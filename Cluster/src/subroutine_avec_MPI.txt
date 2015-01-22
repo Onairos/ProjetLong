@@ -1,0 +1,5 @@
+
+program cluster
+
+lit avec un MPI_ABORT qu'il y a moyen d'éviter en remontant une info à
+l'appelant

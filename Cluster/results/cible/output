@@ -1,0 +1,54 @@
+ rank           0  procnamedudegpu                                                                         
+ ----------------------------------------
+ rank           2  procnamedudegpu                                                                         
+ ----------------------------------------
+ rank           1  procnamedudegpu                                                                         
+ ----------------------------------------
+ rank           3  procnamedudegpu                                                                         
+ ----------------------------------------
+ DATA                          
+   > format d entree image + decoupage par seuil
+   > lecture du fichier de data : cible                         
+     > nb de points :         650
+     > dimension :           2
+ nb de points         650
+   > coordonnees min/max :
+     >            1 :  -15.520178000000000        17.741305000000001     
+     >            2 :  -15.517251000000000        17.669101000000001     
+ NBLIMIT                       
+   > nb maximal de clusters recherches :           5
+ EPAISSEUR                     
+   > epaisseur de la tranche :   1.7000000000000000     
+ DECOUPAGE                     
+   > decoupage par recouvrement active.
+ dim           2
+ decoupe           2           2
+   > decoupage :           2           2
+ END                           
+ temps lecture data   5.18584251403808594E-003
+   > bilan decoupage :
+     > zone            0 :         193
+     > zone            1 :         193
+     > zone            2 :         216
+     > zone            3 :         248
+ temps decoupage des datas...  3.49149703979492188E-002
+           0 calcule le sigma global :  0.65617772869655300     
+ temps envoi données et calcul sigma  9.43994522094726563E-003
+           1 calcul cluster //  7.39481449127197266E-002
+           1 ecriture des clusters : cluster.partiel.1             
+           2 calcul cluster //  0.10426807403564453     
+           2 ecriture des clusters : cluster.partiel.2             
+           0 calcul cluster //  0.10972499847412109     
+           3 calcul cluster //  0.11789608001708984     
+           3 ecriture des clusters : cluster.partiel.3             
+ temps calcul cluster global //  0.11789608001708984     
+           0 ecriture des clusters : cluster.partiel.0             
+ temps regroupement des clusters  1.11608505249023438E-002
+   > Ecriture du resultat...
+     > cluster            1  :          50  -> cluster.final.1               
+     > cluster            2  :         100  -> cluster.final.2               
+     > cluster            3  :         200  -> cluster.final.3               
+     > cluster            4  :         300  -> cluster.final.4               
+ temps écriture des clusters  2.26070880889892578E-002
+  Fin du calcul
+   > temps total=  0.20179295539855957     

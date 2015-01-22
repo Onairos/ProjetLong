@@ -1,0 +1,65 @@
+ rank           3  procnamelush                                                                            
+ rank           1  procnamelush                                                                            
+ ----------------------------------------
+ ----------------------------------------
+ rank           0  procnamelush                                                                            
+ rank           2  procnamelush                                                                            
+ ----------------------------------------
+ ----------------------------------------
+ DATA                          
+   > format d entree image + decoupage par seuil
+   > lecture du fichier de data : 3blocsSimple.txt              
+     > nb de points :          48
+     > dimension :           2
+ nb de points          48
+   > coordonnees min/max :
+     >            1 :  -4.0000000000000000        1.0000000000000000     
+     >            2 :   0.0000000000000000        5.0000000000000000     
+ NBLIMIT                       
+   > nb maximal de clusters recherches :          10
+ EPAISSEUR                     
+   > epaisseur de la tranche :   3.0000000000000000     
+ DECOUPAGE                     
+   > decoupage par recouvrement active.
+ dim           2
+ decoupe           2           2
+   > decoupage :           2           2
+ END                           
+ temps lecture data    8.1797122955322266E-002
+   > bilan decoupage :
+     > zone            0 :          48
+     > zone            1 :          48
+     > zone            2 :          48
+     > zone            3 :          48
+ temps decoupage des datas...   1.0020732879638672E-003
+           0 calcule le sigma global :  0.51031037223899745     
+           2 valeur du sigma  0.51031037223899745     
+ temps envoi données et calcul sigma   6.0930252075195312E-003
+           2 solveur lapack
+           0 valeur du sigma  0.51031037223899745     
+           0 solveur lapack
+           3 valeur du sigma  0.51031037223899745     
+           1 valeur du sigma  0.51031037223899745     
+           3 solveur lapack
+           1 solveur lapack
+           2 cout construction vp   2.8625011444091797E-002
+           0 cout construction vp   2.8402090072631836E-002
+           3 cout construction vp   2.5384902954101562E-002
+           2 calcul cluster //   2.9394865036010742E-002
+           0 calcul cluster //   2.9214859008789062E-002
+           2 ecriture des clusters : cluster.partiel.2             
+           3 calcul cluster //   2.6318073272705078E-002
+           1 cout construction vp   2.6129961013793945E-002
+           3 ecriture des clusters : cluster.partiel.3             
+           1 calcul cluster //   2.6889085769653320E-002
+           1 ecriture des clusters : cluster.partiel.1             
+ temps calcul cluster global //   2.9394865036010742E-002
+           0 ecriture des clusters : cluster.partiel.0             
+ temps regroupement des clusters   2.2482872009277344E-004
+   > Ecriture du resultat...
+     > cluster            1  :          16  -> cluster.final.1               
+     > cluster            2  :          16  -> cluster.final.2               
+     > cluster            3  :          16  -> cluster.final.3               
+ temps écriture des clusters   1.1897087097167969E-004
+  Fin du calcul
+   > temps total=  0.12007403373718262     

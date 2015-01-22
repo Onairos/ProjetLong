@@ -1,0 +1,78 @@
+ rank           0  procnamedudegpu                                                                         
+ rank           3  procnamedudegpu                                                                         
+ ----------------------------------------
+ rank           6  procnamedudegpu                                                                         
+ rank           7  procnamedudegpu                                                                         
+ ----------------------------------------
+ rank           4  procnamedudegpu                                                                         
+ ----------------------------------------
+ rank           1  procnamedudegpu                                                                         
+ ----------------------------------------
+ rank           5  procnamedudegpu                                                                         
+ ----------------------------------------
+ ----------------------------------------
+ rank           2  procnamedudegpu                                                                         
+ ----------------------------------------
+ ----------------------------------------
+ DATA                          
+   > format d entree image + decoupage par seuil
+   > lecture du fichier de data : 3spheres                      
+     > nb de points :        4361
+     > dimension :           3
+ nb de points        4361
+   > coordonnees min/max :
+     >            1 :  -5.9991440999999996        5.9991440999999996     
+     >            2 :  -6.0000000000000000        3.0000000000000000     
+     >            3 :  -6.0000000000000000        6.0000000000000000     
+ NBLIMIT                       
+   > nb maximal de clusters recherches :           8
+ EPAISSEUR                     
+   > epaisseur de la tranche :  0.90000000000000002     
+ DECOUPAGE                     
+   > decoupage par recouvrement active.
+ dim           3
+ decoupe           2           2           2
+   > decoupage :           2           2           2
+ END                           
+ temps lecture data   2.37238407135009766E-002
+   > bilan decoupage :
+     > zone            0 :         955
+     > zone            1 :         984
+     > zone            2 :         811
+     > zone            3 :         838
+     > zone            4 :         983
+     > zone            5 :         943
+     > zone            6 :         934
+     > zone            7 :         782
+ temps decoupage des datas...  9.46331024169921875E-002
+           0 calcule le sigma global :  0.36724498549338597     
+ temps envoi données et calcul sigma  0.19321584701538086     
+ difference ratio  8.97204549643519644E-013
+           7 calcul cluster //   1.7840578556060791     
+           7 ecriture des clusters : cluster.partiel.7             
+           2 calcul cluster //   1.9817349910736084     
+           3 calcul cluster //   2.2709949016571045     
+           3 ecriture des clusters : cluster.partiel.3             
+           2 ecriture des clusters : cluster.partiel.2             
+ difference ratio  2.85760449448759490E-006
+           6 calcul cluster //   2.8774909973144531     
+           6 ecriture des clusters : cluster.partiel.6             
+ difference ratio  4.96161553750499566E-013
+           5 calcul cluster //   3.2182068824768066     
+           5 ecriture des clusters : cluster.partiel.5             
+           0 calcul cluster //   3.5773689746856689     
+           1 calcul cluster //   3.8134429454803467     
+           1 ecriture des clusters : cluster.partiel.1             
+ difference ratio  1.22209213958508153E-006
+           4 calcul cluster //   3.9880340099334717     
+ temps calcul cluster global //   3.9880340099334717     
+           0 ecriture des clusters : cluster.partiel.0             
+           4 ecriture des clusters : cluster.partiel.4             
+ temps regroupement des clusters  6.14609718322753906E-002
+   > Ecriture du resultat...
+     > cluster            1  :        4086  -> cluster.final.1               
+     > cluster            2  :          95  -> cluster.final.2               
+     > cluster            3  :         180  -> cluster.final.3               
+ temps écriture des clusters  2.78201103210449219E-002
+  Fin du calcul
+   > temps total=   4.3894979953765869     

@@ -1,0 +1,240 @@
+ rank           0  procnamelush                                                                            
+ ----------------------------------------
+ DATA                          
+   > format d entree image + decoupage par seuil
+   > lecture du fichier de data : 3blocsSimple.txt              
+     > nb de points :          48
+     > dimension :           2
+ nb de points          48
+   > coordonnees min/max :
+     >            1 :  -4.0000000000000000        1.0000000000000000     
+     >            2 :   0.0000000000000000        5.0000000000000000     
+ NBLIMIT                       
+   > nb maximal de clusters recherches :           5
+ EPAISSEUR                     
+   > epaisseur de la tranche :   1.7000000000000000     
+ DECOUPAGE                     
+   > decoupage par recouvrement active.
+ dim           2
+ decoupe           1           1
+   > decoupage :           1           1
+ END                           
+ temps lecture data    3.4689903259277344E-004
+   > bilan decoupage :
+     > zone            0 :           0
+ temps decoupage des datas...   1.4185905456542969E-004
+           0 calcule le sigma global :  0.51031037223899745     
+ temps envoi données et calcul sigma   3.7908554077148438E-005
+           0 construction A   3.0994415283203125E-005
+ ========== facteur, n*n nnz2 =    3.0000000000000000             2304         724
+           0 surcout construction A   5.6982040405273438E-005
+ matvec workd            0   9.4597743959850794E-002  -1.7508473663141344E-002
+ matvec workd            1   2.0675896492858888E-004  -1.2322516624616548E-002
+ matvec workd            2 -0.22056588068467131        9.2142367406038064E-003
+ matvec workd            3 -0.21909497321682639        6.1127363701999815E-003
+ matvec workd            4   2.8110080979727201E-002  -7.9724507299523337E-003
+ matvec workd            5  -7.1622254516705369E-002   4.2585668403596934E-003
+ matvec workd            6  0.21604957481210815       -2.8387172083993082E-002
+ matvec workd            7  -5.9867480180519135E-002   1.1209319142417639E-002
+ matvec workd            8   7.9419972768188490E-002  -3.4276747251859821E-002
+ matvec workd            9  -6.9378391112156865E-002  -1.1039365030486381E-003
+ matvec workd           10  0.15594027803506103       -1.0435973856889410E-002
+ matvec workd           11  0.21037023965822871       -5.3176572079930654E-003
+ matvec workd           12 -0.16986939355614866       -1.4273321522516320E-002
+ matvec workd           13 -0.19884456747455367        4.1085572417116399E-003
+ matvec workd           14  -8.2147843778490034E-002   1.6536857516365043E-002
+ matvec workd           15  0.11025068144232736        1.4235176698180179E-002
+ matvec workd           16 -0.13864562225353688       -3.1742055694606530E-002
+ matvec workd           17  -1.8846973021454137E-002  -1.9494499749725953E-002
+ matvec workd           18   5.6261463398353754E-003   8.8355276608706856E-003
+ matvec workd           19  0.11999678470497784        1.1306017552071607E-002
+
+ _naupd: Number of update iterations taken
+ -----------------------------------------
+    1 -    1:    17
+  
+
+ _naupd: Number of wanted "converged" Ritz values
+ ------------------------------------------------
+    1 -    1:     5
+  
+
+ _naupd: Real part of the final Ritz values
+ ------------------------------------------
+    1 -    5:   3.186D-01   3.193D-01   9.994D-01   9.998D-01   1.000D+00
+  
+
+ _naupd: Imaginary part of the final Ritz values
+ -----------------------------------------------
+    1 -    5:   0.000D+00   0.000D+00   0.000D+00   0.000D+00   0.000D+00
+  
+
+ _naupd: Associated Ritz estimates
+ ---------------------------------
+    1 -    5:   0.000D+00   0.000D+00   0.000D+00   0.000D+00   0.000D+00
+  
+
+
+     =============================================
+     = Nonsymmetric implicit Arnoldi update code =
+     = Version Number:  2.4                      =
+     = Version Date:    07/31/96                 =
+     =============================================
+     = Summary of timing statistics              =
+     =============================================
+
+
+     Total number update iterations             =    17
+     Total number of OP*x operations            =    68
+     Total number of B*x operations             =     0
+     Total number of reorthogonalization steps  =    58
+     Total number of iterative refinement steps =     0
+     Total number of restart steps              =     0
+     Total time in user OP*x operation          =     0.000000
+     Total time in user B*x operation           =     0.000000
+     Total time in Arnoldi update routine       =     0.000000
+     Total time in naup2 routine                =     0.000000
+     Total time in basic Arnoldi iteration loop =     0.000000
+     Total time in reorthogonalization phase    =     0.000000
+     Total time in (re)start vector generation  =     0.000000
+     Total time in Hessenberg eig. subproblem   =     0.000000
+     Total time in getting the shifts           =     0.000000
+     Total time in applying the shifts          =     0.000000
+     Total time in convergence testing          =     0.000000
+     Total time in computing final Ritz vectors =     0.000000
+
+
+ Ritz values (Real, Imag) and residual residuals
+ -----------------------------------------------
+               Col   1       Col   2       Col   3
+  Row   1:    9.99411D-01   0.00000D+00   1.20640D-15
+  Row   2:    9.99804D-01   0.00000D+00   1.38552D-15
+  Row   3:    1.00000D+00   0.00000D+00   1.49365D-15
+  Row   4:    3.19295D-01   0.00000D+00   1.93620D-15
+  Row   5:    3.18615D-01   0.00000D+00   6.64720D-16
+  
+  
+  _NSIMP 
+  ====== 
+  
+  Size of the matrix is           48
+  The number of Ritz values requested is            5
+  The number of Arnoldi vectors generated (NCV) is           11
+  What portion of the spectrum: LM
+  The number of converged Ritz values is            5
+  The number of Implicit Arnoldi update iterations taken is           17
+  The number of OP*x is           68
+  The convergence criterion is    1.1102230246251565E-016
+  
+ ---------- WS -------------
+ valeurs propres arpack brutes creux           1  0.99941053383582135     
+ valeurs propres arpack brutes creux           2  0.99980367626175815     
+ valeurs propres arpack brutes creux           3  0.99999999999999922     
+ valeurs propres arpack brutes creux           4  0.31929512102166518     
+ valeurs propres arpack brutes creux           5  0.31861464057270777     
+ nev ***********           5          11          48
+ matvec workd            0 -0.10914451258097174        2.0256851679894328E-002
+ matvec workd            1  -5.2848189476062825E-002   2.2477490379778330E-002
+ matvec workd            2  0.13167275378220139        8.1531116434524192E-003
+ matvec workd            3   8.8716719907417918E-002   1.9574422480251309E-002
+ matvec workd            4  -3.2344065856491841E-002  -8.1329528584149317E-003
+ matvec workd            5  0.12207709704628528       -1.8966751103980106E-002
+ matvec workd            6  0.19424110307317460       -1.7850566712250958E-002
+ matvec workd            7 -0.10187252873935865        2.9701152882643068E-002
+ matvec workd            8  0.23902687452164240       -7.9694317766493217E-002
+ matvec workd            9 -0.17522372856972684       -1.3805370692672136E-002
+ matvec workd           10  -8.4457745007508273E-002  -1.6379055409743128E-002
+ matvec workd           11   6.9012609561219337E-002  -2.9600540084156454E-002
+ matvec workd           12 -0.25653564682512003       -2.9065878050547195E-002
+ matvec workd           13 -0.23310793789176967       -3.8665829752319143E-002
+ matvec workd           14  -9.1404644899587120E-002  -4.9918097994415080E-002
+ matvec workd           15  -6.8204302062689501E-002  -3.7905362894054676E-002
+ matvec workd           16 -0.13169990657009756       -2.6548386515926860E-002
+ matvec workd           17  -8.9163682191582896E-002  -2.2127446591181543E-002
+ matvec workd           18  -8.6058523685719604E-002  -9.1324774404230799E-003
+ matvec workd           19  -2.6018103091021368E-002  -1.1530562618534072E-002
+
+ _naupd: Number of update iterations taken
+ -----------------------------------------
+    1 -    1:    11
+  
+
+ _naupd: Number of wanted "converged" Ritz values
+ ------------------------------------------------
+    1 -    1:     5
+  
+
+ _naupd: Real part of the final Ritz values
+ ------------------------------------------
+    1 -    5:   3.186D-01   3.193D-01   9.994D-01   9.998D-01   1.000D+00
+  
+
+ _naupd: Imaginary part of the final Ritz values
+ -----------------------------------------------
+    1 -    5:   0.000D+00   0.000D+00   0.000D+00   0.000D+00   0.000D+00
+  
+
+ _naupd: Associated Ritz estimates
+ ---------------------------------
+    1 -    5:   1.859D-18   6.245D-19   0.000D+00   0.000D+00   0.000D+00
+  
+
+
+     =============================================
+     = Nonsymmetric implicit Arnoldi update code =
+     = Version Number:  2.4                      =
+     = Version Date:    07/31/96                 =
+     =============================================
+     = Summary of timing statistics              =
+     =============================================
+
+
+     Total number update iterations             =    11
+     Total number of OP*x operations            =    50
+     Total number of B*x operations             =     0
+     Total number of reorthogonalization steps  =    40
+     Total number of iterative refinement steps =     0
+     Total number of restart steps              =     0
+     Total time in user OP*x operation          =     0.000000
+     Total time in user B*x operation           =     0.000000
+     Total time in Arnoldi update routine       =     0.000000
+     Total time in naup2 routine                =     0.000000
+     Total time in basic Arnoldi iteration loop =     0.000000
+     Total time in reorthogonalization phase    =     0.000000
+     Total time in (re)start vector generation  =     0.000000
+     Total time in Hessenberg eig. subproblem   =     0.000000
+     Total time in getting the shifts           =     0.000000
+     Total time in applying the shifts          =     0.000000
+     Total time in convergence testing          =     0.000000
+     Total time in computing final Ritz vectors =     0.000000
+
+
+ Ritz values (Real, Imag) and residual residuals
+ -----------------------------------------------
+               Col   1       Col   2       Col   3
+  Row   1:    9.99411D-01   0.00000D+00   1.59809D-15
+  Row   2:    9.99804D-01   0.00000D+00   1.98694D-15
+  Row   3:    1.00000D+00   0.00000D+00   1.55307D-15
+  Row   4:    3.17266D-01   0.00000D+00   1.46388D-15
+  Row   5:    3.19295D-01   0.00000D+00   1.48876D-15
+  
+  
+  _NSIMP 
+  ====== 
+  
+  Size of the matrix is           48
+  The number of Ritz values requested is            5
+  The number of Arnoldi vectors generated (NCV) is           11
+  What portion of the spectrum: LM
+  The number of converged Ritz values is            5
+  The number of Implicit Arnoldi update iterations taken is           11
+  The number of OP*x is           50
+  The convergence criterion is    1.1102230246251565E-016
+  
+           0 cout construction vp   2.5510787963867188E-003
+ ---------- WS -------------
+ valeurs propres arpack brutes full           1  0.99941053383582357     
+ valeurs propres arpack brutes full           2  0.99980367626176025     
+ valeurs propres arpack brutes full           3   1.0000000000000002     
+ valeurs propres arpack brutes full           4  0.31726643047773712     
+ valeurs propres arpack brutes full           5  0.31929512102166596     

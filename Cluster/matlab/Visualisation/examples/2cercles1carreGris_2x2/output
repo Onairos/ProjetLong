@@ -1,0 +1,64 @@
+ rank           0  procnamedudegpu                                                                         
+ ----------------------------------------
+ rank           2  procnamedudegpu                                                                         
+ ----------------------------------------
+ rank           3  procnamedudegpu                                                                         
+ ----------------------------------------
+ rank           1  procnamedudegpu                                                                         
+ ----------------------------------------
+ DATA                          
+   > format d entree image + decoupage geometrique
+   > lecture du fichier de data : 2Cercles1CarreGris.txt        
+     >dimension de l image:           2
+     >nb de temps:           1
+     >decoupage spatial:          60          60
+     > nb de points a lire :        3600
+     > nb de points lus        3600
+   > coordonnees min/max :
+     >            3 :   0.0000000000000000        76.000000000000000     
+   > pas max :   76.000000000000000     
+   > pas :           1   1.2666667    
+   > pas :           2   1.2666667    
+   > decodage du format image...
+ NBLIMIT                       
+   > nb maximal de clusters recherches :           2
+ EPAISSEUR                     
+   > epaisseur de la tranche :  0.50000000000000000     
+ DECOUPAGE                     
+   > decoupage par recouvrement active.
+ dim           3
+ decoupe           2           2           1
+   > decoupage :           2           2           1
+ END                           
+ temps lecture data   9.57584381103515625E-003
+   > bilan decoupage :
+     > zone            0 :         961
+     > zone            1 :         930
+     > zone            2 :         930
+     > zone            3 :         900
+ temps decoupage des datas...  2.69141197204589844E-002
+           0 calcule le sigma global :   3.8234933426375801     
+ temps envoi données et calcul sigma  0.12444400787353516     
+ difference ratio  2.09464483450749785E-002
+ difference ratio  2.14193728629531628E-002
+           3 calcul cluster //   2.7924230098724365     
+           3 ecriture des clusters : cluster.partiel.3             
+           2 calcul cluster //   2.7934658527374268     
+           2 ecriture des clusters : cluster.partiel.2             
+ difference ratio  5.64573141366459827E-019
+           1 calcul cluster //   3.1940920352935791     
+           1 ecriture des clusters : cluster.partiel.1             
+ difference ratio  2.04798157506352677E-002
+           0 calcul cluster //   3.3611528873443604     
+ temps calcul cluster global //   3.3611528873443604     
+           0 ecriture des clusters : cluster.partiel.0             
+ temps regroupement des clusters  3.53910923004150391E-002
+   > Ecriture du resultat...
+     > cluster            1  :         191  -> cluster.final.1               
+     > cluster            2  :        2821  -> cluster.final.2               
+     > cluster            3  :         191  -> cluster.final.3               
+     > cluster            4  :         191  -> cluster.final.4               
+     > cluster            5  :         206  -> cluster.final.5               
+ temps écriture des clusters  3.05340290069580078E-002
+  Fin du calcul
+   > temps total=   3.5886220932006836     

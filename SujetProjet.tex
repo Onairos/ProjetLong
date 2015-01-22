@@ -1,0 +1,102 @@
+\documentclass[a4paper,twoside,10pt]{article}
+% Alternative Options:
+%	Paper Size: a4paper / a5paper / b5paper / letterpaper / legalpaper / executivepaper
+% Duplex: oneside / twoside
+% Base Font Size: 10pt / 11pt / 12pt
+
+
+
+
+%% Language %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage[USenglish]{babel} %francais, polish, spanish, ...
+\usepackage[T1]{fontenc}
+\usepackage[ansinew]{inputenc}
+\usepackage[dvips]{graphicx}
+
+
+\usepackage{amsmath, amssymb, amsfonts, amstext}
+\usepackage{multicol}
+\usepackage{subfigure}
+\usepackage{relsize}
+\usepackage[T1]{fontenc}
+%\usepackage[french]{babel}
+\usepackage{supertabular}
+\usepackage{amsmath,amstext,amssymb}
+
+
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
+\begin{document}
+
+
+\subsection*{Sujet de projet long :}
+\begin{center}
+{\Large Intégration de nouvelles méthodes de clusterisation dans un code
+parallèle}
+\end{center}
+\vspace*{1.5cm}
+
+
+\noindent Ce projet est proposé par  l'équipe Algorithmes Parallèles et Optimisation (APO) du laboratoire IRIT. \\
+\smallskip
+
+\noindent \textbf{Encadrants :} Sandrine Mouysset : sandrine.mouysset@enseeiht.fr
+\hspace*{2.3cm} Ronan Guivarch : ronan.guivarch@enseeiht.fr\\
+
+\subsection*{Contexte}
+
+Dans le cadre de la segmentation d'images couleurs ou hyperspectrales, nous avons affaire à un grand flot de données dont il faut extraire des classes sans connaissance a priori.\\
+
+... 
+paragraphe sur les méthodes de clusterisation supervisées et non supervisées
+...
+
+Une méthode paralléle basée sur une décomposition en
+sous-domaines et une stratégie de "\textit{branch and bound}"
+a été développée. Cette méthode consiste en 5 étapes
+
+\begin{enumerate}
+  \item Découpage des données par le processus Maître
+  \item Distribution des données aux processus Esclaves
+  \item Clusterisation sur chaque sous-domaine
+  \item Envoi des résultats vers le Maître
+  \item Regroupement des clusters commun à plusieurs sous-domaines
+\end{enumerate}
+
+... figure ...
+
+Un code parallèle existe et pour le moment la seule méthode implémentée pour
+l'étape 3 est la méthode spectrale ... structure pleine/structure creuse ??...
+
+Nous voudrions reprendre le code pour pouvoir facilement changer de méthode de
+clusterisation et pouvoir ainsi comparer les méthodes en particulier pour des
+grands problèmes (images spectrales).
+
+Le code serait alors constitué de deux parties
+\begin{itemize}
+  \item un moteur parallèle
+  \item un coeur de résolution (méthode de clusterisation)
+\end{itemize}
+
+\subsection*{Objectifs du projet long}
+
+objectifs sur les méthodes de clusterisation (matlab ?)
+...
+
+objectifs pour le code
+
+Dans le cadre du projet, nous proposons à partir du code existant :
+\begin{itemize}
+  \item de procéder à un refactoring du code (nettoyage du code,
+    documentation),
+  \item de spécifier les interfaces des routines des méthodes de résolution
+    pour pouvoir facilement passer d'une méthode à une autre,
+  \item de coder quelques méthodes de clusterisation,
+  \item de définir des tests et de valider les méthodes.
+\end{itemize}
+
+ouverture ?
+openMP, développement sur GPU ??
+ou on garde cela pour le master
+
+\end{document}
