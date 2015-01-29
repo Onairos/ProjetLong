@@ -1,0 +1,39 @@
+Soit $PL_PATH le chemin où votre dossier ProjetLong est situé
+
+
+1. Pour compiler le programme, aller dans $PL_PATH/ProjetLong/Cluster/src/ puis exécuter la commande make (en ayant exécuter au préalable la commande make clean si besoin pour nettoyer le dossier)
+
+
+2. Facultatif mais je vous conseille de modifier votre variable d'environnement PATH en y ajoutant les binaires afin de pouvoir lancer le programme principal (run.sh) à partir de n'importe que dossier :
+en BASH, cela s'écrit :
+
+export PATH=$PL_PATH/ProjetLong/Cluster/bin:$PATH (à mettre dans le .bashrc)
+
+
+3. Pour lancer le programme sur un exemple avec une seule machine, aller dans $PL_PATH/ProjetLong/Cluster/examples/xxxx/ et lancer la commande :
+
+run.sh [nb_proc] param.in
+
+/!\ on pense mais on n'est pas sûr qu'il faille mettre la même valeur sur nb_proc que dans le fichier param.in ligne 10 (produit des deux nombres de RECOUVREMENT). A étudier si le temps
+
+
+4. Ensuite, étant donné que le programme utilise le protocole SSH pour se connecter aux autres machines, il faut faire une manip' pour permettre de se connecter aux machines de l'N7 sans mettre un mot de passe.
+
+	a. Aller dans ~/.ssh
+	b. Taper ssh-keygen
+	c. Faire trois fois Enter
+	d. ssh-copy-id [une_machine] (ex: carapuce)
+	e. Il faut ensuite se connecter une première fois (si ce n'est pas déjà fait) sur les [nb_machines] premières machines indiquées par le fichier $PL_PATH/ProjetLong/Cluster/hosts/hosts via la commande ssh [nom_de_la_machine]
+
+
+5. Pour lancer le programme sur un exemple avec plusieurs machine, aller dans $PL_PATH/ProjetLong/Cluster/examples/xxxx/ et lancer la commande :
+
+prun.sh [nb_machines] param.in
+
+/!\ même remarque que le 3.
+
+
+6. Afin de visualiser les résultats : 
+	a. Copier-coller $PL_PATH/ProjetLong/Cluster/matlab/Visualisation/VisualisationGeom.m (ou VisualisationImg.m) vers le dossier examples/xxxx/
+	b. Ouvrir Matlab, modifier la ligne 7 en mettant xxxx.txt
+	c. Puis run le fichier Matlab
