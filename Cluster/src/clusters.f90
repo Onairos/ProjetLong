@@ -4,7 +4,7 @@ program clusters
   use module_decoupe
   use module_MPI
   use module_calcul
-  use module_sparse
+!  use module_sparse
   use module_sortie
 
   implicit none

@@ -1,11 +1,12 @@
 
 #include Makefile.${ARCH}
-include Makefile.lush
+include Makefile.hydre
 
 #Modules
 	MODULES=module_structure.o module_entree.o module_decoupe.o \
 		module_MPI.o module_calcul.o module_solve.o module_embed.o \
-		 module_sortie.o module_sparse.o
+		 module_sortie.o 
+	#module_sparse.o
 
 all :  visudecoup visuclusters clusters gmsh2cluster
 
