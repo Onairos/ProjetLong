@@ -14,7 +14,6 @@ else
     error('ERROR: init is not valid.');
 end
 last = 0;
-i=0;
 while any (label ~= last)
     [u,~,label] = unique(label);   % remove empty clusters
     k = length(u);
@@ -24,7 +23,6 @@ while any (label ~= last)
     Z = repmat(diag(T*E'),1,n)-2*T;
     last = label';
     [val, label] = min(Z,[],1);
-    i=i+1
 end
 [~,~,label] = unique(label);   % remove empty clusters
 energy = sum(val)+trace(K);
