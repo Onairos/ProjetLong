@@ -24,7 +24,7 @@ while any (label ~= last)
     Z = repmat(diag(T*E'),1,n)-2*T;
     last = label';
     [val, label] = min(Z,[],1);
-    i=i+1
+   
 end
 [~,~,label] = unique(label);   % remove empty clusters
 energy = sum(val)+trace(K);
