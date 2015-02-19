@@ -1,61 +1,61 @@
-module module_entree
- use module_structure
-contains
+MODULE module_entree
+ USE module_structure
+CONTAINS
 
   !*********************************************
   !fichier d'aide
-  subroutine help
-    implicit none
-    !integer :: ierr
-    print *
-    print *,'syntaxe d appel : clusters fichier_d_entree'
-    print *
-    print *,'mots cles du fichier d entree :'
-    print *
-    print *,'DATA'
-    print *,'COORD (si donnees par coordonnees)'
-    print *,'IMAGE (si fichier de maillage sous forme image + decoupage par pixel)'
-    print *,'GEOM  (si fichier de maillage sous forme image + decoupage geom)'
-    print *,'SEUIL  (si fichier de maillage sous forme image + decoupage par seuil)'
-    print *,'  fichier_de_maillage'
-    print *
-    print *,'EPAISSEUR'
-    print *,'  epaisseur_de_la_tranche'
-    print *
-    print *,'NBLIMIT'
-    print *,'  nb_max_de_clusters'
-    print *
-    print *,'NBCLUST'
-    print *,'  (facultatif)'
-    print *,'  nb_de_clusters_par_sous-domaine'
-    print *
-    print *,'SIGMA'
-    print *,'  (facultatif)'
-    print *,'  valeur_de_sigma_imposee'
-    print *
-    print *,'DECOUPAGE'
-    print *,'INTERFACE (decoupage + interface) '
-    print *,'RECOUVREMENT (decoupage avec recouvrement)'
-    print *,'  nb_de_sous-domaines_par_dimension'
-    print *
-    print *,'END'
-    print *,'  (fin du fichier d entree)'
-    stop
-    return
-  end subroutine help
+  SUBROUTINE help
+    IMPLICIT NONE
+    !INTEGER :: ierr
+    PRINT *
+    PRINT *,'syntaxe d appel : clusters fichier_d_entree'
+    PRINT *
+    PRINT *,'mots cles du fichier d entree :'
+    PRINT *
+    PRINT *,'DATA'
+    PRINT *,'COORD (si donnees par coordonnees)'
+    PRINT *,'IMAGE (si fichier de maillage sous forme image + decoupage par pixel)'
+    PRINT *,'GEOM  (si fichier de maillage sous forme image + decoupage geom)'
+    PRINT *,'SEUIL  (si fichier de maillage sous forme image + decoupage par seuil)'
+    PRINT *,'  fichier_de_maillage'
+    PRINT *
+    PRINT *,'EPAISSEUR'
+    PRINT *,'  epaisseur_de_la_tranche'
+    PRINT *
+    PRINT *,'NBLIMIT'
+    PRINT *,'  nb_max_de_clusters'
+    PRINT *
+    PRINT *,'NBCLUST'
+    PRINT *,'  (facultatif)'
+    PRINT *,'  nb_de_clusters_par_sous-domaine'
+    PRINT *
+    PRINT *,'SIGMA'
+    PRINT *,'  (facultatif)'
+    PRINT *,'  valeur_de_sigma_imposee'
+    PRINT *
+    PRINT *,'DECOUPAGE'
+    PRINT *,'INTERFACE (decoupage + interface) '
+    PRINT *,'RECOUVREMENT (decoupage avec recouvrement)'
+    PRINT *,'  nb_de_sous-domaines_par_DIMENSION'
+    PRINT *
+    PRINT *,'END'
+    PRINT *,'  (fin du fichier d entree)'
+    STOP
+    RETURN
+  END SUBROUTINE help
 
   !**********************************************
   !lecture du fichier d'entree
-  subroutine lit(data,epsilon,coordmin,coordmax,nbproc,decoupe,&
+  SUBROUTINE lit(data,epsilon,coordmin,coordmax,nbproc,decoupe,&
        mesh,sigma,nblimit,listenbideal)
-    implicit none
-    integer :: nbproc,nblimit,decoupage
-    integer,dimension(:),pointer :: decoupe,listenbideal
-    type(type_data) :: data
-    double precision :: epsilon,sigma
-    double precision,dimension(:),pointer :: coordmax,coordmin
-    character*30 :: mot,mesh
-    integer :: ok,i,ierr,tot
+    IMPLICIT NONE
+    INTEGER :: nbproc,nblimit,decoupage
+    INTEGER,DIMENSION(:),POINTER :: decoupe,listenbideal
+    TYPE(type_data) :: data
+    DOUBLE PRECISION :: epsilon,sigma
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
+    CHARACTER*30 :: mot,mesh
+    INTEGER :: ok,i,ierr,tot
     !initialisation
     epsilon=0.0
     sigma=-1.0
@@ -67,420 +67,420 @@ contains
     data%recouvrement=0
     nblimit=4
     decoupage=0
-    if (nbproc>1) then
-       allocate(listenbideal(0:nbproc-1))
-    else
-       allocate(listenbideal(1))
-    end if
+    IF (nbproc>1) THEN
+       ALLOCATE(listenbideal(0:nbproc-1))
+    ELSE
+       ALLOCATE(listenbideal(1))
+    ENDIF
     listenbideal(:)=0
     !lecture
     ok=0
-    do while (ok/=1)
+    DO WHILE (ok/=1)
        ok=1
-       read(1,*) mot
-       print *,mot
-       select case(mot)
-       case('DATA')
+       READ(1,*) mot
+       PRINT *,mot
+       SELECT CASE(mot)
+       CASE('DATA')
           ok=0
-          read(1,*) mesh
-          if (mesh=='IMAGE') then
+          READ(1,*) mesh
+          IF (mesh=='IMAGE') THEN
              data%image=1
-             read (1,*) mesh
-             print *,'  > format d entree image + decoupage par pixel'
-             print *,'  > lecture du fichier de data : ',mesh
-             call lit_mesh_image(mesh,data,coordmin,coordmax)
-          elseif (mesh=='GEOM') then
+             READ (1,*) mesh
+             PRINT *,'  > format d entree image + decoupage par pixel'
+             PRINT *,'  > lecture du fichier de data : ',mesh
+             CALL lit_mesh_image(mesh,data,coordmin,coordmax)
+          ELSEIF (mesh=='GEOM') THEN
              data%geom=1
-             read (1,*) mesh
-             print *,'  > format d entree image + decoupage geometrique'
-             print *,'  > lecture du fichier de data : ',mesh
-             call lit_mesh_geom(mesh,data,coordmin,coordmax)
-          elseif (mesh=='SEUIL') then
+             READ (1,*) mesh
+             PRINT *,'  > format d entree image + decoupage geometrique'
+             PRINT *,'  > lecture du fichier de data : ',mesh
+             CALL lit_mesh_geom(mesh,data,coordmin,coordmax)
+          ELSEIF (mesh=='SEUIL') THEN
              data%seuil=1
-             read (1,*) mesh
-             print *,'  > format d entree image + decoupage par seuil'
-             print *,'  > lecture du fichier de data : ',mesh
-             call lit_mesh_seuil(mesh,data,coordmin,coordmax)
-          elseif (mesh=='COORD') then
+             READ (1,*) mesh
+             PRINT *,'  > format d entree image + decoupage par seuil'
+             PRINT *,'  > lecture du fichier de data : ',mesh
+             CALL lit_mesh_seuil(mesh,data,coordmin,coordmax)
+          ELSEIF (mesh=='COORD') THEN
              data%coord=1
-             read (1,*) mesh
-             print *,'  > format d entree image + decoupage par seuil'
-             print *,'  > lecture du fichier de data : ',mesh
-             call lit_mesh_coord(mesh,data,coordmin,coordmax)
-          else
-             print *
-             print *,'format de donnees non reconnu !!!'
-             call help
-          end if
-          if ((data%image==1).or.(data%geom==1).or.(data%seuil==1)) then
+             READ (1,*) mesh
+             PRINT *,'  > format d entree image + decoupage par seuil'
+             PRINT *,'  > lecture du fichier de data : ',mesh
+             CALL lit_mesh_coord(mesh,data,coordmin,coordmax)
+          ELSE
+             PRINT *
+             PRINT *,'format de donnees non reconnu !!!'
+             CALL help
+          ENDIF
+          IF ((data%image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              !creation du tableau de correspondances pixel/coord
-             print *,'  > decodage du format image...'
-             call tableau_image(data)
-          end if
-       case('EPAISSEUR')
+             PRINT *,'  > decodage du format image...'
+             CALL tableau_image(data)
+          ENDIF
+       CASE('EPAISSEUR')
           ok=0
-          read(1,*) epsilon
-          print *,'  > epaisseur de la tranche :',epsilon
-       case('NBLIMIT')
+          READ(1,*) epsilon
+          PRINT *,'  > epaisseur de la tranche :',epsilon
+       CASE('NBLIMIT')
           ok=0
-          read(1,*) nblimit
-          print *,'  > nb maximal de clusters recherches :',nblimit
-       case('NBCLUST')
+          READ(1,*) nblimit
+          PRINT *,'  > nb maximal de clusters recherches :',nblimit
+       CASE('NBCLUST')
           ok=0
-          read(1,*) listenbideal(:)
-          print *,'  > test pour nb de clusters=',listenbideal
-       case('SIGMA')
+          READ(1,*) listenbideal(:)
+          PRINT *,'  > test pour nb de clusters=',listenbideal
+       CASE('SIGMA')
           ok=0
-          read(1,*) sigma
-          print *,'  > valeur de sigma imposee :',sigma
-          if (data%image==1) then
-             if (sigma<1.0) then
-                print *,'epaisseur trop petite pour le mode image !!!!'
-                stop
-             end if
-          end if
-       case('DECOUPAGE')
+          READ(1,*) sigma
+          PRINT *,'  > valeur de sigma imposee :',sigma
+          IF (data%image==1) THEN
+             IF (sigma<1.0) THEN
+                PRINT *,'epaisseur trop petite pour le mode image !!!!'
+                STOP
+             ENDIF
+          ENDIF
+       CASE('DECOUPAGE')
           decoupage=1
           ok=0
-          read (1,*) mot
-          select case(mot)
-          case('INTERFACE')
+          READ (1,*) mot
+          SELECT CASE(mot)
+          CASE('INTERFACE')
              data%interface=1
-             print *,'  > decoupage par interface active.'
-          case('RECOUVREMENT')
+             PRINT *,'  > decoupage par interface active.'
+          CASE('RECOUVREMENT')
              data%recouvrement=1
-             print *,'  > decoupage par recouvrement active.'
-          case default
-             print *
-             print *,'mauvais format de decoupage !!!'
-             print *
-             call help
-          end select
-          print *, 'dim', data%dim
-          if ((data%coord==1).or.(data%geom==1).or.(data%seuil==1)) then
-             allocate(decoupe(data%dim))
-          elseif (data%image==1) then
+             PRINT *,'  > decoupage par recouvrement active.'
+          CASE DEFAULT
+             PRINT *
+             PRINT *,'mauvais format de decoupage !!!'
+             PRINT *
+             CALL help
+          END SELECT
+          PRINT *, 'dim', data%dim
+          IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+             ALLOCATE(decoupe(data%dim))
+          ELSEIF (data%image==1) THEN
              !decoupage par pixel
-             allocate(decoupe(data%imgdim))
-          end if
-          read(1,*) decoupe(:)
-          print *, 'decoupe', decoupe
-          if (nbproc>1) then
+             ALLOCATE(decoupe(data%imgdim))
+          ENDIF
+          READ(1,*) decoupe(:)
+          PRINT *, 'decoupe', decoupe
+          IF (nbproc>1) THEN
              tot=1
-             if ((data%coord==1).or.(data%geom==1).or.(data%seuil==1)) then
-                do i=1,data%dim
+             IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+                DO i=1,data%dim
                    tot=tot*decoupe(i)
-                enddo
-             elseif (data%image==1) then
+                ENDDO
+             ELSEIF (data%image==1) THEN
                 !decoupage par pixel
-                do i=1,data%imgdim
+                DO i=1,data%imgdim
                    tot=tot*decoupe(i)
-                enddo
-             end if
-             if (tot/=nbproc-data%interface) then
-                print *,'decoupage non valide !'
-                print *,'le nombre de proc doit etre egal a',tot+data%interface
-                call MPI_ABORT(ierr)
-                stop
-             end if
-          else
+                ENDDO
+             ENDIF
+             IF (tot/=nbproc-data%interface) THEN
+                PRINT *,'decoupage non valide !'
+                PRINT *,'le nombre de proc DOit etre egal a',tot+data%interface
+                CALL MPI_ABORT(ierr)
+                STOP
+             ENDIF
+          ELSE
              !mode 1 proc
-             if ((data%coord==1).or.(data%geom==1).or.(data%seuil==1)) then
-                do i=1,data%dim
+             IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+                DO i=1,data%dim
                    decoupe(i)=1
-                enddo
+                ENDDO
                 tot=1
-             elseif (data%image==1) then
+             ELSEIF (data%image==1) THEN
                 !decoupage par pixel
-                do i=1,data%imgdim
+                DO i=1,data%imgdim
                    decoupe(i)=1
-                enddo
+                ENDDO
                 tot=1
-             end if
-          end if
-          print *,'  > decoupage :',decoupe
-       case('END')
+             ENDIF
+          ENDIF
+          PRINT *,'  > decoupage :',decoupe
+       CASE('END')
           ok=1
-       case default
+       CASE DEFAULT
           ok=0
-          print *,'mot clé inconnu :',mot
-       end select
-    end do
+          PRINT *,'mot clÃ© inconnu :',mot
+       END SELECT
+    ENDDO
     !parametre de decoupage
-    if ((nbproc>1).and.(decoupage==0)) then
-       print *
-       print *,'mot cle DECOUPAGE absent !'
-       call help 
-    end if
+    IF ((nbproc>1).AND.(decoupage==0)) THEN
+       PRINT *
+       PRINT *,'mot cle DECOUPAGE absent !'
+       CALL help 
+    ENDIF
     !cas monoproc
-    if (nbproc==1) then
+    IF (nbproc==1) THEN
        !initialisation par defaut a 1 de tous les parametres de decoupage
-       if (decoupage==1) deallocate(decoupe)
-       if ((data%coord==1).or.(data%geom==1).or.(data%seuil==1)) then
-          allocate(decoupe(data%dim) )
-       elseif (data%image==1) then
-          allocate(decoupe(data%imgdim))
-       end if
+       IF (decoupage==1) DEALLOCATE(decoupe)
+       IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          ALLOCATE(decoupe(data%dim) )
+       ELSEIF (data%image==1) THEN
+          ALLOCATE(decoupe(data%imgdim))
+       ENDIF
        decoupe(:)=1
        epsilon=1.0
-    end if   
+    ENDIF   
     !validation des combinaisons de parametres d'entree
     tot=data%geom+data%seuil+data%coord+data%image
-    if (tot/=1) then
-       print *
-       print *,'pb dans les formats de data entres !'
-       call help
-    end if
+    IF (tot/=1) THEN
+       PRINT *
+       PRINT *,'pb dans les formats de data entres !'
+       CALL help
+    ENDIF
     tot=data%interface+data%recouvrement
-    if (tot/=1) then
-       print *
-       print *,'pb dans les formats de decoupage entres !'
-       call help
-    end if
-    return
-  end subroutine lit
+    IF (tot/=1) THEN
+       PRINT *
+       PRINT *,'pb dans les formats de decoupage entres !'
+       CALL help
+    ENDIF
+    RETURN
+  END SUBROUTINE lit
 
   !**********************************
   !lecture des datas en format coord
-  subroutine lit_mesh_coord(mesh,data,coordmin,coordmax)
-    implicit none
-    character*30 :: mesh
-    type(type_data) :: data
-    double precision,dimension(:),pointer :: coordmax,coordmin
-    integer :: i,j,nb
+  SUBROUTINE lit_mesh_coord(mesh,data,coordmin,coordmax)
+    IMPLICIT NONE
+    CHARACTER*30 :: mesh
+    TYPE(type_data) :: data
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
+    INTEGER :: i,j,nb
     !lecture de donnees classiques
-    open(file=mesh,unit=2)
-    read(2,*) data%nb,data%dim
+    OPEN(FILE=mesh,UNIT=2)
+    READ(2,*) data%nb,data%dim
     data%nbclusters=0
-    print *,'    > nb de points :',data%nb
-    print *,'    > dimension :',data%dim
-    allocate(data%point(data%nb))
-    allocate(coordmax(data%dim))
-    allocate(coordmin(data%dim))
+    PRINT *,'    > nb de points :',data%nb
+    PRINT *,'    > dimension :',data%dim
+    ALLOCATE(data%point(data%nb))
+    ALLOCATE(coordmax(data%dim))
+    ALLOCATE(coordmin(data%dim))
     nb=0
-    do i=1,data%nb
-       allocate(data%point(i)%coord(data%dim))
-       read(2,*,end=100) data%point(i)%coord(:)
+    DO i=1,data%nb
+       ALLOCATE(data%point(i)%coord(data%dim))
+       READ(2,*,END=100) data%point(i)%coord(:)
        nb=nb+1
        data%point(i)%cluster=-1
-       if (i==1) then
+       IF (i==1) THEN
           coordmax(:)=data%point(1)%coord(:)
           coordmin(:)=data%point(1)%coord(:)
-       else
-          do j=1,data%dim
+       ELSE
+          DO j=1,data%dim
              coordmin(j)=min(coordmin(j),data%point(i)%coord(j))
              coordmax(j)=max(coordmax(j),data%point(i)%coord(j))
-          enddo
-       endif
-    enddo
-100 print *,'nb de points',nb
+          ENDDO
+       ENDIF
+    ENDDO
+100 PRINT *,'nb de points',nb
     data%nb=nb
-    close(2)
-    print *,'  > coordonnees min/max :'
-    do j=1,data%dim
-       print *,'    > ',j,':',coordmin(j),coordmax(j)
-    enddo
-    return
-  end subroutine lit_mesh_coord
+    CLOSE(2)
+    PRINT *,'  > coordonnees min/max :'
+    DO j=1,data%dim
+       PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
+    ENDDO
+    RETURN
+  END SUBROUTINE lit_mesh_coord
 
   !**********************************
   !lecture d'image
-  subroutine lit_mesh_image(mesh,data,coordmin,coordmax)
-    implicit none
-    character*30 :: mesh
-    type(type_data) :: data
-    double precision,dimension(:),pointer :: coordmax,coordmin
-    integer :: i,j,nb
-    open(file=mesh,unit=2)
-    read(2,*) data%imgdim,data%imgt
-    print *,'    >dimension de l image:',data%imgdim
-    print *,'    >nb de temps:',data%imgt
-    allocate(data%imgmap(data%imgdim))
-    read(2,*) data%imgmap(:)
-    print *,'    >decoupage spatial:',data%imgmap
+  SUBROUTINE lit_mesh_image(mesh,data,coordmin,coordmax)
+    IMPLICIT NONE
+    CHARACTER*30 :: mesh
+    TYPE(type_data) :: data
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
+    INTEGER :: i,j,nb
+    OPEN(FILE=mesh,UNIT=2)
+    READ(2,*) data%imgdim,data%imgt
+    PRINT *,'    >dimension de l image:',data%imgdim
+    PRINT *,'    >nb de temps:',data%imgt
+    ALLOCATE(data%imgmap(data%imgdim))
+    READ(2,*) data%imgmap(:)
+    PRINT *,'    >decoupage spatial:',data%imgmap
     data%nb=1
-    do i=1,data%imgdim
+    DO i=1,data%imgdim
        data%nb=data%nb*data%imgmap(i)
-    end do
+    ENDDO
     data%dim=data%imgt
     data%nbclusters=0
-    print *,'    > nb de points a lire :',data%nb
-    allocate(data%point(data%nb))
-    allocate(coordmax(data%imgdim))
-    allocate(coordmin(data%imgdim))
+    PRINT *,'    > nb de points a lire :',data%nb
+    ALLOCATE(data%point(data%nb))
+    ALLOCATE(coordmax(data%imgdim))
+    ALLOCATE(coordmin(data%imgdim))
     coordmin(:)=0.9
-    do i=1,data%imgdim
+    DO i=1,data%imgdim
        coordmax(i)=data%imgmap(i)+0.1
-    end do
+    ENDDO
     nb=0
-    do i=1,data%nb
-       allocate(data%point(i)%coord(data%dim))
-       read(2,*,end=200) data%point(i)%coord(:)
+    DO i=1,data%nb
+       ALLOCATE(data%point(i)%coord(data%dim))
+       READ(2,*,END=200) data%point(i)%coord(:)
        nb=nb+1
        data%point(i)%cluster=-1
-    enddo
-200 print *,'    > nb de points lus',nb       
+    ENDDO
+200 PRINT *,'    > nb de points lus',nb       
     data%nb=nb
-    close(2)
-    print *,'  > coordonnees min/max :'
-    do j=1,data%dim
-       print *,'    > ',j,':',coordmin(j),coordmax(j)
-    enddo
-    return
-  end subroutine lit_mesh_image
+    CLOSE(2)
+    PRINT *,'  > coordonnees min/max :'
+    DO j=1,data%dim
+       PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
+    ENDDO
+    RETURN
+  END SUBROUTINE lit_mesh_image
   
   !**********************************
   !lecture image en mode geom
-  subroutine lit_mesh_geom(mesh,data,coordmin,coordmax)
-    implicit none
-    character*30 :: mesh
-    type(type_data) :: data
-    double precision,dimension(:),pointer :: coordmax,coordmin
-    double precision :: pasmax
-    integer :: i,j,nb
-    open(file=mesh,unit=2)
-    read(2,*) data%imgdim,data%imgt
-    print *,'    >dimension de l image:',data%imgdim
-    print *,'    >nb de temps:',data%imgt
-    allocate(data%pas(data%imgdim))
+  SUBROUTINE lit_mesh_geom(mesh,data,coordmin,coordmax)
+    IMPLICIT NONE
+    CHARACTER*30 :: mesh
+    TYPE(type_data) :: data
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
+    DOUBLE PRECISION :: pasmax
+    INTEGER :: i,j,nb
+    OPEN(FILE=mesh,UNIT=2)
+    READ(2,*) data%imgdim,data%imgt
+    PRINT *,'    >dimension de l image:',data%imgdim
+    PRINT *,'    >nb de temps:',data%imgt
+    ALLOCATE(data%pas(data%imgdim))
     data%pas(:)=0.0
-    allocate(data%imgmap(data%imgdim))
-    read(2,*) data%imgmap(:)
-    print *,'    >decoupage spatial:',data%imgmap
+    ALLOCATE(data%imgmap(data%imgdim))
+    READ(2,*) data%imgmap(:)
+    PRINT *,'    >decoupage spatial:',data%imgmap
     data%nb=1
-    do i=1,data%imgdim
+    DO i=1,data%imgdim
        data%nb=data%nb*data%imgmap(i)
-    end do
+    ENDDO
     data%dim=data%imgdim+data%imgt
     data%nbclusters=0
-    print *,'    > nb de points a lire :',data%nb
-    allocate(data%point(data%nb))
-    allocate(coordmax(data%dim))
-    allocate(coordmin(data%dim))
+    PRINT *,'    > nb de points a lire :',data%nb
+    ALLOCATE(data%point(data%nb))
+    ALLOCATE(coordmax(data%dim))
+    ALLOCATE(coordmin(data%dim))
     nb=0
-    do i=1,data%nb
-       allocate(data%point(i)%coord(data%dim))
+    DO i=1,data%nb
+       ALLOCATE(data%point(i)%coord(data%dim))
        data%point(i)%coord(:)=0.0
-       read(2,*,end=300) data%point(i)%coord(data%imgdim+1:data%imgdim+data%imgt)
+       READ(2,*,END=300) data%point(i)%coord(data%imgdim+1:data%imgdim+data%imgt)
        nb=nb+1
        data%point(i)%cluster=-1
-       if (i==1) then
+       IF (i==1) THEN
           coordmax(:)=data%point(1)%coord(:)
           coordmin(:)=data%point(1)%coord(:)
-       else
-          do j=1,data%dim
+       ELSE
+          DO j=1,data%dim
              coordmin(j)=min(coordmin(j),data%point(i)%coord(j))
              coordmax(j)=max(coordmax(j),data%point(i)%coord(j))
-          enddo
-       endif
-    enddo
-300 print *,'    > nb de points lus',nb
+          ENDDO
+       ENDIF
+    ENDDO
+300 PRINT *,'    > nb de points lus',nb
     data%nb=nb
-    close(2)
-    print *,'  > coordonnees min/max :'
+    CLOSE(2)
+    PRINT *,'  > coordonnees min/max :'
     pasmax=1.e-13
-    do j=data%imgdim+1,data%imgdim+data%imgt
+    DO j=data%imgdim+1,data%imgdim+data%imgt
        pasmax=max(pasmax,coordmax(j)-coordmin(j))
-       print *,'    > ',j,':',coordmin(j),coordmax(j)
-    enddo
-    print *,'  > pas max :',pasmax
-    !recherche des pas par dimension d'image
-    do j=1,data%imgdim
+       PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
+    ENDDO
+    PRINT *,'  > pas max :',pasmax
+    !recherche des pas par DIMENSION d'image
+    DO j=1,data%imgdim
        data%pas(j)=pasmax/data%imgmap(j)
-       print *,'  > pas :',j,data%pas(j)
+       PRINT *,'  > pas :',j,data%pas(j)
        coordmin(j)=0.9*data%pas(j)
        coordmax(j)=(data%imgmap(j)+1)*data%pas(j)
-    end do
-    return
-  end subroutine lit_mesh_geom
+    ENDDO
+    RETURN
+  END SUBROUTINE lit_mesh_geom
 
   !**********************************
   !lecture des datas en format seuil
-  subroutine lit_mesh_seuil(mesh,data,coordmin,coordmax)
-    implicit none
-    character*30 :: mesh
-    type(type_data) :: data
-    double precision,dimension(:),pointer :: coordmax,coordmin
-    integer :: i,j,nb
+  SUBROUTINE lit_mesh_seuil(mesh,data,coordmin,coordmax)
+    IMPLICIT NONE
+    CHARACTER*30 :: mesh
+    TYPE(type_data) :: data
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
+    INTEGER :: i,j,nb
     !lecture de donnees classiques
-    open(file=mesh,unit=2)
-    read(2,*) data%imgdim,data%imgt
-    print *,'    >dimension de l image:',data%imgdim
-    print *,'    >nb de temps:',data%imgt
-    allocate(data%imgmap(data%imgdim))
-    read(2,*) data%imgmap(:)
-    print *,'    >decoupage spatial:',data%imgmap
+    OPEN(FILE=mesh,UNIT=2)
+    READ(2,*) data%imgdim,data%imgt
+    PRINT *,'    >dimension de l image:',data%imgdim
+    PRINT *,'    >nb de temps:',data%imgt
+    ALLOCATE(data%imgmap(data%imgdim))
+    READ(2,*) data%imgmap(:)
+    PRINT *,'    >decoupage spatial:',data%imgmap
     data%nb=1
-    do i=1,data%imgdim
+    DO i=1,data%imgdim
        data%nb=data%nb*data%imgmap(i)
-    end do
+    ENDDO
     data%dim=data%imgt
     data%nbclusters=0
-    print *,'    > nb de points a lire :',data%nb
-    allocate(data%point(data%nb))
-    allocate(coordmax(data%dim))
-    allocate(coordmin(data%dim))
+    PRINT *,'    > nb de points a lire :',data%nb
+    ALLOCATE(data%point(data%nb))
+    ALLOCATE(coordmax(data%dim))
+    ALLOCATE(coordmin(data%dim))
     nb=0
-    do i=1,data%nb
-       allocate(data%point(i)%coord(data%dim))
-       read(2,*,end=400) data%point(i)%coord(:)
+    DO i=1,data%nb
+       ALLOCATE(data%point(i)%coord(data%dim))
+       READ(2,*,END=400) data%point(i)%coord(:)
        nb=nb+1
        data%point(i)%cluster=-1
-       if (i==1) then
+       IF (i==1) THEN
           coordmax(:)=data%point(1)%coord(:)
           coordmin(:)=data%point(1)%coord(:)
-       else
-          do j=1,data%dim
+       ELSE
+          DO j=1,data%dim
              coordmin(j)=min(coordmin(j),data%point(i)%coord(j))
              coordmax(j)=max(coordmax(j),data%point(i)%coord(j))
-          enddo
-       endif
-    enddo
-400 print *,'nb de points',nb
+          ENDDO
+       ENDIF
+    ENDDO
+400 PRINT *,'nb de points',nb
     data%nb=nb
-    close(2)
-    print *,'  > coordonnees min/max :'
-    do j=1,data%dim
-       print *,'    > ',j,':',coordmin(j),coordmax(j)
-    enddo
-    return
-  end subroutine lit_mesh_seuil
+    CLOSE(2)
+    PRINT *,'  > coordonnees min/max :'
+    DO j=1,data%dim
+       PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
+    ENDDO
+    RETURN
+  END SUBROUTINE lit_mesh_seuil
 
   !**********************************
   !mise en tableau des indices de points pour les formats image
-  subroutine tableau_image(data)
-    implicit none
-    type(type_data) :: data
-    integer :: i,j,k,ok
-    integer,dimension(:),pointer :: plan
+  SUBROUTINE tableau_image(data)
+    IMPLICIT NONE
+    TYPE(type_data) :: data
+    INTEGER :: i,j,k,ok
+    INTEGER,DIMENSION(:),POINTER :: plan
     !creation du tableau de references points/coordonnes_images
-    allocate(data%refimg(data%nb,data%imgdim))
-    allocate(plan(data%imgdim)); plan(:)=1
-    do i=1,data%nb
-       do j=1,data%imgdim
+    ALLOCATE(data%refimg(data%nb,data%imgdim))
+    ALLOCATE(plan(data%imgdim)); plan(:)=1
+    DO i=1,data%nb
+       DO j=1,data%imgdim
           !index dans le tableau de reference points/pixel
           data%refimg(i,j)=plan(j)
-          if (data%geom==1) then
+          IF (data%geom==1) THEN
              !entree des coordonnees 1:imgdim pour le cluster geom
              data%point(i)%coord(j)=plan(j)*data%pas(j)
-          end if
-       end do
+          ENDIF
+       ENDDO
        ok=0
        k=data%imgdim
-       do while(ok==0)
-          if (plan(k)<data%imgmap(k)) then
+       DO WHILE(ok==0)
+          IF (plan(k)<data%imgmap(k)) THEN
              plan(k)=plan(k)+1
              ok=1
-          else
+          ELSE
              plan(k)=1
              k=k-1
-          end if
-          if (k==0) ok=1
-       end do
-    end do
-    deallocate(plan)
-    return
-  end subroutine tableau_image
+          ENDIF
+          IF (k==0) ok=1
+       ENDDO
+    ENDDO
+    DEALLOCATE(plan)
+    RETURN
+  END SUBROUTINE tableau_image
 
 
-end module module_entree
+END MODULE module_entree

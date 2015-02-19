@@ -1,303 +1,303 @@
-program clusters
-  use module_structure
-  use module_entree
-  use module_decoupe
-  use module_MPI
-  use module_calcul
-!  use module_sparse
-  use module_sortie
+PROGRAM clusters
+  USE module_structure
+  USE module_entree
+  USE module_decoupe
+  USE module_MPI
+  USE module_calcul
+!  USE module_sparse
+  USE module_sortie
 
-  implicit none
+  IMPLICIT NONE
  
   ! librairie MPI
-  include 'mpif.h'
+  INCLUDE 'mpif.h'
 
   ! variables MPI
-  integer :: ierr,tag
-  integer :: numproc,nbproc, len
-  character*80 :: procname
+  INTEGER :: ierr,tag
+  INTEGER :: numproc,nbproc, len
+  CHARACTER*80 :: procname
   
-  integer status(MPI_STATUS_SIZE)
+  INTEGER status(MPI_STATUS_SIZE)
 
  ! modif sandrine
   ! variables
-  real :: elapsed(2)     ! For receiving user and system time
-  real :: temps
-  double precision :: epsilon
-  type(type_data) :: data,dataw
-  double precision,dimension(:),pointer :: coordmax,coordmin
-  integer,dimension(:),pointer :: decoupe
-  integer,dimension(:),pointer :: ldat,iclust,listenbideal
-  type(type_clusters),dimension(:),pointer :: nclust
-  integer,dimension(:,:),pointer :: ddat
-  integer :: nblimit,nbideal
-  logical :: existe
-  integer :: test,nbclust,i,j,nmax
-  double precision :: sigma
-  integer,dimension(:,:),pointer :: clustermap
-  real*8,dimension(:,:,:),pointer :: bornes
-  character*30 :: mesh,entree
+  REAL :: elapsed(2)     ! For receiving user and system time
+  REAL :: temps
+  DOUBLE PRECISION :: epsilon
+  TYPE(type_data) :: data,dataw
+  DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
+  INTEGER,DIMENSION(:),POINTER :: decoupe
+  INTEGER,DIMENSION(:),POINTER :: ldat,iclust,listenbideal
+  TYPE(type_clusters),DIMENSION(:),POINTER :: nclust
+  INTEGER,DIMENSION(:,:),POINTER :: ddat
+  INTEGER :: nblimit,nbideal
+  LOGICAL :: existe
+  INTEGER :: test,nbclust,i,j,nmax
+  DOUBLE PRECISION :: sigma
+  INTEGER,DIMENSION(:,:),POINTER :: clustermap
+  REAL*8,DIMENSION(:,:,:),POINTER :: bornes
+  CHARACTER*30 :: mesh,entree
  
-  double precision :: starttime, endtime
-  double precision :: t1, t2
-  double precision :: t_parall, t_parallg
+  DOUBLE PRECISION :: starttime, endtime
+  DOUBLE PRECISION :: t1, t2
+  DOUBLE PRECISION :: t_parall, t_parallg
 
   !initialisation MPI
-  call MPI_INIT(ierr)
-  call MPI_COMM_RANK(MPI_COMM_WORLD,numproc,ierr)
-  call MPI_COMM_SIZE(MPI_COMM_WORLD,nbproc,ierr)
-  call MPI_GET_PROCESSOR_NAME(procname,len,ierr)
-  print*, 'rank', numproc, ' procname',procname
+  CALL MPI_INIT(ierr)
+  CALL MPI_COMM_RANK(MPI_COMM_WORLD,numproc,ierr)
+  CALL MPI_COMM_SIZE(MPI_COMM_WORLD,nbproc,ierr)
+  CALL MPI_GET_PROCESSOR_NAME(procname,len,ierr)
+  PRINT*, 'rank', numproc, ' procname',procname
 
-  if(numproc==0) then
+  IF(numproc==0) THEN
     starttime = MPI_WTIME();
-  end if
+  ENDIF
 #if aff
-  print *,'lancement du proc',numproc,' de ',nbproc
+  PRINT *,'lancement du proc',numproc,' de ',nbproc
 #endif
-  print *,'----------------------------------------'
+  PRINT *,'----------------------------------------'
 
   !lecture des datas
-  if (numproc==0) then
+  IF (numproc==0) THEN
      t1 = MPI_WTIME()
 #if aff
-     print *
-     print *,'------------------------------'
-     print *,'spectral clustering de datas'
-     print *,'------------------------------'
-     print *
+     PRINT *
+     PRINT *,'------------------------------'
+     PRINT *,'spectral clustering de datas'
+     PRINT *,'------------------------------'
+     PRINT *
 #endif
-     if (iargc()>0) then
+     IF (iargc()>0) THEN
         !recupere le nom du fichier d'entree
-        call getarg(1,entree)
-        inquire(file=entree,exist=existe)
-        if (.not.existe) call help
-     else
+        CALL getarg(1,entree)
+        INQUIRE(FILE=entree,EXIST=existe)
+        IF (.NOT.existe) CALL help
+     ELSE
         !si pas fichier d'entree defaut=fort.1
-        call help
-     end if
+        CALL help
+     ENDIF
      !lecture du fichier
 #if aff
-     print *
-     print *,'lecture des data... ',entree
+     PRINT *
+     PRINT *,'lecture des data... ',entree
 #endif
-     open(file=entree,unit=1)
-     call lit(data,epsilon,coordmin,coordmax,nbproc,decoupe,mesh,&
+     OPEN(FILE=entree,UNIT=1)
+     CALL lit(data,epsilon,coordmin,coordmax,nbproc,decoupe,mesh,&
           sigma,nblimit,listenbideal)
      t2 = MPI_WTIME()
-     print *, 'temps lecture data ', t2-t1
-     close(1)
-  endif
+     PRINT *, 'temps lecture data ', t2-t1
+     CLOSE(1)
+  ENDIF
 
   !decoupage & calcul du sigma
-  if (numproc==0) then
+  IF (numproc==0) THEN
      !decoupage
 #if aff
-     print *
-     print *,'decoupage des datas...'
+     PRINT *
+     PRINT *,'decoupage des datas...'
 #endif
     t1 = MPI_WTIME();
-    call decoupedata(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
+    CALL decoupedata(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
          ldat,ddat,bornes)
     t2 = MPI_WTIME();
-    print *,'temps decoupage des datas...', t2-t1
-  end if
+    PRINT *,'temps decoupage des datas...', t2-t1
+  ENDIF
      
-  if(numproc==0) then
+  IF(numproc==0) THEN
     t1 = MPI_WTIME();
-  end if
+  ENDIF
 
   !CALL MPI_FINALIZE(ierr)
   !STOP
   !partie echanges
-  if (nbproc>1) then
+  IF (nbproc>1) THEN
      !** cas >1 proc
 
      !calcul du sigma si mode auto global
-     call MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
-     if ((sigma==0.0).and.(numproc==0)) then
-        call calculsigmainterface(numproc,data,sigma,bornes,decoupe,epsilon)
-     end if
+     CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
+     IF ((sigma==0.0).AND.(numproc==0)) THEN
+        CALL calculsigmainterface(numproc,data,sigma,bornes,decoupe,epsilon)
+     ENDIF
 
      !envoi du sigma
-     if (sigma>=0.0) then
-          call MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
-     end if
+     IF (sigma>=0.0) THEN
+          CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
+     ENDIF
 
      !envoi du nblimit
-     call MPI_BARRIER(MPI_COMM_WORLD,ierr)
-     call MPI_BCAST(nblimit,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+     CALL MPI_BARRIER(MPI_COMM_WORLD,ierr)
+     CALL MPI_BCAST(nblimit,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
 
      !envoi du nbideal
-     if (numproc==0) then
-        do i=1,nbproc-1
+     IF (numproc==0) THEN
+        DO i=1,nbproc-1
            tag=i
-           call MPI_SEND(listenbideal(i),1,MPI_INTEGER,i,tag,MPI_COMM_WORLD,ierr)
-        end do
+           CALL MPI_SEND(listenbideal(i),1,MPI_INTEGER,i,tag,MPI_COMM_WORLD,ierr)
+        ENDDO
         nbideal=listenbideal(0)
-     else
+     ELSE
         tag=numproc
-        call MPI_RECV(nbideal,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
-     endif
-     call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+        CALL MPI_RECV(nbideal,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
+     ENDIF
+     CALL MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
      !transferts des datas
-     if (numproc==0) then
+     IF (numproc==0) THEN
         !envoi des datas
 #if aff
-        print *
-        print *,'transfert des datas decoupees...'
+        PRINT *
+        PRINT *,'transfert des datas decoupees...'
 #endif
-        call  envoidecoupes(nbproc,data,ldat,ddat,dataw)
+        CALL  envoidecoupes(nbproc,data,ldat,ddat,dataw)
 #if aff
-        print *
-        print *,'calcul des clusters...'
+        PRINT *
+        PRINT *,'calcul des clusters...'
 #endif
-     else
+     ELSE
         !reception des datas
-        call recoitdecoupes(numproc,dataw)
-     endif
+        CALL recoitdecoupes(numproc,dataw)
+     ENDIF
 
-  else
+  ELSE
      !** cas 1 proc
      dataw%nb=data%nb; dataw%dim=data%dim; dataw%nbclusters=0
-     allocate(dataw%point(data%nb))
-     do i=1,data%nb
-        allocate(dataw%point(i)%coord(data%dim))
+     ALLOCATE(dataw%point(data%nb))
+     DO i=1,data%nb
+        ALLOCATE(dataw%point(i)%coord(data%dim))
         dataw%point(i)%coord=data%point(i)%coord
         dataw%point(i)%cluster=0
-     enddo
+     ENDDO
      nbideal=listenbideal(1)
-  endif
+  ENDIF
 
   !calcul du sigma si mode auto individuel
-  if (sigma<0.0) then
+  IF (sigma<0.0) THEN
 #if aff
-     print *
+     PRINT *
 #endif
-     if (numproc==0) call calculsigma(data,sigma)
-     call MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
-     if (numproc==0) then
-        print *,numproc,'calcule le sigma global :',sigma
+     IF (numproc==0) CALL calculsigma(data,sigma)
+     CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
+     IF (numproc==0) THEN
+        PRINT *,numproc,'calcule le sigma global :',sigma
 #if aff
-        print *,numproc,'calcule le sigma global :',sigma
+        PRINT *,numproc,'calcule le sigma global :',sigma
 #endif
-        if (data%interface==1) then 
-           call calculsigmainterface(numproc,dataw,sigma,bornes,decoupe,epsilon) 
-           print *,numproc,'calcule le sigma interface :',sigma
+        IF (data%interface==1) THEN 
+           CALL calculsigmainterface(numproc,dataw,sigma,bornes,decoupe,epsilon) 
+           PRINT *,numproc,'calcule le sigma interface :',sigma
 #if aff
-           print *,numproc,'calcule le sigma interface :',sigma
+           PRINT *,numproc,'calcule le sigma interface :',sigma
 #endif
-        end if
-     end if
-  end if
+        ENDIF
+     ENDIF
+  ENDIF
 
-  if(numproc==0) then
+  IF(numproc==0) THEN
     t2 = MPI_WTIME();
-    print *,'temps envoi données et calcul sigma', t2-t1
-  end if
+    PRINT *,'temps envoi donnÃ©es et calcul sigma', t2-t1
+  ENDIF
 
   !calcul des clusters
   ! partie //
   t1 = MPI_WTIME();
-  if (dataw%nb>0) then
+  IF (dataw%nb>0) THEN
 #if aff
-     print *,numproc,'calcul des clusters...'
+     PRINT *,numproc,'calcul des clusters...'
 #endif
-     call calculclusters(numproc,nblimit,nbideal,dataw,sigma)
-     !call sp_calculclusters(numproc,nblimit,nbideal,dataw,sigma)
-  endif
+     CALL calculclusters(numproc,nblimit,nbideal,dataw,sigma)
+     !CALL sp_calculclusters(numproc,nblimit,nbideal,dataw,sigma)
+  ENDIF
   t2 = MPI_WTIME();
   t_parall = t2 - t1
-  print *, numproc, 'calcul cluster //', t_parall
+  PRINT *, numproc, 'calcul cluster //', t_parall
 
-  call MPI_REDUCE(t_parall, t_parallg, 1, MPI_DOUBLE_PRECISION, MPI_MAX, 0, MPI_COMM_WORLD, ierr)
-  if(numproc==0) print *, 'temps calcul cluster global //', t_parallg
+  CALL MPI_REDUCE(t_parall, t_parallg, 1, MPI_DOUBLE_PRECISION, MPI_MAX, 0, MPI_COMM_WORLD, ierr)
+  IF(numproc==0) PRINT *, 'temps calcul cluster global //', t_parallg
 
-  if(numproc==0) then
+  IF(numproc==0) THEN
     t1 = MPI_WTIME();
-  end if
+  ENDIF
 
   !sauvegarde des clusters regroupes
-  call ecritcluster(numproc,dataw)
+  CALL ecritcluster(numproc,dataw)
 
   !partie echanges
-  if (nbproc>1) then
+  IF (nbproc>1) THEN
      !regroupement des clusters
-     if (numproc==0) then
+     IF (numproc==0) THEN
 #if aff
-        print *
-        print *,'regroupement des clusters...'
+        PRINT *
+        PRINT *,'regroupement des clusters...'
 #endif
         !creation de la liste des clusters avec doublon
-        call preparecpclusters(nbproc,nbclust,ldat,dataw,nclust)
+        CALL preparecpclusters(nbproc,nbclust,ldat,dataw,nclust)
 #if aff
-        print *,'  > nb de clusters avec doublons obtenus :',nbclust
+        PRINT *,'  > nb de clusters avec doublons obtenus :',nbclust
 #endif
         !reception des infos de clusters
-        allocate(clustermap(nbclust,data%nb))
-        call recepclusters(nbproc,nbclust,ldat,ddat,dataw,&
+        ALLOCATE(clustermap(nbclust,data%nb))
+        CALL recepclusters(nbproc,nbclust,ldat,ddat,dataw,&
              clustermap,nclust,iclust)
-     else
+     ELSE
         !creation de la liste des clusters avec doublon
-        call prepaenvclusters(numproc,dataw)
+        CALL prepaenvclusters(numproc,dataw)
         !envoi des infos de clusters
-        call envoiclusters(numproc,dataw)
-     endif
+        CALL envoiclusters(numproc,dataw)
+     ENDIF
 
      !fin du postprocess
-     if (numproc==0) then
+     IF (numproc==0) THEN
         !regroupement des clusters et ecriture du resultat
-        call regroupe(nbclust,iclust,clustermap,data)
-     endif
+        CALL regroupe(nbclust,iclust,clustermap,data)
+     ENDIF
 
-  else
+  ELSE
      !** cas 1 proc
      nbclust=dataw%nbclusters
-     allocate(iclust(nbclust)); iclust(:)=0; nmax=0
-     do i=1,dataw%nb
+     ALLOCATE(iclust(nbclust)); iclust(:)=0; nmax=0
+     DO i=1,dataw%nb
         j=dataw%point(i)%cluster
         iclust(j)=iclust(j)+1
         nmax=max(nmax,iclust(j))
-     enddo
-     allocate(clustermap(nbclust,nmax)); clustermap(:,:)=0
+     ENDDO
+     ALLOCATE(clustermap(nbclust,nmax)); clustermap(:,:)=0
      iclust(:)=0
-     do i=1,dataw%nb
+     DO i=1,dataw%nb
         j=dataw%point(i)%cluster
         iclust(j)=iclust(j)+1
         clustermap(j,iclust(j))=i
-     enddo
-  endif
+     ENDDO
+  ENDIF
 
-  if(numproc==0) then
+  IF(numproc==0) THEN
     t2 = MPI_WTIME();
-    print *,'temps regroupement des clusters', t2-t1
-  end if
+    PRINT *,'temps regroupement des clusters', t2-t1
+  ENDIF
 
-  if(numproc==0) then
+  IF(numproc==0) THEN
     t1 = MPI_WTIME();
-  end if
+  ENDIF
   !sorties
-  if (numproc==0) then
+  IF (numproc==0) THEN
      !ecriture des cluster.final.
-     call ecritclusterfinal(nbclust,iclust,clustermap)
+     CALL ecritclusterfinal(nbclust,iclust,clustermap)
 
      !ecriture des informations
-     call ecrit_info(mesh,data,nbproc,nbclust)
-  endif
-  if(numproc==0) then
+     CALL ecrit_info(mesh,data,nbproc,nbclust)
+  ENDIF
+  IF(numproc==0) THEN
     t2 = MPI_WTIME();
-    print *,'temps écriture des clusters', t2-t1
-  end if
+    PRINT *,'temps Ã©criture des clusters', t2-t1
+  ENDIF
   
   !fin du MPI
-  if (numproc==0) then
+  IF (numproc==0) THEN
     endtime = MPI_WTIME();
-    print *,' Fin du calcul'
-    print *,'  > temps total=', endtime-starttime
-  end if
+    PRINT *,' Fin du calcul'
+    PRINT *,'  > temps total=', endtime-starttime
+  ENDIF
   
-  call MPI_FINALIZE(ierr)
-  stop
+  CALL MPI_FINALIZE(ierr)
+  STOP
 
-end program clusters
+END PROGRAM clusters

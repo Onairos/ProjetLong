@@ -1,408 +1,408 @@
-module module_decoupe
-  use module_structure
-  use module_sortie
-contains
+MODULE module_decoupe
+  USE module_structure
+  USE module_sortie
+CONTAINS
 
   !****************************************
   !decoupage pour transfert MPI
-  subroutine decoupedata(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
+  SUBROUTINE decoupedata(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
        ldat,ddat,bornes)
-    implicit none
-    type(type_data) :: data
-    real*8 :: epsilon
-    integer :: nbproc, ierr
-    integer,dimension(:),pointer :: decoupe
-    real*8,dimension(:),pointer :: coordmax,coordmin
-    integer,dimension(:),pointer :: ldat
-    integer,dimension(:,:),pointer :: ddat
-    real*8,dimension(:,:,:),pointer :: bornes,domaines
+    IMPLICIT NONE
+    TYPE(type_data) :: data
+    REAL*8 :: epsilon
+    INTEGER :: nbproc, ierr
+    INTEGER,DIMENSION(:),POINTER :: decoupe
+    REAL*8,DIMENSION(:),POINTER :: coordmax,coordmin
+    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER,DIMENSION(:,:),POINTER :: ddat
+    REAL*8,DIMENSION(:,:,:),POINTER :: bornes,domaines
  
 
     !definition des bornes
-    call definit_bornes(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
+    CALL definit_bornes(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
 
     !definition des domaines
-    call definit_domaines(nbproc,data,domaines,bornes,decoupe)
+    CALL definit_domaines(nbproc,data,domaines,bornes,decoupe)
 
     !ecriture des domaines decoupes
-    call ecrit_domaines(data,nbproc,domaines)
+    CALL ecrit_domaines(data,nbproc,domaines)
 
     !definition des decoupages
-    if ((data%interface==1).or.(nbproc==1)) then
+    IF ((data%interface==1).OR.(nbproc==1)) THEN
        !decoupage avec interface
-       call decoupe_interface(nbproc,data,ldat,ddat,domaines,epsilon)
-    else
+       CALL decoupe_interface(nbproc,data,ldat,ddat,domaines,epsilon)
+    ELSE
        !decoupage avec recouvrement
-       call decoupe_recouvrement(nbproc,data,ldat,ddat,domaines)
-    end if
-    deallocate(domaines)
+       CALL decoupe_recouvrement(nbproc,data,ldat,ddat,domaines)
+    ENDIF
+    DEALLOCATE(domaines)
 
     !sauvegarde des decoupages
-    call ecrit_decoupages(nbproc,data,ldat,ddat)
+    CALL ecrit_decoupages(nbproc,data,ldat,ddat)
 
     !CALL MPI_ABORT(ierr)
 
-    return
-  end subroutine decoupedata
+    RETURN
+  END SUBROUTINE decoupedata
 
   !****************************************
   !definition des bornes avec interface
-  subroutine definit_bornes(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
-    implicit none
-    integer :: nbproc
-    real*8 :: epsilon
-    type(type_data) :: data
-    integer,dimension(:),pointer :: decoupe
-    real*8,dimension(:),pointer :: coordmax,coordmin
-    real*8,dimension(:,:,:),pointer :: bornes
-    integer :: i,j
-    double precision :: prod1,prod2,som1,prod
-    character*30 :: num,files
+  SUBROUTINE definit_bornes(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
+    IMPLICIT NONE
+    INTEGER :: nbproc
+    REAL*8 :: epsilon
+    TYPE(type_data) :: data
+    INTEGER,DIMENSION(:),POINTER :: decoupe
+    REAL*8,DIMENSION(:),POINTER :: coordmax,coordmin
+    REAL*8,DIMENSION(:,:,:),POINTER :: bornes
+    INTEGER :: i,j
+    DOUBLE PRECISION :: prod1,prod2,som1,prod
+    CHARACTER*30 :: num,files
 
     prod1=1.0
     prod2=0.0
     som1=1.0
     prod=1.0
     !volume max
-    do i=1,data%dim
-       !print *,'coordmax',coordmax(i)
-       !print *,'coordmin',coordmin(i)
+    DO i=1,data%dim
+       !PRINT *,'coordmax',coordmax(i)
+       !PRINT *,'coordmin',coordmin(i)
        prod=prod*(coordmax(i)-coordmin(i))
-       !print *,'difference',(coordmax(i)-coordmin(i))
-    end do
-    !print *,'surface globale',data%dim
+       !PRINT *,'difference',(coordmax(i)-coordmin(i))
+    ENDDO
+    !PRINT *,'surface globale',data%dim
     files='diminterface'
-    write(num,*),0
+    WRITE(num,*),0
     num=adjustl(num)
     files=trim(files)//'.'//trim(num)
     ! len=len(trim(num))
-    ! print *,numproc,'ecriture dim interface : '
-    open(file=files,unit=20)
-    do i=1,data%dim
+    ! PRINT *,numproc,'ecriture dim interface : '
+    OPEN(FILE=files,UNIT=20)
+    DO i=1,data%dim
        som1=som1*(decoupe(i)-1)
        prod2=prod2+(decoupe(i)-1)*prod/(coordmax(i)-coordmin(i))    
-    end do
-    !print *,'surface bande',prod2     
-    write(20,*)  prod,epsilon*prod2-som1*(epsilon)**data%dim
-    close(20)
+    ENDDO
+    !PRINT *,'surface bande',prod2     
+    WRITE(20,*)  prod,epsilon*prod2-som1*(epsilon)**data%dim
+    CLOSE(20)
  
 
 
 
- if ((data%coord==1).or.(data%geom==1).or.(data%seuil==1)) then
+ IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        !traitement en coordonnees ou image en coodonnees ou image seuillee
-       allocate(bornes(data%dim,max(nbproc-data%interface,1),2));bornes(:,:,:)=0.0
-       do i=1,data%dim
+       ALLOCATE(bornes(data%dim,max(nbproc-data%interface,1),2));bornes(:,:,:)=0.0
+       DO i=1,data%dim
           coordmin(i)=coordmin(i)-epsilon*1.1
           coordmax(i)=coordmax(i)+epsilon*1.1
-          do j=1,decoupe(i)
+          DO j=1,decoupe(i)
              bornes(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/decoupe(i)
              bornes(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/decoupe(i)
-          enddo
-          if (data%recouvrement==1) then
+          ENDDO
+          IF (data%recouvrement==1) THEN
              !decoupage en mode interface
-             do j=1,decoupe(i)
+             DO j=1,decoupe(i)
                 bornes(i,j,1)=bornes(i,j,1)-epsilon
                 bornes(i,j,2)=bornes(i,j,2)+epsilon
-             enddo
-          end if
+             ENDDO
+          ENDIF
           bornes(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
           bornes(i,decoupe(i),2)=coordmax(i)+0.01*abs(coordmax(i))
-       enddo
-    elseif (data%image==1) then
+       ENDDO
+    ELSEIF (data%image==1) THEN
        !traitement pour decoupage en pixel d'images
-       allocate(bornes(data%imgdim,max(nbproc-1,1),2));bornes(:,:,:)=0.0
-       if ((data%imgdim/=2).and.(data%imgdim/=3)) then
+       ALLOCATE(bornes(data%imgdim,max(nbproc-1,1),2));bornes(:,:,:)=0.0
+       IF ((data%imgdim/=2).AND.(data%imgdim/=3)) THEN
 #if aff
-          print *
-          print *,'format d images /= 2d, 3d pas supporte !!!!'
+          PRINT *
+          PRINT *,'format d images /= 2d, 3d pas supporte !!!!'
 #endif
-          stop
-       end if
-       do i=1,data%imgdim
+          STOP
+       ENDIF
+       DO i=1,data%imgdim
           coordmin(i)=1.0-epsilon*1.1
           coordmax(i)=data%imgmap(i)+epsilon*1.1
-          do j=1,decoupe(i)
+          DO j=1,decoupe(i)
              bornes(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/decoupe(i)
              bornes(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/decoupe(i)
-          enddo
-          if (data%recouvrement==1) then
+          ENDDO
+          IF (data%recouvrement==1) THEN
              !decoupage en mode interface
-             do j=1,decoupe(i)
+             DO j=1,decoupe(i)
                 bornes(i,j,1)=bornes(i,j,1)-epsilon
                 bornes(i,j,2)=bornes(i,j,2)+epsilon
-             enddo
-          end if
+             ENDDO
+          ENDIF
           bornes(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
           bornes(i,decoupe(i),2)=coordmax(i)+0.01*abs(coordmax(i))
-       enddo
-    end if
-    return
-  end subroutine definit_bornes
+       ENDDO
+    ENDIF
+    RETURN
+  END SUBROUTINE definit_bornes
 
   !****************************************
   !definition des domaines de decoupages
-  subroutine definit_domaines(nbproc,data,domaines,bornes,decoupe)
-    implicit none
-    integer :: nbproc
-    type(type_data) :: data
-    integer,dimension(:),pointer :: decoupe
-    integer,dimension(:),pointer :: list
-    real*8,dimension(:,:,:),pointer :: bornes,domaines
-    integer :: k,n,ok
-    if ((data%coord==1).or.(data%geom==1).or.(data%seuil==1)) then
+  SUBROUTINE definit_domaines(nbproc,data,domaines,bornes,decoupe)
+    IMPLICIT NONE
+    INTEGER :: nbproc
+    TYPE(type_data) :: data
+    INTEGER,DIMENSION(:),POINTER :: decoupe
+    INTEGER,DIMENSION(:),POINTER :: list
+    REAL*8,DIMENSION(:,:,:),POINTER :: bornes,domaines
+    INTEGER :: k,n,ok
+    IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        !traitement en coordonnees ou image en coodonnees ou image seuillee
-       allocate(domaines(max(1,nbproc-data%interface),data%dim,2))
+       ALLOCATE(domaines(max(1,nbproc-data%interface),data%dim,2))
        domaines(:,:,:)=0.0
-       allocate(list(data%dim)); list(:)=1
-       if (nbproc>1) then
+       ALLOCATE(list(data%dim)); list(:)=1
+       IF (nbproc>1) THEN
           !** mode >1 proc
-          do n=1,nbproc-data%interface
-             do k=1,data%dim
+          DO n=1,nbproc-data%interface
+             DO k=1,data%dim
                 domaines(n,k,:)=bornes(k,list(k),:)
-             enddo
+             ENDDO
              ok=1
-             do k=data%dim,1,-1
-                if (ok==1) then
+             DO k=data%dim,1,-1
+                IF (ok==1) THEN
                    list(k)=list(k)+1
-                   if (list(k)>decoupe(k)) then
+                   IF (list(k)>decoupe(k)) THEN
                       list(k)=1
-                   else
+                   ELSE
                       ok=0
-                   endif
-                end if
-             end do
-          enddo
-       else
+                   ENDIF
+                ENDIF
+             ENDDO
+          ENDDO
+       ELSE
           !** mode 1 proc
-          do k=1,data%dim
+          DO k=1,data%dim
              domaines(1,k,:)=bornes(k,1,:)
-          enddo
-       endif
-       deallocate(list)
-    elseif (data%image==1) then
+          ENDDO
+       ENDIF
+       DEALLOCATE(list)
+    ELSEIF (data%image==1) THEN
        !traitement pour decoupage en pixel d'images
-       allocate(domaines(max(1,nbproc-data%interface),data%imgdim,2))
+       ALLOCATE(domaines(max(1,nbproc-data%interface),data%imgdim,2))
        domaines(:,:,:)=0.0
-       allocate(list(data%imgdim)); list(:)=1
-       if (nbproc>1) then
+       ALLOCATE(list(data%imgdim)); list(:)=1
+       IF (nbproc>1) THEN
           !** mode >1 proc
-          do n=1,nbproc-data%interface
-             do k=1,data%imgdim
+          DO n=1,nbproc-data%interface
+             DO k=1,data%imgdim
                 domaines(n,k,:)=bornes(k,list(k),:)
-             enddo
+             ENDDO
              ok=1
-             do k=data%imgdim,1,-1
-                if (ok==1) then
+             DO k=data%imgdim,1,-1
+                IF (ok==1) THEN
                    list(k)=list(k)+1
-                   if (list(k)>decoupe(k)) then
+                   IF (list(k)>decoupe(k)) THEN
                       list(k)=1
-                   else
+                   ELSE
                       ok=0
-                   endif
-                end if
-             end do
-          enddo
-       else
+                   ENDIF
+                ENDIF
+             ENDDO
+          ENDDO
+       ELSE
           !** mode 1 proc
-          do k=1,data%imgdim
+          DO k=1,data%imgdim
              domaines(1,k,:)=bornes(k,1,:)
-          enddo
-       endif
-       deallocate(list)
-    end if
-    return
-  end subroutine definit_domaines
+          ENDDO
+       ENDIF
+       DEALLOCATE(list)
+    ENDIF
+    RETURN
+  END SUBROUTINE definit_domaines
 
   !****************************************
   !decoupage avec interface
-  subroutine decoupe_interface(nbproc,data,ldat,ddat,domaines,epsilon)
-    implicit none
-    integer :: nbproc
-    type(type_data) :: data
-    real*8 :: epsilon
-    integer,dimension(:),pointer :: ldat
-    integer,dimension(:,:),pointer :: ddat
-    real*8,dimension(:,:,:),pointer :: domaines
-    integer :: i,j,n,ok,ierr
-    allocate(ldat(0:max(1,nbproc-1))); ldat(:)=0
-    allocate(ddat(0:max(1,nbproc-1),data%nb)); ddat(:,:)=0
-    do i=1,data%nb
+  SUBROUTINE decoupe_interface(nbproc,data,ldat,ddat,domaines,epsilon)
+    IMPLICIT NONE
+    INTEGER :: nbproc
+    TYPE(type_data) :: data
+    REAL*8 :: epsilon
+    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER,DIMENSION(:,:),POINTER :: ddat
+    REAL*8,DIMENSION(:,:,:),POINTER :: domaines
+    INTEGER :: i,j,n,ok,ierr
+    ALLOCATE(ldat(0:max(1,nbproc-1))); ldat(:)=0
+    ALLOCATE(ddat(0:max(1,nbproc-1),data%nb)); ddat(:,:)=0
+    DO i=1,data%nb
        !recherche des paquets
        n=0; ok=0
-       do while(ok==0)
+       DO WHILE(ok==0)
           n=n+1; ok=1
-          if ((data%coord==1).or.(data%geom==1).or.(data%seuil==1)) then
+          IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              !traitement en coordonnees ou image en coodonnees ou image seuillee
-             do j=1,data%dim
-                if ((data%point(i)%coord(j)>domaines(n,j,2)).or.&
+             DO j=1,data%dim
+                IF ((data%point(i)%coord(j)>domaines(n,j,2)).OR.&
                      (data%point(i)%coord(j)<domaines(n,j,1))) ok=0
-             end do
-          elseif (data%image==1) then
+             ENDDO
+          ELSEIF (data%image==1) THEN
              !traitement pour decoupage en pixel d'images
-             do j=1,data%imgdim
-                if ((data%refimg(i,j)>domaines(n,j,2)).or.&
+             DO j=1,data%imgdim
+                IF ((data%refimg(i,j)>domaines(n,j,2)).OR.&
                      (data%refimg(i,j)<domaines(n,j,1))) ok=0
-             end do
-          end if
-          if ((n>nbproc-1).and.(nbproc>1)) then
+             ENDDO
+          ENDIF
+          IF ((n>nbproc-1).AND.(nbproc>1)) THEN
 #if aff
-             print *,'bug dans le decoupage !',n,nbproc-1
+             PRINT *,'bug dans le decoupage !',n,nbproc-1
 #endif
-             if (data%geom==0) then
+             IF (data%geom==0) THEN
 #if aff
-                print *,data%point(i)%coord(:)
+                PRINT *,data%point(i)%coord(:)
 #endif
-             else
+             ELSE
 #if aff
-                print *,i,data%refimg(i,:)
+                PRINT *,i,data%refimg(i,:)
 #endif
-             end if
-             call MPI_ABORT(ierr)
-             stop
-          end if
-       end do
+             ENDIF
+             CALL MPI_ABORT(ierr)
+             STOP
+          ENDIF
+       ENDDO
        ldat(n)=ldat(n)+1
        ddat(n,ldat(n))=i
-       if (nbproc>1) then
+       IF (nbproc>1) THEN
           !** recherche de l'interface si plus de 1 proc
           ok=0
-          if ((data%coord==1).or.(data%geom==1).or.(data%seuil==1)) then
+          IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              !traitement en coordonnees ou image en coodonnees ou image seuillee
-             do j=1,data%dim
-                if ((abs(data%point(i)%coord(j)-domaines(n,j,1))<epsilon).or.&
+             DO j=1,data%dim
+                IF ((abs(data%point(i)%coord(j)-domaines(n,j,1))<epsilon).OR.&
                      (abs(data%point(i)%coord(j)-domaines(n,j,2))<epsilon)) ok=1
-             enddo
-          elseif (data%image==1) then
+             ENDDO
+          ELSEIF (data%image==1) THEN
              !traitement pour decoupage en pixel d'images
-             do j=1,data%imgdim
-                if ((abs(data%refimg(i,j)-domaines(n,j,1))<epsilon).or.&
+             DO j=1,data%imgdim
+                IF ((abs(data%refimg(i,j)-domaines(n,j,1))<epsilon).OR.&
                      (abs(data%refimg(i,j)-domaines(n,j,2))<epsilon)) ok=1
-             enddo
-          end if
-          if (ok==1) then
+             ENDDO
+          ENDIF
+          IF (ok==1) THEN
              ldat(0)=ldat(0)+1
              ddat(0,ldat(0))=i
-             write(7,*) ddat(0,ldat(0))
-          endif
-       end if
-    end do
-    write(7,*) ldat(0)
-    return
-  end subroutine decoupe_interface
+             WRITE(7,*) ddat(0,ldat(0))
+          ENDIF
+       ENDIF
+    ENDDO
+    WRITE(7,*) ldat(0)
+    RETURN
+  END SUBROUTINE decoupe_interface
 
   !****************************************
   !decoupage avec recouvrement
-  subroutine decoupe_recouvrement(nbproc,data,ldat,ddat,domaines)
-    implicit none
-    integer :: nbproc
-    type(type_data) :: data
-    integer,dimension(:),pointer :: ldat
-    integer,dimension(:,:),pointer :: ddat
-    real*8,dimension(:,:,:),pointer :: domaines
-    integer :: i,j,n,ok
-    allocate(ldat(0:max(1,nbproc-1))); ldat(:)=0
-    allocate(ddat(0:max(1,nbproc-1),data%nb)); ddat(:,:)=0
-    do i=1,data%nb
+  SUBROUTINE decoupe_recouvrement(nbproc,data,ldat,ddat,domaines)
+    IMPLICIT NONE
+    INTEGER :: nbproc
+    TYPE(type_data) :: data
+    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER,DIMENSION(:,:),POINTER :: ddat
+    REAL*8,DIMENSION(:,:,:),POINTER :: domaines
+    INTEGER :: i,j,n,ok
+    ALLOCATE(ldat(0:max(1,nbproc-1))); ldat(:)=0
+    ALLOCATE(ddat(0:max(1,nbproc-1),data%nb)); ddat(:,:)=0
+    DO i=1,data%nb
        !recherche des paquets
-       do n=1,nbproc
+       DO n=1,nbproc
           ok=1
-          if ((data%coord==1).or.(data%geom==1).or.(data%seuil==1)) then
+          IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              !traitement en coordonnees ou image en coodonnees ou image seuillee
-             do j=1,data%dim
-                if ((data%point(i)%coord(j)>domaines(n,j,2)).or.&
+             DO j=1,data%dim
+                IF ((data%point(i)%coord(j)>domaines(n,j,2)).OR.&
                      (data%point(i)%coord(j)<domaines(n,j,1))) ok=0
-             end do
-          elseif (data%image==1) then
+             ENDDO
+          ELSEIF (data%image==1) THEN
              !traitement pour decoupage en pixel d'images
-             do j=1,data%imgdim
-                if ((data%refimg(i,j)>domaines(n,j,2)).or.&
+             DO j=1,data%imgdim
+                IF ((data%refimg(i,j)>domaines(n,j,2)).OR.&
                      (data%refimg(i,j)<domaines(n,j,1))) ok=0
-             end do
-          end if
-          if (ok==1) then
+             ENDDO
+          ENDIF
+          IF (ok==1) THEN
              ldat(n-1)=ldat(n-1)+1
              ddat(n-1,ldat(n-1))=i
-          end if
-       end do
-    end do
-    return
-  end subroutine decoupe_recouvrement
+          ENDIF
+       ENDDO
+    ENDDO
+    RETURN
+  END SUBROUTINE decoupe_recouvrement
 
   !****************************************
   !elimine les doublons dans le clustering
-  subroutine regroupe(nbclust,iclust,clustermap,data)
-    implicit none
-    integer :: nbclust
-    type(type_data) :: data
-    integer,dimension(:),pointer :: iclust
-    integer,dimension(:,:),pointer :: clustermap
-    integer :: ok,i,j,k,ok2,i2,j2,n,j3,ok3
+  SUBROUTINE regroupe(nbclust,iclust,clustermap,data)
+    IMPLICIT NONE
+    INTEGER :: nbclust
+    TYPE(type_data) :: data
+    INTEGER,DIMENSION(:),POINTER :: iclust
+    INTEGER,DIMENSION(:,:),POINTER :: clustermap
+    INTEGER :: ok,i,j,k,ok2,i2,j2,n,j3,ok3
     ok=0; i=1; j=0
 #if aff
-    print *,'  > elimination des doublons...'
-    print *,'    > regroupement du sous-cluster ',1
+    PRINT *,'  > elimination des doublons...'
+    PRINT *,'    > regroupement du sous-cluster ',1
 #endif
-    do while(ok==0)
+    DO WHILE(ok==0)
        j=j+1 
-       if (j>iclust(i)) then
+       IF (j>iclust(i)) THEN
           !la ligne i est completement testee
 #if aff
-          print *,'      > nb d elements apres regroupement :',iclust(i)
+          PRINT *,'      > nb d elements apres regroupement :',iclust(i)
 #endif
           i=i+1; j=1
 #if aff
-          print *,'    > regroupement du cluster ',i
+          PRINT *,'    > regroupement du cluster ',i
 #endif
-       endif
-       if (i>nbclust-1) then
+       ENDIF
+       IF (i>nbclust-1) THEN
           !plus de points a tester
           ok=1
-       elseif (iclust(i)>0) then
+       ELSEIF (iclust(i)>0) THEN
           !stockage de l'indice
           data%point(clustermap(i,j))%cluster=i
           !test des recouvrement
           ok2=0; i2=i+1; j2=1
-          do while(ok2==0)
-             if (j2>iclust(i2)) then
+          DO WHILE(ok2==0)
+             IF (j2>iclust(i2)) THEN
                 !ligne i2 completement teste pour le point (i,j)
                 i2=i2+1; j2=1
-             endif
-             if (i2>nbclust) then
+             ENDIF
+             IF (i2>nbclust) THEN
                 !fin des tests pour le point (i,j)
                 ok2=1
-             else
+             ELSE
                 !test d'intersections :
-                if (clustermap(i,j)==clustermap(i2,j2)) then
+                IF (clustermap(i,j)==clustermap(i2,j2)) THEN
                    !intersection trouvee :
                    !ligne i2 ajoutee a la ligne i
                    n=0
-                   do k=1,iclust(i2)
+                   DO k=1,iclust(i2)
                       !test d'elimination de doublon
                       ok3=1
-                      do j3=1,iclust(i)
-                         if (clustermap(i2,k)==clustermap(i,j3)) ok3=0
-                      enddo
-                      if (ok3==1) then
+                      DO j3=1,iclust(i)
+                         IF (clustermap(i2,k)==clustermap(i,j3)) ok3=0
+                      ENDDO
+                      IF (ok3==1) THEN
                          n=n+1
                          clustermap(i,iclust(i)+n)=clustermap(i2,k)
                          clustermap(i2,k)=0                         
-                      endif
-                   enddo
+                      ENDIF
+                   ENDDO
                    iclust(i)=iclust(i)+n
                    iclust(i2)=0
-                else
+                ELSE
                    !test d'un nouveau point
                    j2=j2+1
-                endif
-             endif
-          end do
-       end if
-    end do
+                ENDIF
+             ENDIF
+          ENDDO
+       ENDIF
+    ENDDO
 #if aff
-    print *,'      > nb d elements apres regroupement :',iclust(i)
+    PRINT *,'      > nb d elements apres regroupement :',iclust(i)
 #endif
-    return
-  end subroutine regroupe
+    RETURN
+  END SUBROUTINE regroupe
 
-end module module_decoupe
+END MODULE module_decoupe

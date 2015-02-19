@@ -1,95 +1,95 @@
-module module_sparse
-  use module_structure
-  use module_solve
-  use module_embed
-contains
+MODULE module_sparse
+  USE module_structure
+  USE module_solve
+  USE module_embed
+CONTAINS
 
   !*****************************************
   !calcul des clusters
-  subroutine sp_calculclusters(numproc,nblimit,nbideal,dataw,sigma)
+  SUBROUTINE sp_calculclusters(numproc,nblimit,nbideal,dataw,sigma)
 
-    implicit integer(i,j,q)
-    include 'mpif.h'
-    type(type_data) :: dataw
-    integer :: numproc,nbproc
-    double precision :: sigma
-    double precision,dimension(:,:),pointer :: cluster_center
-    integer :: n, k, nbcluster
-    double precision,dimension(:),pointer :: ratiomax,cluster_energy,&
+    IMPLICIT INTEGER(i,j,q)
+    INCLUDE 'mpif.h'
+    TYPE(type_data) :: dataw
+    INTEGER :: numproc,nbproc
+    DOUBLE PRECISION :: sigma
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: cluster_center
+    INTEGER :: n, k, nbcluster
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiomax,cluster_energy,&
          ratiomin,ratiomoy,ratiorii,ratiorij
-    integer,dimension(:),pointer ::cluster,cluster_population,nbinfo
-    integer :: nblimit,nbideal
-    double precision :: norme,ratio,ratio1,ratio2,seuilrij
-    character*30 :: num,files
+    INTEGER,DIMENSION(:),POINTER ::cluster,cluster_population,nbinfo
+    INTEGER :: nblimit,nbideal
+    DOUBLE PRECISION :: norme,ratio,ratio1,ratio2,seuilrij
+    CHARACTER*30 :: num,files
 
 ! sparsification deb
-    !double precision :: value
-    double precision :: t1, t2, t_cons_a, t_cons_vp
-    integer :: nnz, nnz2, nb
-    double precision :: facteur
-    integer :: l
-    double precision :: treshold
-    double precision,dimension(:),pointer :: AS
-    integer, dimension(:),pointer :: IAS, JAS
-    double precision, dimension(:),pointer :: D
-    double precision,dimension(:,:),pointer :: Z
-    double precision, dimension(:), pointer :: W
+    !DOUBLE PRECISION :: value
+    DOUBLE PRECISION :: t1, t2, t_cons_a, t_cons_vp
+    INTEGER :: nnz, nnz2, nb
+    DOUBLE PRECISION :: facteur
+    INTEGER :: l
+    DOUBLE PRECISION :: treshold
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: AS
+    INTEGER, DIMENSION(:),POINTER :: IAS, JAS
+    DOUBLE PRECISION, DIMENSION(:),POINTER :: D
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: Z
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: W
 
 ! sparsification fin
 
     !creation de la matrice
 #if aff
-    print *,numproc,'valeur du sigma',sigma
+    PRINT *,numproc,'valeur du sigma',sigma
 #endif
     n=dataw%nb
 
 ! sparsification deb
     nnz = 0
-    ! valeur de treshold arbitraire -> paramètre du sp ou calcul interne
+    ! valeur de treshold arbitraire -> paramÃ¨tre du sp ou calcul interne
     !                                  (voir avec S.)
     ! TODO : mettre la valeur du facteur dans le fichier param
     facteur = 3.0
     treshold = facteur*sigma
-    !write(*,*) '************** SIGMA', sigma
+    !WRITE(*,*) '************** SIGMA', sigma
 
     t1 = MPI_WTIME();
-    do i=1,n-1  ! borne ?
-       do j=i+1,n ! borne ?
+    DO i=1,n-1  ! borne ?
+       DO j=i+1,n ! borne ?
 
           norme=0.0
 
-          do k=1,dataw%dim
+          DO k=1,dataw%dim
              norme=norme+(dataw%point(i)%coord(k)-dataw%point(j)%coord(k))**2
-          end do
+          ENDDO
 
-          if(sqrt(norme) <= treshold) then
+          IF(sqrt(norme) <= treshold) THEN
             nnz = nnz + 1;
-          end if
+          ENDIF
 
-       end do
-    end do
+       ENDDO
+    ENDDO
 
     t2 = MPI_WTIME();
     t_cons_a = t2 - t1
-    print *, numproc, 'surcoût A', t_cons_a
+    PRINT *, numproc, 'surcoÃ»t A', t_cons_a
 
     t1 = MPI_WTIME();
     nnz2 = nnz*2
 
-    allocate(AS(nnz2))
-    allocate(IAS(nnz2))
-    allocate(JAS(nnz2))
+    ALLOCATE(AS(nnz2))
+    ALLOCATE(IAS(nnz2))
+    ALLOCATE(JAS(nnz2))
     l = 1
-    do i=1,n-1
-       do j=i+1,n
+    DO i=1,n-1
+       DO j=i+1,n
           norme=0.0
-          do k=1,dataw%dim
+          DO k=1,dataw%dim
              norme=norme+(dataw%point(i)%coord(k)-dataw%point(j)%coord(k))**2
-          end do
+          ENDDO
           value=exp(-norme/sigma)
           ! on garde si value <= treshold
-          ! (si on veut tout garder, commenter ligne if, end if)
-          if(sqrt(norme) <= treshold) then
+          ! (si on veut tout garder, commenter ligne IF, ENDIF)
+          IF(sqrt(norme) <= treshold) THEN
             AS(l) = value
             IAS(l) = i
             JAS(l) = j
@@ -105,220 +105,220 @@ contains
             !IAS(l+nnz) = j
             !JAS(l+nnz) = i
             !l = l+1
-          end if
-       end do
-    end do
-    write(*,*) '========== facteur, n*n nnz2 = ', facteur, n*n, nnz2
+          ENDIF
+       ENDDO
+    ENDDO
+    WRITE(*,*) '========== facteur, n*n nnz2 = ', facteur, n*n, nnz2
 
-  allocate(D(n)); D(:)=0.0
-  do l=1, nnz2
+  ALLOCATE(D(n)); D(:)=0.0
+  DO l=1, nnz2
     D(IAS(l)) = D(IAS(l)) + AS(l)
-  end do
+  ENDDO
 
-  do l=1, nnz2
+  DO l=1, nnz2
     AS(l)=AS(l)/D(IAS(l))
-  end do
+  ENDDO
 
-  deallocate(D)
+  DEALLOCATE(D)
 
-!  print *, "******************* A sparse ********************"
-!  do l=1,nnz2
-!    write(13,*)  IAS(l), JAS(l), AS(l)
-!  end do
+!  PRINT *, "******************* A sparse ********************"
+!  DO l=1,nnz2
+!    WRITE(13,*)  IAS(l), JAS(l), AS(l)
+!  ENDDO
 
-    ! nb et nblimit même valeur ?
+    ! nb et nblimit mÃªme valeur ?
     nb = 2*nblimit
 
     t1 = MPI_WTIME()
-    call solve_arpack(AS, IAS, JAS, n, nnz2, nb, W, Z)
-    print *, "---------- W -------------"
-    do i=1,nb
-       print *,'valeurs propres arpack brutes',i, W(i)
-    end do
+    CALL solve_arpack(AS, IAS, JAS, n, nnz2, nb, W, Z)
+    PRINT *, "---------- W -------------"
+    DO i=1,nb
+       PRINT *,'valeurs propres arpack brutes',i, W(i)
+    ENDDO
     
 
-    !print *,numproc,'reordonne les vp...'  ! QUESTION nécessaire avec arpack ?
-    do i=1,nb-1
-       do j=i+1,nb
-          if (W(i)<W(j)) then
+    !PRINT *,numproc,'reordonne les vp...'  ! QUESTION nÃ©cessaire avec arpack ?
+    DO i=1,nb-1
+       DO j=i+1,nb
+          IF (W(i)<W(j)) THEN
              value=W(i); W(i)=W(j); W(j)=value
-             do k=1,n
+             DO k=1,n
                 value=Z(k,i); Z(k,i)=Z(k,j); Z(k,j)=value
-             end do
-          end if
-       end do
-    end do
-    do i=1,nb
-       print *,'valeurs propres arpack réordonnées',i, W(i)
-    end do
+             ENDDO
+          ENDIF
+       ENDDO
+    ENDDO
+    DO i=1,nb
+       PRINT *,'valeurs propres arpack rÃ©ordonnÃ©es',i, W(i)
+    ENDDO
 
     !Test spectral embedding avec different nbcluster   
     !***********************
     ! Spectral embedding
-    !print *,numproc,'Spectral Embedding'
+    !PRINT *,numproc,'Spectral Embedding'
 
-    if ((nbideal==0).and.(n>2)) then
+    IF ((nbideal==0).AND.(n>2)) THEN
        !** recherche du meilleur decoupage
-       allocate(ratiomax(nblimit)); ratiomax(:)=0
-       allocate(ratiomin(nblimit)); ratiomin(:)=0
-       allocate(ratiomoy(nblimit)); ratiomoy(:)=0
-       allocate(ratiorii(nblimit)); ratiorii(:)=0
-       allocate(ratiorij(nblimit)); ratiorij(:)=0
+       ALLOCATE(ratiomax(nblimit)); ratiomax(:)=0
+       ALLOCATE(ratiomin(nblimit)); ratiomin(:)=0
+       ALLOCATE(ratiomoy(nblimit)); ratiomoy(:)=0
+       ALLOCATE(ratiorii(nblimit)); ratiorii(:)=0
+       ALLOCATE(ratiorij(nblimit)); ratiorij(:)=0
 
-       allocate(nbinfo(nblimit)); nbinfo(:)=0
+       ALLOCATE(nbinfo(nblimit)); nbinfo(:)=0
 
-       do nbcluster = 2 ,min(n,nblimit)
-          !print *,numproc,'teste avec nbcluster=',nbcluster
-          !call flush(6)
+       DO nbcluster = 2 ,min(n,nblimit)
+          !PRINT *,numproc,'teste avec nbcluster=',nbcluster
+          !CALL flush(6)
 
-          allocate(cluster(n))
+          ALLOCATE(cluster(n))
           cluster(:)=0.0
-          allocate(cluster_center(nbcluster,nbcluster))
+          ALLOCATE(cluster_center(nbcluster,nbcluster))
           cluster_center(:,:)=0.0
-          allocate(cluster_population(nbcluster))
+          ALLOCATE(cluster_population(nbcluster))
           cluster_population(:)=0.0
-          allocate(cluster_energy(nbcluster))
+          ALLOCATE(cluster_energy(nbcluster))
           cluster_energy(:)=0.0
 
-          call sp_spectral_embedding(nbcluster, n, Z, nnz2, AS, IAS, JAS, &
+          CALL sp_spectral_embedding(nbcluster, n, Z, nnz2, AS, IAS, JAS, &
                ratiomax(nbcluster),cluster,cluster_center,cluster_population, &
                cluster_energy,nbinfo(nbcluster),numproc,ratiomoy(nbcluster), &
                ratiorij(nbcluster),ratiorii(nbcluster))
 
-          deallocate(cluster);
-          deallocate(cluster_center);
-          deallocate(cluster_energy)
-          deallocate(cluster_population);
-       end do
+          DEALLOCATE(cluster);
+          DEALLOCATE(cluster_center);
+          DEALLOCATE(cluster_energy)
+          DEALLOCATE(cluster_population);
+       ENDDO
 
 
 #if aff
-print *, 'ratio de frobenius'
+PRINT *, 'ratio de frobenius'
 #endif
        !*******************************
        ! Ratio de norme de frobenius
-       !print *,numproc,'Ratio max par cluster',ratiomax(2:nblimit)
-       !print *,numproc,'Ratio min par cluster',ratiomin(2:nblimit)
-       !print *,numproc,'Ratio Rii par cluster',ratiorii(2:nblimit)
-       !print *,numproc,'Ratio Rij par cluster',ratiorij(2:nblimit)
+       !PRINT *,numproc,'Ratio max par cluster',ratiomax(2:nblimit)
+       !PRINT *,numproc,'Ratio min par cluster',ratiomin(2:nblimit)
+       !PRINT *,numproc,'Ratio Rii par cluster',ratiorii(2:nblimit)
+       !PRINT *,numproc,'Ratio Rij par cluster',ratiorij(2:nblimit)
        ratio=ratiomax(nblimit)
        dataw%nbclusters=nblimit
        ratio1=0.0
        ratio2=1e+10
 
-       do i=2,nblimit
-          !if  ((nbinfo(i)==i).and.(ratio(i)<ratio)) then
-          !if  ((nbinfo(i)==i).and.(ratiomoy(i)<ratio)) then
-          if ((numproc==0).and.(nbproc>1)) then 
+       DO i=2,nblimit
+          !if  ((nbinfo(i)==i).AND.(ratio(i)<ratio)) THEN
+          !if  ((nbinfo(i)==i).AND.(ratiomoy(i)<ratio)) THEN
+          IF ((numproc==0).AND.(nbproc>1)) THEN 
              seuilrij=1e-1
-          else
+          ELSE
              seuilrij=1e-4
-          end if
+          ENDIF
 
-          if ((ratiorii(i)>=0.95*ratio1).and.(ratiorij(i)-ratio2<=seuilrij)) then  
-             !if (ratiomoy(i)-ratio1<=1e-4) then
-             !2eme critère
+          IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
+             !if (ratiomoy(i)-ratio1<=1e-4) THEN
+             !2eme critÃ¨re
              !(ratiorij(i)/ratiorii(i)<=1e-4)
              dataw%nbclusters=i
              ! ratio=ratiomax(i)
              ratio1=ratiorii(i)
              ratio2=ratiorij(i)
              !ratio1=ratiomoy(i)
-          end if
-       end do
-      ! print *,numproc,'nb de clusters final :',dataw%nbclusters
+          ENDIF
+       ENDDO
+      ! PRINT *,numproc,'nb de clusters final :',dataw%nbclusters
 
-    elseif ((nbideal==1).and.(n>nbideal)) then
+    ELSEIF ((nbideal==1).AND.(n>nbideal)) THEN
        !** test avec un cluster impose
-       allocate(nbinfo(nbideal))
+       ALLOCATE(nbinfo(nbideal))
        nbinfo(:) = 0
-       allocate(ratiomin(1))
+       ALLOCATE(ratiomin(1))
        ratiomin(:) = 0.0
        dataw%nbclusters = nbideal
-    else
+    ELSE
        !** cas d'un domaine avec moins de points que nbideal ou 1 seul point
-       allocate(nbinfo(n))
+       ALLOCATE(nbinfo(n))
        nbinfo(:)=0
-       allocate(ratiomin(1))
+       ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
        dataw%nbclusters=n
-       allocate(ratiomax(n))
+       ALLOCATE(ratiomax(n))
        ratiomax(:)=0
-       allocate(ratiomoy(n))
+       ALLOCATE(ratiomoy(n))
        ratiomoy(:)=0
-       allocate(ratiomin(n))
+       ALLOCATE(ratiomin(n))
        ratiomin(:)=0
-       allocate(ratiorii(n))
+       ALLOCATE(ratiorii(n))
        ratiorii(:)=0
-       allocate(ratiorij(n))
+       ALLOCATE(ratiorij(n))
        ratiorij(:)=0
-    endif
-    ! cas où nbcluster==1
-    if (dataw%nbclusters==2) then
-       print *, 'difference ratio',ratiorij(2)/ratiorii(2)
-       if (ratiomax(2)>=0.6) then 
+    ENDIF
+    ! cas oÃ¹ nbcluster==1
+    IF (dataw%nbclusters==2) THEN
+       PRINT *, 'difference ratio',ratiorij(2)/ratiorii(2)
+       IF (ratiomax(2)>=0.6) THEN 
           dataw%nbclusters=1
-       else 
+       ELSE 
           dataw%nbclusters=2
-       end if
-    end if
+       ENDIF
+    ENDIF
 #if aff
-    print *,numproc,'cluster final obtenu : ',dataw%nbclusters
+    PRINT *,numproc,'cluster final obtenu : ',dataw%nbclusters
 #endif
 
     !** calcul du clustering final
-    if (dataw%nbclusters>1) then
+    IF (dataw%nbclusters>1) THEN
 
-       call sp_spectral_embedding(dataw%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,cluster,&
+       CALL sp_spectral_embedding(dataw%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,cluster,&
             cluster_center,cluster_population,cluster_energy,&
             nbinfo(dataw%nbclusters),numproc,ratiomin(1),ratiorij(1),&
             ratiorii(1))
 
-       do i=1,dataw%nb
+       DO i=1,dataw%nb
           dataw%point(i)%cluster=cluster(i)
-       enddo
+       ENDDO
 
-       deallocate(cluster)
-       deallocate(cluster_population)
-       deallocate(ratiomax)
-       deallocate(cluster_energy)
-       deallocate(ratiomin)
-       deallocate(ratiomoy)
-       deallocate(ratiorii)
-       deallocate(ratiorij)
-       deallocate(cluster_center)
+       DEALLOCATE(cluster)
+       DEALLOCATE(cluster_population)
+       DEALLOCATE(ratiomax)
+       DEALLOCATE(cluster_energy)
+       DEALLOCATE(ratiomin)
+       DEALLOCATE(ratiomoy)
+       DEALLOCATE(ratiorii)
+       DEALLOCATE(ratiorij)
+       DEALLOCATE(cluster_center)
 
-    else 
+    ELSE 
        !cluster_population(1)=dataw%nb
 #if aff
-       print *, numproc, 'ok'
+       PRINT *, numproc, 'ok'
 #endif
-       do i=1,dataw%nb
+       DO i=1,dataw%nb
           dataw%point(i)%cluster=1
-       end do
+       ENDDO
 #if aff
-       print *,numproc,'cluster'
+       PRINT *,numproc,'cluster'
 #endif
-    end if
+    ENDIF
 
     !affichage
     !do j=1,dataw%nbclusters
-    !   print *,numproc,'centres des clusters',cluster_center(:,j)
-    !end do
+    !   PRINT *,numproc,'centres des clusters',cluster_center(:,j)
+    !ENDDO
     !maj du cluster
   
 
     !deallocations
-    deallocate(AS)
-    deallocate(IAS)
-    deallocate(JAS)
-    deallocate(W)
-    deallocate(Z)
+    DEALLOCATE(AS)
+    DEALLOCATE(IAS)
+    DEALLOCATE(JAS)
+    DEALLOCATE(W)
+    DEALLOCATE(Z)
 
-    return
-  end subroutine sp_calculclusters
+    RETURN
+  END SUBROUTINE sp_calculclusters
 
-    subroutine sp_spectral_embedding(nbcluster,n,Z, nnz, AS, IAS, JAS, ratio,cluster,&
+    SUBROUTINE sp_spectral_embedding(nbcluster,n,Z, nnz, AS, IAS, JAS, ratio,cluster,&
        cluster_center,cluster_population,cluster_energy,nbinfo,numproc,&
        ratiomoy,ratiorij,ratiorii)
 
@@ -328,108 +328,108 @@ print *, 'ratio de frobenius'
     ! nbcluster = nbre de cluster
     ! dataw : points
     ! Z : matrice des vecteurs propres
-    ! M : nbre de vp trouvéesx
-    ! ratio : max des ration de frob sur matrice aff réordonnancée suivant
+    ! M : nbre de vp trouvÃ©esx
+    ! ratio : max des ration de frob sur matrice aff rÃ©ordonnancÃ©e suivant
     ! les clusters
     ! cluster : appartenance des clusters
     ! cluster_center : centre des nbclusters clusters
     ! cluster_population : nbre de points par cluster
-    ! cluster_energy : somme des énergies par cluster
+    ! cluster_energy : somme des Ã©nergies par cluster
     !
 
-    implicit none
-    !type(type_data) :: dataw
-    double precision,dimension(:,:),pointer:: Z,cluster_center
-    integer ::nbcluster,n,nbinfo,numproc
-    double precision ::ratio,test,ratiomin,ratiorii,ratiorij, ratiomoy
-    double precision,dimension(:),pointer :: cluster_energy,Z3
-    integer,dimension(:),pointer ::cluster,cluster_population
-    !integer,dimension(:),pointer::ordaffperclus
-    double precision, dimension(:,:),pointer :: Frob
-    double precision,dimension(:,:),pointer::Z1,Z2
-    integer :: it_max,it_num,i,j,k
-    integer,dimension(:,:),pointer :: clustercorresp
-    integer :: ki,kj,ni,nj,ok,nbmax
+    IMPLICIT NONE
+    !TYPE(type_data) :: dataw
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER:: Z,cluster_center
+    INTEGER ::nbcluster,n,nbinfo,numproc
+    DOUBLE PRECISION ::ratio,test,ratiomin,ratiorii,ratiorij, ratiomoy
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: cluster_energy,Z3
+    INTEGER,DIMENSION(:),POINTER ::cluster,cluster_population
+    !INTEGER,DIMENSION(:),POINTER::ordaffperclus
+    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Frob
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER::Z1,Z2
+    INTEGER :: it_max,it_num,i,j,k
+    INTEGER,DIMENSION(:,:),POINTER :: clustercorresp
+    INTEGER :: ki,kj,ni,nj,ok,nbmax
 
-    double precision,dimension(:),pointer:: AS
-    integer,dimension(:),pointer:: IAS, JAS
-    integer :: nnz
+    DOUBLE PRECISION,DIMENSION(:),POINTER:: AS
+    INTEGER,DIMENSION(:),POINTER:: IAS, JAS
+    INTEGER :: nnz
 
-    integer :: l
-    integer :: num1, num2
+    INTEGER :: l
+    INTEGER :: num1, num2
 
-    allocate(cluster(n));
-    allocate(cluster_center(nbcluster,nbcluster));
-    allocate(cluster_population(nbcluster));
-    allocate(cluster_energy(nbcluster));
-    allocate(Z1(n,nbcluster));  allocate(Z2(nbcluster,n));
-    allocate(Z3(n));Z3(:)=0.0
+    ALLOCATE(cluster(n));
+    ALLOCATE(cluster_center(nbcluster,nbcluster));
+    ALLOCATE(cluster_population(nbcluster));
+    ALLOCATE(cluster_energy(nbcluster));
+    ALLOCATE(Z1(n,nbcluster));  ALLOCATE(Z2(nbcluster,n));
+    ALLOCATE(Z3(n));Z3(:)=0.0
 
-    print *, '************ sp_spectral_embedding *************'
-    do i=1,n
-       do j=1,nbcluster
+    PRINT *, '************ sp_spectral_embedding *************'
+    DO i=1,n
+       DO j=1,nbcluster
           Z1(i,j)=Z(i,j)
-          !if (i==1) print *,numproc,'matrice vp',j,W(j)
+          !if (i==1) PRINT *,numproc,'matrice vp',j,W(j)
           Z3(i)=Z3(i)+Z1(i,j)**2
-       end do
-    end do
+       ENDDO
+    ENDDO
 
-    do i=1,n
+    DO i=1,n
        test=0.0
-       do j=1,nbcluster
+       DO j=1,nbcluster
           Z2(j,i)=Z1(i,j)/(sqrt(Z3(i)))
           test=test+Z2(j,i)**2
-       end do
-    end do
+       ENDDO
+    ENDDO
 
-    print *, numproc,'methode kmeans'
+    PRINT *, numproc,'methode kmeans'
 
     it_max=n*n !1000.0
 
-    call kmeans_01 ( nbcluster, n, nbcluster, it_max, it_num, Z2,&
+    CALL kmeans_01 ( nbcluster, n, nbcluster, it_max, it_num, Z2,&
          cluster, cluster_center, cluster_population, cluster_energy, &
          numproc)
 
     !do i=1,nbcluster
-    !   print *, 'Z2(',i,',:) ', Z2(i,:)
-    !end do
+    !   PRINT *, 'Z2(',i,',:) ', Z2(i,:)
+    !ENDDO
 
-    !print *,numproc,'fin de kmeans. nb d iterations effectuees : ',it_num
+    !PRINT *,numproc,'fin de kmeans. nb d iterations effectuees : ',it_num
 
-    !print *,numproc,'Nombre points par cluster', cluster_population
-    ! print *,'vecteur cluster',cluster(1:5) 
+    !PRINT *,numproc,'Nombre points par cluster', cluster_population
+    ! PRINT *,'vecteur cluster',cluster(1:5) 
 
     !*****************************
-    ! Mesure de qualité
-    !print *,'Indexation'
+    ! Mesure de qualitÃ©
+    !PRINT *,'Indexation'
 
     nbmax=0
-    do i=1,nbcluster
+    DO i=1,nbcluster
        nbmax=max(nbmax,cluster_population(i))
-    end do
-    print *, cluster_population
-    allocate(clustercorresp(nbcluster,nbmax)); clustercorresp(:,:)=0
-    do i=1,n
+    ENDDO
+    PRINT *, cluster_population
+    ALLOCATE(clustercorresp(nbcluster,nbmax)); clustercorresp(:,:)=0
+    DO i=1,n
        j=cluster(i)
        ok=0;k=1
-       do while(ok==0)
-          if (clustercorresp(j,k)==0) then
+       DO WHILE(ok==0)
+          IF (clustercorresp(j,k)==0) THEN
              ok=1
-          else
+          ELSE
              k=k+1
-          end if
-       end do
+          ENDIF
+       ENDDO
        clustercorresp(j,k)=i
-    end do
+    ENDDO
 
 
-! sparsification début
-    allocate(Frob(nbcluster,nbcluster)); Frob(:,:)=0.0
-    do i=1, nnz
+! sparsification dÃ©but
+    ALLOCATE(Frob(nbcluster,nbcluster)); Frob(:,:)=0.0
+    DO i=1, nnz
       num1 = cluster(IAS(i))
       num2 = cluster(JAS(i))
       Frob(num1, num2) = Frob(num1, num2) + AS(i)**2
-    end do
+    ENDDO
 ! sparsification fin
 
 
@@ -437,119 +437,119 @@ print *, 'ratio de frobenius'
     ratio=0.0; ratiomin=1.D+16;ratiorii=0.0;ratiorij=0.0
     ratiomoy = 0.0
     nbinfo=nbcluster
-    do i=1,nbcluster
-       if ((cluster_population(i)/=0).and.(Frob(i,i)/=0)) then
-          do j=1,nbcluster
-             if (i/=j) then
+    DO i=1,nbcluster
+       IF ((cluster_population(i)/=0).AND.(Frob(i,i)/=0)) THEN
+          DO j=1,nbcluster
+             IF (i/=j) THEN
                 ratio=ratio+Frob(i,j)/Frob(i,i)
                 !ratio=max(ratio,Frob(i,j)/Frob(i,i))
                 ratiomoy=ratiomoy+Frob(i,j)/Frob(i,i)
                 ratiorij=ratiorij+Frob(i,j)
                 ratiorii=ratiorii+Frob(i,i)
                 ratiomin=min(ratiomin,Frob(i,j)/Frob(i,i))
-             endif
-          end do
-       else
+             ENDIF
+          ENDDO
+       ELSE
           nbinfo=nbinfo-1
-       end if
+       ENDIF
        ratiorij=ratiorij*2/(nbcluster*(nbcluster-1))
        ratiomoy=ratiomoy*2/(nbcluster*(nbcluster-1))
        ratiorii=ratiorii!/nbcluster
-    end do
+    ENDDO
 
-    print *, "============= ratio ================", ratiomoy, ratiorij
+    PRINT *, "============= ratio ================", ratiomoy, ratiorij
 
-    deallocate(Frob)
+    DEALLOCATE(Frob)
 ! sparsification fin
 
 #if aff
-    print *,numproc,'nbinfo=', nbinfo,' nbcluster=',nbcluster
+    PRINT *,numproc,'nbinfo=', nbinfo,' nbcluster=',nbcluster
 #endif
 
-    return 
-  end subroutine sp_spectral_embedding
+    RETURN 
+  END SUBROUTINE sp_spectral_embedding
 
-  subroutine sp_matvec(A, IA, JA, X, Y, n, nnz)
-  implicit none
+  SUBROUTINE sp_matvec(A, IA, JA, X, Y, n, nnz)
+  IMPLICIT NONE
 
-  double precision, intent(in), dimension(nnz) :: A
-  integer, intent(in), dimension(nnz) :: IA, JA
-  double precision, intent(in), dimension(n) :: X
-  double precision, intent(out), dimension(n) :: Y
-  integer, intent(in) :: n, nnz
+  DOUBLE PRECISION, INTENT(IN), DIMENSION(nnz) :: A
+  INTEGER, INTENT(IN), DIMENSION(nnz) :: IA, JA
+  DOUBLE PRECISION, INTENT(IN), DIMENSION(n) :: X
+  DOUBLE PRECISION, INTENT(OUT), DIMENSION(n) :: Y
+  INTEGER, INTENT(IN) :: n, nnz
 
-  integer :: l
+  INTEGER :: l
 
   Y(:) = dfloat(0)
 
-  do l = 1, nnz
+  DO l = 1, nnz
     Y(IA(l)) = Y(IA(l)) + A(l)*X(JA(l))
-  enddo
+  ENDDO
 
-  return
+  RETURN
 
-  end subroutine sp_matvec
+  END SUBROUTINE sp_matvec
 
-  subroutine solve_arpack(A, IA, JA, ndim, nnz, nblimit, W, Z)
+  SUBROUTINE solve_arpack(A, IA, JA, ndim, nnz, nblimit, W, Z)
 
-  double precision, intent(in), dimension(:) :: A
-  integer, intent(in), dimension(:) :: IA, JA
-  integer, intent(in) :: ndim, nnz, nblimit
+  DOUBLE PRECISION, INTENT(IN), DIMENSION(:) :: A
+  INTEGER, INTENT(IN), DIMENSION(:) :: IA, JA
+  INTEGER, INTENT(IN) :: ndim, nnz, nblimit
 
-  double precision, intent(out), pointer :: W(:)
-  double precision, intent(out), pointer :: Z(:, :)
+  DOUBLE PRECISION, INTENT(OUT), POINTER :: W(:)
+  DOUBLE PRECISION, INTENT(OUT), POINTER :: Z(:, :)
   
-  integer :: maxn, maxnev, maxncv, ldv, i, nbite
+  INTEGER :: maxn, maxnev, maxncv, ldv, i, nbite
 !
 !     %--------------%
 !     | Local Arrays |
 !     %--------------%
 !
-  integer           iparam(11), ipntr(14)
-  logical, dimension(:), allocatable :: select
+  INTEGER           iparam(11), ipntr(14)
+  LOGICAL, DIMENSION(:), ALLOCATABLE :: SELECT
 
 !     d valeurs propres
 !     v vecteurs propres
 
-  Double precision, dimension(:), allocatable :: ax, resid, workd, workev, workl
-  Double precision, dimension(:,:), allocatable :: d, v
+  DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: ax, resid, workd, workev, workl
+  DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: d, v
 !
 !     %---------------%
 !     | Local Scalars |
 !     %---------------%
 !
-  character         bmat*1, which*2
-  integer           ido, n, nx, nev, ncv, lworkl, info, ierr, &
+  CHARACTER         bmat*1, which*2
+  INTEGER           ido, n, nx, nev, ncv, lworkl, info, ierr, &
                     j, ishfts, maxitr, mode1, nconv
-  Double precision  tol, sigmar, sigmai
-  logical           first, rvec
+  DOUBLE PRECISION  tol, sigmar, sigmai
+  LOGICAL           first, rvec
 !
 !     %------------%
 !     | Parameters |
 !     %------------%
 !
-  Double precision  zero
-  parameter         (zero = 0.0D+0)
+  DOUBLE PRECISION  zero
+  PARAMETER         (zero = 0.0D+0)
 !
 !     %-----------------------------%
 !     | BLAS & LAPACK routines used |
 !     %-----------------------------%
 !
-      Double precision  dlapy2, dnrm2
-      external          dlapy2, dnrm2, daxpy 
+      DOUBLE PRECISION  dlapy2, dnrm2
+      EXTERNAL          dlapy2, dnrm2, daxpy 
 !
 !     %--------------------%
-!     | Intrinsic function |
+!     | Intrinsic FUNCTION |
 !     %--------------------%
 !
-      intrinsic         abs
+      INTRINSIC         abs
 !
 !     %-----------------------%
 !     | Executable Statements |
 !     %-----------------------%
 !
 !     %-------------------------------------------------%
-!     | The following include statement and assignments |
+!     | The following INCLUDE statement and assignments |
 !     | initiate trace output from the internal         |
 !     | actions of ARPACK.  See debug.doc in the        |
 !     | DOCUMENTS directory for usage.  Initially, the  |
@@ -558,7 +558,7 @@ print *, 'ratio de frobenius'
 !     | given by setting mnaupd = 1.                    |
 !     %-------------------------------------------------%
 !
-      include 'debug.h'
+      INCLUDE 'debug.h'
 
 ! lien entre les tailles
       maxn = ndim
@@ -567,10 +567,10 @@ print *, 'ratio de frobenius'
       maxncv = 2*maxnev + 1
 
 ! allocation memoire
-      allocate(select(maxn))
-      allocate(ax(maxn), resid(maxn), workd(3*maxn), &
+      ALLOCATE(SELECT(maxn))
+      ALLOCATE(ax(maxn), resid(maxn), workd(3*maxn), &
                workev(3*maxncv), workl(3*maxncv*maxncv+6*maxncv))
-      allocate(d(maxncv, 3), v(ldv, maxncv))
+      ALLOCATE(d(maxncv, 3), v(ldv, maxncv))
 
       ndigit = -3
       logfil = 6
@@ -604,7 +604,7 @@ print *, 'ratio de frobenius'
 !     |    4) Ask for the NEV eigenvalues of          |
 !     |       largest magnitude.                      |
 !     |         (indicated by which = 'LM')           |
-!     |       See documentation in DNAUPD for the     |
+!     |       See DOcumentation in DNAUPD for the     |
 !     |       other options SM, LR, SR, LI, SI.       |
 !     |                                               |
 !     | Note: NEV and NCV must satisfy the following  |
@@ -619,50 +619,50 @@ print *, 'ratio de frobenius'
       bmat  = 'I'
       which = 'LR'
 !
-      if ( n .gt. maxn ) then
-         print *, ' ERROR with _NSIMP: N is greater than MAXN '
-         go to 9000
-      else if ( nev .gt. maxnev ) then
-         print *, ' ERROR with _NSIMP: NEV is greater than MAXNEV '
-         go to 9000
-      else if ( ncv .gt. maxncv ) then
-         print *, ' ERROR with _NSIMP: NCV is greater than MAXNCV '
-         go to 9000
-      end if
+      IF ( n .GT. maxn ) THEN
+         PRINT *, ' ERROR with _NSIMP: N is greater than MAXN '
+         GOTO 9000
+      ELSEIF ( nev .GT. maxnev ) THEN
+         PRINT *, ' ERROR with _NSIMP: NEV is greater than MAXNEV '
+         GOTO 9000
+      ELSEIF ( ncv .GT. maxncv ) THEN
+         PRINT *, ' ERROR with _NSIMP: NCV is greater than MAXNCV '
+         GOTO 9000
+      ENDIF
 !
 !     %-----------------------------------------------------%
 !     |                                                     |
-!     | Specification of stopping rules and initial         |
-!     | conditions before calling DNAUPD                    |
+!     | Specification of STOPping rules and initial         |
+!     | conditions before CALLing DNAUPD                    |
 !     |                                                     |
-!     | TOL  determines the stopping criterion.             |
+!     | TOL  determines the STOPping criterion.             |
 !     |                                                     |
 !     |      Expect                                         |
 !     |           abs(lambdaC - lambdaT) < TOL*abs(lambdaC) |
 !     |               computed   true                       |
 !     |                                                     |
-!     |      If TOL .le. 0,  then TOL <- macheps            |
+!     |      If TOL .LE. 0,  THEN TOL <- macheps            |
 !     |           (machine precision) is used.              |
 !     |                                                     |
-!     | IDO  is the REVERSE COMMUNICATION parameter         |
-!     |      used to specify actions to be taken on return  |
+!     | IDO  is the REVERSE COMMUNICATION PARAMETER         |
+!     |      used to specify actions to be taken on RETURN  |
 !     |      from DNAUPD. (see usage below)                 |
 !     |                                                     |
 !     |      It MUST initially be set to 0 before the first |
-!     |      call to DNAUPD.                                |
+!     |      CALL to DNAUPD.                                |
 !     |                                                     |
 !     | INFO on entry specifies starting vector information |
-!     |      and on return indicates error codes            |
+!     |      and on RETURN indicates error codes            |
 !     |                                                     |
 !     |      Initially, setting INFO=0 indicates that a     |
 !     |      random starting vector is requested to         |
 !     |      start the ARNOLDI iteration.  Setting INFO to  |
-!     |      a nonzero value on the initial call is used    |
-!     |      if you want to specify your own starting       |
+!     |      a nonzero value on the initial CALL is used    |
+!     |      IF you want to specify your own starting       |
 !     |      vector (This vector must be placed in RESID).  |
 !     |                                                     |
 !     | The work array WORKL is used in DNAUPD as           |
-!     | workspace.  Its dimension LWORKL is set as          |
+!     | workspace.  Its DIMENSION LWORKL is set as          |
 !     | illustrated below.                                  |
 !     |                                                     |
 !     %-----------------------------------------------------%
@@ -675,12 +675,12 @@ print *, 'ratio de frobenius'
 !     %---------------------------------------------------%
 !     | Specification of Algorithm Mode:                  |
 !     |                                                   |
-!     | This program uses the exact shift strategy        |
+!     | This PROGRAM uses the exact shift strategy        |
 !     | (indicated by setting IPARAM(1) = 1).             |
 !     | IPARAM(3) specifies the maximum number of Arnoldi |
 !     | iterations allowed.  Mode 1 of DNAUPD is used     |
 !     | (IPARAM(7) = 1). All these options can be changed |
-!     | by the user. For details see the documentation in |
+!     | by the user. For details see the DOcumentation in |
 !     | DNAUPD.                                           |
 !     %---------------------------------------------------%
 !
@@ -699,20 +699,20 @@ print *, 'ratio de frobenius'
 !     %-------------------------------------------%
 !
       nbite = 1
- 10   continue
+ 10   CONTINUE
 !
 !        %---------------------------------------------%
-!        | Repeatedly call the routine DNAUPD and take |
-!        | actions indicated by parameter IDO until    |
+!        | Repeatedly CALL the routine DNAUPD and take |
+!        | actions indicated by PARAMETER IDO until    |
 !        | either convergence is indicated or maxitr   |
 !        | has been exceeded.                          |
 !        %---------------------------------------------%
 !
-         call dnaupd ( ido, bmat, n, which, nev, tol, resid, ncv, &
+         CALL dnaupd ( ido, bmat, n, which, nev, tol, resid, ncv, &
                        v, ldv, iparam, ipntr, workd, workl, lworkl, & 
                        info )
 !
-         if (ido .eq. -1 .or. ido .eq. 1) then
+         IF (ido .EQ. -1 .OR. ido .EQ. 1) THEN
 !
 !           %-------------------------------------------%
 !           | Perform matrix vector multiplication      |
@@ -720,47 +720,47 @@ print *, 'ratio de frobenius'
 !           | The user should supply his/her own        |
 !           | matrix vector multiplication routine here |
 !           | that takes workd(ipntr(1)) as the input   |
-!           | vector, and return the matrix vector      |
+!           | vector, and RETURN the matrix vector      |
 !           | product to workd(ipntr(2)).               | 
 !           %-------------------------------------------%
 !
-            !call av (nx, workd(ipntr(1)), workd(ipntr(2)))
-            call sp_matvec(A, IA, JA, workd(ipntr(1)), workd(ipntr(2)), &
+            !CALL av (nx, workd(ipntr(1)), workd(ipntr(2)))
+            CALL sp_matvec(A, IA, JA, workd(ipntr(1)), workd(ipntr(2)), &
                            ndim, nnz)
 
-            !if(nbite .eq. 1) then
-            !  do i = 0,19
-            !    print *,'matvec workd ',i,  workd(ipntr(1)+i), workd(ipntr(2)+i)
-            !  end do
-            !end if
+            !if(nbite .EQ. 1) THEN
+            !  DO i = 0,19
+            !    PRINT *,'matvec workd ',i,  workd(ipntr(1)+i), workd(ipntr(2)+i)
+            !  ENDDO
+            !ENDIF
             nbite = nbite + 1
 !
 !           %-----------------------------------------%
-!           | L O O P   B A C K to call DNAUPD again. |
+!           | L O O P   B A C K to CALL DNAUPD again. |
 !           %-----------------------------------------%
 !
-            go to 10
+            GOTO 10
 !
-         endif
+         ENDIF
 !
 !     %----------------------------------------%
 !     | Either we have convergence or there is |
 !     | an error.                              |
 !     %----------------------------------------%
 !
-      if ( info .lt. 0 ) then
+      IF ( info .LT. 0 ) THEN
 !
 !        %--------------------------%
 !        | Error message, check the |
-!        | documentation in DNAUPD. |
+!        | DOcumentation in DNAUPD. |
 !        %--------------------------%
 !
-         print *, ' '
-         print *, ' Error with _naupd, info = ',info
-         print *, ' Check the documentation of _naupd'
-         print *, ' '
+         PRINT *, ' '
+         PRINT *, ' Error with _naupd, info = ',info
+         PRINT *, ' Check the DOcumentation of _naupd'
+         PRINT *, ' '
 !
-      else 
+      ELSE 
 !
 !        %-------------------------------------------%
 !        | No fatal errors occurred.                 |
@@ -768,25 +768,25 @@ print *, 'ratio de frobenius'
 !        |                                           |
 !        | Computed eigenvalues may be extracted.    |
 !        |                                           |
-!        | Eigenvectors may be also computed now if  |
-!        | desired.  (indicated by rvec = .true.)    |
+!        | Eigenvectors may be also computed now IF  |
+!        | desired.  (indicated by rvec = .TRUE.)    |
 !        |                                           |
-!        | The routine DNEUPD now called to do this  |
+!        | The routine DNEUPD now CALLed to DO this  |
 !        | post processing (Other modes may require  |
 !        | more complicated post processing than     |
 !        | mode1,)                                   |
 !        |                                           |
 !        %-------------------------------------------%
 !
-         rvec = .true.
+         rvec = .TRUE.
 !
-         call dneupd ( rvec, 'A', select, d, d(1,2), v, ldv, &
+         CALL dneupd ( rvec, 'A', SELECT, d, d(1,2), v, ldv, &
               sigmar, sigmai, workev, bmat, n, which, nev, tol, & 
               resid, ncv, v, ldv, iparam, ipntr, workd, workl, &
               lworkl, ierr )
 !
 !        %------------------------------------------------%
-!        | The real parts of the eigenvalues are returned |
+!        | The REAL parts of the eigenvalues are returned |
 !        | in the first column of the two dimensional     |
 !        | array D, and the IMAGINARY part are returned   |
 !        | in the second column of D.  The corresponding  |
@@ -798,23 +798,23 @@ print *, 'ratio de frobenius'
 !        | returned in V.                                 |
 !        %------------------------------------------------%
 !
-         if ( ierr .ne. 0) then
+         IF ( ierr .NE. 0) THEN
 !
 !           %------------------------------------%
 !           | Error condition:                   |
 !           | Check the documentation of DNEUPD. |
 !           %------------------------------------%
 !
-            print *, ' '
-            print *, ' Error with _neupd, info = ', ierr
-            print *, ' Check the documentation of _neupd. '
-            print *, ' '
+            PRINT *, ' '
+            PRINT *, ' Error with _neupd, info = ', ierr
+            PRINT *, ' Check the documentation of _neupd. '
+            PRINT *, ' '
 !
-         else
+         ELSE
 !
-            first = .true.
+            first = .TRUE.
             nconv =  iparam(5)
-            do 20 j=1, nconv
+            DO 20 j=1, nconv
 !
 !              %---------------------------%
 !              | Compute the residual norm |
@@ -829,107 +829,107 @@ print *, 'ratio de frobenius'
 !              | tolerance)                |
 !              %---------------------------%
 !
-               if (d(j,2) .eq. zero)  then
+               IF (d(j,2) .EQ. zero)  THEN
 !
 !                 %--------------------%
-!                 | Ritz value is real |
+!                 | Ritz value is REAL |
 !                 %--------------------%
 !
-                  !call av(nx, v(1,j), ax)
-                  call sp_matvec(A, IA, JA, v(1,j), ax, ndim, nnz)
-                  call daxpy(n, -d(j,1), v(1,j), 1, ax, 1)
+                  !CALL av(nx, v(1,j), ax)
+                  CALL sp_matvec(A, IA, JA, v(1,j), ax, ndim, nnz)
+                  CALL daxpy(n, -d(j,1), v(1,j), 1, ax, 1)
                   d(j,3) = dnrm2(n, ax, 1)
                   d(j,3) = d(j,3) / abs(d(j,1))
 !
-               else if (first) then
+               ELSEIF (first) THEN
 !
 !                 %------------------------%
-!                 | Ritz value is complex. |
+!                 | Ritz value is COMPLEX. |
 !                 | Residual of one Ritz   |
 !                 | value of the conjugate |
 !                 | pair is computed.      |
 !                 %------------------------%
 !
-                  !call av(nx, v(1,j), ax)
-                  call sp_matvec(A, IA, JA, v(1,j), ax, ndim, nnz)
-                  call daxpy(n, -d(j,1), v(1,j), 1, ax, 1)
-                  call daxpy(n, d(j,2), v(1,j+1), 1, ax, 1)
+                  !CALL av(nx, v(1,j), ax)
+                  CALL sp_matvec(A, IA, JA, v(1,j), ax, ndim, nnz)
+                  CALL daxpy(n, -d(j,1), v(1,j), 1, ax, 1)
+                  CALL daxpy(n, d(j,2), v(1,j+1), 1, ax, 1)
                   d(j,3) = dnrm2(n, ax, 1)
-                  !call av(nx, v(1,j+1), ax)
-                  call sp_matvec(A, IA, JA, v(1,j+1), ax, ndim, nnz)
-                  call daxpy(n, -d(j,2), v(1,j), 1, ax, 1)
-                  call daxpy(n, -d(j,1), v(1,j+1), 1, ax, 1)
+                  !CALL av(nx, v(1,j+1), ax)
+                  CALL sp_matvec(A, IA, JA, v(1,j+1), ax, ndim, nnz)
+                  CALL daxpy(n, -d(j,2), v(1,j), 1, ax, 1)
+                  CALL daxpy(n, -d(j,1), v(1,j+1), 1, ax, 1)
                   d(j,3) = dlapy2( d(j,3), dnrm2(n, ax, 1) )
                   d(j,3) = d(j,3) / dlapy2(d(j,1),d(j,2))
                   d(j+1,3) = d(j,3)
-                  first = .false.
-               else
-                  first = .true.
-               end if
+                  first = .FALSE.
+               ELSE
+                  first = .TRUE.
+               ENDIF
 !
- 20         continue
+ 20         CONTINUE
 !
 !           %-----------------------------%
 !           | Display computed residuals. |
 !           %-----------------------------%
 !
-            call dmout(6, nconv, 3, d, maxncv, -6, &
+            CALL dmout(6, nconv, 3, d, maxncv, -6, &
                  'Ritz values (Real, Imag) and residual residuals')
-         end if
+         ENDIF
 !
 !        %-------------------------------------------%
 !        | Print additional convergence information. |
 !        %-------------------------------------------%
 !
-         if ( info .eq. 1) then
-             print *, ' '
-             print *, ' Maximum number of iterations reached.'
-             print *, ' '
-         else if ( info .eq. 3) then
-             print *, ' ' 
-             print *, ' No shifts could be applied during implicit &
+         IF ( info .EQ. 1) THEN
+             PRINT *, ' '
+             PRINT *, ' Maximum number of iterations reached.'
+             PRINT *, ' '
+         ELSEIF ( info .EQ. 3) THEN
+             PRINT *, ' ' 
+             PRINT *, ' No shifts could be applied during IMPLICIT &
                         Arnoldi update, try increasing NCV.'
-             print *, ' '
-         end if      
+             PRINT *, ' '
+         ENDIF      
 !
-         print *, ' '
-         print *, ' _NSIMP '
-         print *, ' ====== '
-         print *, ' '
-         print *, ' Size of the matrix is ', n
-         print *, ' The number of Ritz values requested is ', nev
-         print *, ' The number of Arnoldi vectors generated', &
+         PRINT *, ' '
+         PRINT *, ' _NSIMP '
+         PRINT *, ' ====== '
+         PRINT *, ' '
+         PRINT *, ' Size of the matrix is ', n
+         PRINT *, ' The number of Ritz values requested is ', nev
+         PRINT *, ' The number of Arnoldi vectors generated', &
                   ' (NCV) is ', ncv
-         print *, ' What portion of the spectrum: ', which
-         print *, ' The number of converged Ritz values is ', &
+         PRINT *, ' What portion of the spectrum: ', which
+         PRINT *, ' The number of converged Ritz values is ', &
                     nconv 
-         print *, ' The number of Implicit Arnoldi update', &
+         PRINT *, ' The number of Implicit Arnoldi update', &
                   ' iterations taken is ', iparam(3)
-         print *, ' The number of OP*x is ', iparam(9)
-         print *, ' The convergence criterion is ', tol
-         print *, ' '
+         PRINT *, ' The number of OP*x is ', iparam(9)
+         PRINT *, ' The convergence criterion is ', tol
+         PRINT *, ' '
 !
-      end if
+      ENDIF
 !
 !     %---------------------------%
-!     | Done with program dnsimp. |
+!     | Done with PROGRAM dnsimp. |
 !     %---------------------------%
 !
- 9000 continue
+ 9000 CONTINUE
 
-      allocate(W(nblimit))
-      allocate(Z(n, nblimit))
+      ALLOCATE(W(nblimit))
+      ALLOCATE(Z(n, nblimit))
 
       W(1:nblimit) = d(1:nblimit, 1)
 
-      do i = 1, nblimit
+      DO i = 1, nblimit
         Z(:,i) = v(:,i)
-      end do
+      ENDDO
 
-      deallocate(select)
-      deallocate(ax, resid, workd, workev, workl)
-      deallocate(d, v)
+      DEALLOCATE(SELECT)
+      DEALLOCATE(ax, resid, workd, workev, workl)
+      DEALLOCATE(d, v)
 
-  end subroutine solve_arpack
+  END SUBROUTINE solve_arpack
 
-  end module module_sparse
+  END MODULE module_sparse

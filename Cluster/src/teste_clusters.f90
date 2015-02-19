@@ -1,37 +1,37 @@
-program teste_clusters
-  use module_teste_clusters
+PROGRAM teste_clusters
+  USE module_teste_clusters
 
-  implicit none
-  type(type_test),dimension(:),pointer :: test
-  integer :: nbtests
-  integer :: i
-  character*30 :: files
+  IMPLICIT NONE
+  TYPE(type_test),DIMENSION(:),POINTER :: test
+  INTEGER :: nbtests
+  INTEGER :: i
+  CHARACTER*30 :: files
 
-  print *
-  print *,'-------------------------------------------------------'
-  print *,'Programme de test de CLUSTERS et VISUCLUSTERS '
-  print *,'-------------------------------------------------------'
-  print *
-  print *,'teste pour plusieurs configurations differentes :'
-  print *,'  - le programme CLUSTERS'
-  print *,'  - le programme VISUCLUSTERS pour des sorties paraview'
-  print *,'  - le programme VISUCLUSTERS pour des sorties gmsh'
-  print *
-  print *,'le programme verifie l existence d un fichier genere'
-  print *,'  en fin d execution de ces programmes.'
-  print *,'il retourne "T" ou "F" selon que ce programme c est'
-  print *,'  bien execute ou non.'
-  print *
-  print *,'-------------------------------------------------------'
+  PRINT *
+  PRINT *,'-------------------------------------------------------'
+  PRINT *,'Programme de test de CLUSTERS et VISUCLUSTERS '
+  PRINT *,'-------------------------------------------------------'
+  PRINT *
+  PRINT *,'teste pour plusieurs configurations differentes :'
+  PRINT *,'  - le PROGRAMme CLUSTERS'
+  PRINT *,'  - le PROGRAMme VISUCLUSTERS pour des sorties paraview'
+  PRINT *,'  - le PROGRAMme VISUCLUSTERS pour des sorties gmsh'
+  PRINT *
+  PRINT *,'le PROGRAMme verifie l existence d un fichier genere'
+  PRINT *,'  en fin d execution de ces PROGRAMmes.'
+  PRINT *,'il retourne "T" ou "F" selon que ce PROGRAMme c est'
+  PRINT *,'  bien execute ou non.'
+  PRINT *
+  PRINT *,'-------------------------------------------------------'
   
   !creation des datas
-  print *
-  print *,'creation des datas...'
-  call cree_data
+  PRINT *
+  PRINT *,'creation des datas...'
+  CALL cree_data
 
   !declaration des tests
   nbtests=12
-  allocate(test(nbtests))
+  ALLOCATE(test(nbtests))
 
   !test coord mono
   test(1)%dir='test_coord_mono'
@@ -42,7 +42,7 @@ program teste_clusters
   test(1)%fichier='cible'
   test(1)%datatype='COORD'
   test(1)%decoupetype='INTERFACE'
-  allocate(test(1)%decoupe(2))
+  ALLOCATE(test(1)%decoupe(2))
   test(1)%decoupe(:)=1
   test(1)%epaisseur=0.
 
@@ -55,7 +55,7 @@ program teste_clusters
   test(2)%fichier='cible'
   test(2)%datatype='COORD'
   test(2)%decoupetype='INTERFACE'
-  allocate(test(2)%decoupe(2))
+  ALLOCATE(test(2)%decoupe(2))
   test(2)%decoupe(1)=2
   test(2)%decoupe(2)=2
   test(2)%epaisseur=0.3
@@ -69,7 +69,7 @@ program teste_clusters
   test(3)%fichier='cible'
   test(3)%datatype='COORD'
   test(3)%decoupetype='RECOUVREMENT'
-  allocate(test(3)%decoupe(2))
+  ALLOCATE(test(3)%decoupe(2))
   test(3)%decoupe(1)=2
   test(3)%decoupe(2)=2
   test(3)%epaisseur=0.3
@@ -83,7 +83,7 @@ program teste_clusters
   test(4)%fichier='image1d'
   test(4)%datatype='IMAGE'
   test(4)%decoupetype='INTERFACE'
-  allocate(test(4)%decoupe(2))
+  ALLOCATE(test(4)%decoupe(2))
   test(4)%decoupe(:)=1
   test(4)%epaisseur=0.
 
@@ -96,7 +96,7 @@ program teste_clusters
   test(5)%fichier='image1d'
   test(5)%datatype='IMAGE'
   test(5)%decoupetype='INTERFACE'
-  allocate(test(5)%decoupe(2))
+  ALLOCATE(test(5)%decoupe(2))
   test(5)%decoupe(1)=3
   test(5)%decoupe(2)=2
   test(5)%epaisseur=1.01
@@ -110,7 +110,7 @@ program teste_clusters
   test(6)%fichier='image1d'
   test(6)%datatype='IMAGE'
   test(6)%decoupetype='RECOUVREMENT'
-  allocate(test(6)%decoupe(2))
+  ALLOCATE(test(6)%decoupe(2))
   test(6)%decoupe(1)=3
   test(6)%decoupe(2)=2
   test(6)%epaisseur=1.01
@@ -124,7 +124,7 @@ program teste_clusters
   test(7)%fichier='image1d'
   test(7)%datatype='SEUIL'
   test(7)%decoupetype='INTERFACE'
-  allocate(test(7)%decoupe(1))
+  ALLOCATE(test(7)%decoupe(1))
   test(7)%decoupe(:)=1
   test(7)%epaisseur=0.
 
@@ -137,7 +137,7 @@ program teste_clusters
   test(8)%fichier='image1d'
   test(8)%datatype='SEUIL'
   test(8)%decoupetype='INTERFACE'
-  allocate(test(8)%decoupe(1))
+  ALLOCATE(test(8)%decoupe(1))
   test(8)%decoupe(:)=8
   test(8)%epaisseur=0.01
 
@@ -150,7 +150,7 @@ program teste_clusters
   test(9)%fichier='image1d'
   test(9)%datatype='SEUIL'
   test(9)%decoupetype='RECOUVREMENT'
-  allocate(test(9)%decoupe(1))
+  ALLOCATE(test(9)%decoupe(1))
   test(9)%decoupe(:)=8
   test(9)%epaisseur=0.01
 
@@ -163,7 +163,7 @@ program teste_clusters
   test(10)%fichier='image1d'
   test(10)%datatype='GEOM'
   test(10)%decoupetype='INTERFACE'
-  allocate(test(10)%decoupe(3))
+  ALLOCATE(test(10)%decoupe(3))
   test(10)%decoupe(:)=1
   test(10)%epaisseur=0.
 
@@ -176,7 +176,7 @@ program teste_clusters
   test(11)%fichier='image1d'
   test(11)%datatype='GEOM'
   test(11)%decoupetype='INTERFACE'
-  allocate(test(11)%decoupe(3))
+  ALLOCATE(test(11)%decoupe(3))
   test(11)%decoupe(:)=3
   test(11)%epaisseur=0.01
 
@@ -189,26 +189,26 @@ program teste_clusters
   test(12)%fichier='image1d'
   test(12)%datatype='GEOM'
   test(12)%decoupetype='RECOUVREMENT'
-  allocate(test(12)%decoupe(3))
+  ALLOCATE(test(12)%decoupe(3))
   test(12)%decoupe(:)=3
   test(12)%epaisseur=0.01
 
   !lancement
   files=''
-  do i=1,nbtests
-     print *
-     print *,'TEST : '//test(i)%dir
-     if (files/='t') then
-        print *,'  > lancer le test ? [o,n,t]'
-        read *,files
-     end if
-     if (files/='n') then
-        call cree_go(test(i))
-        call cree_test(test(i))  
-        call teste(test(i))
-     end if
-  end do
-  print *
-  print *,'-------------------------------------------------------'
+  DO i=1,nbtests
+     PRINT *
+     PRINT *,'TEST : '//test(i)%dir
+     IF (files/='t') THEN
+        PRINT *,'  > lancer le test ? [o,n,t]'
+        READ *,files
+     ENDIF
+     IF (files/='n') THEN
+        CALL cree_go(test(i))
+        CALL cree_test(test(i))  
+        CALL teste(test(i))
+     ENDIF
+  ENDDO
+  PRINT *
+  PRINT *,'-------------------------------------------------------'
 
-end program teste_clusters
+END PROGRAM teste_clusters

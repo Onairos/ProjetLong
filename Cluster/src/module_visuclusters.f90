@@ -1,178 +1,178 @@
-module module_visuclusters
-  use module_visuclusters_structure
-  use module_visuclusters_gmsh
-  use module_visuclusters_paraview
-contains
+MODULE module_visuclusters
+  USE module_visuclusters_structure
+  USE module_visuclusters_gmsh
+  USE module_visuclusters_paraview
+CONTAINS
 
   !************************
   !lecture des fichiers d'entree
-  subroutine lit(params)
-    implicit none
-    type(type_params) :: params
-    integer :: i,j,k,n
+  SUBROUTINE lit(params)
+    IMPLICIT NONE
+    TYPE(type_params) :: params
+    INTEGER :: i,j,k,n
     params%geom=0
     params%seuil=0
-    print *
-    print *,'lecture des infos...'
-    read (3,*)
-    read(3,*) params%mesh
-    print *,'  > nom du fichier de maillage : ',params%mesh
-    read (3,*)
-    read(3,*) params%nbp
-    print *,'  > nb de points :',params%nbp
-    read (3,*)
-    read (3,*) params%dim
-    print *,'  > dimension : ',params%dim
-    read (3,*)
-    read(3,*) params%nbproc
-    print *,'  > nb de proc :',params%nbproc
-    read (3,*)
-    read(3,*) params%interface
-    print *,'  > decoupage par interface ?',params%interface
-    read (3,*)
-    read(3,*) params%recouvrement
-    print *,'  > decoupage par recouvrement ?',params%recouvrement
-    read (3,*)
-    read(3,*) params%nbclusters  
-    print *,'  > nb de clusters obtenus :',params%nbclusters
-    read (3,*)
-    read(3,*) params%coord
-    print *,'  > format coord ?',params%coord
-    read (3,*)
-    read(3,*) params%image
-    print *,'  > format image ?',params%image
-    read (3,*)
-    read(3,*) params%geom
-    print *,'  > format geom ?',params%geom
-    read (3,*)
-    read(3,*) params%seuil
-    print *,'  > format seuil ?',params%seuil
-    if ((params%image==1).or.(params%geom==1).or.(params%seuil==1)) then
-       read (3,*)
-       read(3,*) params%imgdim
-       print *,'  > dimension image :',params%imgdim
-       allocate(params%imgmap(params%imgdim))
-       read (3,*)
-       read(3,*) params%imgmap(:)
-       print *,'  > decoupage image :',params%imgmap
-       read (3,*)
-       read(3,*) params%imgt
-       print *,'  > nb de temps :',params%imgt
+    PRINT *
+    PRINT *,'lecture des infos...'
+    READ (3,*)
+    READ(3,*) params%mesh
+    PRINT *,'  > nom du fichier de maillage : ',params%mesh
+    READ (3,*)
+    READ(3,*) params%nbp
+    PRINT *,'  > nb de points :',params%nbp
+    READ (3,*)
+    READ (3,*) params%dim
+    PRINT *,'  > dimension : ',params%dim
+    READ (3,*)
+    READ(3,*) params%nbproc
+    PRINT *,'  > nb de proc :',params%nbproc
+    READ (3,*)
+    READ(3,*) params%interface
+    PRINT *,'  > decoupage par interface ?',params%interface
+    READ (3,*)
+    READ(3,*) params%recouvrement
+    PRINT *,'  > decoupage par recouvrement ?',params%recouvrement
+    READ (3,*)
+    READ(3,*) params%nbclusters  
+    PRINT *,'  > nb de clusters obtenus :',params%nbclusters
+    READ (3,*)
+    READ(3,*) params%coord
+    PRINT *,'  > format coord ?',params%coord
+    READ (3,*)
+    READ(3,*) params%image
+    PRINT *,'  > format image ?',params%image
+    READ (3,*)
+    READ(3,*) params%geom
+    PRINT *,'  > format geom ?',params%geom
+    READ (3,*)
+    READ(3,*) params%seuil
+    PRINT *,'  > format seuil ?',params%seuil
+    IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
+       READ (3,*)
+       READ(3,*) params%imgdim
+       PRINT *,'  > dimension image :',params%imgdim
+       ALLOCATE(params%imgmap(params%imgdim))
+       READ (3,*)
+       READ(3,*) params%imgmap(:)
+       PRINT *,'  > decoupage image :',params%imgmap
+       READ (3,*)
+       READ(3,*) params%imgt
+       PRINT *,'  > nb de temps :',params%imgt
        !reference des points
-       allocate(params%refimg(params%nbp,params%imgdim))
+       ALLOCATE(params%refimg(params%nbp,params%imgdim))
        params%refimg(:,:)=0
        n=0
-       do i=1,params%imgmap(1)
-          do j=1,params%imgmap(2)
-             if (params%imgdim==2) then
+       DO i=1,params%imgmap(1)
+          DO j=1,params%imgmap(2)
+             IF (params%imgdim==2) THEN
                 n=n+1
                 params%refimg(n,1)=i
                 params%refimg(n,2)=j
-             else
-                do k=1,params%imgmap(3)
+             ELSE
+                DO k=1,params%imgmap(3)
                    n=n+1
                    params%refimg(n,1)=i
                    params%refimg(n,2)=j
                    params%refimg(n,3)=k
-                end do
-             end if
-          end do
-       end do
-       if (params%geom==1) then
-          allocate(params%pas(params%imgdim))
-          read (3,*)
-          read (3,*) params%pas(:)
-          print *,'    > pas de maillage :',params%pas(:)
-       end if
-    end if
-    return
-  end subroutine lit
+                ENDDO
+             ENDIF
+          ENDDO
+       ENDDO
+       IF (params%geom==1) THEN
+          ALLOCATE(params%pas(params%imgdim))
+          READ (3,*)
+          READ (3,*) params%pas(:)
+          PRINT *,'    > pas de maillage :',params%pas(:)
+       ENDIF
+    ENDIF
+    RETURN
+  END SUBROUTINE lit
 
   !*************************
   !ecriture de la geometrie du decoupage
-  subroutine ecrit_decoupage(formato,params)
-    implicit none
-    type(type_params) :: params
-    character*30 :: formato
-    print *
-    print *,'ecriture de la geometrie du decoupage...'
-    select case(formato)
-    case('gmsh')
-       call ecrit_decoupage_gmsh(params)
-    case('paraview')
-       call ecrit_decoupage_paraview(params)
-    end select
-    return
-  end subroutine ecrit_decoupage
+  SUBROUTINE ecrit_decoupage(formato,params)
+    IMPLICIT NONE
+    TYPE(type_params) :: params
+    CHARACTER*30 :: formato
+    PRINT *
+    PRINT *,'ecriture de la geometrie du decoupage...'
+    SELECT CASE(formato)
+    CASE('gmsh')
+       CALL ecrit_decoupage_gmsh(params)
+    CASE('paraview')
+       CALL ecrit_decoupage_paraview(params)
+    END SELECT
+    RETURN
+  END SUBROUTINE ecrit_decoupage
 
   !***********************
   !ecriture des affectations de decoupage
-  subroutine affectation(formato,params)
-    implicit none
-    type(type_params) :: params
-    character*30 :: formato
-    print *
-    print *,'ecriture des affectations du decoupage...'
-    select case(formato)
-    case('gmsh')
-       call affectation_gmsh(params)
-    case('paraview')
-       call affectation_paraview(params)
-    end select
-    return
-  end subroutine affectation
+  SUBROUTINE affectation(formato,params)
+    IMPLICIT NONE
+    TYPE(type_params) :: params
+    CHARACTER*30 :: formato
+    PRINT *
+    PRINT *,'ecriture des affectations du decoupage...'
+    SELECT CASE(formato)
+    CASE('gmsh')
+       CALL affectation_gmsh(params)
+    CASE('paraview')
+       CALL affectation_paraview(params)
+    END SELECT
+    RETURN
+  END SUBROUTINE affectation
 
   !***********************
   !ecriture des clusters avant regroupement
-  subroutine sous_clusters(formato,params)
-    implicit none
-    type(type_params) :: params
-    character*30 :: formato
-    print *
-    print *,'lecture des clusters avant regroupement...'
-    select case(formato)
-    case('gmsh')
-       call sous_clusters_gmsh(params)
-    case('paraview')
-       call sous_clusters_paraview(params)
-    end select
-    return
-  end subroutine sous_clusters
+  SUBROUTINE sous_clusters(formato,params)
+    IMPLICIT NONE
+    TYPE(type_params) :: params
+    CHARACTER*30 :: formato
+    PRINT *
+    PRINT *,'lecture des clusters avant regroupement...'
+    SELECT CASE(formato)
+    CASE('gmsh')
+       CALL sous_clusters_gmsh(params)
+    CASE('paraview')
+       CALL sous_clusters_paraview(params)
+    END SELECT
+    RETURN
+  END SUBROUTINE sous_clusters
 
   !***********************
   !ecriture des clusters apres regroupement
-  subroutine cluster_final(formato,params)
-    implicit none
-    type(type_params) :: params
-    character*30 :: formato
-    print *
-    print *,'lecture des clusters apres regroupement...'
-    select case(formato)
-    case('gmsh')
-       call cluster_final_gmsh(params)
-    case('paraview')
-       call cluster_final_paraview(params)
-    end select
-    return
-  end subroutine cluster_final
+  SUBROUTINE cluster_final(formato,params)
+    IMPLICIT NONE
+    TYPE(type_params) :: params
+    CHARACTER*30 :: formato
+    PRINT *
+    PRINT *,'lecture des clusters apres regroupement...'
+    SELECT CASE(formato)
+    CASE('gmsh')
+       CALL cluster_final_gmsh(params)
+    CASE('paraview')
+       CALL cluster_final_paraview(params)
+    END SELECT
+    RETURN
+  END SUBROUTINE cluster_final
 
   !***********************
   !liste des commandes
-  subroutine commandes(formato)
-    implicit none
-    character*30 :: formato
-    print *
-    print *,'-------------------------------------'
-    print *,'liste de commandes de visualisation :'
-    print *
-    select case(formato)
-    case('gmsh')
-       call commandes_gmsh
-    case('paraview')
-       call commandes_paraview
-    end select
-    return
-  end subroutine commandes
+  SUBROUTINE commandes(formato)
+    IMPLICIT NONE
+    CHARACTER*30 :: formato
+    PRINT *
+    PRINT *,'-------------------------------------'
+    PRINT *,'liste de commandes de visualisation :'
+    PRINT *
+    SELECT CASE(formato)
+    CASE('gmsh')
+       CALL commandes_gmsh
+    CASE('paraview')
+       CALL commandes_paraview
+    END SELECT
+    RETURN
+  END SUBROUTINE commandes
 
 
-end module module_visuclusters
+END MODULE module_visuclusters

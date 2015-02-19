@@ -1,12 +1,12 @@
-module module_visuclusters_structure
+MODULE module_visuclusters_structure
 
-  type type_params
-     character*30 :: mesh
-     integer :: nbp,dim,nbproc,nbclusters,seuil,&
+  TYPE type_params
+     CHARACTER*30 :: mesh
+     INTEGER :: nbp,dim,nbproc,nbclusters,seuil,&
           image,imgdim,imgt,coord,geom,interface,recouvrement
-     integer,dimension(:),pointer :: imgmap
-     integer,dimension(:,:),pointer :: refimg
-     real,dimension(:),pointer :: pas
-  end type type_params
+     INTEGER,DIMENSION(:),POINTER :: imgmap
+     INTEGER,DIMENSION(:,:),POINTER :: refimg
+     REAL,DIMENSION(:),POINTER :: pas
+  END TYPE type_params
 
-end module module_visuclusters_structure
+END MODULE module_visuclusters_structure

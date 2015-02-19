@@ -1,75 +1,75 @@
-program visuclusters
-  use module_visuclusters_structure
-  use module_visuclusters
+PROGRAM visuclusters
+  USE module_visuclusters_structure
+  USE module_visuclusters
 
-  implicit none
-  type(type_params) :: params
-  character*30 :: formato
-  real :: elapsed(2)     ! For receiving user and system time
-  real :: temps
+  IMPLICIT NONE
+  TYPE(type_params) :: params
+  CHARACTER*30 :: formato
+  REAL :: elapsed(2)     ! For receiving user and system time
+  REAL :: temps
 
-  print *
-  print *,'-----------------------------------'
-  print *,'visualisation des clusters en 2D/3D'
-  print *,'-----------------------------------'
+  PRINT *
+  PRINT *,'-----------------------------------'
+  PRINT *,'visualisation des clusters en 2D/3D'
+  PRINT *,'-----------------------------------'
 
   !lecture des infos
-  call lit(params)
+  CALL lit(params)
 
   !choix du format de sortie
-  if (iargc()>0) then
-     call getarg(1,formato)
-     print *,' > format de sortie ? [gmsh,paraview]'
-     print *,formato
-     goto 11
-  endif
+  IF (iargc()>0) THEN
+     CALL getarg(1,formato)
+     PRINT *,' > format de sortie ? [gmsh,paraview]'
+     PRINT *,formato
+     GOTO 11
+  ENDIF
 
-10  print *
-  print *,' > format de sortie ? [gmsh,paraview]'
-  read *,formato
+10  PRINT *
+  PRINT *,' > format de sortie ? [gmsh,paraview]'
+  READ *,formato
   formato=trim(adjustl(formato))
 
-11 if ((formato/='gmsh').and.(formato/='paraview')) goto 10
+11 IF ((formato/='gmsh').AND.(formato/='paraview')) GOTO 10
 
   !creation de la sub-directory visu/ pour stocker les fichiers paraview
 
-  if (formato=='paraview') call system('mkdir visu')
+  IF (formato=='paraview') CALL system('mkdir visu')
 
   !geometrie du decoupage
   !if (params%image==0) 
-  call ecrit_decoupage(formato,params)
+  CALL ecrit_decoupage(formato,params)
 
   !fichier de sortie
-  call affectation(formato,params)
+  CALL affectation(formato,params)
 
   !fichier de sortie des clusters avant regroupement
-  if (params%nbproc>1) call sous_clusters(formato,params)
+  IF (params%nbproc>1) CALL sous_clusters(formato,params)
 
   !fichier de sortie des clusters apres regroupement
-  call cluster_final(formato,params)
+  CALL cluster_final(formato,params)
 
   !liste des commandes
-  call commandes(formato)
+  CALL commandes(formato)
 
   !fin du fichier
 !  temps = etime(elapsed)
-  select case(formato)
-  case('gmsh')
-     open(file='visuclusters.gmsh',unit=100)
-  case('paraview')
-     open(file='visuclusters.paraview',unit=100)
-  end select
-  write(100,*) '# temps total :'
-  write(100,*) temps
-  write(100,*) '# temps user :'
-  write(100,*) elapsed(1)
-  write(100,*) '# temps systeme :'
-  write(100,*) elapsed(2)
-  close(100)
+  SELECT CASE(formato)
+  CASE('gmsh')
+     OPEN(FILE='visuclusters.gmsh',UNIT=100)
+  CASE('paraview')
+     OPEN(FILE='visuclusters.paraview',UNIT=100)
+  END SELECT
+  WRITE(100,*) '# temps total :'
+  WRITE(100,*) temps
+  WRITE(100,*) '# temps user :'
+  WRITE(100,*) elapsed(1)
+  WRITE(100,*) '# temps systeme :'
+  WRITE(100,*) elapsed(2)
+  CLOSE(100)
 
-  print *
-  print *,'-----------------------------------'
-  print *
-  stop
+  PRINT *
+  PRINT *,'-----------------------------------'
+  PRINT *
+  STOP
 
-end program visuclusters
+END PROGRAM visuclusters
