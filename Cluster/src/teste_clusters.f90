@@ -13,13 +13,13 @@ PROGRAM teste_clusters
   PRINT *,'-------------------------------------------------------'
   PRINT *
   PRINT *,'teste pour plusieurs configurations differentes :'
-  PRINT *,'  - le PROGRAMme CLUSTERS'
-  PRINT *,'  - le PROGRAMme VISUCLUSTERS pour des sorties paraview'
-  PRINT *,'  - le PROGRAMme VISUCLUSTERS pour des sorties gmsh'
+  PRINT *,'  - le programme CLUSTERS'
+  PRINT *,'  - le programme VISUCLUSTERS pour des sorties paraview'
+  PRINT *,'  - le programme VISUCLUSTERS pour des sorties gmsh'
   PRINT *
-  PRINT *,'le PROGRAMme verifie l existence d un fichier genere'
-  PRINT *,'  en fin d execution de ces PROGRAMmes.'
-  PRINT *,'il retourne "T" ou "F" selon que ce PROGRAMme c est'
+  PRINT *,'le programme verifie l existence d un fichier genere'
+  PRINT *,'  en fin d execution de ces programmes.'
+  PRINT *,'il retourne "T" ou "F" selon que ce programme c est'
   PRINT *,'  bien execute ou non.'
   PRINT *
   PRINT *,'-------------------------------------------------------'
