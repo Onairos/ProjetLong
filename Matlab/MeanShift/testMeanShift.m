@@ -3,7 +3,9 @@
 clear
 profile on
 
-nPtsPerClust = 250;
+% nPtsPerClust = 250;
+nPtsPerClust = 16;
+
 nClust  = 3;
 totalNumPts = nPtsPerClust*nClust;
 m(:,1) = [1 1]';
@@ -14,12 +16,19 @@ bandwidth = .75;
 clustMed = [];
 %clustCent;
 
+% Chargement des donn�es
+Data0=importdata('3blocsSimple.txt');
+Data=Data0(2:end, :);
 
-x = var*randn(2,nPtsPerClust*nClust);
-%*** build the point set
-for i = 1:nClust
-    x(:,1+(i-1)*nPtsPerClust:(i)*nPtsPerClust)       = x(:,1+(i-1)*nPtsPerClust:(i)*nPtsPerClust) + repmat(m(:,i),1,nPtsPerClust);   
-end
+x= Data'
+
+
+% x = var*randn(2,nPtsPerClust*nClust);
+
+% %*** build the point set
+% for i = 1:nClust
+%     x(:,1+(i-1)*nPtsPerClust:(i)*nPtsPerClust)       = x(:,1+(i-1)*nPtsPerClust:(i)*nPtsPerClust) + repmat(m(:,i),1,nPtsPerClust);   
+% end
 
 tic
 [clustCent,point2cluster,clustMembsCell] = MeanShiftCluster(x,bandwidth);
