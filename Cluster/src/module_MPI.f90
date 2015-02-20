@@ -14,7 +14,7 @@ CONTAINS
     INTEGER,DIMENSION(:),POINTER :: ldat
     INTEGER,DIMENSION(:,:),POINTER :: ddat
     INTEGER :: i,j,m,n,tag,ierr
-    REAL*8,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     DO i=1,nbproc-1
        m=ldat(i); n=data%dim
        tag=i
@@ -71,7 +71,7 @@ CONTAINS
     INTEGER :: numproc
     TYPE(type_data) :: dataw
     INTEGER :: m,n,tag,ierr,i
-    REAL*8,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     INTEGER status(MPI_STATUS_SIZE)
     !reception des dimensions
     tag=numproc

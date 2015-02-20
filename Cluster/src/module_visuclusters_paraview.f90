@@ -9,8 +9,8 @@ CONTAINS
     TYPE(type_params) :: params
     INTEGER :: i
     CHARACTER*30 :: num
-    REAL,POINTER,DIMENSION(:) :: xmin,ymin,zmin,xmax,ymax,zmax
-    REAL :: x0,y0,z0,x1,y1,z1
+    DOUBLE PRECISION,POINTER,DIMENSION(:) :: xmin,ymin,zmin,xmax,ymax,zmax
+    DOUBLE PRECISION :: x0,y0,z0,x1,y1,z1
     !lecture
     OPEN(FILE='fort.2',UNIT=2)
     ALLOCATE(xmin(params%nbproc))
@@ -244,7 +244,7 @@ CONTAINS
   SUBROUTINE affectation_paraview(params)
     IMPLICIT NONE
     TYPE(type_params) :: params
-    REAL,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     CHARACTER*30 :: files,num
     INTEGER :: i,j,nb,offset,totnum
     INTEGER,DIMENSION(:),POINTER :: ind,indp
@@ -359,7 +359,7 @@ CONTAINS
     TYPE(type_params) :: params
     INTEGER :: i,j,k,nb,lenn,nbstar
     CHARACTER*30 :: num,files,star
-    REAL,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     INTEGER,DIMENSION(:),POINTER :: corresp,ind,indp
     !nb de caracteres generiques a utiliser
     nbstar=floor(log(real(params%nbproc-1))/log(real(10)))+1
@@ -466,7 +466,7 @@ CONTAINS
     TYPE(type_params) :: params
     INTEGER :: i,j,k,nb,nb0
     CHARACTER*30 :: num,files
-    REAL,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     INTEGER,DIMENSION(:),POINTER :: ind,indp
     IF (params%coord==1) THEN
        OPEN(FILE=params%mesh,UNIT=1)
@@ -543,7 +543,7 @@ CONTAINS
   SUBROUTINE ecritpoint_paraview(unitgeo,unitind,nb,dim,coord,ind,k)
     IMPLICIT NONE
     INTEGER :: unitgeo,unitind,k,nb,i,dim
-    REAL,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     INTEGER,DIMENSION(:),POINTER :: ind
     WRITE(unitgeo,'(a)') 'part'
     WRITE(unitgeo,*) ind(k)
@@ -582,7 +582,7 @@ CONTAINS
     INTEGER :: nbp,unitgeo,unitind,i,k,ix,iy
     TYPE(type_params) :: params
     INTEGER,DIMENSION(:),POINTER :: indp,ind
-    REAL,DIMENSION(:),POINTER :: kx,ky,kz,data
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: kx,ky,kz,data
     ALLOCATE(kx(nbp)); kx(:)=0
     ALLOCATE(ky(nbp)); ky(:)=0
     ALLOCATE(kz(nbp)); kz(:)=0

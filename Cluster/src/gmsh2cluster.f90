@@ -2,7 +2,7 @@ PROGRAM gmsh2cluster
   IMPLICIT NONE
   INTEGER :: nbnoe
   INTEGER :: i,j,dim
-  REAL :: x,y,z
+  DOUBLE PRECISION :: x,y,z
   CHARACTER(30) :: nom
   PRINT *
   PRINT *,'conversion gmsh vers entree cluster'

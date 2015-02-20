@@ -6,7 +6,7 @@ MODULE module_visuclusters_structure
           image,imgdim,imgt,coord,geom,interface,recouvrement
      INTEGER,DIMENSION(:),POINTER :: imgmap
      INTEGER,DIMENSION(:,:),POINTER :: refimg
-     REAL,DIMENSION(:),POINTER :: pas
+     DOUBLE PRECISION,DIMENSION(:),POINTER :: pas
   END TYPE type_params
 
 END MODULE module_visuclusters_structure

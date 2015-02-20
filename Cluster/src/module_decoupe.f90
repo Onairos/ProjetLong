@@ -9,13 +9,13 @@ CONTAINS
        ldat,ddat,bornes)
     IMPLICIT NONE
     TYPE(type_data) :: data
-    REAL*8 :: epsilon
+    DOUBLE PRECISION :: epsilon
     INTEGER :: nbproc, ierr
     INTEGER,DIMENSION(:),POINTER :: decoupe
-    REAL*8,DIMENSION(:),POINTER :: coordmax,coordmin
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
     INTEGER,DIMENSION(:),POINTER :: ldat
     INTEGER,DIMENSION(:,:),POINTER :: ddat
-    REAL*8,DIMENSION(:,:,:),POINTER :: bornes,domaines
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes,domaines
  
 
     !definition des bornes
@@ -50,11 +50,11 @@ CONTAINS
   SUBROUTINE definit_bornes(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
     IMPLICIT NONE
     INTEGER :: nbproc
-    REAL*8 :: epsilon
+    DOUBLE PRECISION :: epsilon
     TYPE(type_data) :: data
     INTEGER,DIMENSION(:),POINTER :: decoupe
-    REAL*8,DIMENSION(:),POINTER :: coordmax,coordmin
-    REAL*8,DIMENSION(:,:,:),POINTER :: bornes
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
     INTEGER :: i,j
     DOUBLE PRECISION :: prod1,prod2,som1,prod
     CHARACTER*30 :: num,files
@@ -148,7 +148,7 @@ CONTAINS
     TYPE(type_data) :: data
     INTEGER,DIMENSION(:),POINTER :: decoupe
     INTEGER,DIMENSION(:),POINTER :: list
-    REAL*8,DIMENSION(:,:,:),POINTER :: bornes,domaines
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes,domaines
     INTEGER :: k,n,ok
     IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        !traitement en coordonnees ou image en coodonnees ou image seuillee
@@ -220,10 +220,10 @@ CONTAINS
     IMPLICIT NONE
     INTEGER :: nbproc
     TYPE(type_data) :: data
-    REAL*8 :: epsilon
+    DOUBLE PRECISION :: epsilon
     INTEGER,DIMENSION(:),POINTER :: ldat
     INTEGER,DIMENSION(:,:),POINTER :: ddat
-    REAL*8,DIMENSION(:,:,:),POINTER :: domaines
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
     INTEGER :: i,j,n,ok,ierr
     ALLOCATE(ldat(0:max(1,nbproc-1))); ldat(:)=0
     ALLOCATE(ddat(0:max(1,nbproc-1),data%nb)); ddat(:,:)=0
@@ -299,7 +299,7 @@ CONTAINS
     TYPE(type_data) :: data
     INTEGER,DIMENSION(:),POINTER :: ldat
     INTEGER,DIMENSION(:,:),POINTER :: ddat
-    REAL*8,DIMENSION(:,:,:),POINTER :: domaines
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
     INTEGER :: i,j,n,ok
     ALLOCATE(ldat(0:max(1,nbproc-1))); ldat(:)=0
     ALLOCATE(ddat(0:max(1,nbproc-1),data%nb)); ddat(:,:)=0

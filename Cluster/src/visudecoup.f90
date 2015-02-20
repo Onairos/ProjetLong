@@ -3,7 +3,7 @@ PROGRAM visudecoup
   INTEGER :: n
   CHARACTER*30 :: files,num
   INTEGER :: i,j,nb
-  REAL :: coord(2),xmin,xmax,ymin,ymax
+  DOUBLE PRECISION :: coord(2),xmin,xmax,ymin,ymax
 
   PRINT *
   PRINT *,'visualisation du decoupage parallele en 2D'

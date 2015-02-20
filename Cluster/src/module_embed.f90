@@ -14,13 +14,13 @@ CONTAINS
     ! nbcluster = nbre de cluster
     ! dataw : points
     ! Z : matrice des vecteurs propres
-    ! M : nbre de vp trouvéesx
-    ! ratio : max des ration de frob sur matrice aff réordonnancée suivant
+    ! M : nbre de vp trouvÃÂÃÂ©esx
+    ! ratio : max des ration de frob sur matrice aff rÃÂÃÂ©ordonnancÃÂÃÂ©e suivant
     ! les clusters
     ! cluster : appartenance des clusters
     ! cluster_center : centre des nbclusters clusters
     ! cluster_population : nbre de points par cluster
-    ! cluster_energy : somme des énergies par cluster
+    ! cluster_energy : somme des ÃÂÃÂ©nergies par cluster
     !
 
     IMPLICIT NONE
@@ -72,7 +72,7 @@ CONTAINS
     ! PRINT *,'vecteur cluster',cluster(1:5) 
 
     !*****************************
-    ! Mesure de qualité
+    ! Mesure de qualitÃÂÃÂ©
     !PRINT *,'Indexation'
     nbmax=0
     DO i=1,nbcluster
@@ -232,18 +232,18 @@ CONTAINS
     !
     !    Output, INTEGER ( KIND = 4 ) IT_NUM, the number of iterations taken.
     !
-    !    Input, REAL ( KIND = 8 ) POINT(DIM_NUM,POINT_NUM), the points.
+    !    Input, DOUBLE PRECISION POINT(DIM_NUM,POINT_NUM), the points.
     !
     !    Output, INTEGER ( KIND = 4 ) CLUSTER(POINT_NUM), indicates which cluster
     !    each point belongs to.
     !
-    !    Input/output, REAL ( KIND = 8 ) CLUSTER_CENTER(DIM_NUM,CLUSTER_NUM),
+    !    Input/output, DOUBLE PRECISION CLUSTER_CENTER(DIM_NUM,CLUSTER_NUM),
     !    the cluster centers.
     !
     !    Output, INTEGER ( KIND = 4 ) CLUSTER_POPULATION(CLUSTER_NUM), the number 
     !    of points in each cluster.
     !
-    !    Output, REAL ( KIND = 8 ) CLUSTER_ENERGY(CLUSTER_NUM), the 
+    !    Output, DOUBLE PRECISION CLUSTER_ENERGY(CLUSTER_NUM), the 
     !    cluster energies.
     !
     IMPLICIT NONE
@@ -251,15 +251,15 @@ CONTAINS
     INTEGER ( KIND = 4 ) dim_num
     INTEGER ( KIND = 4 ) point_num
     INTEGER ( KIND = 4 ) cluster(point_num)
-    REAL    ( KIND = 8 ) cluster_center(dim_num,cluster_num)
-    REAL    ( KIND = 8 ) stockcenter(dim_num,cluster_num)
-    !REAL    ( KIND = 8 ) diffcenter(dim_num)
-    REAL    ( KIND = 8 ) listnorm(point_num,cluster_num)
-    REAL    ( KIND = 8 ) cluster_energy(cluster_num),stockenergy(cluster_num)
+    DOUBLE PRECISION cluster_center(dim_num,cluster_num)
+    DOUBLE PRECISION stockcenter(dim_num,cluster_num)
+    !DOUBLE PRECISION diffcenter(dim_num)
+    DOUBLE PRECISION listnorm(point_num,cluster_num)
+    DOUBLE PRECISION cluster_energy(cluster_num),stockenergy(cluster_num)
     INTEGER ( KIND = 4 ) cluster_population(cluster_num)
     INTEGER ( KIND = 4 ) stockpopulation(cluster_num)
-    !REAL    ( KIND = 8 ) dc,de,epsilon
-    !REAL    ( KIND = 8 ) f(point_num)
+    !DOUBLE PRECISION dc,de,epsilon
+    !DOUBLE PRECISION f(point_num)
     INTEGER ( KIND = 4 ) i
     !INTEGER ( KIND = 4 ) il
     !INTEGER ( KIND = 4 ) diffpopulation
@@ -268,10 +268,10 @@ CONTAINS
     INTEGER ( KIND = 4 ) j
     INTEGER ( KIND = 4 ) k
     !INTEGER ( KIND = 4 ) list(1)
-    REAL    ( KIND = 8 ) point(dim_num,point_num)
+    DOUBLE PRECISION point(dim_num,point_num)
     INTEGER ( KIND = 4 ) swap
     INTEGER  :: ok,p,ok2
-    REAL (KIND=8) :: val,valmax,seuil,norme !,diffenergy
+    DOUBLE PRECISION :: val,valmax,seuil,norme !,diffenergy
     INTEGER :: cluster_id(cluster_num)
 
     INTEGER :: numproc
@@ -428,7 +428,7 @@ PRINT *, 'recherche des centres'
 
        !PRINT *,numproc,'nbre de permut',swap
 
-       !! mise à jour des centres
+       !! mise ÃÂÃÂ  jour des centres
        cluster_center(:,:)=0.0
        DO j=1,point_num
           i=cluster(j) 

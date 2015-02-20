@@ -45,7 +45,7 @@ CONTAINS
 
 ! sparsification deb
     nnz = 0
-    ! valeur de treshold arbitraire -> paramÃ¨tre du sp ou calcul interne
+    ! valeur de treshold arbitraire -> paramÃÂÃÂÃÂÃÂ¨tre du sp ou calcul interne
     !                                  (voir avec S.)
     ! TODO : mettre la valeur du facteur dans le fichier param
     facteur = 3.0
@@ -71,7 +71,7 @@ CONTAINS
 
     t2 = MPI_WTIME();
     t_cons_a = t2 - t1
-    PRINT *, numproc, 'surcoÃ»t A', t_cons_a
+    PRINT *, numproc, 'surcoÃÂÃÂÃÂÃÂ»t A', t_cons_a
 
     t1 = MPI_WTIME();
     nnz2 = nnz*2
@@ -126,7 +126,7 @@ CONTAINS
 !    WRITE(13,*)  IAS(l), JAS(l), AS(l)
 !  ENDDO
 
-    ! nb et nblimit mÃªme valeur ?
+    ! nb et nblimit mÃÂÃÂÃÂÃÂªme valeur ?
     nb = 2*nblimit
 
     t1 = MPI_WTIME()
@@ -137,7 +137,7 @@ CONTAINS
     ENDDO
     
 
-    !PRINT *,numproc,'reordonne les vp...'  ! QUESTION nÃ©cessaire avec arpack ?
+    !PRINT *,numproc,'reordonne les vp...'  ! QUESTION nÃÂÃÂÃÂÃÂ©cessaire avec arpack ?
     DO i=1,nb-1
        DO j=i+1,nb
           IF (W(i)<W(j)) THEN
@@ -149,7 +149,7 @@ CONTAINS
        ENDDO
     ENDDO
     DO i=1,nb
-       PRINT *,'valeurs propres arpack rÃ©ordonnÃ©es',i, W(i)
+       PRINT *,'valeurs propres arpack reordonnees',i, W(i)
     ENDDO
 
     !Test spectral embedding avec different nbcluster   
@@ -217,7 +217,7 @@ PRINT *, 'ratio de frobenius'
 
           IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
              !if (ratiomoy(i)-ratio1<=1e-4) THEN
-             !2eme critÃ¨re
+             !2eme critÃÂÃÂÃÂÃÂ¨re
              !(ratiorij(i)/ratiorii(i)<=1e-4)
              dataw%nbclusters=i
              ! ratio=ratiomax(i)
@@ -253,7 +253,7 @@ PRINT *, 'ratio de frobenius'
        ALLOCATE(ratiorij(n))
        ratiorij(:)=0
     ENDIF
-    ! cas oÃ¹ nbcluster==1
+    ! cas oÃÂÃÂÃÂÃÂ¹ nbcluster==1
     IF (dataw%nbclusters==2) THEN
        PRINT *, 'difference ratio',ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 
@@ -328,13 +328,13 @@ PRINT *, 'ratio de frobenius'
     ! nbcluster = nbre de cluster
     ! dataw : points
     ! Z : matrice des vecteurs propres
-    ! M : nbre de vp trouvÃ©esx
-    ! ratio : max des ration de frob sur matrice aff rÃ©ordonnancÃ©e suivant
+    ! M : nbre de vp trouvÃÂÃÂÃÂÃÂ©esx
+    ! ratio : max des ration de frob sur matrice aff rÃÂÃÂÃÂÃÂ©ordonnancÃÂÃÂÃÂÃÂ©e suivant
     ! les clusters
     ! cluster : appartenance des clusters
     ! cluster_center : centre des nbclusters clusters
     ! cluster_population : nbre de points par cluster
-    ! cluster_energy : somme des Ã©nergies par cluster
+    ! cluster_energy : somme des ÃÂÃÂÃÂÃÂ©nergies par cluster
     !
 
     IMPLICIT NONE
@@ -400,7 +400,7 @@ PRINT *, 'ratio de frobenius'
     ! PRINT *,'vecteur cluster',cluster(1:5) 
 
     !*****************************
-    ! Mesure de qualitÃ©
+    ! Mesure de qualitÃÂÃÂÃÂÃÂ©
     !PRINT *,'Indexation'
 
     nbmax=0
@@ -423,7 +423,7 @@ PRINT *, 'ratio de frobenius'
     ENDDO
 
 
-! sparsification dÃ©but
+! sparsification dÃÂÃÂÃÂÃÂ©but
     ALLOCATE(Frob(nbcluster,nbcluster)); Frob(:,:)=0.0
     DO i=1, nnz
       num1 = cluster(IAS(i))

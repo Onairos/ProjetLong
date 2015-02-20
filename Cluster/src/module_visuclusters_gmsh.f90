@@ -9,8 +9,8 @@ CONTAINS
     TYPE(type_params) :: params
     INTEGER :: i
     CHARACTER*30 :: num
-    REAL :: xmin,ymin,zmin,xmax,ymax,zmax
-    REAL :: x0,y0,z0,x1,y1,z1
+    DOUBLE PRECISION :: xmin,ymin,zmin,xmax,ymax,zmax
+    DOUBLE PRECISION :: x0,y0,z0,x1,y1,z1
     PRINT *,'-> decoupe.geo'
     OPEN(FILE='fort.2',UNIT=2)
     OPEN(FILE='decoupe.geo',UNIT=10)
@@ -132,7 +132,7 @@ CONTAINS
   SUBROUTINE affectation_gmsh(params)
     IMPLICIT NONE
     TYPE(type_params) :: params
-    REAL,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     CHARACTER*30 :: files,num
     INTEGER :: i,j,k,nb,offset,totnum
     OPEN(FILE='decoupe.visu',UNIT=1)
@@ -181,7 +181,7 @@ CONTAINS
     TYPE(type_params) :: params
     INTEGER :: i,j,k,nb,ind,lenn
     CHARACTER*30 :: num,files
-    REAL,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     INTEGER,DIMENSION(:),POINTER :: corresp
     DO i=0,params%nbproc-1
        !nom du fichier
@@ -236,7 +236,7 @@ CONTAINS
     TYPE(type_params) :: params
     INTEGER :: i,j,k,nb,nb0
     CHARACTER*30 :: num,files
-    REAL,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     OPEN(FILE=params%mesh,UNIT=1)
     IF (params%coord==1) THEN
        !lecture au format coordonnes
@@ -288,7 +288,7 @@ CONTAINS
   SUBROUTINE ecritpoint_gmsh(unit,dim,coord,ind,k)
     IMPLICIT NONE
     INTEGER :: unit,dim,ind,k
-    REAL,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     IF (dim==2) THEN
        !2D
        WRITE(unit,*) 'SP(',coord(k,1),',',coord(k,2),',',0.,'){',ind,'};' 
@@ -305,8 +305,8 @@ CONTAINS
     IMPLICIT NONE
     TYPE(type_params) :: params
     INTEGER :: unit,ind,k,ix,iy,i
-    REAL :: kx,ky,kz
-    REAL,DIMENSION(:),POINTER :: data
+    DOUBLE PRECISION :: kx,ky,kz
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: data
     IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
          .AND.(params%imgdim==2)) THEN
        ALLOCATE(data(params%nbp))

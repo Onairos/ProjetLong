@@ -5,8 +5,8 @@ PROGRAM visuclusters
   IMPLICIT NONE
   TYPE(type_params) :: params
   CHARACTER*30 :: formato
-  REAL :: elapsed(2)     ! For receiving user and system time
-  REAL :: temps
+  DOUBLE PRECISION :: elapsed(2)     ! For receiving user and system time
+  DOUBLE PRECISION :: temps
 
   PRINT *
   PRINT *,'-----------------------------------'

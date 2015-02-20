@@ -203,7 +203,7 @@ CONTAINS
           ok=1
        CASE DEFAULT
           ok=0
-          PRINT *,'mot clÃ© inconnu :',mot
+          PRINT *,'mot clÃÂÃÂÃÂÃÂ© inconnu :',mot
        END SELECT
     ENDDO
     !parametre de decoupage

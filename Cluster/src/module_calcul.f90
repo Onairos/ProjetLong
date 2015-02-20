@@ -140,11 +140,11 @@ CONTAINS
     CHARACTER*30 :: num,files
     DOUBLE PRECISION :: t1, t2, t_cons_vp
 
-    ! deux valeurs qui quand elles ne sont pas dÃ©clarÃ©es
-    ! et donc IMPLICITement des REAL font que Ã§a marche mieux
-    REAL :: val, value
+    ! deux valeurs qui quand elles ne sont pas dÃÂÃÂÃÂÃÂ©clarÃÂÃÂÃÂÃÂ©es
+    ! et donc IMPLICITement des REAL font que ÃÂÃÂÃÂÃÂ§a marche mieux
+    DOUBLE PRECISION :: val, value
 
-    ! solveur au valeur propre => paramÃ¨tre de contrÃ´le
+    ! solveur au valeur propre => paramÃÂÃÂÃÂÃÂ¨tre de contrÃÂÃÂÃÂÃÂ´le
     INTEGER :: solver
 
     !creation de la matrice
@@ -183,7 +183,7 @@ CONTAINS
 
     DO i=1,n
        DO j=1,n
-          ! la matrice A n'est plus symÃ©tique
+          ! la matrice A n'est plus symÃÂÃÂÃÂÃÂ©tique
           A(i,j)=A(i,j)/D(i)
        ENDDO
     ENDDO
@@ -325,7 +325,7 @@ PRINT *, 'ratio de frobenius'
           ENDIF
           IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
              !if (ratiomoy(i)-ratio1<=1e-4) THEN
-             !2eme critÃ¨re
+             !2eme critÃÂÃÂÃÂÃÂ¨re
              !(ratiorij(i)/ratiorii(i)<=1e-4)
              dataw%nbclusters=i
              ! ratio=ratiomax(i)
@@ -352,7 +352,7 @@ PRINT *, 'ratio de frobenius'
        ALLOCATE(ratiorii(n)); ratiorii(:)=0
        ALLOCATE(ratiorij(n)); ratiorij(:)=0
     ENDIF
-    ! cas oÃ¹ nbcluster==1
+    ! cas oÃÂÃÂÃÂÃÂ¹ nbcluster==1
     IF (dataw%nbclusters==2) THEN
        PRINT *, 'difference ratio',ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 

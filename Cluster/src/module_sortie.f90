@@ -8,7 +8,7 @@ CONTAINS
     IMPLICIT NONE
     TYPE(type_data) :: data
     INTEGER :: nbproc
-    REAL*8,DIMENSION(:,:,:),POINTER :: domaines
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
     INTEGER :: i
     DO i=1,nbproc-data%interface
        WRITE(2,*) domaines(i,:,1),'|', domaines(i,:,2)

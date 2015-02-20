@@ -21,8 +21,8 @@ PROGRAM clusters
 
  ! modif sandrine
   ! variables
-  REAL :: elapsed(2)     ! For receiving user and system time
-  REAL :: temps
+  DOUBLE PRECISION :: elapsed(2)     ! For receiving user and system time
+  DOUBLE PRECISION :: temps
   DOUBLE PRECISION :: epsilon
   TYPE(type_data) :: data,dataw
   DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
@@ -35,7 +35,7 @@ PROGRAM clusters
   INTEGER :: test,nbclust,i,j,nmax
   DOUBLE PRECISION :: sigma
   INTEGER,DIMENSION(:,:),POINTER :: clustermap
-  REAL*8,DIMENSION(:,:,:),POINTER :: bornes
+  DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
   CHARACTER*30 :: mesh,entree
  
   DOUBLE PRECISION :: starttime, endtime
@@ -194,7 +194,7 @@ PROGRAM clusters
 
   IF(numproc==0) THEN
     t2 = MPI_WTIME();
-    PRINT *,'temps envoi donnÃ©es et calcul sigma', t2-t1
+    PRINT *,'temps envoi donnees et calcul sigma', t2-t1
   ENDIF
 
   !calcul des clusters
@@ -287,7 +287,7 @@ PROGRAM clusters
   ENDIF
   IF(numproc==0) THEN
     t2 = MPI_WTIME();
-    PRINT *,'temps Ã©criture des clusters', t2-t1
+    PRINT *,'temps ecriture des clusters', t2-t1
   ENDIF
   
   !fin du MPI

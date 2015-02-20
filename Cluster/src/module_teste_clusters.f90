@@ -3,7 +3,7 @@ MODULE module_teste_clusters
   TYPE type_test
      CHARACTER*80 :: dir,output,visup,visug,fichier,datatype,decoupetype
      INTEGER :: nbproc
-     REAL :: epaisseur
+     DOUBLE PRECISION :: epaisseur
      INTEGER,DIMENSION(:),POINTER :: decoupe
   END TYPE type_test
 

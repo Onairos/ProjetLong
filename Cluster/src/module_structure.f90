@@ -20,7 +20,7 @@ MODULE module_structure
           imgt            !nb de "temps" 
      INTEGER,DIMENSION(:),POINTER :: imgmap   !decoupages pixel de l'image
      INTEGER,DIMENSION(:,:),POINTER :: refimg !reference du point dans les coordonnes pixel
-     REAL,DIMENSION(:),POINTER :: pas !pas utilise pour le mode geom
+     DOUBLE PRECISION,DIMENSION(:),POINTER :: pas !pas utilise pour le mode geom
   END TYPE type_data
 
   !***********************
