@@ -632,10 +632,10 @@ PRINT *, 'ratio de frobenius'
 !
 !     %-----------------------------------------------------%
 !     |                                                     |
-!     | Specification of STOPping rules and initial         |
-!     | conditions before CALLing DNAUPD                    |
+!     | Specification of stopping rules and initial         |
+!     | conditions before calling DNAUPD                    |
 !     |                                                     |
-!     | TOL  determines the STOPping criterion.             |
+!     | TOL  determines the stopping criterion.             |
 !     |                                                     |
 !     |      Expect                                         |
 !     |           abs(lambdaC - lambdaT) < TOL*abs(lambdaC) |
@@ -645,24 +645,24 @@ PRINT *, 'ratio de frobenius'
 !     |           (machine precision) is used.              |
 !     |                                                     |
 !     | IDO  is the REVERSE COMMUNICATION PARAMETER         |
-!     |      used to specify actions to be taken on RETURN  |
+!     |      used to specify actions to be taken on return  |
 !     |      from DNAUPD. (see usage below)                 |
 !     |                                                     |
 !     |      It MUST initially be set to 0 before the first |
-!     |      CALL to DNAUPD.                                |
+!     |      call to DNAUPD.                                |
 !     |                                                     |
 !     | INFO on entry specifies starting vector information |
-!     |      and on RETURN indicates error codes            |
+!     |      and on return indicates error codes            |
 !     |                                                     |
 !     |      Initially, setting INFO=0 indicates that a     |
 !     |      random starting vector is requested to         |
 !     |      start the ARNOLDI iteration.  Setting INFO to  |
-!     |      a nonzero value on the initial CALL is used    |
-!     |      IF you want to specify your own starting       |
+!     |      a nonzero value on the initial call is used    |
+!     |      if you want to specify your own starting       |
 !     |      vector (This vector must be placed in RESID).  |
 !     |                                                     |
 !     | The work array WORKL is used in DNAUPD as           |
-!     | workspace.  Its DIMENSION LWORKL is set as          |
+!     | workspace.  Its dimension LWORKL is set as          |
 !     | illustrated below.                                  |
 !     |                                                     |
 !     %-----------------------------------------------------%
@@ -675,7 +675,7 @@ PRINT *, 'ratio de frobenius'
 !     %---------------------------------------------------%
 !     | Specification of Algorithm Mode:                  |
 !     |                                                   |
-!     | This PROGRAM uses the exact shift strategy        |
+!     | This program uses the exact shift strategy        |
 !     | (indicated by setting IPARAM(1) = 1).             |
 !     | IPARAM(3) specifies the maximum number of Arnoldi |
 !     | iterations allowed.  Mode 1 of DNAUPD is used     |
@@ -702,8 +702,8 @@ PRINT *, 'ratio de frobenius'
  10   CONTINUE
 !
 !        %---------------------------------------------%
-!        | Repeatedly CALL the routine DNAUPD and take |
-!        | actions indicated by PARAMETER IDO until    |
+!        | Repeatedly call the routine DNAUPD and take |
+!        | actions indicated by parameter IDO until    |
 !        | either convergence is indicated or maxitr   |
 !        | has been exceeded.                          |
 !        %---------------------------------------------%
@@ -768,7 +768,7 @@ PRINT *, 'ratio de frobenius'
 !        |                                           |
 !        | Computed eigenvalues may be extracted.    |
 !        |                                           |
-!        | Eigenvectors may be also computed now IF  |
+!        | Eigenvectors may be also computed now if  |
 !        | desired.  (indicated by rvec = .TRUE.)    |
 !        |                                           |
 !        | The routine DNEUPD now CALLed to DO this  |
@@ -912,7 +912,7 @@ PRINT *, 'ratio de frobenius'
       ENDIF
 !
 !     %---------------------------%
-!     | Done with PROGRAM dnsimp. |
+!     | Done with program dnsimp. |
 !     %---------------------------%
 !
  9000 CONTINUE
