@@ -14,13 +14,13 @@ CONTAINS
     ! nbcluster = nbre de cluster
     ! dataw : points
     ! Z : matrice des vecteurs propres
-    ! M : nbre de vp trouvÃÂÃÂ©esx
-    ! ratio : max des ration de frob sur matrice aff rÃÂÃÂ©ordonnancÃÂÃÂ©e suivant
+    ! M : nbre de vp trouvÃÂÃÂÃÂÃÂ©esx
+    ! ratio : max des ration de frob sur matrice aff rÃÂÃÂÃÂÃÂ©ordonnancÃÂÃÂÃÂÃÂ©e suivant
     ! les clusters
     ! cluster : appartenance des clusters
     ! cluster_center : centre des nbclusters clusters
     ! cluster_population : nbre de points par cluster
-    ! cluster_energy : somme des ÃÂÃÂ©nergies par cluster
+    ! cluster_energy : somme des ÃÂÃÂÃÂÃÂ©nergies par cluster
     !
 
     IMPLICIT NONE
@@ -72,7 +72,7 @@ CONTAINS
     ! PRINT *,'vecteur cluster',cluster(1:5) 
 
     !*****************************
-    ! Mesure de qualitÃÂÃÂ©
+    ! Mesure de qualitÃÂÃÂÃÂÃÂ©
     !PRINT *,'Indexation'
     nbmax=0
     DO i=1,nbcluster
@@ -222,54 +222,54 @@ CONTAINS
     !
     !  Parameters:
     !
-    !    Input, INTEGER ( KIND = 4 ) DIM_NUM, the number of spatial dimensions.
+    !    Input, INTEGER DIM_NUM, the number of spatial dimensions.
     !
-    !    Input, INTEGER ( KIND = 4 ) POINT_NUM, the number of points.
+    !    Input, INTEGER POINT_NUM, the number of points.
     !
-    !    Input, INTEGER ( KIND = 4 ) CLUSTER_NUM, the number of clusters.
+    !    Input, INTEGER CLUSTER_NUM, the number of clusters.
     !
-    !    Input, INTEGER ( KIND = 4 ) IT_MAX, the maximum number of iterations.
+    !    Input, INTEGER IT_MAX, the maximum number of iterations.
     !
-    !    Output, INTEGER ( KIND = 4 ) IT_NUM, the number of iterations taken.
+    !    Output, INTEGER IT_NUM, the number of iterations taken.
     !
     !    Input, DOUBLE PRECISION POINT(DIM_NUM,POINT_NUM), the points.
     !
-    !    Output, INTEGER ( KIND = 4 ) CLUSTER(POINT_NUM), indicates which cluster
+    !    Output, INTEGER CLUSTER(POINT_NUM), indicates which cluster
     !    each point belongs to.
     !
     !    Input/output, DOUBLE PRECISION CLUSTER_CENTER(DIM_NUM,CLUSTER_NUM),
     !    the cluster centers.
     !
-    !    Output, INTEGER ( KIND = 4 ) CLUSTER_POPULATION(CLUSTER_NUM), the number 
+    !    Output, INTEGER CLUSTER_POPULATION(CLUSTER_NUM), the number 
     !    of points in each cluster.
     !
     !    Output, DOUBLE PRECISION CLUSTER_ENERGY(CLUSTER_NUM), the 
     !    cluster energies.
     !
     IMPLICIT NONE
-    INTEGER ( KIND = 4 ) cluster_num
-    INTEGER ( KIND = 4 ) dim_num
-    INTEGER ( KIND = 4 ) point_num
-    INTEGER ( KIND = 4 ) cluster(point_num)
+    INTEGER cluster_num
+    INTEGER dim_num
+    INTEGER point_num
+    INTEGER cluster(point_num)
     DOUBLE PRECISION cluster_center(dim_num,cluster_num)
     DOUBLE PRECISION stockcenter(dim_num,cluster_num)
     !DOUBLE PRECISION diffcenter(dim_num)
     DOUBLE PRECISION listnorm(point_num,cluster_num)
     DOUBLE PRECISION cluster_energy(cluster_num),stockenergy(cluster_num)
-    INTEGER ( KIND = 4 ) cluster_population(cluster_num)
-    INTEGER ( KIND = 4 ) stockpopulation(cluster_num)
+    INTEGER cluster_population(cluster_num)
+    INTEGER stockpopulation(cluster_num)
     !DOUBLE PRECISION dc,de,epsilon
     !DOUBLE PRECISION f(point_num)
-    INTEGER ( KIND = 4 ) i
-    !INTEGER ( KIND = 4 ) il
-    !INTEGER ( KIND = 4 ) diffpopulation
-    INTEGER ( KIND = 4 ) it_max
-    INTEGER ( KIND = 4 ) it_num
-    INTEGER ( KIND = 4 ) j
-    INTEGER ( KIND = 4 ) k
-    !INTEGER ( KIND = 4 ) list(1)
+    INTEGER i
+    !INTEGER il
+    !INTEGER diffpopulation
+    INTEGER it_max
+    INTEGER it_num
+    INTEGER j
+    INTEGER k
+    !INTEGER list(1)
     DOUBLE PRECISION point(dim_num,point_num)
-    INTEGER ( KIND = 4 ) swap
+    INTEGER swap
     INTEGER  :: ok,p,ok2
     DOUBLE PRECISION :: val,valmax,seuil,norme !,diffenergy
     INTEGER :: cluster_id(cluster_num)
@@ -428,7 +428,7 @@ PRINT *, 'recherche des centres'
 
        !PRINT *,numproc,'nbre de permut',swap
 
-       !! mise ÃÂÃÂ  jour des centres
+       !! mise ÃÂÃÂÃÂÃÂ  jour des centres
        cluster_center(:,:)=0.0
        DO j=1,point_num
           i=cluster(j) 
