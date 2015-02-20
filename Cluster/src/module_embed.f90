@@ -14,13 +14,13 @@ CONTAINS
     ! nbcluster = nbre de cluster
     ! dataw : points
     ! Z : matrice des vecteurs propres
-    ! M : nbre de vp trouvÃÂÃÂÃÂÃÂ©esx
-    ! ratio : max des ration de frob sur matrice aff rÃÂÃÂÃÂÃÂ©ordonnancÃÂÃÂÃÂÃÂ©e suivant
+    ! M : nbre de vp trouveesx
+    ! ratio : max des ration de frob sur matrice aff reordonnancee suivant
     ! les clusters
     ! cluster : appartenance des clusters
     ! cluster_center : centre des nbclusters clusters
     ! cluster_population : nbre de points par cluster
-    ! cluster_energy : somme des ÃÂÃÂÃÂÃÂ©nergies par cluster
+    ! cluster_energy : somme des energies par cluster
     !
 
     IMPLICIT NONE
@@ -40,7 +40,8 @@ CONTAINS
     ALLOCATE(cluster_center(nbcluster,nbcluster));
     ALLOCATE(cluster_population(nbcluster));
     ALLOCATE(cluster_energy(nbcluster));
-    ALLOCATE(Z1(n,nbcluster));  ALLOCATE(Z2(nbcluster,n));
+    ALLOCATE(Z1(n,nbcluster))
+    ALLOCATE(Z2(nbcluster,n));
     ALLOCATE(Z3(n));Z3(:)=0.0
 
     DO i=1,n
@@ -72,7 +73,7 @@ CONTAINS
     ! PRINT *,'vecteur cluster',cluster(1:5) 
 
     !*****************************
-    ! Mesure de qualitÃÂÃÂÃÂÃÂ©
+    ! Mesure de qualite
     !PRINT *,'Indexation'
     nbmax=0
     DO i=1,nbcluster
@@ -104,7 +105,10 @@ CONTAINS
        ENDDO
     ENDDO
     DEALLOCATE(clustercorresp)
-    ratio=0.0; ratiomin=1.D+16;ratiorii=0.0;ratiorij=0.0
+    ratio=0.0
+    ratiomin=1.D+16
+    ratiorii=0.0
+    ratiorij=0.0
     nbinfo=nbcluster
     DO i=1,nbcluster
        IF ((cluster_population(i)/=0).AND.(Frob(i,i)/=0)) THEN

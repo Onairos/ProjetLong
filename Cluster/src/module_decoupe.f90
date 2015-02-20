@@ -91,7 +91,8 @@ CONTAINS
 
  IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        !traitement en coordonnees ou image en coodonnees ou image seuillee
-       ALLOCATE(bornes(data%dim,max(nbproc-data%interface,1),2));bornes(:,:,:)=0.0
+       ALLOCATE(bornes(data%dim,max(nbproc-data%interface,1),2))
+       bornes(:,:,:)=0.0
        DO i=1,data%dim
           coordmin(i)=coordmin(i)-epsilon*1.1
           coordmax(i)=coordmax(i)+epsilon*1.1
@@ -225,8 +226,10 @@ CONTAINS
     INTEGER,DIMENSION(:,:),POINTER :: ddat
     DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
     INTEGER :: i,j,n,ok,ierr
-    ALLOCATE(ldat(0:max(1,nbproc-1))); ldat(:)=0
-    ALLOCATE(ddat(0:max(1,nbproc-1),data%nb)); ddat(:,:)=0
+    ALLOCATE(ldat(0:max(1,nbproc-1)))
+    ldat(:)=0
+    ALLOCATE(ddat(0:max(1,nbproc-1),data%nb))
+    ddat(:,:)=0
     DO i=1,data%nb
        !recherche des paquets
        n=0; ok=0
@@ -301,8 +304,10 @@ CONTAINS
     INTEGER,DIMENSION(:,:),POINTER :: ddat
     DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
     INTEGER :: i,j,n,ok
-    ALLOCATE(ldat(0:max(1,nbproc-1))); ldat(:)=0
-    ALLOCATE(ddat(0:max(1,nbproc-1),data%nb)); ddat(:,:)=0
+    ALLOCATE(ldat(0:max(1,nbproc-1)))
+    ldat(:)=0
+    ALLOCATE(ddat(0:max(1,nbproc-1),data%nb))
+    ddat(:,:)=0
     DO i=1,data%nb
        !recherche des paquets
        DO n=1,nbproc

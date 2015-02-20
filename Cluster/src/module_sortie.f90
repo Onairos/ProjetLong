@@ -29,12 +29,15 @@ CONTAINS
     INTEGER :: i,j,offset,nbdom
     CHARACTER*30 :: files,num
     PRINT *,'  > bilan decoupage :'
-    offset=1; nbdom=nbproc
+    offset=1
+    nbdom=nbproc
     IF ((data%interface==1).AND.(nbproc>1)) THEN
-       offset=0; nbdom=nbproc-1
+       offset=0
+       nbdom=nbproc-1
     ENDIF
     IF (data%recouvrement==1) THEN
-       offset=0; nbdom=nbproc-1
+       offset=0
+       nbdom=nbproc-1
     ENDIF
     DO i=offset,nbdom
        PRINT *,'    > zone ',i,':',ldat(i)

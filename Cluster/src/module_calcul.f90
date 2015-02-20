@@ -140,8 +140,8 @@ CONTAINS
     CHARACTER*30 :: num,files
     DOUBLE PRECISION :: t1, t2, t_cons_vp
 
-    ! deux valeurs qui quand elles ne sont pas dÃÂÃÂÃÂÃÂ©clarÃÂÃÂÃÂÃÂ©es
-    ! et donc IMPLICITement des REAL font que ÃÂÃÂÃÂÃÂ§a marche mieux
+    ! deux valeurs qui quand elles ne sont pas declarees
+    ! et donc implicitement des REAL font que ca marche mieux
     DOUBLE PRECISION :: val, value
 
     ! solveur au valeur propre => paramÃÂÃÂÃÂÃÂ¨tre de contrÃÂÃÂÃÂÃÂ´le
@@ -313,7 +313,8 @@ PRINT *, 'ratio de frobenius'
        !PRINT *,numproc,'Ratio min par cluster',ratiomin(2:nblimit)
        !PRINT *,numproc,'Ratio Rii par cluster',ratiorii(2:nblimit)
        !PRINT *,numproc,'Ratio Rij par cluster',ratiorij(2:nblimit)
-       ratio=ratiomax(nblimit); dataw%nbclusters=nblimit
+       ratio=ratiomax(nblimit)
+       dataw%nbclusters=nblimit
        ratio1=0.0;ratio2=1e+10
        DO i=2,nblimit
           !if  ((nbinfo(i)==i).AND.(ratio(i)<ratio)) THEN
