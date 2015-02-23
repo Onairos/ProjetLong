@@ -344,9 +344,6 @@ CONTAINS
           ky=-ix*params%pas(1)
           kz=float(params%refimg(k,3))*params%pas(3)
        ELSE
-          !kx=-float(ix)
-          !ky=float(iy)
-          !kz=float(params%refimg(k,3))
           kx=float(iy)
           ky=-float(ix)
           kz=float(params%refimg(k,3))

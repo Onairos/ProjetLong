@@ -118,10 +118,6 @@ CONTAINS
     LWORK = WORK(1)
     LIWORK = IWORK(1)
     IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
-   ! PRINT *,'nb de vp trouvees :',M
-    !do i=1,M
-    !   PRINT *,'vp trouvees :', W(i)!,' vect ass :',Z(:,i)
-    !ENDDO
   END SUBROUTINE solve_dsyevr
 
   !***********************************************
@@ -158,50 +154,6 @@ CONTAINS
     LWORK = WORK(1)
     LIWORK = IWORK(1)
     IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
-   ! PRINT *,'nb de vp trouvees :',M
-    !do i=1,M
-    !   PRINT *,'vp trouvees :', W(i)!,' vect ass :',Z(:,i)
-    !ENDDO
   END SUBROUTINE solve_dsyevx
-
-  !***********************************************
-  !DGEHRD
-!!$  SUBROUTINE solve_dgehrd(k,N,A,Z,LWORK,M)
-!!$    IMPLICIT NONE
-!!$    EXTERNAL DGEHRD
-!!$    INTEGER :: N, ILO, IHI
-!!$    DOUBLE PRECISION :: A(N,N),TAU(N-1),WORK(LWORK)
-!!$
-!!$
-!!$    INTEGER :: LDA,IL,IU,M,INFO,LDZ,ISUPPZ(2*N),IWORK(LIWORK)
-!!$    DOUBLE PRECISION :: ABSTOL,VL,VU
-!!$    CHARACTER :: JOBZ,RANGE,UPLO
-!!$    INTEGER :: i,j,k
-!!$    INFO=0
-!!$    ILO=1
-!!$    IHI=N
-!!$    LDA=N
-!!$    TAU(:)=0.0
-!!$    !on enleve la partie triangulaire inferieure
-!!$    DO i=1,N
-!!$       DO j=1,i-1
-!!$          A(i,j)=0.0
-!!$       ENDDO
-!!$    ENDDO
-!!$    CALL DGEHRD( N, ILO,IHI,A,LDA,TAU,WORK,LWORK,INFO)
-!!$    LWORK = WORK(1)
-!!$    LIWORK = IWORK(1)
-!!$    IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
-!!$   ! PRINT *,'nb de vp trouvees :',M
-!!$    !do i=1,M
-!!$    !   PRINT *,'vp trouvees :', W(i)!,' vect ass :',Z(:,i)
-!!$    !ENDDO
-!!$  END SUBROUTINE solve_dgehrd
-
-! Subroutine ARPACK
-
-
-
-
 
 END MODULE module_solve

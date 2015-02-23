@@ -22,8 +22,7 @@ CONTAINS
     DOUBLE PRECISION :: norme,ratio,ratio1,ratio2,seuilrij
     CHARACTER*30 :: num,files
 
-! sparsification deb
-    !DOUBLE PRECISION :: value
+! sparsification debut
     DOUBLE PRECISION :: t1, t2, t_cons_a, t_cons_vp
     INTEGER :: nnz, nnz2, nb
     DOUBLE PRECISION :: facteur
@@ -34,7 +33,6 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:),POINTER :: D
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: Z
     DOUBLE PRECISION, DIMENSION(:), POINTER :: W
-
 ! sparsification fin
 
     !creation de la matrice
@@ -43,14 +41,13 @@ CONTAINS
 #endif
     n=dataw%nb
 
-! sparsification deb
+! sparsification debut
     nnz = 0
-    ! valeur de treshold arbitraire -> paramÃÂÃÂÃÂÃÂ¨tre du sp ou calcul interne
+    ! valeur de treshold arbitraire -> parametre du sp ou calcul interne
     !                                  (voir avec S.)
     ! TODO : mettre la valeur du facteur dans le fichier param
     facteur = 3.0
     treshold = facteur*sigma
-    !WRITE(*,*) '************** SIGMA', sigma
 
     t1 = MPI_WTIME();
     DO i=1,n-1  ! borne ?
@@ -71,7 +68,7 @@ CONTAINS
 
     t2 = MPI_WTIME();
     t_cons_a = t2 - t1
-    PRINT *, numproc, 'surcoÃÂÃÂÃÂÃÂ»t A', t_cons_a
+    PRINT *, numproc, 'surcout A', t_cons_a
 
     t1 = MPI_WTIME();
     nnz2 = nnz*2
@@ -99,12 +96,6 @@ CONTAINS
             IAS(l) = j
             JAS(l) = i
             l = l+1
-            !------
-            ! autre rangement
-            !AS(l+nnz) = value
-            !IAS(l+nnz) = j
-            !JAS(l+nnz) = i
-            !l = l+1
           ENDIF
        ENDDO
     ENDDO
@@ -121,12 +112,7 @@ CONTAINS
 
   DEALLOCATE(D)
 
-!  PRINT *, "******************* A sparse ********************"
-!  DO l=1,nnz2
-!    WRITE(13,*)  IAS(l), JAS(l), AS(l)
-!  ENDDO
-
-    ! nb et nblimit mÃÂÃÂÃÂÃÂªme valeur ?
+    ! nb et nblimit meme valeur ?
     nb = 2*nblimit
 
     t1 = MPI_WTIME()
@@ -137,7 +123,7 @@ CONTAINS
     ENDDO
     
 
-    !PRINT *,numproc,'reordonne les vp...'  ! QUESTION nÃÂÃÂÃÂÃÂ©cessaire avec arpack ?
+    ! reordonne les vp... QUESTION: necessaire avec arpack ?
     DO i=1,nb-1
        DO j=i+1,nb
           IF (W(i)<W(j)) THEN
@@ -155,7 +141,6 @@ CONTAINS
     !Test spectral embedding avec different nbcluster   
     !***********************
     ! Spectral embedding
-    !PRINT *,numproc,'Spectral Embedding'
 
     IF ((nbideal==0).AND.(n>2)) THEN
        !** recherche du meilleur decoupage
@@ -168,8 +153,6 @@ CONTAINS
        ALLOCATE(nbinfo(nblimit)); nbinfo(:)=0
 
        DO nbcluster = 2 ,min(n,nblimit)
-          !PRINT *,numproc,'teste avec nbcluster=',nbcluster
-          !CALL flush(6)
 
           ALLOCATE(cluster(n))
           cluster(:)=0.0
@@ -197,18 +180,12 @@ PRINT *, 'ratio de frobenius'
 #endif
        !*******************************
        ! Ratio de norme de frobenius
-       !PRINT *,numproc,'Ratio max par cluster',ratiomax(2:nblimit)
-       !PRINT *,numproc,'Ratio min par cluster',ratiomin(2:nblimit)
-       !PRINT *,numproc,'Ratio Rii par cluster',ratiorii(2:nblimit)
-       !PRINT *,numproc,'Ratio Rij par cluster',ratiorij(2:nblimit)
        ratio=ratiomax(nblimit)
        dataw%nbclusters=nblimit
        ratio1=0.0
        ratio2=1e+10
 
        DO i=2,nblimit
-          !if  ((nbinfo(i)==i).AND.(ratio(i)<ratio)) THEN
-          !if  ((nbinfo(i)==i).AND.(ratiomoy(i)<ratio)) THEN
           IF ((numproc==0).AND.(nbproc>1)) THEN 
              seuilrij=1e-1
           ELSE
@@ -216,17 +193,11 @@ PRINT *, 'ratio de frobenius'
           ENDIF
 
           IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
-             !if (ratiomoy(i)-ratio1<=1e-4) THEN
-             !2eme critÃÂÃÂÃÂÃÂ¨re
-             !(ratiorij(i)/ratiorii(i)<=1e-4)
              dataw%nbclusters=i
-             ! ratio=ratiomax(i)
              ratio1=ratiorii(i)
              ratio2=ratiorij(i)
-             !ratio1=ratiomoy(i)
           ENDIF
        ENDDO
-      ! PRINT *,numproc,'nb de clusters final :',dataw%nbclusters
 
     ELSEIF ((nbideal==1).AND.(n>nbideal)) THEN
        !** test avec un cluster impose
@@ -253,7 +224,7 @@ PRINT *, 'ratio de frobenius'
        ALLOCATE(ratiorij(n))
        ratiorij(:)=0
     ENDIF
-    ! cas oÃÂÃÂÃÂÃÂ¹ nbcluster==1
+    ! cas avec nbcluster==1
     IF (dataw%nbclusters==2) THEN
        PRINT *, 'difference ratio',ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 
@@ -289,7 +260,6 @@ PRINT *, 'ratio de frobenius'
        DEALLOCATE(cluster_center)
 
     ELSE 
-       !cluster_population(1)=dataw%nb
 #if aff
        PRINT *, numproc, 'ok'
 #endif
@@ -300,13 +270,6 @@ PRINT *, 'ratio de frobenius'
        PRINT *,numproc,'cluster'
 #endif
     ENDIF
-
-    !affichage
-    !do j=1,dataw%nbclusters
-    !   PRINT *,numproc,'centres des clusters',cluster_center(:,j)
-    !ENDDO
-    !maj du cluster
-  
 
     !deallocations
     DEALLOCATE(AS)
@@ -328,13 +291,13 @@ PRINT *, 'ratio de frobenius'
     ! nbcluster = nbre de cluster
     ! dataw : points
     ! Z : matrice des vecteurs propres
-    ! M : nbre de vp trouvÃÂÃÂÃÂÃÂ©esx
-    ! ratio : max des ration de frob sur matrice aff rÃÂÃÂÃÂÃÂ©ordonnancÃÂÃÂÃÂÃÂ©e suivant
+    ! M : nbre de vp trouvees
+    ! ratio : max des ration de frob sur matrice aff reordonnancee suivant
     ! les clusters
     ! cluster : appartenance des clusters
     ! cluster_center : centre des nbclusters clusters
     ! cluster_population : nbre de points par cluster
-    ! cluster_energy : somme des ÃÂÃÂÃÂÃÂ©nergies par cluster
+    ! cluster_energy : somme des energies par cluster
     !
 
     IMPLICIT NONE
@@ -369,7 +332,6 @@ PRINT *, 'ratio de frobenius'
     DO i=1,n
        DO j=1,nbcluster
           Z1(i,j)=Z(i,j)
-          !if (i==1) PRINT *,numproc,'matrice vp',j,W(j)
           Z3(i)=Z3(i)+Z1(i,j)**2
        ENDDO
     ENDDO
@@ -390,17 +352,8 @@ PRINT *, 'ratio de frobenius'
          cluster, cluster_center, cluster_population, cluster_energy, &
          numproc)
 
-    !do i=1,nbcluster
-    !   PRINT *, 'Z2(',i,',:) ', Z2(i,:)
-    !ENDDO
-
-    !PRINT *,numproc,'fin de kmeans. nb d iterations effectuees : ',it_num
-
-    !PRINT *,numproc,'Nombre points par cluster', cluster_population
-    ! PRINT *,'vecteur cluster',cluster(1:5) 
-
     !*****************************
-    ! Mesure de qualitÃÂÃÂÃÂÃÂ©
+    ! Mesure de qualite
     !PRINT *,'Indexation'
 
     nbmax=0
@@ -423,7 +376,7 @@ PRINT *, 'ratio de frobenius'
     ENDDO
 
 
-! sparsification dÃÂÃÂÃÂÃÂ©but
+! sparsification debut
     ALLOCATE(Frob(nbcluster,nbcluster)); Frob(:,:)=0.0
     DO i=1, nnz
       num1 = cluster(IAS(i))
@@ -442,7 +395,6 @@ PRINT *, 'ratio de frobenius'
           DO j=1,nbcluster
              IF (i/=j) THEN
                 ratio=ratio+Frob(i,j)/Frob(i,i)
-                !ratio=max(ratio,Frob(i,j)/Frob(i,i))
                 ratiomoy=ratiomoy+Frob(i,j)/Frob(i,i)
                 ratiorij=ratiorij+Frob(i,j)
                 ratiorii=ratiorii+Frob(i,i)
@@ -724,15 +676,9 @@ PRINT *, 'ratio de frobenius'
 !           | product to workd(ipntr(2)).               | 
 !           %-------------------------------------------%
 !
-            !CALL av (nx, workd(ipntr(1)), workd(ipntr(2)))
             CALL sp_matvec(A, IA, JA, workd(ipntr(1)), workd(ipntr(2)), &
                            ndim, nnz)
 
-            !if(nbite .EQ. 1) THEN
-            !  DO i = 0,19
-            !    PRINT *,'matvec workd ',i,  workd(ipntr(1)+i), workd(ipntr(2)+i)
-            !  ENDDO
-            !ENDIF
             nbite = nbite + 1
 !
 !           %-----------------------------------------%

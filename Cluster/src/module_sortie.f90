@@ -74,7 +74,6 @@ CONTAINS
     WRITE(num,*),numproc
     num=adjustl(num)
     files='cluster.partiel.'//trim(num)
-    !len=len(trim(num))
     PRINT *,numproc,'ecriture des clusters : ',files
     OPEN(FILE=files,UNIT=10)
     WRITE(10,*) dataw%nb,dataw%dim
@@ -127,7 +126,6 @@ CONTAINS
     CHARACTER*30 :: mesh
     INTEGER :: nbproc,nbclust
     TYPE(type_data) :: data
-    !ecriture du fichier fort.3
     WRITE(3,*) '# fichier de maillage :'
     WRITE(3,*) mesh
     WRITE(3,*) '#nb de points :'
