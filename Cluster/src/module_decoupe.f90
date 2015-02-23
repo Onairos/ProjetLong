@@ -8,16 +8,32 @@ CONTAINS
   SUBROUTINE decoupedata(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
        ldat,ddat,bornes)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) :: data
     DOUBLE PRECISION :: epsilon
-    INTEGER :: nbproc, ierr
     INTEGER,DIMENSION(:),POINTER :: decoupe
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
-    INTEGER,DIMENSION(:),POINTER :: ldat
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes,domaines
- 
+    INTEGER :: nbproc
 
+    !=== IN/OUT ===
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+
+    !====  OUT ====
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
+    INTEGER,DIMENSION(:,:),POINTER :: ddat
+    INTEGER,DIMENSION(:),POINTER :: ldat
+
+    !#### Variables  ####
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
+    INTEGER :: ierr 
+
+    !###########################################
+    ! INSTRUCTIONS
+    !########################################### 
     !definition des bornes
     CALL definit_bornes(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
 
@@ -47,16 +63,35 @@ CONTAINS
   !definition des bornes avec interface
   SUBROUTINE definit_bornes(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
     IMPLICIT NONE
-    INTEGER :: nbproc
-    DOUBLE PRECISION :: epsilon
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) :: data
+    DOUBLE PRECISION :: epsilon
     INTEGER,DIMENSION(:),POINTER :: decoupe
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
-    INTEGER :: i,j
-    DOUBLE PRECISION :: prod1,prod2,som1,prod
-    CHARACTER*30 :: num,files
+    INTEGER :: nbproc
 
+    !=== IN/OUT ===
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+
+    !====  OUT ====
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
+
+    !#### Variables  ####
+    CHARACTER*30 :: num,files
+    DOUBLE PRECISION :: prod
+    DOUBLE PRECISION :: prod1
+    DOUBLE PRECISION :: prod2
+    DOUBLE PRECISION :: som1
+    INTEGER :: i
+    INTEGER :: j
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     prod1=1.0
     prod2=0.0
     som1=1.0
@@ -136,12 +171,29 @@ CONTAINS
   !definition des domaines de decoupages
   SUBROUTINE definit_domaines(nbproc,data,domaines,bornes,decoupe)
     IMPLICIT NONE
-    INTEGER :: nbproc
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) :: data
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
     INTEGER,DIMENSION(:),POINTER :: decoupe
+    INTEGER :: nbproc
+
+    !====  OUT ====
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
+
+    !#### Variables  ####
     INTEGER,DIMENSION(:),POINTER :: list
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes,domaines
-    INTEGER :: k,n,ok
+    INTEGER :: k
+    INTEGER :: n
+    INTEGER :: ok !TODO utilisé comme un booleen, modifier en LOGICAL ??
+
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        !traitement en coordonnees ou image en coodonnees ou image seuillee
        ALLOCATE(domaines(max(1,nbproc-data%interface),data%dim,2))
@@ -210,13 +262,29 @@ CONTAINS
   !decoupage avec interface
   SUBROUTINE decoupe_interface(nbproc,data,ldat,ddat,domaines,epsilon)
     IMPLICIT NONE
-    INTEGER :: nbproc
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION :: epsilon
-    INTEGER,DIMENSION(:),POINTER :: ldat
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
     DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
-    INTEGER :: i,j,n,ok,ierr
+    DOUBLE PRECISION :: epsilon
+    INTEGER :: nbproc
+    !====  OUT ====
+    INTEGER,DIMENSION(:,:),POINTER :: ddat
+    INTEGER,DIMENSION(:),POINTER :: ldat
+
+    !#### Variables  ####
+    INTEGER :: i
+    INTEGER :: ierr
+    INTEGER :: j
+    INTEGER :: ok
+    INTEGER :: n
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     ALLOCATE(ldat(0:max(1,nbproc-1)))
     ldat(:)=0
     ALLOCATE(ddat(0:max(1,nbproc-1),data%nb))
@@ -289,12 +357,27 @@ CONTAINS
   !decoupage avec recouvrement
   SUBROUTINE decoupe_recouvrement(nbproc,data,ldat,ddat,domaines)
     IMPLICIT NONE
-    INTEGER :: nbproc
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) :: data
-    INTEGER,DIMENSION(:),POINTER :: ldat
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
     DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
-    INTEGER :: i,j,n,ok
+    INTEGER :: nbproc
+    !====  OUT ====
+    INTEGER,DIMENSION(:,:),POINTER :: ddat
+    INTEGER,DIMENSION(:),POINTER :: ldat
+
+    !#### Variables  ####
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: n
+    INTEGER :: ok
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     ALLOCATE(ldat(0:max(1,nbproc-1)))
     ldat(:)=0
     ALLOCATE(ddat(0:max(1,nbproc-1),data%nb))
@@ -329,11 +412,35 @@ CONTAINS
   !elimine les doublons dans le clustering
   SUBROUTINE regroupe(nbclust,iclust,clustermap,data)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     INTEGER :: nbclust
-    TYPE(type_data) :: data
-    INTEGER,DIMENSION(:),POINTER :: iclust
+
+    !=== IN/OUT ===
     INTEGER,DIMENSION(:,:),POINTER :: clustermap
-    INTEGER :: ok,i,j,k,ok2,i2,j2,n,j3,ok3
+    INTEGER,DIMENSION(:),POINTER :: iclust
+
+    !====  OUT ====
+    TYPE(type_data) :: data
+
+    !#### Variables  ####
+    INTEGER :: i
+    INTEGER :: i2
+    INTEGER :: j
+    INTEGER :: j2
+    INTEGER :: j3
+    INTEGER :: k
+    INTEGER :: n
+    INTEGER :: ok !TODO utilisé comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok2 !TODO utilisé comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok3 !TODO utilisé comme un booleen, modifier en LOGICAL ??
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     ok=0; i=1; j=0
 #if aff
     PRINT *,'  > elimination des doublons...'
