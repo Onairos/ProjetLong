@@ -19,7 +19,6 @@ PROGRAM clusters
   
   INTEGER status(MPI_STATUS_SIZE)
 
- ! modif sandrine
   ! variables
   DOUBLE PRECISION :: elapsed(2)     ! For receiving user and system time
   DOUBLE PRECISION :: temps
@@ -107,8 +106,6 @@ PROGRAM clusters
     t1 = MPI_WTIME();
   ENDIF
 
-  !CALL MPI_FINALIZE(ierr)
-  !STOP
   !partie echanges
   IF (nbproc>1) THEN
      !** cas >1 proc
@@ -205,7 +202,6 @@ PROGRAM clusters
      PRINT *,numproc,'calcul des clusters...'
 #endif
      CALL calculclusters(numproc,nblimit,nbideal,dataw,sigma)
-     !CALL sp_calculclusters(numproc,nblimit,nbideal,dataw,sigma)
   ENDIF
   t2 = MPI_WTIME();
   t_parall = t2 - t1

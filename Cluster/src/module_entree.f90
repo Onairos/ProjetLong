@@ -6,7 +6,6 @@ CONTAINS
   !fichier d'aide
   SUBROUTINE help
     IMPLICIT NONE
-    !INTEGER :: ierr
     PRINT *
     PRINT *,'syntaxe d appel : clusters fichier_d_entree'
     PRINT *
@@ -203,7 +202,7 @@ CONTAINS
           ok=1
        CASE DEFAULT
           ok=0
-          PRINT *,'mot clÃÂÃÂÃÂÃÂ© inconnu :',mot
+          PRINT *,'mot cle inconnu :',mot
        END SELECT
     ENDDO
     !parametre de decoupage
