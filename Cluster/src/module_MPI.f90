@@ -2,19 +2,40 @@ MODULE module_MPI
   USE module_structure
 CONTAINS
 
+
   !****************************************
   !envoi des decoupages
   SUBROUTINE envoidecoupes(nbproc,data,ldat,ddat,dataw)
-    IMPLICIT NONE
+    IMPLICIT NONE    
     ! librairie MPI
     INCLUDE 'mpif.h'
-    !variables
-    TYPE(type_data) :: data,dataw
-    INTEGER :: nbproc
-    INTEGER,DIMENSION(:),POINTER :: ldat
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     INTEGER,DIMENSION(:,:),POINTER :: ddat
-    INTEGER :: i,j,m,n,tag,ierr
+    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER :: nbproc
+
+    !=== IN/OUT ===
+    TYPE(type_data) :: data
+
+    !====  OUT ====
+    TYPE(type_data) :: dataw
+    
+    !#### Variables  ####
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: ierr
+    INTEGER :: m
+    INTEGER :: n
+    INTEGER :: tag
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
     DO i=1,nbproc-1
        m=ldat(i); n=data%dim
        tag=i
@@ -67,12 +88,28 @@ CONTAINS
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
-    !variables
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     INTEGER :: numproc
+
+    !====  OUT ====
     TYPE(type_data) :: dataw
-    INTEGER :: m,n,tag,ierr,i
+    
+    !#### Variables  ####
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     INTEGER status(MPI_STATUS_SIZE)
+    INTEGER :: i
+    INTEGER :: ierr
+    INTEGER :: m
+    INTEGER :: n
+    INTEGER :: tag
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################   
     !reception des dimensions
     tag=numproc
     CALL MPI_RECV(m,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
@@ -118,13 +155,30 @@ CONTAINS
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
-    !variables
-    INTEGER :: nbproc,nbclust
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ==== 
     TYPE(type_data) ::dataw
-    TYPE(type_clusters),DIMENSION(:),POINTER :: nclust
-    INTEGER status(MPI_STATUS_SIZE)
     INTEGER,DIMENSION(:),POINTER :: ldat
-    INTEGER :: i,j,nb,tag,ierr
+    INTEGER :: nbproc
+
+    !====  OUT ====
+    TYPE(type_clusters),DIMENSION(:),POINTER :: nclust
+    INTEGER :: nbclust
+    
+    !#### Variables  ####    
+    INTEGER status(MPI_STATUS_SIZE)
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: ierr
+    INTEGER :: nb
+    INTEGER :: tag
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !########################################### 
     IF (dataw%nb>0) THEN
        nbclust=dataw%nbclusters
     ELSE
@@ -157,11 +211,23 @@ CONTAINS
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
-    !variables
-    INTEGER :: numproc
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) ::dataw
-    INTEGER :: tag,ierr,i
+    INTEGER :: numproc
+
+    !#### Variables  ####
     INTEGER,DIMENSION(:),POINTER :: list
+    INTEGER :: tag
+    INTEGER :: i
+    INTEGER :: ierr
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################
     IF (dataw%nb>0) THEN
        !nb de clusters
        tag=numproc*11
@@ -184,11 +250,23 @@ CONTAINS
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
-    !variables
-    INTEGER :: numproc
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) ::dataw
+    INTEGER :: numproc
+    
+    !#### Variables  ####  
     INTEGER,DIMENSION(:),POINTER :: lclust
-    INTEGER :: i,tag,ierr
+    INTEGER :: i
+    INTEGER :: ierr
+    INTEGER :: tag
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################    
     IF (dataw%nb>0) THEN
        ALLOCATE(lclust(dataw%nb))
        DO i=1,dataw%nb
@@ -208,17 +286,40 @@ CONTAINS
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
-    !variables
-    INTEGER :: nbproc,nbclust
-    TYPE(type_data) ::dataw
-    INTEGER,DIMENSION(:),POINTER :: ldat
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
-    INTEGER,DIMENSION(:),POINTER :: lclust,iclust,listclust
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_clusters),DIMENSION(:),POINTER :: nclust
-    INTEGER :: i,j,k,tag,ierr,i0
+    TYPE(type_data) ::dataw
+    INTEGER,DIMENSION(:,:),POINTER :: ddat
+    INTEGER,DIMENSION(:),POINTER :: ldat 
+    INTEGER :: nbproc
+    INTEGER :: nbclust
+
+    !====  OUT ====
     INTEGER,DIMENSION(:,:),POINTER :: clustermap
+    INTEGER,DIMENSION(:),POINTER :: iclust
+    
+    !#### Variables  ####
+    INTEGER,DIMENSION(:),POINTER :: lclust
+    INTEGER,DIMENSION(:),POINTER :: listclust
     INTEGER status(MPI_STATUS_SIZE)
-    INTEGER :: p, longueur, maxldat, m
+    INTEGER :: i
+    INTEGER :: i0
+    INTEGER :: ierr
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: longueur
+    INTEGER :: m
+    INTEGER :: maxldat
+    INTEGER :: p
+    INTEGER :: tag
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################    
     i0=0; ALLOCATE(iclust(nbclust)); iclust(:)=0
     IF (dataw%nb>0) THEN
        !stockage des clusters locaux dans le tableau global

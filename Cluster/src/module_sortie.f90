@@ -6,10 +6,21 @@ CONTAINS
   !ecriture des domaines decoupes
   SUBROUTINE ecrit_domaines(data,nbproc,domaines)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) :: data
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines  
     INTEGER :: nbproc
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
+    
+    !#### Variables  ####
     INTEGER :: i
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################    
     DO i=1,nbproc-data%interface
        WRITE(2,*) domaines(i,:,1),'|', domaines(i,:,2)
     ENDDO
@@ -22,12 +33,27 @@ CONTAINS
   !ecriture des decoupages
   SUBROUTINE ecrit_decoupages(nbproc,data,ldat,ddat)
     IMPLICIT NONE
-    INTEGER :: nbproc
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) :: data
-    INTEGER,DIMENSION(:),POINTER :: ldat
     INTEGER,DIMENSION(:,:),POINTER :: ddat
-    INTEGER :: i,j,offset,nbdom
-    CHARACTER*30 :: files,num
+    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER :: nbproc
+    
+    !#### Variables  ####
+    CHARACTER*30 :: files
+    CHARACTER*30 :: num
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: nbdom
+    INTEGER :: offset
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !########################################### 
     PRINT *,'  > bilan decoupage :'
     offset=1
     nbdom=nbproc
@@ -66,10 +92,22 @@ CONTAINS
   !ecriture des clusters regroupes
   SUBROUTINE ecritcluster(numproc,dataw)
     IMPLICIT NONE
-    INTEGER :: numproc
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====  
     TYPE(type_data) :: dataw
+    INTEGER :: numproc
+    
+    !#### Variables  ####
+    CHARACTER*30 :: files
+    CHARACTER*30 :: num
     INTEGER :: i
-    CHARACTER*30 :: files,num
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################
     !nom du fichier
     WRITE(num,*),numproc
     num=adjustl(num)
@@ -93,11 +131,27 @@ CONTAINS
   !ecriture de cluster.final.
   SUBROUTINE ecritclusterfinal(nbclust,iclust,clustermap)
     IMPLICIT NONE
-    INTEGER :: nbclust
-    INTEGER,DIMENSION(:),POINTER :: iclust
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     INTEGER,DIMENSION(:,:),POINTER :: clustermap
-    INTEGER :: i,j,k
-    CHARACTER*30 :: files,num
+    INTEGER,DIMENSION(:),POINTER :: iclust
+
+    !=== IN/OUT === 
+    INTEGER :: nbclust
+
+    !#### Variables  ####
+    CHARACTER*30 :: files
+    CHARACTER*30 :: num
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !########################################### 
     PRINT *,'  > Ecriture du resultat...'
     k=0
     DO i=1,nbclust
@@ -123,9 +177,19 @@ CONTAINS
   !ecriture des informations
   SUBROUTINE ecrit_info(mesh,data,nbproc,nbclust)
     IMPLICIT NONE
-    CHARACTER*30 :: mesh
-    INTEGER :: nbproc,nbclust
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) :: data
+    CHARACTER*30 :: mesh
+    INTEGER :: nbclust
+    INTEGER :: nbproc
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !########################################### 
     WRITE(3,*) '# fichier de maillage :'
     WRITE(3,*) mesh
     WRITE(3,*) '#nb de points :'
