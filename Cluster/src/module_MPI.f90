@@ -2,6 +2,7 @@ MODULE module_MPI
   USE module_structure
 CONTAINS
 
+
   !****************************************
   !envoi des decoupages
   SUBROUTINE envoidecoupes(nbproc,data,ldat,ddat,dataw)
