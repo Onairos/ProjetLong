@@ -8,10 +8,27 @@ CONTAINS
   !calcul du sigma
   SUBROUTINE calculsigma(dataw,sigma)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) :: dataw
-    DOUBLE PRECISION :: sigma,norme,norme1,sigma1
-    INTEGER :: i1,j1,k1
 
+    !====  OUT ====
+    DOUBLE PRECISION :: sigma
+
+    !#### Variables  ####
+    DOUBLE PRECISION :: norme
+    DOUBLE PRECISION :: norme1
+    DOUBLE PRECISION :: sigma1
+    INTEGER :: i1
+    INTEGER :: j1
+    INTEGER :: k1
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     sigma=0.0
     sigma1=0.0
     DO i1=1,dataw%nb
@@ -34,15 +51,36 @@ CONTAINS
   !calcul du sigma pour l'interface
   SUBROUTINE calculsigmainterface(numproc,dataw,sigma,bornes,decoupe,epsilon)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_data) :: dataw
-    DOUBLE PRECISION :: sigma
-    INTEGER :: i,j,k,numproc,nb,ok
     DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
-    INTEGER,DIMENSION(:),POINTER :: decoupe,decoupe0
-    INTEGER,DIMENSION(:,:),POINTER :: tableau
     DOUBLE PRECISION :: epsilon
-    DOUBLE PRECISION :: long,sigma0
-    DOUBLE PRECISION :: volext,volint
+    INTEGER,DIMENSION(:),POINTER :: decoupe
+    INTEGER :: numproc
+
+    !====  OUT ====
+    DOUBLE PRECISION :: sigma
+
+    !#### Variables  ####
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: nb
+    INTEGER :: ok !TODO sert comme booléen, changer en LOGICAL ?
+    INTEGER,DIMENSION(:,:),POINTER :: tableau
+    INTEGER,DIMENSION(:),POINTER :: decoupe0
+    DOUBLE PRECISION :: long
+    DOUBLE PRECISION :: sigma0
+    DOUBLE PRECISION :: volext
+    DOUBLE PRECISION :: volint
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     !nb de decoupes
     nb=1
     DO i=1,dataw%dim
@@ -99,30 +137,63 @@ CONTAINS
   !*****************************************
   !calcul des clusters
   SUBROUTINE calculclusters(numproc,nblimit,nbideal,dataw,sigma)
-    IMPLICIT INTEGER(i,j,q)
-
+    IMPLICIT NONE
     INCLUDE 'mpif.h'
-    TYPE(type_data) :: dataw
-    INTEGER :: numproc,nbproc
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     DOUBLE PRECISION :: sigma
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: A,Z,A2,cluster_center
+    INTEGER :: nbideal
+    INTEGER :: nblimit
+    INTEGER :: numproc
+
+    !=== IN/OUT ===
+    TYPE(type_data) :: dataw
+
+    !#### Variables  ####
+    CHARACTER*30 :: files
+    CHARACTER*30 :: num
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: A
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: A2
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: cluster_center
+    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: Z
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: cluster_energy
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: D
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiomax
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiomin
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiomoy
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiorii
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiorij
     DOUBLE PRECISION,DIMENSION(:),POINTER :: W
-    INTEGER :: n,k,nbcluster
-    DOUBLE PRECISION, DIMENSION(:),POINTER :: D
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiomax,cluster_energy,&
-         ratiomin,ratiomoy,ratiorii,ratiorij
-    INTEGER,DIMENSION(:),POINTER ::cluster,cluster_population,nbinfo
-    INTEGER :: nblimit, nbideal, nb, nbvp
-    DOUBLE PRECISION :: norme,ratio,ratio1,ratio2,seuilrij
-    CHARACTER*30 :: num,files
-    DOUBLE PRECISION :: t1, t2, t_cons_vp
+    DOUBLE PRECISION :: norme
+    DOUBLE PRECISION :: ratio
+    DOUBLE PRECISION :: ratio1
+    DOUBLE PRECISION :: ratio2
+    DOUBLE PRECISION :: seuilrij
+    DOUBLE PRECISION :: t_cons_vp
+    DOUBLE PRECISION :: t1
+    DOUBLE PRECISION :: t2
+    DOUBLE PRECISION :: val ! deux valeurs qui quand elles ne sont pas declarees et donc implicitement des REAL font que ca marche mieux
+    DOUBLE PRECISION :: value ! deux valeurs qui quand elles ne sont pas declarees et donc implicitement des REAL font que ca marche mieux
+    INTEGER,DIMENSION(:),POINTER :: cluster
+    INTEGER,DIMENSION(:),POINTER :: cluster_population
+    INTEGER,DIMENSION(:),POINTER :: nbinfo
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: n
+    INTEGER :: nb
+    INTEGER :: nbcluster
+    INTEGER :: nbproc
+    INTEGER :: nbvp
+    INTEGER :: q
+    INTEGER :: solver ! solveur au valeur propre => parametre de controle
 
-    ! deux valeurs qui quand elles ne sont pas declarees
-    ! et donc implicitement des REAL font que ca marche mieux
-    DOUBLE PRECISION :: val, value
-
-    ! solveur au valeur propre => parametre de controle
-    INTEGER :: solver
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
 
     !creation de la matrice
     PRINT *,numproc,'valeur du sigma',sigma
@@ -327,7 +398,7 @@ PRINT *, 'ratio de frobenius'
        PRINT *,numproc,'cluster'
 #endif
     ENDIF
-	
+
     RETURN
   END SUBROUTINE calculclusters
 
