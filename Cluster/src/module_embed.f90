@@ -24,13 +24,11 @@ CONTAINS
     !
 
     IMPLICIT NONE
-    !TYPE(type_data) :: dataw
     DOUBLE PRECISION,DIMENSION(:,:),POINTER:: Z,A,cluster_center
     INTEGER ::nbcluster,n,nbinfo,numproc
     DOUBLE PRECISION ::ratio,test,ratiomin,ratiorii,ratiorij, ratiomoy
     DOUBLE PRECISION,DIMENSION(:),POINTER :: cluster_energy,Z3
     INTEGER,DIMENSION(:),POINTER ::cluster,cluster_population
-    !INTEGER,DIMENSION(:),POINTER::ordaffperclus
     DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Frob
     DOUBLE PRECISION,DIMENSION(:,:),POINTER::Z1,Z2
     INTEGER :: it_max,it_num,i,j,k
@@ -47,7 +45,6 @@ CONTAINS
     DO i=1,n
        DO j=1,nbcluster
           Z1(i,j)=Z(i,j)
-          !if (i==1) PRINT *,numproc,'matrice vp',j,W(j)
           Z3(i)=Z3(i)+Z1(i,j)**2
        ENDDO
     ENDDO
@@ -60,21 +57,14 @@ CONTAINS
        ENDDO
     ENDDO
 
-!    PRINT *, numproc,'methode kmeans'
-
-    it_max=n*n !1000.
+    it_max=n*n
 
     CALL kmeans_01 ( nbcluster, n, nbcluster, it_max, it_num,Z2,&
          cluster, cluster_center, cluster_population, cluster_energy, &
          numproc)
-    !PRINT *,numproc,'fin de kmeans. nb d iterations effectuees : ',it_num
-
-    !PRINT *,numproc,'Nombre points par cluster', cluster_population
-    ! PRINT *,'vecteur cluster',cluster(1:5) 
 
     !*****************************
     ! Mesure de qualite
-    !PRINT *,'Indexation'
     nbmax=0
     DO i=1,nbcluster
        nbmax=max(nbmax,cluster_population(i))
@@ -115,7 +105,6 @@ CONTAINS
           DO j=1,nbcluster
              IF (i/=j) THEN
                 ratio=ratio+Frob(i,j)/Frob(i,i)
-                !ratio=max(ratio,Frob(i,j)/Frob(i,i))
                 ratiomoy=ratiomoy+Frob(i,j)/Frob(i,i)
                 ratiorij=ratiorij+Frob(i,j)
                 ratiorii=ratiorii+Frob(i,i)
@@ -130,59 +119,9 @@ CONTAINS
     ENDDO
     DEALLOCATE(Frob)
 
-!!$    p2=1
-!!$    dataw%point(:)%cluster=cluster(:)
-!!$    ALLOCATE(P(n,n)); P(:,:)=0.0
-!!$    !PRINT *,'petit test', dataw%point(1:5)%cluster
-!!$    DO i=1,nbcluster
-!!$       DO j=1,n
-!!$          ! P(j,:)=0.0
-!!$          IF (dataw%point(j)%cluster==i) THEN 
-!!$             P(p2,j)=1.0
-!!$             p2=p2+1
-!!$          ENDIF
-!!$       ENDDO
-!!$    ENDDO
-!!$    !PRINT *,
-!!$    !PRINT *, 'matrice permut',P
-!!$    ALLOCATE(P1(n,n)); P1(:,:)=0.0
-!!$    P1=MATMUL(P,A)
-!!$    PRINT *,numproc,'Mesure de qualite : Frobenius norm'
-!!$    ALLOCATE(ordaffperclus(nbcluster+1));ordaffperclus(:)=0.0
-!!$    ordaffperclus(1)=0.0
-!!$    DO i=2,nbcluster+1
-!!$       ordaffperclus(i)=ordaffperclus(i-1)+cluster_population(i-1)
-!!$    ENDDO
-!!$    ! PRINT *, 'ordreaffperclus',  ordaffperclus
-!!$    ALLOCATE(Frob(nbcluster,nbcluster)); Frob(:,:)=0.0 
-!!$    nbinfo=nbcluster
-!!$    DO i=1,nbcluster
-!!$       IF (cluster_population(i)/=0) THEN
-!!$          DO p3=i,nbcluster
-!!$             normfro=0.0
-!!$             DO j=ordaffperclus(i)+1,ordaffperclus(i+1)
-!!$                DO q=ordaffperclus(p3)+1,ordaffperclus(p3+1)
-!!$                   normfro=normfro+P1(j,q)**2
-!!$                ENDDO
-!!$             ENDDO
-!!$             IF (i/=p3) THEN                
-!!$                Frob(i,p3)=normfro/Frob(i,i)
-!!$                ratio=ratio+Frob(i,p3)/nbcluster
-!!$             ELSE
-!!$                Frob(i,i)=normfro
-!!$             ENDIF
-!!$          ENDDO
-!!$       ELSE
-!!$          nbinfo=nbinfo-1
-!!$       ENDIF
-!!$    ENDDO
-!!$    ! PRINT *, 
-!!$    ! PRINT *,'norme de frobenius ',Frob
 #if aff
     PRINT *,numproc,'nbinfo=', nbinfo,' nbcluster=',nbcluster
 #endif
-    !DEALLOCATE(ordaffperclus);DEALLOCATE(Frob)
-    !DEALLOCATE(Z1), DEALLOCATE(Z2),DEALLOCATE(P);DEALLOCATE(P1)
 
     RETURN 
   END SUBROUTINE spectral_embedding
@@ -257,21 +196,15 @@ CONTAINS
     INTEGER cluster(point_num)
     DOUBLE PRECISION cluster_center(dim_num,cluster_num)
     DOUBLE PRECISION stockcenter(dim_num,cluster_num)
-    !DOUBLE PRECISION diffcenter(dim_num)
     DOUBLE PRECISION listnorm(point_num,cluster_num)
     DOUBLE PRECISION cluster_energy(cluster_num),stockenergy(cluster_num)
     INTEGER cluster_population(cluster_num)
     INTEGER stockpopulation(cluster_num)
-    !DOUBLE PRECISION dc,de,epsilon
-    !DOUBLE PRECISION f(point_num)
     INTEGER i
-    !INTEGER il
-    !INTEGER diffpopulation
     INTEGER it_max
     INTEGER it_num
     INTEGER j
     INTEGER k
-    !INTEGER list(1)
     DOUBLE PRECISION point(dim_num,point_num)
     INTEGER swap
     INTEGER  :: ok,p,ok2
@@ -317,22 +250,6 @@ CONTAINS
     cluster_id(:)=0; cluster_id(1)=1
     p=2
     seuil=0.4
-    !do i=2,cluster_num
-    !   ok=0
-    !   DO WHILE (ok==0)
-    !      valmax=2.0*seuil
-    !      DO j=1,i-1
-    !         val=0.0
-    !         DO k=1,dim_num
-    !            val=max(val,abs(cluster_center(k,j)-point(k,p)))
-    !         ENDDO
-    !         valmax=min(valmax,val)
-    !      ENDDO
-    !      IF (valmax>seuil) ok=1
-    !      p=p+1
-    !   ENDDO
-    !   cluster_center(:,i)=point(:,p-1)
-    !ENDDO
 #if aff
 PRINT *, 'recherche des centres'
 #endif
@@ -351,18 +268,12 @@ PRINT *, 'recherche des centres'
                 val=0.0; norme=0.0
                 DO k=1,dim_num
                    val=max(val,abs(cluster_center(k,j)-point(k,p)))
-                  !norme=norme+abs(cluster_center(k,j)-point(k,p))**2
                 ENDDO
-               !norme=sqrt(norme)
-                !valmax=min(valmax,val/norme)
                 valmax=min(val,valmax)
-               !if (valmax>seuil) ok=1
              ENDDO
              IF (valmax>=seuil) ok=1
           ENDIF
          p=p+1
-!if (seuil<=1e-4) THEN
-!do i1=p+1,cluster_num
 
          !abaisse le seuil si pas assez de centre sont trouves
          IF ((p>point_num).AND.(ok==0)) THEN 
@@ -399,7 +310,6 @@ PRINT *, 'recherche des centres'
 
        !! Calcul de toutes les distances
        cluster_population(1:cluster_num) = 1
-       ! ALLOCATE(listnorm(point_num,cluster_num));
        listnorm(:,:)=0.0
        DO i=1,point_num
           DO j=1,cluster_num
@@ -423,16 +333,7 @@ PRINT *, 'recherche des centres'
           cluster_population(cluster(i))=cluster_population(cluster(i))+1
        ENDDO
 
-       !WRITE(num,*) numproc
-       !files = 'kmeans.'//trim(adjustl(num))
-       !OPEN(FILE=files, UNIT=15, ACCESS="APPEND")
-       !WRITE (15,*) numproc,'iteration',it_num,'test clustering',cluster(1:3)
-       !CALL FLUSH(15)
-       !CLOSE(15)
-
-       !PRINT *,numproc,'nbre de permut',swap
-
-       !! mise ÃÂÃÂÃÂÃÂ  jour des centres
+       !! mise a jour des centres
        cluster_center(:,:)=0.0
        DO j=1,point_num
           i=cluster(j) 
@@ -447,164 +348,6 @@ PRINT *, 'recherche des centres'
 
 
     ENDDO
-
-
-
-
-
-
-
-
-
-
-!!$
-!!$    DO i = 1, point_num
-!!$       DO j = 1, cluster_num
-!!$          cluster_energy(j) = sum ( &
-!!$               ( point(1:dim_num,i) - cluster_center(1:dim_num,j) )**2 )
-!!$       ENDDO
-!!$       list = minloc ( cluster_energy(1:cluster_num) )
-!!$       cluster(i) = list(1)
-!!$    ENDDO
-!!$    !
-!!$    !  Determine the cluster population counts.
-!!$    !
-!!$    cluster_population(1:cluster_num) = 0
-!!$
-!!$    DO i = 1, point_num
-!!$       j = cluster(i)
-!!$       cluster_population(j) = cluster_population(j) + 1
-!!$    ENDDO
-!!$    !
-!!$    !  Calculate the mean and sum of squares for each cluster.
-!!$    !
-!!$
-!!$    DO i = 1, point_num
-!!$       j = cluster(i)
-!!$       cluster_center(1:dim_num,j) = cluster_center(1:dim_num,j) &
-!!$            + point(1:dim_num,i)
-!!$    ENDDO
-!!$
-!!$    DO i = 1, cluster_num
-!!$       IF ( 0 < cluster_population(i) ) THEN
-!!$          cluster_center(1:dim_num,i) = cluster_center(1:dim_num,i) &
-!!$               / REAL ( cluster_population(i), KIND = 8 )
-!!$       ENDIF
-!!$    ENDDO
-!!$    !
-!!$    !  Set the point energies.
-!!$    !
-!!$    f(1:point_num) = 0.0
-!!$
-!!$    DO i = 1, point_num
-!!$       j = cluster(i)
-!!$       f(i) = sum ( ( point(1:dim_num,i) - cluster_center(1:dim_num,j) )**2 )
-!!$    ENDDO
-!!$    !
-!!$    !  Set the cluster energies.
-!!$    !
-!!$    cluster_energy(1:cluster_num) = 0.0
-!!$
-!!$    DO i = 1, point_num
-!!$       j = cluster(i)
-!!$       cluster_energy(j) = cluster_energy(j) + f(i)
-!!$    ENDDO
-!!$    !
-!!$    !  Adjust the point energies by a weight factor.
-!!$    !
-!!$    DO i = 1, point_num
-!!$       j = cluster(i)
-!!$       IF ( 1 < cluster_population(j) ) THEN
-!!$          f(i) = f(i) * REAL ( cluster_population(j), KIND = 8 ) &
-!!$               / REAL ( cluster_population(j) - 1, KIND = 8 )
-!!$       ENDIF
-!!$    ENDDO
-!!$    !
-!!$    !  Examine each observation in turn to see IF it should be
-!!$    !  reassigned to a different cluster.
-!!$    !
-!!$    it_num = 0
-!!$    DO WHILE ( it_num < it_max )
-!!$       it_num = it_num + 1
-!!$       swap = 0
-!!$       DO i = 1, point_num
-!!$          il = cluster(i)
-!!$          ir = il
-!!$          IF ( cluster_population(il) <= 1 ) THEN
-!!$             cycle
-!!$          ENDIF
-!!$          dc = f(i)
-!!$          DO j = 1, cluster_num
-!!$             IF ( j /= il ) THEN
-!!$                de = sum ( &
-!!$                     ( point(1:dim_num,i) - cluster_center(1:dim_num,j) )**2 ) &
-!!$                     * REAL ( cluster_population(j), KIND = 8 ) &
-!!$                     / REAL ( cluster_population(j) + 1, KIND = 8 )
-!!$                IF ( de < dc ) THEN
-!!$                   dc = de
-!!$                   ir = j
-!!$                ENDIF
-!!$             ENDIF
-!!$          ENDDO
-!!$          !
-!!$          !  If the lowest value was obtained by staying in the current cluster,
-!!$          !  THEN cycle.
-!!$          !
-!!$          IF ( ir == il ) THEN
-!!$             cycle
-!!$          ENDIF
-!!$          !
-!!$          !  Reassign the point from cluster IL to cluster IR.
-!!$          !
-!!$          cluster_center(1:dim_num,il) = &
-!!$               ( cluster_center(1:dim_num,il) &
-!!$               * REAL ( cluster_population(il), KIND = 8 ) &
-!!$               - point(1:dim_num,i) ) / REAL ( cluster_population(il) - 1, KIND = 8 )
-!!$
-!!$          cluster_center(1:dim_num,ir) = &
-!!$               ( cluster_center(1:dim_num,ir) &
-!!$               * REAL ( cluster_population(ir), KIND = 8 ) &
-!!$               + point(1:dim_num,i) ) / REAL ( cluster_population(ir) + 1, KIND = 8 )
-!!$
-!!$          cluster_energy(il) = cluster_energy(il) - f(i)
-!!$          cluster_energy(ir) = cluster_energy(ir) + dc
-!!$          cluster_population(ir) = cluster_population(ir) + 1
-!!$          cluster_population(il) = cluster_population(il) - 1
-!!$
-!!$          cluster(i) = ir
-!!$          !
-!!$          !  Adjust the value of F for points in clusters IL and IR.
-!!$          !
-!!$          DO j = 1, point_num
-!!$             k = cluster(j)
-!!$             IF ( k == il .OR. k == ir ) THEN
-!!$                f(j) = sum ( &
-!!$                     ( point(1:dim_num,j) - cluster_center(1:dim_num,k) )**2 )
-!!$                IF ( 1 < cluster_population(k) ) THEN
-!!$                   f(j) = f(j) * REAL ( cluster_population(k), KIND = 8 ) &
-!!$                        / ( REAL ( cluster_population(k) - 1, KIND = 8 ) )
-!!$                ENDIF
-!!$             ENDIF
-!!$          ENDDO
-!!$          swap = swap + 1
-!!$       ENDDO
-!!$       !
-!!$       !  Exit IF no reassignments were made during this iteration.
-!!$       !
-!!$       IF ( swap == 0 ) THEN
-!!$          exit
-!!$       ENDIF
-!!$    ENDDO
-!!$    !
-!!$    !  Compute the cluster energies.
-!!$    !
-!!$    cluster_energy(1:cluster_num) = 0.0
-!!$    DO i = 1, point_num
-!!$       j = cluster(i)
-!!$       cluster_energy(j) = cluster_energy(j) + sum ( &
-!!$            ( point(1:dim_num,i) - cluster_center(1:dim_num,j) )**2 )
-!!$    ENDDO
-!!$
 
     RETURN
   END SUBROUTINE kmeans_01

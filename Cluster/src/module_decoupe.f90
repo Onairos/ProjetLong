@@ -40,8 +40,6 @@ CONTAINS
     !sauvegarde des decoupages
     CALL ecrit_decoupages(nbproc,data,ldat,ddat)
 
-    !CALL MPI_ABORT(ierr)
-
     RETURN
   END SUBROUTINE decoupedata
 
@@ -65,24 +63,17 @@ CONTAINS
     prod=1.0
     !volume max
     DO i=1,data%dim
-       !PRINT *,'coordmax',coordmax(i)
-       !PRINT *,'coordmin',coordmin(i)
        prod=prod*(coordmax(i)-coordmin(i))
-       !PRINT *,'difference',(coordmax(i)-coordmin(i))
     ENDDO
-    !PRINT *,'surface globale',data%dim
     files='diminterface'
     WRITE(num,*),0
     num=adjustl(num)
     files=trim(files)//'.'//trim(num)
-    ! len=len(trim(num))
-    ! PRINT *,numproc,'ecriture dim interface : '
     OPEN(FILE=files,UNIT=20)
     DO i=1,data%dim
        som1=som1*(decoupe(i)-1)
        prod2=prod2+(decoupe(i)-1)*prod/(coordmax(i)-coordmin(i))    
-    ENDDO
-    !PRINT *,'surface bande',prod2     
+    ENDDO    
     WRITE(20,*)  prod,epsilon*prod2-som1*(epsilon)**data%dim
     CLOSE(20)
  

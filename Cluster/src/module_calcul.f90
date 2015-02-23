@@ -27,27 +27,6 @@ CONTAINS
     sigma=sigma/(2*exp(log(float(dataw%nb))*(1.0/float(dataw%dim))))
     !securite
     IF (sigma==0.0) sigma=1.0
-
-    !do i1=1,dataw%nb
-    !   norme1=10**8
-    !   DO j1=1,dataw%nb
-    !      norme=0.0
-    !      IF (j1/=i1) THEN
-    !         DO k1=1,dataw%dim
-    !            norme=norme+&
-    !                 (dataw%point(i1)%coord(k1)-dataw%point(j1)%coord(k1))**2
-    !         ENDDO
-    !         norme1=min(norme1,sqrt(norme))
-    !      ENDIF
-    !   ENDDO
-    !   sigma1=sigma1+sqrt(norme1)/dataw%nb
-    !!ENDDO
-    !sigma1=sqrt(sigma1)
-
-
-    !PRINT *
-    !PRINT *,numproc,'valeur de sigma calculee :',sigma
-    !PRINT *,numproc,'2eme valeur de sigma calculee :',sigma1
     RETURN
   END SUBROUTINE calculsigma
 
@@ -98,7 +77,6 @@ CONTAINS
           volext=volext*long
           volint=volint*max(0.0,long-2.0*epsilon)
        ENDDO
-       !PRINT *,'volext',volext,'volint=',volint
        sigma0=sigma0+volext-volint
     ENDDO
     DEALLOCATE(tableau)
@@ -111,7 +89,6 @@ CONTAINS
 #if aff
     PRINT *,numproc,'valeur de sigma calculee pour interface:',sigma0
 #endif
-    !sigma=min(sigma,sigma0)
 #if aff
     PRINT *,numproc,'valeur sigma interface',sigma
 #endif
@@ -144,7 +121,7 @@ CONTAINS
     ! et donc implicitement des REAL font que ca marche mieux
     DOUBLE PRECISION :: val, value
 
-    ! solveur au valeur propre => paramÃÂÃÂÃÂÃÂ¨tre de contrÃÂÃÂÃÂÃÂ´le
+    ! solveur au valeur propre => parametre de controle
     INTEGER :: solver
 
     !creation de la matrice
@@ -183,13 +160,12 @@ CONTAINS
 
     DO i=1,n
        DO j=1,n
-          ! la matrice A n'est plus symÃÂÃÂÃÂÃÂ©tique
+          ! la matrice A n'est plus symetrique
           A(i,j)=A(i,j)/D(i)
        ENDDO
     ENDDO
     DEALLOCATE(D)
 
-    ! solver 0 = lapack - 1 = arpack
     solver = 0
 
     IF(solver == 0) THEN
@@ -227,7 +203,6 @@ CONTAINS
     t_cons_vp = t2 - t1
     PRINT *, numproc, 'cout construction vp', t_cons_vp
 
-    !PRINT *,numproc,'reordonne les vp...'
     DO i=1,nbvp-1
        DO j=i+1,nbvp
           IF (W(i)<W(j)) THEN
@@ -237,13 +212,11 @@ CONTAINS
              ENDDO
           ENDIF
        ENDDO
-       !PRINT *,'vp ',i,W(i)
     ENDDO
 
     !Test spectral embedding avec different nbcluster   
     !***********************
     ! Spectral embedding
-    !PRINT *,numproc,'Spectral Embedding'
 
     IF ((nbideal==0).AND.(n>2)) THEN
        !** recherche du meilleur decoupage
@@ -255,8 +228,6 @@ CONTAINS
 
        ALLOCATE(nbinfo(nblimit)); nbinfo(:)=0
        DO nbcluster=2,min(n,nblimit)
-          !PRINT *,numproc,'teste avec nbcluster=',nbcluster
-          !CALL flush(6)
 
           ALLOCATE(cluster(n));cluster(:)=0.0
           ALLOCATE(cluster_center(nbcluster,nbcluster)); cluster_center(:,:)=0.0
@@ -268,74 +239,32 @@ CONTAINS
                cluster_energy,nbinfo(nbcluster),numproc,ratiomoy(nbcluster), &
                ratiorij(nbcluster),ratiorii(nbcluster))
 
-          !WRITE(num,*),numproc
-          !num=adjustl(num)
-          !files='clusterk.partiel'//trim(num)
-          !WRITE(num,*),nbcluster
-          !num=adjustl(num)
-          !files=trim(files)//'.'//trim(num)
-          !len=len(trim(num))
-          !PRINT *,numproc,'ecriture des clusters : ',files
-          !OPEN(FILE=files,UNIT=20)
-          !WRITE(20,*) dataw%nb,dataw%dim
-          !do i=1,n
-          !   WRITE(20,*) dataw%point(i)%coord(:),cluster(i)
-          !ENDDO
-          !CLOSE(20)
 
           DEALLOCATE(cluster);DEALLOCATE(cluster_center);
           DEALLOCATE(cluster_energy)
           DEALLOCATE(cluster_population);
        ENDDO
 
-       !WRITE(num,*),numproc
-       !num=adjustl(num)
-!       files='ratio'
-!          WRITE(num,*),numproc
-!          num=adjustl(num)
-!          files=trim(files)//'.'//trim(num)
-         ! len=len(trim(num))
-         ! PRINT *,numproc,'ecriture des ratio : '
-!          OPEN(FILE=files,UNIT=20)
-!          DO i=1,min(n,nblimit)
-!             WRITE(20,*) ratiorij(i),ratiorii(i),ratiomoy(i)
-!          ENDDO
-!          CLOSE(20)
-
-
-
 #if aff
 PRINT *, 'ratio de frobenius'
 #endif
        !*******************************
        ! Ratio de norme de frobenius
-       !PRINT *,numproc,'Ratio max par cluster',ratiomax(2:nblimit)
-       !PRINT *,numproc,'Ratio min par cluster',ratiomin(2:nblimit)
-       !PRINT *,numproc,'Ratio Rii par cluster',ratiorii(2:nblimit)
-       !PRINT *,numproc,'Ratio Rij par cluster',ratiorij(2:nblimit)
        ratio=ratiomax(nblimit)
        dataw%nbclusters=nblimit
        ratio1=0.0;ratio2=1e+10
        DO i=2,nblimit
-          !if  ((nbinfo(i)==i).AND.(ratio(i)<ratio)) THEN
-          !if  ((nbinfo(i)==i).AND.(ratiomoy(i)<ratio)) THEN
           IF ((numproc==0).AND.(nbproc>1)) THEN 
              seuilrij=1e-1
           ELSE
              seuilrij=1e-4
           ENDIF
           IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
-             !if (ratiomoy(i)-ratio1<=1e-4) THEN
-             !2eme critÃÂÃÂÃÂÃÂ¨re
-             !(ratiorij(i)/ratiorii(i)<=1e-4)
              dataw%nbclusters=i
-             ! ratio=ratiomax(i)
              ratio1=ratiorii(i)
              ratio2=ratiorij(i)
-             !ratio1=ratiomoy(i)
           ENDIF
        ENDDO
-      ! PRINT *,numproc,'nb de clusters final :',dataw%nbclusters
 
     ELSEIF ((nbideal==1).AND.(n>nbideal)) THEN
        !** test avec un cluster impose
@@ -353,7 +282,7 @@ PRINT *, 'ratio de frobenius'
        ALLOCATE(ratiorii(n)); ratiorii(:)=0
        ALLOCATE(ratiorij(n)); ratiorij(:)=0
     ENDIF
-    ! cas oÃÂÃÂÃÂÃÂ¹ nbcluster==1
+    ! cas ou nbcluster==1
     IF (dataw%nbclusters==2) THEN
        PRINT *, 'difference ratio',ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 
@@ -388,7 +317,6 @@ PRINT *, 'ratio de frobenius'
        DEALLOCATE(cluster_center)
        DEALLOCATE(W)
     ELSE 
-       !cluster_population(1)=dataw%nb
 #if aff
        PRINT *, numproc, 'ok'
 #endif
@@ -399,18 +327,7 @@ PRINT *, 'ratio de frobenius'
        PRINT *,numproc,'cluster'
 #endif
     ENDIF
-
-
-    !affichage
-    !do j=1,dataw%nbclusters
-    !   PRINT *,numproc,'centres des clusters',cluster_center(:,j)
-    !ENDDO
-    !maj du cluster
-  
-
-    !deallocations
-   
-!    CALL flush()
+	
     RETURN
   END SUBROUTINE calculclusters
 

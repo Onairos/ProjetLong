@@ -170,7 +170,6 @@ CONTAINS
        ALLOCATE(list(dataw%nbclusters))
        list(:) = 0
        DO i=1,dataw%nb
-         ! PRINT *, dataw%point(i)%cluster
           list(dataw%point(i)%cluster)=list(dataw%point(i)%cluster)+1
        ENDDO
        tag=tag+1
@@ -235,7 +234,6 @@ CONTAINS
     DO i=1,nbproc-1
        IF (ldat(i)>0) THEN
           !reception des affectations locales des points du sous-domaine
-          !tag=i*12
           CALL MPI_RECV(lclust,maxldat,MPI_INTEGER,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,status,ierr)
 #if aff
           PRINT *, 'mpi_recv', i, status(1), status(2), status(3), status(4) 
