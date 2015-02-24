@@ -4,43 +4,59 @@ PROGRAM clusters
   USE module_decoupe
   USE module_MPI
   USE module_calcul
-!  USE module_sparse
   USE module_sortie
 
   IMPLICIT NONE
  
   ! librairie MPI
   INCLUDE 'mpif.h'
-
-  ! variables MPI
-  INTEGER :: ierr,tag
-  INTEGER :: numproc,nbproc, len
-  CHARACTER*80 :: procname
-  
-  INTEGER status(MPI_STATUS_SIZE)
-
-  ! variables
-  DOUBLE PRECISION :: elapsed(2)     ! For receiving user and system time
-  DOUBLE PRECISION :: temps
-  DOUBLE PRECISION :: epsilon
-  TYPE(type_data) :: data,dataw
-  DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
-  INTEGER,DIMENSION(:),POINTER :: decoupe
-  INTEGER,DIMENSION(:),POINTER :: ldat,iclust,listenbideal
+  !###########################################
+  ! DECLARATIONS
+  !###########################################
+  !#### Variables  ####
   TYPE(type_clusters),DIMENSION(:),POINTER :: nclust
-  INTEGER,DIMENSION(:,:),POINTER :: ddat
-  INTEGER :: nblimit,nbideal
-  LOGICAL :: existe
-  INTEGER :: test,nbclust,i,j,nmax
-  DOUBLE PRECISION :: sigma
-  INTEGER,DIMENSION(:,:),POINTER :: clustermap
+  TYPE(type_data) :: data
+  TYPE(type_data) :: dataw
+  CHARACTER*80 :: procname ! variable MPI
+  CHARACTER*30 :: entree
+  CHARACTER*30 :: mesh
   DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
-  CHARACTER*30 :: mesh,entree
- 
-  DOUBLE PRECISION :: starttime, endtime
-  DOUBLE PRECISION :: t1, t2
-  DOUBLE PRECISION :: t_parall, t_parallg
+  DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
+  DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+  DOUBLE PRECISION :: elapsed(2) ! For receiving user and system time
+  DOUBLE PRECISION :: endtime
+  DOUBLE PRECISION :: epsilon
+  DOUBLE PRECISION :: sigma
+  DOUBLE PRECISION :: starttime
+  DOUBLE PRECISION :: t_parall
+  DOUBLE PRECISION :: t_parallg
+  DOUBLE PRECISION :: t1
+  DOUBLE PRECISION :: t2
+  DOUBLE PRECISION :: temps
+  INTEGER,DIMENSION(:,:),POINTER :: clustermap
+  INTEGER,DIMENSION(:,:),POINTER :: ddat
+  INTEGER,DIMENSION(:),POINTER :: decoupe
+  INTEGER,DIMENSION(:),POINTER :: iclust
+  INTEGER,DIMENSION(:),POINTER :: ldat
+  INTEGER,DIMENSION(:),POINTER :: listenbideal
+  INTEGER :: i
+  INTEGER :: ierr ! variable MPI
+  INTEGER :: j
+  INTEGER :: len ! variable MPI
+  INTEGER :: nbclust
+  INTEGER :: nbideal
+  INTEGER :: nblimit
+  INTEGER :: nbproc ! variable MPI
+  INTEGER :: nmax
+  INTEGER :: numproc ! variable MPI
+  INTEGER :: status(MPI_STATUS_SIZE) ! variable MPI
+  INTEGER :: tag ! variable MPI
+  INTEGER :: test
+  LOGICAL :: existe
 
+  !###########################################
+  ! INSTRUCTIONS
+  !###########################################
   !initialisation MPI
   CALL MPI_INIT(ierr)
   CALL MPI_COMM_RANK(MPI_COMM_WORLD,numproc,ierr)
