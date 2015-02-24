@@ -1,10 +1,24 @@
 PROGRAM visudecoup
   IMPLICIT NONE
+  !###########################################
+  ! DECLARATIONS
+  !###########################################
+  !#### Variables  ####
+  CHARACTER*30 :: files
+  CHARACTER*30 :: num
+  DOUBLE PRECISION :: coord(2)
+  DOUBLE PRECISION :: xmax
+  DOUBLE PRECISION :: xmin
+  DOUBLE PRECISION :: ymax
+  DOUBLE PRECISION :: ymin
+  INTEGER :: i
+  INTEGER :: j
   INTEGER :: n
-  CHARACTER*30 :: files,num
-  INTEGER :: i,j,nb
-  DOUBLE PRECISION :: coord(2),xmin,xmax,ymin,ymax
+  INTEGER :: nb
 
+  !###########################################
+  ! INSTRUCTIONS
+  !###########################################
   PRINT *
   PRINT *,'visualisation du decoupage parallele en 2D'
   PRINT *
