@@ -2,11 +2,18 @@ PROGRAM teste_clusters
   USE module_teste_clusters
 
   IMPLICIT NONE
+  !###########################################
+  ! DECLARATIONS
+  !###########################################
+  !#### Variables  ####
   TYPE(type_test),DIMENSION(:),POINTER :: test
-  INTEGER :: nbtests
-  INTEGER :: i
   CHARACTER*30 :: files
-
+  INTEGER :: i
+  INTEGER :: nbtests
+  
+  !###########################################
+  ! INSTRUCTIONS
+  !###########################################
   PRINT *
   PRINT *,'-------------------------------------------------------'
   PRINT *,'Programme de test de CLUSTERS et VISUCLUSTERS '
@@ -17,9 +24,9 @@ PROGRAM teste_clusters
   PRINT *,'  - le programme VISUCLUSTERS pour des sorties paraview'
   PRINT *,'  - le programme VISUCLUSTERS pour des sorties gmsh'
   PRINT *
-  PRINT *,'le programme verifie l existence d un fichier genere'
-  PRINT *,'  en fin d execution de ces programmes.'
-  PRINT *,'il retourne "T" ou "F" selon que ce programme c est'
+  PRINT *,'le programme verifie l''existence d''un fichier genere'
+  PRINT *,'  en fin d''execution de ces programmes.'
+  PRINT *,'il retourne "T" ou "F" selon que ce programme s''est'
   PRINT *,'  bien execute ou non.'
   PRINT *
   PRINT *,'-------------------------------------------------------'
