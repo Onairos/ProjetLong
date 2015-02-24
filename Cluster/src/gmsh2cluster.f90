@@ -1,9 +1,21 @@
 PROGRAM gmsh2cluster
   IMPLICIT NONE
-  INTEGER :: nbnoe
-  INTEGER :: i,j,dim
-  DOUBLE PRECISION :: x,y,z
+  !###########################################
+  ! DECLARATIONS
+  !###########################################
+  !#### Variables  ####
   CHARACTER(30) :: nom
+  DOUBLE PRECISION :: x
+  DOUBLE PRECISION :: y
+  DOUBLE PRECISION :: z
+  INTEGER :: dim
+  INTEGER :: i
+  INTEGER :: j
+  INTEGER :: nbnoe
+
+  !###########################################
+  ! INSTRUCTIONS
+  !###########################################
   PRINT *
   PRINT *,'conversion gmsh vers entree cluster'
   PRINT *
