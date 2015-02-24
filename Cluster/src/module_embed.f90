@@ -11,29 +11,54 @@ CONTAINS
     !*****************************************
     ! spectral embedding
     !
-    ! nbcluster = nbre de cluster
-    ! dataw : points
-    ! Z : matrice des vecteurs propres
-    ! M : nbre de vp trouveesx
-    ! ratio : max des ration de frob sur matrice aff reordonnancee suivant
-    ! les clusters
-    ! cluster : appartenance des clusters
-    ! cluster_center : centre des nbclusters clusters
-    ! cluster_population : nbre de points par cluster
-    ! cluster_energy : somme des energies par cluster
-    !
-
+    ! dataw : points              TODO: WTF?
+    ! M : nbre de vp trouvees     TODO: WTF?
     IMPLICIT NONE
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER:: Z,A,cluster_center
-    INTEGER ::nbcluster,n,nbinfo,numproc
-    DOUBLE PRECISION ::ratio,test,ratiomin,ratiorii,ratiorij, ratiomoy
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: cluster_energy,Z3
-    INTEGER,DIMENSION(:),POINTER ::cluster,cluster_population
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
+    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: A
+    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Z ! matrice des vecteurs propres
+    INTEGER :: n
+    INTEGER :: nbcluster ! nbre de cluster
+    INTEGER :: numproc
+    
+    !====  OUT ====
+    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: cluster_center ! centre des nbclusters clusters
+    DOUBLE PRECISION, DIMENSION(:),POINTER :: cluster_energy ! somme des energies par cluster
+    DOUBLE PRECISION :: ratio ! max des ration de frob sur matrice aff reordonnancee suivant
+    DOUBLE PRECISION :: ratiomoy
+    DOUBLE PRECISION :: ratiorii
+    DOUBLE PRECISION :: ratiorij
+    INTEGER,DIMENSION(:),POINTER :: cluster ! appartenance des clusters
+    INTEGER,DIMENSION(:),POINTER :: cluster_population ! nbre de points par cluster
+    INTEGER :: nbinfo
+    
+    !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Frob
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER::Z1,Z2
-    INTEGER :: it_max,it_num,i,j,k
+    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Z1
+    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Z2
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: Z3
+    DOUBLE PRECISION :: ratiomin
+    DOUBLE PRECISION :: test
     INTEGER,DIMENSION(:,:),POINTER :: clustercorresp
-    INTEGER :: ki,kj,ni,nj,ok,nbmax
+    INTEGER :: i
+    INTEGER :: it_max
+    INTEGER :: it_num
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: ki
+    INTEGER :: kj
+    INTEGER :: nbmax
+    INTEGER :: ni
+    INTEGER :: nj
+    INTEGER :: ok ! TODO: booleen ?
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
     ALLOCATE(cluster(n));
     ALLOCATE(cluster_center(nbcluster,nbcluster));
     ALLOCATE(cluster_population(nbcluster));
@@ -163,57 +188,54 @@ CONTAINS
     !    Applied Statistics,
     !    Volume 22, Number 1, 1973, pages 126-130.
     !
-    !  Parameters:
-    !
-    !    Input, INTEGER DIM_NUM, the number of spatial dimensions.
-    !
-    !    Input, INTEGER POINT_NUM, the number of points.
-    !
-    !    Input, INTEGER CLUSTER_NUM, the number of clusters.
-    !
-    !    Input, INTEGER IT_MAX, the maximum number of iterations.
-    !
-    !    Output, INTEGER IT_NUM, the number of iterations taken.
-    !
-    !    Input, DOUBLE PRECISION POINT(DIM_NUM,POINT_NUM), the points.
-    !
-    !    Output, INTEGER CLUSTER(POINT_NUM), indicates which cluster
-    !    each point belongs to.
-    !
-    !    Input/output, DOUBLE PRECISION CLUSTER_CENTER(DIM_NUM,CLUSTER_NUM),
-    !    the cluster centers.
-    !
-    !    Output, INTEGER CLUSTER_POPULATION(CLUSTER_NUM), the number 
-    !    of points in each cluster.
-    !
-    !    Output, DOUBLE PRECISION CLUSTER_ENERGY(CLUSTER_NUM), the 
-    !    cluster energies.
-    !
+
     IMPLICIT NONE
-    INTEGER cluster_num
-    INTEGER dim_num
-    INTEGER point_num
-    INTEGER cluster(point_num)
-    DOUBLE PRECISION cluster_center(dim_num,cluster_num)
-    DOUBLE PRECISION stockcenter(dim_num,cluster_num)
-    DOUBLE PRECISION listnorm(point_num,cluster_num)
-    DOUBLE PRECISION cluster_energy(cluster_num),stockenergy(cluster_num)
-    INTEGER cluster_population(cluster_num)
-    INTEGER stockpopulation(cluster_num)
-    INTEGER i
-    INTEGER it_max
-    INTEGER it_num
-    INTEGER j
-    INTEGER k
-    DOUBLE PRECISION point(dim_num,point_num)
-    INTEGER swap
-    INTEGER  :: ok,p,ok2
-    DOUBLE PRECISION :: val,valmax,seuil,norme !,diffenergy
-    INTEGER :: cluster_id(cluster_num)
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
+    DOUBLE PRECISION :: point (dim_num,point_num) ! the points
+    INTEGER :: cluster_num ! the number of clusters
+    INTEGER :: dim_num ! the number of spatial dimensions
+    INTEGER :: it_max ! the maximum number of iterations
+    INTEGER :: point_num ! the number of points
 
-    INTEGER :: numproc
-    CHARACTER*30 :: files, num
+    !=== IN/OUT ===
+    DOUBLE PRECISION :: cluster_center (dim_num, cluster_num) ! the cluster centers
 
+    !====  OUT ====
+    DOUBLE PRECISION :: cluster_energy (cluster_num) ! the cluster energies
+    INTEGER :: it_num ! the number of iterations taken
+    INTEGER :: cluster (point_num) ! indicates which cluster each point belongs to
+    INTEGER :: cluster_population (cluster_num) ! the number of points in each cluster
+
+    !== USELESS ===
+    INTEGER :: numproc ! TODO: remove?
+    
+    !#### Variables  ####
+    CHARACTER*30 :: files
+    CHARACTER*30 :: num
+    DOUBLE PRECISION :: listnorm (point_num, cluster_num)
+    DOUBLE PRECISION :: stockcenter (dim_num, cluster_num)
+    DOUBLE PRECISION :: stockenergy (cluster_num)
+    DOUBLE PRECISION :: norme
+    DOUBLE PRECISION :: seuil
+    DOUBLE PRECISION :: val
+    DOUBLE PRECISION :: valmax
+    INTEGER :: cluster_id (cluster_num)
+    INTEGER :: stockpopulation (cluster_num)
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: ok ! TODO: booleen ?
+    INTEGER :: ok2 ! TODO: booleen ?
+    INTEGER :: swap
+    INTEGER :: p
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################   
     it_num = 0
     !
     !  Idiot checks.
