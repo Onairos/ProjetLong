@@ -13,8 +13,20 @@ CONTAINS
   !fichier de lancement de runclusters
   SUBROUTINE cree_go(test)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_test) :: test
-    CHARACTER*80 :: files,num
+
+    !#### Variables  ####
+    CHARACTER*80 :: files
+    CHARACTER*80 :: num
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     !directory
     files='mkdir '//trim(adjustl(test%dir))
     CALL system(files)
@@ -39,8 +51,19 @@ CONTAINS
   !fichier test
   SUBROUTINE cree_test(test)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_test) :: test
+
+    !#### Variables  ####
     CHARACTER*80 :: files
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     files=trim(adjustl(test%dir))//'/test'
     PRINT *,'  > creation du fichier '//files
     OPEN(FILE=files,UNIT=10)
@@ -66,9 +89,20 @@ CONTAINS
   !fichier test
   SUBROUTINE teste(test)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_test) :: test
+
+    !#### Variables  ####
     CHARACTER*80 :: files
     LOGICAL :: existe
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     files='cd '//trim(adjustl(test%dir))//'; go; cd ..'
     PRINT *,'  > lancement du test...'
     CALL system(files)
@@ -87,6 +121,9 @@ CONTAINS
   !*******************************************
   !genere les exemples de data
   SUBROUTINE cree_data
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     PRINT *,'  > fichier : image1d'
     OPEN(FILE='image1d',UNIT=1)
     WRITE(1,*) '2 1 '
