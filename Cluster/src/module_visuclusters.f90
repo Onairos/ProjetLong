@@ -8,8 +8,22 @@ CONTAINS
   !lecture des fichiers d'entree
   SUBROUTINE lit(params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !=== IN/OUT ===
     TYPE(type_params) :: params
-    INTEGER :: i,j,k,n
+    
+    !#### Variables  ####
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: n
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################     
     params%geom=0
     params%seuil=0
     PRINT *
@@ -88,12 +102,22 @@ CONTAINS
     RETURN
   END SUBROUTINE lit
 
+
   !*************************
   !ecriture de la geometrie du decoupage
   SUBROUTINE ecrit_decoupage(formato,params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
     CHARACTER*30 :: formato
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################    
     PRINT *
     PRINT *,'ecriture de la geometrie du decoupage...'
     SELECT CASE(formato)
@@ -105,12 +129,22 @@ CONTAINS
     RETURN
   END SUBROUTINE ecrit_decoupage
 
+
   !***********************
   !ecriture des affectations de decoupage
   SUBROUTINE affectation(formato,params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
     CHARACTER*30 :: formato
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################    
     PRINT *
     PRINT *,'ecriture des affectations du decoupage...'
     SELECT CASE(formato)
@@ -122,12 +156,22 @@ CONTAINS
     RETURN
   END SUBROUTINE affectation
 
+
   !***********************
   !ecriture des clusters avant regroupement
   SUBROUTINE sous_clusters(formato,params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
     CHARACTER*30 :: formato
+
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################    
     PRINT *
     PRINT *,'lecture des clusters avant regroupement...'
     SELECT CASE(formato)
@@ -139,12 +183,22 @@ CONTAINS
     RETURN
   END SUBROUTINE sous_clusters
 
+
   !***********************
   !ecriture des clusters apres regroupement
   SUBROUTINE cluster_final(formato,params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
     CHARACTER*30 :: formato
+
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
     PRINT *
     PRINT *,'lecture des clusters apres regroupement...'
     SELECT CASE(formato)
@@ -156,11 +210,21 @@ CONTAINS
     RETURN
   END SUBROUTINE cluster_final
 
+
   !***********************
   !liste des commandes
   SUBROUTINE commandes(formato)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     CHARACTER*30 :: formato
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
     PRINT *
     PRINT *,'-------------------------------------'
     PRINT *,'liste de commandes de visualisation :'
