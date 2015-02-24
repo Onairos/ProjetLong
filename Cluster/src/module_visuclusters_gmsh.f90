@@ -6,11 +6,32 @@ CONTAINS
   !ecriture de la geometrie du decoupage
   SUBROUTINE ecrit_decoupage_gmsh(params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER :: i
+
+    !#### Variables  ####
     CHARACTER*30 :: num
-    DOUBLE PRECISION :: xmin,ymin,zmin,xmax,ymax,zmax
-    DOUBLE PRECISION :: x0,y0,z0,x1,y1,z1
+    DOUBLE PRECISION :: x0
+    DOUBLE PRECISION :: x1
+    DOUBLE PRECISION :: xmax
+    DOUBLE PRECISION :: xmin
+    DOUBLE PRECISION :: y0
+    DOUBLE PRECISION :: y1
+    DOUBLE PRECISION :: ymax
+    DOUBLE PRECISION :: ymin
+    DOUBLE PRECISION :: z0
+    DOUBLE PRECISION :: z1
+    DOUBLE PRECISION :: zmax
+    DOUBLE PRECISION :: zmin
+    INTEGER :: i
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     PRINT *,'-> decoupe.geo'
     OPEN(FILE='fort.2',UNIT=2)
     OPEN(FILE='decoupe.geo',UNIT=10)
@@ -131,10 +152,27 @@ CONTAINS
   !initialisation du fichier de decoupage
   SUBROUTINE affectation_gmsh(params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
+
+    !#### Variables  ####
+    CHARACTER*30 :: files
+    CHARACTER*30 :: num
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
-    CHARACTER*30 :: files,num
-    INTEGER :: i,j,k,nb,offset,totnum
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: nb
+    INTEGER :: offset
+    INTEGER :: totnum
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     OPEN(FILE='decoupe.visu',UNIT=1)
     WRITE(1,*) 'View "MPI" {'
     !lecture des fichiers
@@ -178,11 +216,28 @@ CONTAINS
   !ecriture des clusters avant regroupement
   SUBROUTINE sous_clusters_gmsh(params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER :: i,j,k,nb,ind,lenn
-    CHARACTER*30 :: num,files
+
+    !#### Variables  ####
+    CHARACTER*30 :: files
+    CHARACTER*30 :: num
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     INTEGER,DIMENSION(:),POINTER :: corresp
+    INTEGER :: i
+    INTEGER :: ind
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: lenn
+    INTEGER :: nb
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     DO i=0,params%nbproc-1
        !nom du fichier
        !datas
@@ -233,10 +288,28 @@ CONTAINS
   !ecriture des clusters apres regroupement
   SUBROUTINE cluster_final_gmsh(params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER :: i,j,k,nb,nb0
-    CHARACTER*30 :: num,files
+    !=== IN/OUT ===
+    !====  OUT ====
+
+    !#### Variables  ####
+    CHARACTER*30 :: files
+    CHARACTER*30 :: num
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: nb
+    INTEGER :: nb0
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     OPEN(FILE=params%mesh,UNIT=1)
     IF (params%coord==1) THEN
        !lecture au format coordonnes
@@ -287,8 +360,20 @@ CONTAINS
   !SUBROUTINE ecriture de point
   SUBROUTINE ecritpoint_gmsh(unit,dim,coord,ind,k)
     IMPLICIT NONE
-    INTEGER :: unit,dim,ind,k
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
+    INTEGER :: dim
+    INTEGER :: ind
+    INTEGER :: k
+    INTEGER :: unit
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     IF (dim==2) THEN
        !2D
        WRITE(unit,*) 'SP(',coord(k,1),',',coord(k,2),',',0.,'){',ind,'};' 
@@ -303,10 +388,28 @@ CONTAINS
   !SUBROUTINE ecriture de point en format image
   SUBROUTINE ecritpointimage_gmsh(unit,params,ind,k)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER :: unit,ind,k,ix,iy,i
-    DOUBLE PRECISION :: kx,ky,kz
+    INTEGER :: ind
+    INTEGER :: k
+    INTEGER :: unit
+
+    !#### Variables  ####
     DOUBLE PRECISION,DIMENSION(:),POINTER :: data
+    DOUBLE PRECISION :: kx
+    DOUBLE PRECISION :: ky
+    DOUBLE PRECISION :: kz
+    INTEGER :: i
+    INTEGER :: ix
+    INTEGER :: iy
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
          .AND.(params%imgdim==2)) THEN
        ALLOCATE(data(params%nbp))
@@ -357,6 +460,9 @@ CONTAINS
   !************************
   !liste des commandes
   SUBROUTINE commandes_gmsh
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     PRINT *,'gmsh decoupe.visu'
     PRINT *,'gmsh decoupe.geo'
     PRINT *,'gmsh decoupe.visu decoupe.geo'
