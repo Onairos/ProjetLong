@@ -6,11 +6,32 @@ CONTAINS
   !ecriture de la geometrie du decoupage
   SUBROUTINE ecrit_decoupage_paraview(params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====  
     TYPE(type_params) :: params
-    INTEGER :: i
+    
+    !#### Variables  ####
     CHARACTER*30 :: num
-    DOUBLE PRECISION,POINTER,DIMENSION(:) :: xmin,ymin,zmin,xmax,ymax,zmax
-    DOUBLE PRECISION :: x0,y0,z0,x1,y1,z1
+    DOUBLE PRECISION,POINTER,DIMENSION(:) :: xmax
+    DOUBLE PRECISION,POINTER,DIMENSION(:) :: xmin
+    DOUBLE PRECISION,POINTER,DIMENSION(:) :: ymax
+    DOUBLE PRECISION,POINTER,DIMENSION(:) :: ymin
+    DOUBLE PRECISION,POINTER,DIMENSION(:) :: zmax
+    DOUBLE PRECISION,POINTER,DIMENSION(:) :: zmin
+    DOUBLE PRECISION :: x0
+    DOUBLE PRECISION :: x1
+    DOUBLE PRECISION :: y0
+    DOUBLE PRECISION :: y1
+    DOUBLE PRECISION :: z0
+    DOUBLE PRECISION :: z1
+    INTEGER :: i
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################    
     !lecture
     OPEN(FILE='fort.2',UNIT=2)
     ALLOCATE(xmin(params%nbproc))
@@ -243,11 +264,28 @@ CONTAINS
   !initialisation du fichier de decoupage
   SUBROUTINE affectation_paraview(params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
+    
+    !#### Variables  ####
+    CHARACTER*30 :: num
+    CHARACTER*30 :: files
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
-    CHARACTER*30 :: files,num
-    INTEGER :: i,j,nb,offset,totnum
-    INTEGER,DIMENSION(:),POINTER :: ind,indp
+    INTEGER,DIMENSION(:),POINTER :: ind
+    INTEGER,DIMENSION(:),POINTER :: indp
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: nb
+    INTEGER :: offset
+    INTEGER :: totnum
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !########################################### 
     !lecture des fichiers
     IF (params%nbproc==1) THEN
        offset=1
@@ -356,11 +394,31 @@ CONTAINS
   !ecriture des clusters avant regroupement
   SUBROUTINE sous_clusters_paraview(params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER :: i,j,k,nb,lenn,nbstar
-    CHARACTER*30 :: num,files,star
+    
+    !#### Variables  ####
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
-    INTEGER,DIMENSION(:),POINTER :: corresp,ind,indp
+    CHARACTER*30 :: files
+    CHARACTER*30 :: num
+    CHARACTER*30 :: star
+    INTEGER,DIMENSION(:),POINTER :: corresp
+    INTEGER,DIMENSION(:),POINTER :: ind
+    INTEGER,DIMENSION(:),POINTER :: indp
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: lenn
+    INTEGER :: nb
+    INTEGER :: nbstar
+    
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
     !nb de caracteres generiques a utiliser
     nbstar=floor(log(real(params%nbproc-1))/log(real(10)))+1
     DO i=1,nbstar
@@ -463,11 +521,28 @@ CONTAINS
   !ecriture des clusters apres regroupement
   SUBROUTINE cluster_final_paraview(params)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER :: i,j,k,nb,nb0
-    CHARACTER*30 :: num,files
+
+    !#### Variables  ####
+    CHARACTER*30 :: files
+    CHARACTER*30 :: num
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
-    INTEGER,DIMENSION(:),POINTER :: ind,indp
+    INTEGER,DIMENSION(:),POINTER :: ind
+    INTEGER,DIMENSION(:),POINTER :: indp
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: nb
+    INTEGER :: nb0
+    
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     IF (params%coord==1) THEN
        OPEN(FILE=params%mesh,UNIT=1)
        READ(1,*) j,k
@@ -542,9 +617,23 @@ CONTAINS
   !SUBROUTINE ecriture de points
   SUBROUTINE ecritpoint_paraview(unitgeo,unitind,nb,dim,coord,ind,k)
     IMPLICIT NONE
-    INTEGER :: unitgeo,unitind,k,nb,i,dim
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
     INTEGER,DIMENSION(:),POINTER :: ind
+    INTEGER :: unitgeo
+    INTEGER :: unitind
+    INTEGER :: k
+    INTEGER :: nb
+    INTEGER :: i
+    INTEGER :: dim
+    
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     WRITE(unitgeo,'(a)') 'part'
     WRITE(unitgeo,*) ind(k)
     WRITE(unitgeo,*) '** decoupages **'
@@ -579,10 +668,33 @@ CONTAINS
   !SUBROUTINE ecriture de points en format image
   SUBROUTINE ecritpointimage_paraview(unitgeo,unitind,nbp,params,ind,indp)
     IMPLICIT NONE
-    INTEGER :: nbp,unitgeo,unitind,i,k,ix,iy
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER,DIMENSION(:),POINTER :: indp,ind
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: kx,ky,kz,data
+    INTEGER,DIMENSION(:),POINTER :: ind
+    INTEGER,DIMENSION(:),POINTER :: indp
+    INTEGER :: nbp
+    INTEGER :: unitgeo
+    INTEGER :: unitind
+    !=== IN/OUT ===
+    !====  OUT ====
+    
+    !#### Variables  ####
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: data
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: kx
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: ky
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: kz
+    INTEGER :: i
+    INTEGER :: ix
+    INTEGER :: iy
+    INTEGER :: k
+    
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     ALLOCATE(kx(nbp)); kx(:)=0
     ALLOCATE(ky(nbp)); ky(:)=0
     ALLOCATE(kz(nbp)); kz(:)=0
