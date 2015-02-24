@@ -3,11 +3,18 @@ PROGRAM visuclusters
   USE module_visuclusters
 
   IMPLICIT NONE
+  !###########################################
+  ! DECLARATIONS
+  !###########################################
+  !#### Variables  ####
   TYPE(type_params) :: params
   CHARACTER*30 :: formato
-  REAL :: elapsed(2)     ! For receiving user and system time
+  REAL :: elapsed(2) ! For receiving user and system time
   REAL :: temps
 
+  !###########################################
+  ! INSTRUCTIONS
+  !###########################################
   PRINT *
   PRINT *,'-----------------------------------'
   PRINT *,'visualisation des clusters en 2D/3D'
