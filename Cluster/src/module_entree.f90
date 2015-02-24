@@ -6,6 +6,9 @@ CONTAINS
   !fichier d'aide
   SUBROUTINE help
     IMPLICIT NONE
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     PRINT *
     PRINT *,'syntaxe d appel : clusters fichier_d_entree'
     PRINT *
@@ -48,14 +51,37 @@ CONTAINS
   SUBROUTINE lit(data,epsilon,coordmin,coordmax,nbproc,decoupe,&
        mesh,sigma,nblimit,listenbideal)
     IMPLICIT NONE
-    INTEGER :: nbproc,nblimit,decoupage
-    INTEGER,DIMENSION(:),POINTER :: decoupe,listenbideal
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
+    INTEGER :: nbproc
+
+    !=== IN/OUT ===
     TYPE(type_data) :: data
-    DOUBLE PRECISION :: epsilon,sigma
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
-    CHARACTER*30 :: mot,mesh
-    INTEGER :: ok,i,ierr,tot
-    !initialisation
+
+    !====  OUT ====
+    CHARACTER*30 :: mesh
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+    DOUBLE PRECISION :: epsilon
+    DOUBLE PRECISION :: sigma
+    INTEGER,DIMENSION(:),POINTER :: decoupe
+    INTEGER,DIMENSION(:),POINTER :: listenbideal
+    INTEGER :: nblimit
+
+    !#### Variables  ####
+    CHARACTER*30 :: mot
+    INTEGER :: decoupage
+    INTEGER :: i
+    INTEGER :: ierr
+    INTEGER :: ok !TODO utilisé comme un booleen, modifier en LOGICAL ??
+    INTEGER :: tot
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     epsilon=0.0
     sigma=-1.0
     data%coord=0
@@ -178,7 +204,7 @@ CONTAINS
              ENDIF
              IF (tot/=nbproc-data%interface) THEN
                 PRINT *,'decoupage non valide !'
-                PRINT *,'le nombre de proc DOit etre egal a',tot+data%interface
+                PRINT *,'le nombre de proc doit etre egal a',tot+data%interface
                 CALL MPI_ABORT(ierr)
                 STOP
              ENDIF
@@ -243,10 +269,28 @@ CONTAINS
   !lecture des datas en format coord
   SUBROUTINE lit_mesh_coord(mesh,data,coordmin,coordmax)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     CHARACTER*30 :: mesh
+
+    !=== IN/OUT ===
     TYPE(type_data) :: data
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
-    INTEGER :: i,j,nb
+
+    !====  OUT ====
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+
+    !#### Variables  ####
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: nb
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     !lecture de donnees classiques
     OPEN(FILE=mesh,UNIT=2)
     READ(2,*) data%nb,data%dim
@@ -286,10 +330,26 @@ CONTAINS
   !lecture d'image
   SUBROUTINE lit_mesh_image(mesh,data,coordmin,coordmax)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     CHARACTER*30 :: mesh
+    !=== IN/OUT ===
     TYPE(type_data) :: data
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
-    INTEGER :: i,j,nb
+    !====  OUT ====
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+
+    !#### Variables  ####
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: nb
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     OPEN(FILE=mesh,UNIT=2)
     READ(2,*) data%imgdim,data%imgt
     PRINT *,'    >dimension de l image:',data%imgdim
@@ -332,11 +392,29 @@ CONTAINS
   !lecture image en mode geom
   SUBROUTINE lit_mesh_geom(mesh,data,coordmin,coordmax)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     CHARACTER*30 :: mesh
+
+    !=== IN/OUT ===
     TYPE(type_data) :: data
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
+
+    !====  OUT ====
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+
+    !#### Variables  ####
     DOUBLE PRECISION :: pasmax
-    INTEGER :: i,j,nb
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: nb
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     OPEN(FILE=mesh,UNIT=2)
     READ(2,*) data%imgdim,data%imgt
     PRINT *,'    >dimension de l image:',data%imgdim
@@ -397,10 +475,28 @@ CONTAINS
   !lecture des datas en format seuil
   SUBROUTINE lit_mesh_seuil(mesh,data,coordmin,coordmax)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
     CHARACTER*30 :: mesh
+
+    !=== IN/OUT ===
     TYPE(type_data) :: data
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax,coordmin
-    INTEGER :: i,j,nb
+
+    !====  OUT ====
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
+    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+
+    !#### Variables  ####
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: nb
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     !lecture de donnees classiques
     OPEN(FILE=mesh,UNIT=2)
     READ(2,*) data%imgdim,data%imgt
@@ -449,9 +545,23 @@ CONTAINS
   !mise en tableau des indices de points pour les formats image
   SUBROUTINE tableau_image(data)
     IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !=== IN/OUT ===
     TYPE(type_data) :: data
-    INTEGER :: i,j,k,ok
+
+    !#### Variables  ####
     INTEGER,DIMENSION(:),POINTER :: plan
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: ok !TODO utilisé comme un booleen, modifier en LOGICAL ??
+
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     !creation du tableau de references points/coordonnes_images
     ALLOCATE(data%refimg(data%nb,data%imgdim))
     ALLOCATE(plan(data%imgdim)); plan(:)=1
