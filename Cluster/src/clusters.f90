@@ -97,7 +97,7 @@ PROGRAM clusters
      PRINT *,'lecture des data... ',entree
 #endif
      OPEN(FILE=entree,UNIT=1)
-     CALL lit(data,epsilon,coordmin,coordmax,nbproc,decoupe,mesh,&
+     CALL read_file(data,epsilon,coordmin,coordmax,nbproc,decoupe,mesh,&
           sigma,nblimit,listenbideal)
      t2 = MPI_WTIME()
      PRINT *, 'temps lecture data ', t2-t1
@@ -112,7 +112,7 @@ PROGRAM clusters
      PRINT *,'decoupage des datas...'
 #endif
     t1 = MPI_WTIME();
-    CALL decoupedata(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
+    CALL partition_data(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
          ldat,ddat,bornes)
     t2 = MPI_WTIME();
     PRINT *,'temps decoupage des datas...', t2-t1
@@ -129,7 +129,7 @@ PROGRAM clusters
      !calcul du sigma si mode auto global
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF ((sigma==0.0).AND.(numproc==0)) THEN
-        CALL calculsigmainterface(numproc,data,sigma,bornes,decoupe,epsilon)
+        CALL get_sigma_interface(numproc,data,sigma,bornes,decoupe,epsilon)
      ENDIF
 
      !envoi du sigma
@@ -161,14 +161,14 @@ PROGRAM clusters
         PRINT *
         PRINT *,'transfert des datas decoupees...'
 #endif
-        CALL  envoidecoupes(nbproc,data,ldat,ddat,dataw)
+        CALL send_partitionning(nbproc,data,ldat,ddat,dataw)
 #if aff
         PRINT *
         PRINT *,'calcul des clusters...'
 #endif
      ELSE
         !reception des datas
-        CALL recoitdecoupes(numproc,dataw)
+        CALL receive_partitionning(numproc,dataw)
      ENDIF
 
   ELSE
@@ -188,7 +188,7 @@ PROGRAM clusters
 #if aff
      PRINT *
 #endif
-     IF (numproc==0) CALL calculsigma(data,sigma)
+     IF (numproc==0) CALL get_sigma(data,sigma)
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF (numproc==0) THEN
         PRINT *,numproc,'calcule le sigma global :',sigma
@@ -196,7 +196,7 @@ PROGRAM clusters
         PRINT *,numproc,'calcule le sigma global :',sigma
 #endif
         IF (data%interface==1) THEN 
-           CALL calculsigmainterface(numproc,dataw,sigma,bornes,decoupe,epsilon) 
+           CALL get_sigma_interface(numproc,dataw,sigma,bornes,decoupe,epsilon) 
            PRINT *,numproc,'calcule le sigma interface :',sigma
 #if aff
            PRINT *,numproc,'calcule le sigma interface :',sigma
@@ -217,7 +217,7 @@ PROGRAM clusters
 #if aff
      PRINT *,numproc,'calcul des clusters...'
 #endif
-     CALL calculclusters(numproc,nblimit,nbideal,dataw,sigma)
+     CALL apply_spectral_clustering(numproc,nblimit,nbideal,dataw,sigma)
   ENDIF
   t2 = MPI_WTIME();
   t_parall = t2 - t1
@@ -231,7 +231,7 @@ PROGRAM clusters
   ENDIF
 
   !sauvegarde des clusters regroupes
-  CALL ecritcluster(numproc,dataw)
+  CALL write_partial_clusters(numproc,dataw)
 
   !partie echanges
   IF (nbproc>1) THEN
@@ -242,25 +242,25 @@ PROGRAM clusters
         PRINT *,'regroupement des clusters...'
 #endif
         !creation de la liste des clusters avec doublon
-        CALL preparecpclusters(nbproc,nbclust,ldat,dataw,nclust)
+        CALL receive_number_clusters(nbproc,nbclust,ldat,dataw,nclust)
 #if aff
         PRINT *,'  > nb de clusters avec doublons obtenus :',nbclust
 #endif
         !reception des infos de clusters
         ALLOCATE(clustermap(nbclust,data%nb))
-        CALL recepclusters(nbproc,nbclust,ldat,ddat,dataw,&
+        CALL receive_clusters(nbproc,nbclust,ldat,ddat,dataw,&
              clustermap,nclust,iclust)
      ELSE
         !creation de la liste des clusters avec doublon
-        CALL prepaenvclusters(numproc,dataw)
+        CALL send_number_clusters(numproc,dataw)
         !envoi des infos de clusters
-        CALL envoiclusters(numproc,dataw)
+        CALL send_clusters(numproc,dataw)
      ENDIF
 
      !fin du postprocess
      IF (numproc==0) THEN
         !regroupement des clusters et ecriture du resultat
-        CALL regroupe(nbclust,iclust,clustermap,data)
+        CALL group_clusters(nbclust,iclust,clustermap,data)
      ENDIF
 
   ELSE
@@ -292,10 +292,10 @@ PROGRAM clusters
   !sorties
   IF (numproc==0) THEN
      !ecriture des cluster.final.
-     CALL ecritclusterfinal(nbclust,iclust,clustermap)
+     CALL write_final_clusters(nbclust,iclust,clustermap)
 
      !ecriture des informations
-     CALL ecrit_info(mesh,data,nbproc,nbclust)
+     CALL write_metadata(mesh,data,nbproc,nbclust)
   ENDIF
   IF(numproc==0) THEN
     t2 = MPI_WTIME();

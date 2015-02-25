@@ -4,7 +4,7 @@ CONTAINS
 
   !************************
   !ecriture de la geometrie du decoupage
-  SUBROUTINE ecrit_decoupage_gmsh(params)
+  SUBROUTINE write_partionning_gmsh(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -146,7 +146,7 @@ CONTAINS
     CLOSE(10)
     CLOSE(2)
     RETURN
-  END SUBROUTINE ecrit_decoupage_gmsh
+  END SUBROUTINE write_partionning_gmsh
 
   !***********************
   !initialisation du fichier de decoupage
@@ -200,7 +200,7 @@ CONTAINS
           ELSE
              !decoupage d'image 1D
              READ (10,*) k
-             CALL ecritpointimage_gmsh(1,params,i,k)
+             CALL write_picture_to_gmsh(1,params,i,k)
           ENDIF
        ENDDO
        CLOSE(10)
@@ -214,7 +214,7 @@ CONTAINS
 
   !***********************
   !ecriture des clusters avant regroupement
-  SUBROUTINE sous_clusters_gmsh(params)
+  SUBROUTINE write_partial_clusters_gmsh(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -270,7 +270,7 @@ CONTAINS
              CALL ecritpoint_gmsh(1,params%dim,coord,k,1)
           ELSE
              READ(10,*) k,ind
-             CALL ecritpointimage_gmsh(1,params,ind,corresp(k))
+             CALL write_picture_to_gmsh(1,params,ind,corresp(k))
           ENDIF
        ENDDO
        CLOSE(10); 
@@ -282,11 +282,11 @@ CONTAINS
        ENDIF
     ENDDO
     RETURN
-  END SUBROUTINE sous_clusters_gmsh
+  END SUBROUTINE write_partial_clusters_gmsh
 
   !***********************
   !ecriture des clusters apres regroupement
-  SUBROUTINE cluster_final_gmsh(params)
+  SUBROUTINE write_final_clusters_gmsh(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -344,7 +344,7 @@ CONTAINS
              CALL ecritpoint_gmsh(1,nb0,coord,i,k)
           ELSE
              !reassemblage des images
-             CALL ecritpointimage_gmsh(1,params,i,k)
+             CALL write_picture_to_gmsh(1,params,i,k)
           ENDIF
        ENDDO
        CLOSE(10)
@@ -354,7 +354,7 @@ CONTAINS
     PRINT *,'-> cluster.final.visu'
     IF (params%coord==1) DEALLOCATE(coord)
     RETURN
-  END SUBROUTINE cluster_final_gmsh
+  END SUBROUTINE write_final_clusters_gmsh
 
   !*************************
   !SUBROUTINE ecriture de point
@@ -386,7 +386,7 @@ CONTAINS
 
   !*************************
   !SUBROUTINE ecriture de point en format image
-  SUBROUTINE ecritpointimage_gmsh(unit,params,ind,k)
+  SUBROUTINE write_picture_to_gmsh(unit,params,ind,k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -455,11 +455,11 @@ CONTAINS
     !ecriture
     WRITE(unit,*) 'SP(',kx,',',ky,',',kz,'){',ind,'};'
     RETURN
-  END SUBROUTINE ecritpointimage_gmsh
+  END SUBROUTINE write_picture_to_gmsh
 
   !************************
   !liste des commandes
-  SUBROUTINE commandes_gmsh
+  SUBROUTINE list_commands_gmsh
     !###########################################
     ! INSTRUCTIONS
     !###########################################
@@ -471,7 +471,7 @@ CONTAINS
     PRINT *,'gmsh decoupe.geo cluster.partiel.*.visu'
     PRINT *,'gmsh decoupe.geo cluster.final.visu'
     RETURN
-  END SUBROUTINE commandes_gmsh
+  END SUBROUTINE list_commands_gmsh
 
 
 END MODULE module_visuclusters_gmsh

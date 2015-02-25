@@ -6,7 +6,7 @@ CONTAINS
 
   !************************
   !lecture des fichiers d'entree
-  SUBROUTINE lit(params)
+  SUBROUTINE read_params(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -100,12 +100,12 @@ CONTAINS
        ENDIF
     ENDIF
     RETURN
-  END SUBROUTINE lit
+  END SUBROUTINE read_params
 
 
   !*************************
   !ecriture de la geometrie du decoupage
-  SUBROUTINE ecrit_decoupage(formato,params)
+  SUBROUTINE write_partionning(formato,params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -122,12 +122,12 @@ CONTAINS
     PRINT *,'ecriture de la geometrie du decoupage...'
     SELECT CASE(formato)
     CASE('gmsh')
-       CALL ecrit_decoupage_gmsh(params)
+       CALL write_partionning_gmsh(params)
     CASE('paraview')
-       CALL ecrit_decoupage_paraview(params)
+       CALL write_partionning_paraview(params)
     END SELECT
     RETURN
-  END SUBROUTINE ecrit_decoupage
+  END SUBROUTINE write_partionning
 
 
   !***********************
@@ -159,7 +159,7 @@ CONTAINS
 
   !***********************
   !ecriture des clusters avant regroupement
-  SUBROUTINE sous_clusters(formato,params)
+  SUBROUTINE write_partial_clusters(formato,params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -176,17 +176,17 @@ CONTAINS
     PRINT *,'lecture des clusters avant regroupement...'
     SELECT CASE(formato)
     CASE('gmsh')
-       CALL sous_clusters_gmsh(params)
+       CALL write_partial_clusters_gmsh(params)
     CASE('paraview')
-       CALL sous_clusters_paraview(params)
+       CALL write_partial_clusters_paraview(params)
     END SELECT
     RETURN
-  END SUBROUTINE sous_clusters
+  END SUBROUTINE write_partial_clusters
 
 
   !***********************
   !ecriture des clusters apres regroupement
-  SUBROUTINE cluster_final(formato,params)
+  SUBROUTINE write_final_clusters(formato,params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -203,17 +203,17 @@ CONTAINS
     PRINT *,'lecture des clusters apres regroupement...'
     SELECT CASE(formato)
     CASE('gmsh')
-       CALL cluster_final_gmsh(params)
+       CALL write_final_clusters_gmsh(params)
     CASE('paraview')
-       CALL cluster_final_paraview(params)
+       CALL write_final_clusters_paraview(params)
     END SELECT
     RETURN
-  END SUBROUTINE cluster_final
+  END SUBROUTINE write_final_clusters
 
 
   !***********************
   !liste des commandes
-  SUBROUTINE commandes(formato)
+  SUBROUTINE list_commands(formato)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -231,12 +231,12 @@ CONTAINS
     PRINT *
     SELECT CASE(formato)
     CASE('gmsh')
-       CALL commandes_gmsh
+       CALL list_commands_gmsh
     CASE('paraview')
-       CALL commandes_paraview
+       CALL list_commands_paraview
     END SELECT
     RETURN
-  END SUBROUTINE commandes
+  END SUBROUTINE list_commands
 
 
 END MODULE module_visuclusters

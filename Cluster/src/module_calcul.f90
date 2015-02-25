@@ -6,7 +6,7 @@ CONTAINS
 
   !*****************************************
   !calcul du sigma
-  SUBROUTINE calculsigma(dataw,sigma)
+  SUBROUTINE get_sigma(dataw,sigma)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -45,11 +45,11 @@ CONTAINS
     !securite
     IF (sigma==0.0) sigma=1.0
     RETURN
-  END SUBROUTINE calculsigma
+  END SUBROUTINE get_sigma
 
   !*****************************************
   !calcul du sigma pour l'interface
-  SUBROUTINE calculsigmainterface(numproc,dataw,sigma,bornes,decoupe,epsilon)
+  SUBROUTINE get_sigma_interface(numproc,dataw,sigma,bornes,decoupe,epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -70,7 +70,7 @@ CONTAINS
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb
-    INTEGER :: ok !TODO sert comme booléen, changer en LOGICAL ?
+    INTEGER :: ok !TODO sert comme boolÃ©en, changer en LOGICAL ?
     INTEGER,DIMENSION(:,:),POINTER :: tableau
     INTEGER,DIMENSION(:),POINTER :: decoupe0
     DOUBLE PRECISION :: long
@@ -123,7 +123,7 @@ CONTAINS
     !calcul du sigma
     sigma0=sigma0/(2.0*exp(log(float(dataw%nb))*(1.0/float(dataw%dim))))
     !calcul du sigma formule globale
-    CALL calculsigma(dataw,sigma)
+    CALL get_sigma(dataw,sigma)
 #if aff
     PRINT *,numproc,'valeur de sigma calculee pour interface:',sigma0
 #endif
@@ -131,12 +131,12 @@ CONTAINS
     PRINT *,numproc,'valeur sigma interface',sigma
 #endif
     RETURN
-  END SUBROUTINE calculsigmainterface
+  END SUBROUTINE get_sigma_interface
 
 
   !*****************************************
   !calcul des clusters
-  SUBROUTINE calculclusters(numproc,nblimit,nbideal,dataw,sigma)
+  SUBROUTINE apply_spectral_clustering(numproc,nblimit,nbideal,dataw,sigma)
     IMPLICIT NONE
     INCLUDE 'mpif.h'
     !###########################################
@@ -400,6 +400,6 @@ PRINT *, 'ratio de frobenius'
     ENDIF
 
     RETURN
-  END SUBROUTINE calculclusters
+  END SUBROUTINE apply_spectral_clustering
 
 END MODULE module_calcul

@@ -348,7 +348,7 @@ PRINT *, 'ratio de frobenius'
 
     it_max=n*n !1000.0
 
-    CALL kmeans_01 ( nbcluster, n, nbcluster, it_max, it_num, Z2,&
+    CALL apply_kmeans( nbcluster, n, nbcluster, it_max, it_num, Z2,&
          cluster, cluster_center, cluster_population, cluster_energy, &
          numproc)
 

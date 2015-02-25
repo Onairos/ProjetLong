@@ -5,7 +5,7 @@ CONTAINS
 
   !****************************************
   !envoi des decoupages
-  SUBROUTINE envoidecoupes(nbproc,data,ldat,ddat,dataw)
+  SUBROUTINE send_partitionning(nbproc,data,ldat,ddat,dataw)
     IMPLICIT NONE    
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -80,11 +80,11 @@ CONTAINS
     n=data%dim; dataw%dim=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     RETURN
-  END SUBROUTINE envoidecoupes
+  END SUBROUTINE send_partitionning
 
   !***************************************
   !reception des decoupages
-  SUBROUTINE recoitdecoupes(numproc,dataw)
+  SUBROUTINE receive_partitionning(numproc,dataw)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -146,12 +146,12 @@ CONTAINS
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     dataw%dim=n
     RETURN
-  END SUBROUTINE recoitdecoupes
+  END SUBROUTINE receive_partitionning
 
 
   !***************************************
   !compte des clusters avec doublons
-  SUBROUTINE preparecpclusters(nbproc,nbclust,ldat,dataw,nclust)
+  SUBROUTINE receive_number_clusters(nbproc,nbclust,ldat,dataw,nclust)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -203,11 +203,11 @@ CONTAINS
        ENDIF
     ENDDO
     RETURN
-  END SUBROUTINE preparecpclusters
+  END SUBROUTINE receive_number_clusters
 
   !***************************************
   !envoi des nb de clusters
-  SUBROUTINE prepaenvclusters(numproc,dataw)
+  SUBROUTINE send_number_clusters(numproc,dataw)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -242,11 +242,11 @@ CONTAINS
        CALL MPI_SEND(list,dataw%nbclusters,MPI_INTEGER,0,tag,MPI_COMM_WORLD,ierr)
     ENDIF
     RETURN
-  END SUBROUTINE prepaenvclusters
+  END SUBROUTINE send_number_clusters
 
   !***************************************
   !envoi des clusters
-  SUBROUTINE envoiclusters(numproc,dataw)
+  SUBROUTINE send_clusters(numproc,dataw)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -277,11 +277,11 @@ CONTAINS
        DEALLOCATE(lclust)
     ENDIF
     RETURN
-  END SUBROUTINE envoiclusters
+  END SUBROUTINE send_clusters
 
   !***************************************
   !reception des clusters
-  SUBROUTINE recepclusters(nbproc,nbclust,ldat,ddat,dataw,clustermap,&
+  SUBROUTINE receive_clusters(nbproc,nbclust,ldat,ddat,dataw,clustermap,&
        nclust,iclust)
     IMPLICIT NONE
     ! librairie MPI
@@ -351,7 +351,7 @@ CONTAINS
     ENDDO
     DEALLOCATE(lclust)
     RETURN
-  END SUBROUTINE recepclusters
+  END SUBROUTINE receive_clusters
 
 
 END MODULE module_MPI

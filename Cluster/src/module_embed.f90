@@ -84,7 +84,7 @@ CONTAINS
 
     it_max=n*n
 
-    CALL kmeans_01 ( nbcluster, n, nbcluster, it_max, it_num,Z2,&
+    CALL apply_kmeans( nbcluster, n, nbcluster, it_max, it_num,Z2,&
          cluster, cluster_center, cluster_population, cluster_energy, &
          numproc)
 
@@ -154,7 +154,7 @@ CONTAINS
 
   !********************************************************
   !K-means
-  SUBROUTINE kmeans_01 (dim_num,point_num,cluster_num,it_max, it_num, point, &
+  SUBROUTINE apply_kmeans(dim_num,point_num,cluster_num,it_max, it_num, point, &
        cluster, cluster_center, cluster_population, cluster_energy, numproc)
 
     !*****************************************************************************80
@@ -372,7 +372,7 @@ PRINT *, 'recherche des centres'
     ENDDO
 
     RETURN
-  END SUBROUTINE kmeans_01
+  END SUBROUTINE apply_kmeans
 
 
 

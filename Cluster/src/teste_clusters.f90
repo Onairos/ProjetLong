@@ -34,7 +34,7 @@ PROGRAM teste_clusters
   !creation des datas
   PRINT *
   PRINT *,'creation des datas...'
-  CALL cree_data
+  CALL create_data
 
   !declaration des tests
   nbtests=12
@@ -210,9 +210,9 @@ PROGRAM teste_clusters
         READ *,files
      ENDIF
      IF (files/='n') THEN
-        CALL cree_go(test(i))
-        CALL cree_test(test(i))  
-        CALL teste(test(i))
+        CALL create_executable(test(i))
+        CALL create_test(test(i))  
+        CALL execute_test(test(i))
      ENDIF
   ENDDO
   PRINT *

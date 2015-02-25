@@ -21,7 +21,7 @@ PROGRAM visuclusters
   PRINT *,'-----------------------------------'
 
   !lecture des infos
-  CALL lit(params)
+  CALL read_params(params)
 
   !choix du format de sortie
   IF (iargc()>0) THEN
@@ -44,19 +44,19 @@ PROGRAM visuclusters
 
   !geometrie du decoupage
   !if (params%image==0) 
-  CALL ecrit_decoupage(formato,params)
+  CALL write_partionning(formato,params)
 
   !fichier de sortie
   CALL affectation(formato,params)
 
   !fichier de sortie des clusters avant regroupement
-  IF (params%nbproc>1) CALL sous_clusters(formato,params)
+  IF (params%nbproc>1) CALL write_partial_clusters(formato,params)
 
   !fichier de sortie des clusters apres regroupement
-  CALL cluster_final(formato,params)
+  CALL write_final_clusters(formato,params)
 
   !liste des commandes
-  CALL commandes(formato)
+  CALL list_commands(formato)
 
   !fin du fichier
 !  temps = etime(elapsed)

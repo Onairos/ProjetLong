@@ -4,7 +4,7 @@ CONTAINS
 
   !************************
   !ecriture de la geometrie du decoupage
-  SUBROUTINE ecrit_decoupage_paraview(params)
+  SUBROUTINE write_partionning_paraview(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -258,7 +258,7 @@ CONTAINS
     WRITE(12,'(a)') 'scalar per element:   process   visu/decoupe.indices'
     CLOSE(12)
     RETURN
-  END SUBROUTINE ecrit_decoupage_paraview
+  END SUBROUTINE write_partionning_paraview
 
   !***********************
   !initialisation du fichier de decoupage
@@ -347,7 +347,7 @@ CONTAINS
              CALL ecritpoint_paraview(10,11,nb,params%dim,coord,ind,1)
           ELSE
              !decoupage d'image 1D
-             CALL ecritpointimage_paraview(10,11,nb,params,ind,indp)
+             CALL write_picture_to_paraview(10,11,nb,params,ind,indp)
           ENDIF
        ENDIF
        DEALLOCATE(coord)
@@ -392,7 +392,7 @@ CONTAINS
 
   !***********************
   !ecriture des clusters avant regroupement
-  SUBROUTINE sous_clusters_paraview(params)
+  SUBROUTINE write_partial_clusters_paraview(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -476,7 +476,7 @@ CONTAINS
           CALL ecritpoint_paraview(10,11,nb,params%dim,coord,ind,1)
        ELSE
           !decoupage d'image 1D
-          CALL ecritpointimage_paraview(10,11,nb,params,ind,indp)
+          CALL write_picture_to_paraview(10,11,nb,params,ind,indp)
        ENDIF
        DEALLOCATE(coord)
        DEALLOCATE(ind)
@@ -515,11 +515,11 @@ CONTAINS
     ENDDO
     CLOSE(12)
     RETURN
-  END SUBROUTINE sous_clusters_paraview
+  END SUBROUTINE write_partial_clusters_paraview
 
   !***********************
   !ecriture des clusters apres regroupement
-  SUBROUTINE cluster_final_paraview(params)
+  SUBROUTINE write_final_clusters_paraview(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -591,7 +591,7 @@ CONTAINS
        CALL ecritpoint_paraview(10,11,params%nbp,params%dim,coord,ind,1)
     ELSE
        !reassemblage des images
-       CALL ecritpointimage_paraview(10,11,params%nbp,params,ind,indp)
+       CALL write_picture_to_paraview(10,11,params%nbp,params,ind,indp)
     ENDIF
     CLOSE(10)
     CLOSE(11)
@@ -611,7 +611,7 @@ CONTAINS
     WRITE(12,'(a)') 'scalar per element:   cluster   visu/cluster.final.indices'
     CLOSE(12)
     RETURN
-  END SUBROUTINE cluster_final_paraview
+  END SUBROUTINE write_final_clusters_paraview
 
   !*************************
   !SUBROUTINE ecriture de points
@@ -666,7 +666,7 @@ CONTAINS
 
   !*************************
   !SUBROUTINE ecriture de points en format image
-  SUBROUTINE ecritpointimage_paraview(unitgeo,unitind,nbp,params,ind,indp)
+  SUBROUTINE write_picture_to_paraview(unitgeo,unitind,nbp,params,ind,indp)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -776,17 +776,17 @@ CONTAINS
     IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
          .AND.(params%imgdim==2)) DEALLOCATE(data)
     RETURN
-  END SUBROUTINE ecritpointimage_paraview
+  END SUBROUTINE write_picture_to_paraview
 
   !************************
   !liste des commandes
-  SUBROUTINE commandes_paraview
+  SUBROUTINE list_commands_paraview
     PRINT *,'paraview --data=decoupe.CASE'
     PRINT *,'paraview --data=affectation.CASE'
     PRINT *,'paraview --data=affectation-interface.CASE'
     PRINT *,'paraview --data=cluster.partiel.CASE'
     PRINT *,'paraview --data=cluster.final.CASE'
     RETURN
-  END SUBROUTINE commandes_paraview
+  END SUBROUTINE list_commands_paraview
   
 END MODULE module_visuclusters_paraview

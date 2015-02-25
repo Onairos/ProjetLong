@@ -11,7 +11,7 @@ CONTAINS
 
   !*******************************************
   !fichier de lancement de runclusters
-  SUBROUTINE cree_go(test)
+  SUBROUTINE create_executable(test)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -45,11 +45,11 @@ CONTAINS
     files='chmod a+x '//trim(adjustl(files))
     CALL system(files)
     RETURN
-  END SUBROUTINE cree_go
+  END SUBROUTINE create_executable
 
   !*******************************************
   !fichier test
-  SUBROUTINE cree_test(test)
+  SUBROUTINE create_test(test)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -83,11 +83,11 @@ CONTAINS
     files='cp '//trim(adjustl(test%fichier))//' '//trim(adjustl(test%dir))//'/.'
     CALL system(files)
     RETURN
-  END SUBROUTINE cree_test
+  END SUBROUTINE create_test
 
   !*******************************************
   !fichier test
-  SUBROUTINE teste(test)
+  SUBROUTINE execute_test(test)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -116,11 +116,11 @@ CONTAINS
     INQUIRE(FILE=files,EXIST=existe)
     PRINT *,'     > visu_clusters gmsh :',existe
     RETURN
-  END SUBROUTINE teste
+  END SUBROUTINE execute_test
 
   !*******************************************
   !genere les exemples de data
-  SUBROUTINE cree_data
+  SUBROUTINE create_data
     !###########################################
     ! INSTRUCTIONS
     !###########################################
@@ -985,6 +985,6 @@ CONTAINS
     WRITE(11,*) '  1.4456529e+001  9.4007969e+000'
     CLOSE(11)
     RETURN
-  END SUBROUTINE cree_data
+  END SUBROUTINE create_data
 
 END MODULE module_teste_clusters

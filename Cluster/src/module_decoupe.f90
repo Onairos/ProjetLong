@@ -5,7 +5,7 @@ CONTAINS
 
   !****************************************
   !decoupage pour transfert MPI
-  SUBROUTINE decoupedata(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
+  SUBROUTINE partition_data(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
        ldat,ddat,bornes)
     IMPLICIT NONE
     !###########################################
@@ -35,33 +35,33 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     !definition des bornes
-    CALL definit_bornes(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
+    CALL define_bounds(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
 
     !definition des domaines
-    CALL definit_domaines(nbproc,data,domaines,bornes,decoupe)
+    CALL define_domains(nbproc,data,domaines,bornes,decoupe)
 
     !ecriture des domaines decoupes
-    CALL ecrit_domaines(data,nbproc,domaines)
+    CALL write_domains(data,nbproc,domaines)
 
     !definition des decoupages
     IF ((data%interface==1).OR.(nbproc==1)) THEN
        !decoupage avec interface
-       CALL decoupe_interface(nbproc,data,ldat,ddat,domaines,epsilon)
+       CALL partition_with_interfaces(nbproc,data,ldat,ddat,domaines,epsilon)
     ELSE
        !decoupage avec recouvrement
-       CALL decoupe_recouvrement(nbproc,data,ldat,ddat,domaines)
+       CALL partition_with_overlappings(nbproc,data,ldat,ddat,domaines)
     ENDIF
     DEALLOCATE(domaines)
 
     !sauvegarde des decoupages
-    CALL ecrit_decoupages(nbproc,data,ldat,ddat)
+    CALL write_partitionning(nbproc,data,ldat,ddat)
 
     RETURN
-  END SUBROUTINE decoupedata
+  END SUBROUTINE partition_data
 
   !****************************************
   !definition des bornes avec interface
-  SUBROUTINE definit_bornes(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
+  SUBROUTINE define_bounds(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -165,11 +165,11 @@ CONTAINS
        ENDDO
     ENDIF
     RETURN
-  END SUBROUTINE definit_bornes
+  END SUBROUTINE define_bounds
 
   !****************************************
   !definition des domaines de decoupages
-  SUBROUTINE definit_domaines(nbproc,data,domaines,bornes,decoupe)
+  SUBROUTINE define_domains(nbproc,data,domaines,bornes,decoupe)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -188,7 +188,7 @@ CONTAINS
     INTEGER,DIMENSION(:),POINTER :: list
     INTEGER :: k
     INTEGER :: n
-    INTEGER :: ok !TODO utilisé comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
 
 
     !###########################################
@@ -256,11 +256,11 @@ CONTAINS
        DEALLOCATE(list)
     ENDIF
     RETURN
-  END SUBROUTINE definit_domaines
+  END SUBROUTINE define_domains
 
   !****************************************
   !decoupage avec interface
-  SUBROUTINE decoupe_interface(nbproc,data,ldat,ddat,domaines,epsilon)
+  SUBROUTINE partition_with_interfaces(nbproc,data,ldat,ddat,domaines,epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -351,11 +351,11 @@ CONTAINS
     ENDDO
     WRITE(7,*) ldat(0)
     RETURN
-  END SUBROUTINE decoupe_interface
+  END SUBROUTINE partition_with_interfaces
 
   !****************************************
   !decoupage avec recouvrement
-  SUBROUTINE decoupe_recouvrement(nbproc,data,ldat,ddat,domaines)
+  SUBROUTINE partition_with_overlappings(nbproc,data,ldat,ddat,domaines)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -406,11 +406,11 @@ CONTAINS
        ENDDO
     ENDDO
     RETURN
-  END SUBROUTINE decoupe_recouvrement
+  END SUBROUTINE partition_with_overlappings
 
   !****************************************
   !elimine les doublons dans le clustering
-  SUBROUTINE regroupe(nbclust,iclust,clustermap,data)
+  SUBROUTINE group_clusters(nbclust,iclust,clustermap,data)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -434,9 +434,9 @@ CONTAINS
     INTEGER :: j3
     INTEGER :: k
     INTEGER :: n
-    INTEGER :: ok !TODO utilisé comme un booleen, modifier en LOGICAL ??
-    INTEGER :: ok2 !TODO utilisé comme un booleen, modifier en LOGICAL ??
-    INTEGER :: ok3 !TODO utilisé comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok2 !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok3 !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
 
     !###########################################
     ! INSTRUCTIONS
@@ -506,6 +506,6 @@ CONTAINS
     PRINT *,'      > nb d elements apres regroupement :',iclust(i)
 #endif
     RETURN
-  END SUBROUTINE regroupe
+  END SUBROUTINE group_clusters
 
 END MODULE module_decoupe

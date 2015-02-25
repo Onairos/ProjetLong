@@ -48,7 +48,7 @@ CONTAINS
 
   !**********************************************
   !lecture du fichier d'entree
-  SUBROUTINE lit(data,epsilon,coordmin,coordmax,nbproc,decoupe,&
+  SUBROUTINE read_file(data,epsilon,coordmin,coordmax,nbproc,decoupe,&
        mesh,sigma,nblimit,listenbideal)
     IMPLICIT NONE
     !###########################################
@@ -76,7 +76,7 @@ CONTAINS
     INTEGER :: decoupage
     INTEGER :: i
     INTEGER :: ierr
-    INTEGER :: ok !TODO utilisé comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
     INTEGER :: tot
 
     !###########################################
@@ -113,25 +113,25 @@ CONTAINS
              READ (1,*) mesh
              PRINT *,'  > format d entree image + decoupage par pixel'
              PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL lit_mesh_image(mesh,data,coordmin,coordmax)
+             CALL read_picture_data(mesh,data,coordmin,coordmax)
           ELSEIF (mesh=='GEOM') THEN
              data%geom=1
              READ (1,*) mesh
              PRINT *,'  > format d entree image + decoupage geometrique'
              PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL lit_mesh_geom(mesh,data,coordmin,coordmax)
+             CALL read_geometric_data(mesh,data,coordmin,coordmax)
           ELSEIF (mesh=='SEUIL') THEN
              data%seuil=1
              READ (1,*) mesh
              PRINT *,'  > format d entree image + decoupage par seuil'
              PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL lit_mesh_seuil(mesh,data,coordmin,coordmax)
+             CALL read_threshold_data(mesh,data,coordmin,coordmax)
           ELSEIF (mesh=='COORD') THEN
              data%coord=1
              READ (1,*) mesh
              PRINT *,'  > format d entree image + decoupage par seuil'
              PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL lit_mesh_coord(mesh,data,coordmin,coordmax)
+             CALL read_coordinates_data(mesh,data,coordmin,coordmax)
           ELSE
              PRINT *
              PRINT *,'format de donnees non reconnu !!!'
@@ -263,11 +263,11 @@ CONTAINS
        CALL help
     ENDIF
     RETURN
-  END SUBROUTINE lit
+  END SUBROUTINE read_file
 
   !**********************************
   !lecture des datas en format coord
-  SUBROUTINE lit_mesh_coord(mesh,data,coordmin,coordmax)
+  SUBROUTINE read_coordinates_data(mesh,data,coordmin,coordmax)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -324,11 +324,11 @@ CONTAINS
        PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
     ENDDO
     RETURN
-  END SUBROUTINE lit_mesh_coord
+  END SUBROUTINE read_coordinates_data
 
   !**********************************
   !lecture d'image
-  SUBROUTINE lit_mesh_image(mesh,data,coordmin,coordmax)
+  SUBROUTINE read_picture_data(mesh,data,coordmin,coordmax)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -386,11 +386,11 @@ CONTAINS
        PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
     ENDDO
     RETURN
-  END SUBROUTINE lit_mesh_image
+  END SUBROUTINE read_picture_data
   
   !**********************************
   !lecture image en mode geom
-  SUBROUTINE lit_mesh_geom(mesh,data,coordmin,coordmax)
+  SUBROUTINE read_geometric_data(mesh,data,coordmin,coordmax)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -469,11 +469,11 @@ CONTAINS
        coordmax(j)=(data%imgmap(j)+1)*data%pas(j)
     ENDDO
     RETURN
-  END SUBROUTINE lit_mesh_geom
+  END SUBROUTINE read_geometric_data
 
   !**********************************
   !lecture des datas en format seuil
-  SUBROUTINE lit_mesh_seuil(mesh,data,coordmin,coordmax)
+  SUBROUTINE read_threshold_data(mesh,data,coordmin,coordmax)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -539,7 +539,7 @@ CONTAINS
        PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
     ENDDO
     RETURN
-  END SUBROUTINE lit_mesh_seuil
+  END SUBROUTINE read_threshold_data
 
   !**********************************
   !mise en tableau des indices de points pour les formats image
@@ -557,7 +557,7 @@ CONTAINS
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: ok !TODO utilisé comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
 
     !###########################################
     ! INSTRUCTIONS

@@ -4,7 +4,7 @@ CONTAINS
 
   !********************************
   !ecriture des domaines decoupes
-  SUBROUTINE ecrit_domaines(data,nbproc,domaines)
+  SUBROUTINE write_domains(data,nbproc,domaines)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -27,11 +27,11 @@ CONTAINS
     CALL flush(2)
     CLOSE(2)
     RETURN
-  END SUBROUTINE ecrit_domaines
+  END SUBROUTINE write_domains
 
   !********************************
   !ecriture des decoupages
-  SUBROUTINE ecrit_decoupages(nbproc,data,ldat,ddat)
+  SUBROUTINE write_partitionning(nbproc,data,ldat,ddat)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -86,11 +86,11 @@ CONTAINS
     ENDDO
     CALL flush(6)
     RETURN
-  END SUBROUTINE ecrit_decoupages
+  END SUBROUTINE write_partitionning
 
   !********************************
   !ecriture des clusters regroupes
-  SUBROUTINE ecritcluster(numproc,dataw)
+  SUBROUTINE write_partial_clusters(numproc,dataw)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -125,11 +125,11 @@ CONTAINS
     CALL flush(10)
     CLOSE(10)
     RETURN
-  END SUBROUTINE ecritcluster
+  END SUBROUTINE write_partial_clusters
 
   !****************************
   !ecriture de cluster.final.
-  SUBROUTINE ecritclusterfinal(nbclust,iclust,clustermap)
+  SUBROUTINE write_final_clusters(nbclust,iclust,clustermap)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -171,11 +171,11 @@ CONTAINS
     ENDDO
     nbclust=k
     RETURN
-  END SUBROUTINE ecritclusterfinal
+  END SUBROUTINE write_final_clusters
 
   !***************************
   !ecriture des informations
-  SUBROUTINE ecrit_info(mesh,data,nbproc,nbclust)
+  SUBROUTINE write_metadata(mesh,data,nbproc,nbclust)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -227,6 +227,6 @@ CONTAINS
     CALL flush(3)
     CLOSE(3)
     RETURN
-  END SUBROUTINE ecrit_info
+  END SUBROUTINE write_metadata
 
 END MODULE module_sortie
