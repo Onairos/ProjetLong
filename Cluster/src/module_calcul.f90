@@ -66,13 +66,13 @@ CONTAINS
     DOUBLE PRECISION :: sigma
 
     !#### Variables  ####
+    INTEGER,DIMENSION(:,:),POINTER :: tableau
+    INTEGER,DIMENSION(:),POINTER :: decoupe0
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb
-    INTEGER :: ok !TODO sert comme boolÃ©en, changer en LOGICAL ?
-    INTEGER,DIMENSION(:,:),POINTER :: tableau
-    INTEGER,DIMENSION(:),POINTER :: decoupe0
+    INTEGER :: ok !TODO sert comme booleen, changer en LOGICAL ?
     DOUBLE PRECISION :: long
     DOUBLE PRECISION :: sigma0
     DOUBLE PRECISION :: volext
