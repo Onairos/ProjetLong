@@ -195,7 +195,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     INTEGER :: point_num ! the number of points
-    !TODO : à réfléhir sur l'ordre de déclaration
+    !TODO : ÃÂ  rÃÂ©flÃÂ©hir sur l'ordre de dÃÂ©claration
     DOUBLE PRECISION :: point (dim_num, point_num) ! the points
     INTEGER :: cluster_num ! the number of clusters
     INTEGER :: dim_num ! the number of spatial dimensions

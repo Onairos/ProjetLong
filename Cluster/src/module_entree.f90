@@ -59,7 +59,7 @@ CONTAINS
     TYPE(type_data) :: data
 
     !====  OUT ====
-    CHARACTER*30 :: mesh
+    CHARACTER (LEN=30) :: mesh
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
     DOUBLE PRECISION :: epsilon
@@ -69,7 +69,7 @@ CONTAINS
     INTEGER :: nblimit
 
     !#### Variables  ####
-    CHARACTER*30 :: mot
+    CHARACTER (LEN=30) :: mot
     INTEGER :: decoupage
     INTEGER :: i
     INTEGER :: ierr
@@ -270,7 +270,7 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    CHARACTER*30 :: mesh
+    CHARACTER (LEN=30) :: mesh
 
     !=== IN/OUT ===
     TYPE(type_data) :: data
@@ -330,7 +330,7 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    CHARACTER*30 :: mesh
+    CHARACTER (LEN=30) :: mesh
     !=== IN/OUT ===
     TYPE(type_data) :: data
     !====  OUT ====
@@ -391,7 +391,7 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    CHARACTER*30 :: mesh
+    CHARACTER (LEN=30) :: mesh
 
     !=== IN/OUT ===
     TYPE(type_data) :: data
@@ -474,7 +474,7 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    CHARACTER*30 :: mesh
+    CHARACTER (LEN=30) :: mesh
 
     !=== IN/OUT ===
     TYPE(type_data) :: data

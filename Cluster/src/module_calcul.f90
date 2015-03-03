@@ -179,7 +179,7 @@ CONTAINS
     INTEGER :: n
     INTEGER :: nb
     INTEGER :: nbcluster
-    INTEGER :: nbproc !TODO : mettre en paramètre et WTF faut-il fair car on lit une variable vide
+    INTEGER :: nbproc !TODO : mettre en paramÃÂ¨tre et WTF faut-il fair car on lit une variable vide
     INTEGER :: nbvp
     INTEGER :: solver ! solveur au valeur propre => parametre de controle
 

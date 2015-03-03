@@ -20,7 +20,7 @@ CONTAINS
     INTEGER, DIMENSION(:), POINTER ::cluster, cluster_population, nbinfo
     INTEGER :: nblimit, nbideal
     DOUBLE PRECISION :: norme, ratio, ratio1, ratio2, seuilrij
-    CHARACTER*30 :: num, files
+    CHARACTER (LEN=30) :: num, files
 
 ! sparsification debut
     DOUBLE PRECISION :: t1, t2, t_cons_a, t_cons_vp

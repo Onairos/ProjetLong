@@ -17,9 +17,9 @@ PROGRAM clusters
   TYPE(type_clusters), DIMENSION(:), POINTER :: nclust
   TYPE(type_data) :: data
   TYPE(type_data) :: dataw
-  CHARACTER*80 :: procname ! variable MPI
-  CHARACTER*30 :: entree
-  CHARACTER*30 :: mesh
+  CHARACTER (LEN=80) :: procname ! variable MPI
+  CHARACTER (LEN=30) :: entree
+  CHARACTER (LEN=30) :: mesh
   DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin

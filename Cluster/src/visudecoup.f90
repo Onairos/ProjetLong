@@ -4,8 +4,8 @@ PROGRAM visudecoup
   ! DECLARATIONS
   !###########################################
   !#### Variables  ####
-  CHARACTER*30 :: files
-  CHARACTER*30 :: num
+  CHARACTER (LEN=30) :: files
+  CHARACTER (LEN=30) :: num
   DOUBLE PRECISION :: coord(2)
   DOUBLE PRECISION :: xmax
   DOUBLE PRECISION :: xmin

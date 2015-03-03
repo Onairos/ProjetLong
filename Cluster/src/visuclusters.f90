@@ -8,7 +8,7 @@ PROGRAM visuclusters
   !###########################################
   !#### Variables  ####
   TYPE(type_params) :: params
-  CHARACTER*30 :: formato
+  CHARACTER (LEN=30) :: formato
   REAL :: elapsed(2) ! For receiving user and system time
   REAL :: temps
 

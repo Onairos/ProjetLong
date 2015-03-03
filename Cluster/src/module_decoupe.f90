@@ -78,7 +78,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
 
     !#### Variables  ####
-    CHARACTER*30 :: num,files
+    CHARACTER (LEN=30) :: num,files
     DOUBLE PRECISION :: prod
     DOUBLE PRECISION :: prod1
     DOUBLE PRECISION :: prod2
@@ -184,7 +184,7 @@ CONTAINS
     INTEGER, DIMENSION(:), POINTER :: list
     INTEGER :: k
     INTEGER :: n
-    INTEGER :: ok !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok !TODO utilisÃÂÃÂ© comme un booleen, modifier en LOGICAL ??
 
 
     !###########################################
@@ -428,9 +428,9 @@ CONTAINS
     INTEGER :: j3
     INTEGER :: k
     INTEGER :: n
-    INTEGER :: ok !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
-    INTEGER :: ok2 !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
-    INTEGER :: ok3 !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok !TODO utilisÃÂÃÂ© comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok2 !TODO utilisÃÂÃÂ© comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok3 !TODO utilisÃÂÃÂ© comme un booleen, modifier en LOGICAL ??
 
     !###########################################
     ! INSTRUCTIONS

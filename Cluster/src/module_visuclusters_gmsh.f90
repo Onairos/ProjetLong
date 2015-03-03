@@ -14,7 +14,7 @@ CONTAINS
     TYPE(type_params) :: params
 
     !#### Variables  ####
-    CHARACTER*30 :: num
+    CHARACTER (LEN=30) :: num
     DOUBLE PRECISION :: x0
     DOUBLE PRECISION :: x1
     DOUBLE PRECISION :: xmax
@@ -160,8 +160,8 @@ CONTAINS
     TYPE(type_params) :: params
 
     !#### Variables  ####
-    CHARACTER*30 :: files
-    CHARACTER*30 :: num
+    CHARACTER (LEN=30) :: files
+    CHARACTER (LEN=30) :: num
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
     INTEGER :: i
     INTEGER :: j
@@ -224,8 +224,8 @@ CONTAINS
     TYPE(type_params) :: params
 
     !#### Variables  ####
-    CHARACTER*30 :: files
-    CHARACTER*30 :: num
+    CHARACTER (LEN=30) :: files
+    CHARACTER (LEN=30) :: num
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
     INTEGER, DIMENSION(:), POINTER :: corresp
     INTEGER :: i
@@ -298,8 +298,8 @@ CONTAINS
     !====  OUT ====
 
     !#### Variables  ####
-    CHARACTER*30 :: files
-    CHARACTER*30 :: num
+    CHARACTER (LEN=30) :: files
+    CHARACTER (LEN=30) :: num
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
     INTEGER :: i
     INTEGER :: j

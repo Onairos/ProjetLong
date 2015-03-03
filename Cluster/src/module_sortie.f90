@@ -42,8 +42,8 @@ CONTAINS
     INTEGER :: nbproc
     
     !#### Variables  ####
-    CHARACTER*30 :: files
-    CHARACTER*30 :: num
+    CHARACTER (LEN=30) :: files
+    CHARACTER (LEN=30) :: num
     INTEGER :: i
     INTEGER :: j
     INTEGER :: nbdom
@@ -98,8 +98,8 @@ CONTAINS
     INTEGER :: numproc
     
     !#### Variables  ####
-    CHARACTER*30 :: files
-    CHARACTER*30 :: num
+    CHARACTER (LEN=30) :: files
+    CHARACTER (LEN=30) :: num
     INTEGER :: i
     
     !###########################################      
@@ -139,8 +139,8 @@ CONTAINS
     INTEGER :: nbclust
 
     !#### Variables  ####
-    CHARACTER*30 :: files
-    CHARACTER*30 :: num
+    CHARACTER (LEN=30) :: files
+    CHARACTER (LEN=30) :: num
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -178,7 +178,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    CHARACTER*30 :: mesh
+    CHARACTER (LEN=30) :: mesh
     INTEGER :: nbclust
     INTEGER :: nbproc
     

@@ -110,7 +110,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    CHARACTER*30 :: formato
+    CHARACTER (LEN=30) :: formato
     
     !###########################################      
     ! INSTRUCTIONS
@@ -137,7 +137,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    CHARACTER*30 :: formato
+    CHARACTER (LEN=30) :: formato
     
     !###########################################      
     ! INSTRUCTIONS
@@ -164,7 +164,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    CHARACTER*30 :: formato
+    CHARACTER (LEN=30) :: formato
 
     !###########################################      
     ! INSTRUCTIONS
@@ -191,7 +191,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    CHARACTER*30 :: formato
+    CHARACTER (LEN=30) :: formato
 
     !###########################################      
     ! INSTRUCTIONS
@@ -217,7 +217,7 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    CHARACTER*30 :: formato
+    CHARACTER (LEN=30) :: formato
     
     !###########################################      
     ! INSTRUCTIONS
