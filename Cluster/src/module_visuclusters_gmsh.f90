@@ -2,8 +2,8 @@ MODULE module_visuclusters_gmsh
   USE module_visuclusters_structure
 CONTAINS
 
-  !************************
-  !ecriture de la geometrie du decoupage
+
+
   SUBROUTINE write_partionning_gmsh(params)
     IMPLICIT NONE
     !###########################################
@@ -148,8 +148,8 @@ CONTAINS
     RETURN
   END SUBROUTINE write_partionning_gmsh
 
-  !***********************
-  !initialisation du fichier de decoupage
+
+
   SUBROUTINE affectation_gmsh(params)
     IMPLICIT NONE
     !###########################################
@@ -212,8 +212,8 @@ CONTAINS
     RETURN
   END SUBROUTINE affectation_gmsh
 
-  !***********************
-  !ecriture des clusters avant regroupement
+
+
   SUBROUTINE write_partial_clusters_gmsh(params)
     IMPLICIT NONE
     !###########################################
@@ -284,8 +284,8 @@ CONTAINS
     RETURN
   END SUBROUTINE write_partial_clusters_gmsh
 
-  !***********************
-  !ecriture des clusters apres regroupement
+
+
   SUBROUTINE write_final_clusters_gmsh(params)
     IMPLICIT NONE
     !###########################################
@@ -356,8 +356,8 @@ CONTAINS
     RETURN
   END SUBROUTINE write_final_clusters_gmsh
 
-  !*************************
-  !SUBROUTINE ecriture de point
+
+
   SUBROUTINE ecritpoint_gmsh(unit, dim, coord, ind, k)
     IMPLICIT NONE
     !###########################################
@@ -384,8 +384,8 @@ CONTAINS
     RETURN
   END SUBROUTINE ecritpoint_gmsh
 
-  !*************************
-  !SUBROUTINE ecriture de point en format image
+
+
   SUBROUTINE write_picture_to_gmsh(unit, params, ind, k)
     IMPLICIT NONE
     !###########################################
@@ -457,8 +457,8 @@ CONTAINS
     RETURN
   END SUBROUTINE write_picture_to_gmsh
 
-  !************************
-  !liste des commandes
+
+
   SUBROUTINE list_commands_gmsh
     !###########################################
     ! INSTRUCTIONS

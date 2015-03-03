@@ -3,8 +3,7 @@ MODULE module_decoupe
   USE module_sortie
 CONTAINS
 
-  !****************************************
-  !decoupage pour transfert MPI
+
   SUBROUTINE partition_data(data, epsilon, nbproc, coordmin, coordmax, decoupe,&
        ldat, ddat, bornes)
     IMPLICIT NONE
@@ -59,8 +58,7 @@ CONTAINS
     RETURN
   END SUBROUTINE partition_data
 
-  !****************************************
-  !definition des bornes avec interface
+
   SUBROUTINE define_bounds(data, coordmin, coordmax, bornes, decoupe, epsilon, nbproc)
     IMPLICIT NONE
     !###########################################
@@ -167,8 +165,7 @@ CONTAINS
     RETURN
   END SUBROUTINE define_bounds
 
-  !****************************************
-  !definition des domaines de decoupages
+
   SUBROUTINE define_domains(nbproc, data, domaines, bornes, decoupe)
     IMPLICIT NONE
     !###########################################
@@ -258,8 +255,7 @@ CONTAINS
     RETURN
   END SUBROUTINE define_domains
 
-  !****************************************
-  !decoupage avec interface
+
   SUBROUTINE partition_with_interfaces(nbproc, data, ldat, ddat, domaines, epsilon)
     IMPLICIT NONE
     !###########################################
@@ -353,8 +349,8 @@ CONTAINS
     RETURN
   END SUBROUTINE partition_with_interfaces
 
-  !****************************************
-  !decoupage avec recouvrement
+
+
   SUBROUTINE partition_with_overlappings(nbproc, data, ldat, ddat, domaines)
     IMPLICIT NONE
     !###########################################
@@ -408,8 +404,7 @@ CONTAINS
     RETURN
   END SUBROUTINE partition_with_overlappings
 
-  !****************************************
-  !elimine les doublons dans le clustering
+
   SUBROUTINE group_clusters(nbclust, iclust, clustermap, data)
     IMPLICIT NONE
     !###########################################

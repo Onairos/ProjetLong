@@ -3,8 +3,7 @@ MODULE module_MPI
 CONTAINS
 
 
-  !****************************************
-  !envoi des decoupages
+
   SUBROUTINE send_partitionning(nbproc, data, ldat, ddat, dataw)
     IMPLICIT NONE    
     ! librairie MPI
@@ -82,8 +81,7 @@ CONTAINS
     RETURN
   END SUBROUTINE send_partitionning
 
-  !***************************************
-  !reception des decoupages
+
   SUBROUTINE receive_partitionning(numproc, dataw)
     IMPLICIT NONE
     ! librairie MPI
@@ -149,8 +147,7 @@ CONTAINS
   END SUBROUTINE receive_partitionning
 
 
-  !***************************************
-  !compte des clusters avec doublons
+
   SUBROUTINE receive_number_clusters(nbproc, nbclust, ldat, dataw, nclust)
     IMPLICIT NONE
     ! librairie MPI
@@ -205,8 +202,7 @@ CONTAINS
     RETURN
   END SUBROUTINE receive_number_clusters
 
-  !***************************************
-  !envoi des nb de clusters
+
   SUBROUTINE send_number_clusters(numproc, dataw)
     IMPLICIT NONE
     ! librairie MPI
@@ -244,8 +240,8 @@ CONTAINS
     RETURN
   END SUBROUTINE send_number_clusters
 
-  !***************************************
-  !envoi des clusters
+
+
   SUBROUTINE send_clusters(numproc, dataw)
     IMPLICIT NONE
     ! librairie MPI
@@ -279,8 +275,8 @@ CONTAINS
     RETURN
   END SUBROUTINE send_clusters
 
-  !***************************************
-  !reception des clusters
+
+
   SUBROUTINE receive_clusters(nbproc, nbclust, ldat, ddat, dataw, clustermap, &
        nclust, iclust)
     IMPLICIT NONE

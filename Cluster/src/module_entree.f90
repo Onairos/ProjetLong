@@ -2,8 +2,6 @@ MODULE module_entree
  USE module_structure
 CONTAINS
 
-  !*********************************************
-  !fichier d'aide
   SUBROUTINE help
     IMPLICIT NONE
     !###########################################
@@ -46,8 +44,7 @@ CONTAINS
     RETURN
   END SUBROUTINE help
 
-  !**********************************************
-  !lecture du fichier d'entree
+
   SUBROUTINE read_file(data, epsilon, coordmin, coordmax, nbproc, decoupe, &
        mesh, sigma, nblimit, listenbideal)
     IMPLICIT NONE
@@ -265,8 +262,7 @@ CONTAINS
     RETURN
   END SUBROUTINE read_file
 
-  !**********************************
-  !lecture des datas en format coord
+
   SUBROUTINE read_coordinates_data(mesh, data, coordmin, coordmax)
     IMPLICIT NONE
     !###########################################
@@ -326,8 +322,7 @@ CONTAINS
     RETURN
   END SUBROUTINE read_coordinates_data
 
-  !**********************************
-  !lecture d'image
+
   SUBROUTINE read_picture_data(mesh, data, coordmin, coordmax)
     IMPLICIT NONE
     !###########################################
@@ -388,8 +383,7 @@ CONTAINS
     RETURN
   END SUBROUTINE read_picture_data
   
-  !**********************************
-  !lecture image en mode geom
+
   SUBROUTINE read_geometric_data(mesh, data, coordmin, coordmax)
     IMPLICIT NONE
     !###########################################
@@ -471,8 +465,8 @@ CONTAINS
     RETURN
   END SUBROUTINE read_geometric_data
 
-  !**********************************
-  !lecture des datas en format seuil
+
+
   SUBROUTINE read_threshold_data(mesh, data, coordmin, coordmax)
     IMPLICIT NONE
     !###########################################
@@ -541,8 +535,8 @@ CONTAINS
     RETURN
   END SUBROUTINE read_threshold_data
 
-  !**********************************
-  !mise en tableau des indices de points pour les formats image
+
+
   SUBROUTINE tableau_image(data)
     IMPLICIT NONE
     !###########################################

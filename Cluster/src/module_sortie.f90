@@ -2,8 +2,7 @@ MODULE module_sortie
   USE module_structure
 CONTAINS
 
-  !********************************
-  !ecriture des domaines decoupes
+
   SUBROUTINE write_domains(data, nbproc, domaines)
     IMPLICIT NONE
     !###########################################
@@ -29,8 +28,7 @@ CONTAINS
     RETURN
   END SUBROUTINE write_domains
 
-  !********************************
-  !ecriture des decoupages
+
   SUBROUTINE write_partitionning(nbproc, data, ldat, ddat)
     IMPLICIT NONE
     !###########################################
@@ -88,8 +86,7 @@ CONTAINS
     RETURN
   END SUBROUTINE write_partitionning
 
-  !********************************
-  !ecriture des clusters regroupes
+
   SUBROUTINE write_partial_clusters(numproc, dataw)
     IMPLICIT NONE
     !###########################################
@@ -127,8 +124,7 @@ CONTAINS
     RETURN
   END SUBROUTINE write_partial_clusters
 
-  !****************************
-  !ecriture de cluster.final.
+
   SUBROUTINE write_final_clusters(nbclust, iclust, clustermap)
     IMPLICIT NONE
     !###########################################
@@ -173,8 +169,7 @@ CONTAINS
     RETURN
   END SUBROUTINE write_final_clusters
 
-  !***************************
-  !ecriture des informations
+
   SUBROUTINE write_metadata(mesh, data, nbproc, nbclust)
     IMPLICIT NONE
     !###########################################
