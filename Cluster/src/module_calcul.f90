@@ -57,17 +57,17 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: dataw
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
     DOUBLE PRECISION :: epsilon
-    INTEGER,DIMENSION(:),POINTER :: decoupe
+    INTEGER, DIMENSION(:), POINTER :: decoupe
     INTEGER :: numproc
 
     !====  OUT ====
     DOUBLE PRECISION :: sigma
 
     !#### Variables  ####
-    INTEGER,DIMENSION(:,:),POINTER :: tableau
-    INTEGER,DIMENSION(:),POINTER :: decoupe0
+    INTEGER, DIMENSION(:,:), POINTER :: tableau
+    INTEGER, DIMENSION(:), POINTER :: decoupe0
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -155,18 +155,18 @@ CONTAINS
     !#### Variables  ####
     CHARACTER*30 :: files
     CHARACTER*30 :: num
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: A
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: A2
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: cluster_center
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: Z
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: cluster_energy
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: D
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiomax
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiomin
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiomoy
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiorii
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiorij
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: W
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A2
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: cluster_center
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: cluster_energy
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: D
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomoy
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiorii
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiorij
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: W
     DOUBLE PRECISION :: norme
     DOUBLE PRECISION :: ratio
     DOUBLE PRECISION :: ratio1
@@ -177,9 +177,9 @@ CONTAINS
     DOUBLE PRECISION :: t2
     DOUBLE PRECISION :: val ! deux valeurs qui quand elles ne sont pas declarees et donc implicitement des REAL font que ca marche mieux
     DOUBLE PRECISION :: value ! deux valeurs qui quand elles ne sont pas declarees et donc implicitement des REAL font que ca marche mieux
-    INTEGER,DIMENSION(:),POINTER :: cluster
-    INTEGER,DIMENSION(:),POINTER :: cluster_population
-    INTEGER,DIMENSION(:),POINTER :: nbinfo
+    INTEGER, DIMENSION(:), POINTER :: cluster
+    INTEGER, DIMENSION(:), POINTER :: cluster_population
+    INTEGER, DIMENSION(:), POINTER :: nbinfo
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k

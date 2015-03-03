@@ -14,8 +14,8 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
-    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER, DIMENSION(:,:), POINTER :: ddat
+    INTEGER, DIMENSION(:), POINTER :: ldat
     INTEGER :: nbproc
 
     !=== IN/OUT ===
@@ -25,7 +25,7 @@ CONTAINS
     TYPE(type_data) :: dataw
     
     !#### Variables  ####
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
     INTEGER :: i
     INTEGER :: j
     INTEGER :: ierr
@@ -99,7 +99,7 @@ CONTAINS
     TYPE(type_data) :: dataw
     
     !#### Variables  ####
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
     INTEGER status(MPI_STATUS_SIZE)
     INTEGER :: i
     INTEGER :: ierr
@@ -161,11 +161,11 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ==== 
     TYPE(type_data) ::dataw
-    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER, DIMENSION(:), POINTER :: ldat
     INTEGER :: nbproc
 
     !====  OUT ====
-    TYPE(type_clusters),DIMENSION(:),POINTER :: nclust
+    TYPE(type_clusters), DIMENSION(:), POINTER :: nclust
     INTEGER :: nbclust
     
     !#### Variables  ####    
@@ -220,7 +220,7 @@ CONTAINS
     INTEGER :: numproc
 
     !#### Variables  ####
-    INTEGER,DIMENSION(:),POINTER :: list
+    INTEGER, DIMENSION(:), POINTER :: list
     INTEGER :: tag
     INTEGER :: i
     INTEGER :: ierr
@@ -255,11 +255,11 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    TYPE(type_data) ::dataw
+    TYPE(type_data) :: dataw
     INTEGER :: numproc
     
     !#### Variables  ####  
-    INTEGER,DIMENSION(:),POINTER :: lclust
+    INTEGER, DIMENSION(:), POINTER :: lclust
     INTEGER :: i
     INTEGER :: ierr
     INTEGER :: tag
@@ -291,20 +291,20 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    TYPE(type_clusters),DIMENSION(:),POINTER :: nclust
+    TYPE(type_clusters), DIMENSION(:), POINTER :: nclust
     TYPE(type_data) ::dataw
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
-    INTEGER,DIMENSION(:),POINTER :: ldat 
+    INTEGER, DIMENSION(:,:), POINTER :: ddat
+    INTEGER, DIMENSION(:), POINTER :: ldat 
     INTEGER :: nbproc
     INTEGER :: nbclust
 
     !====  OUT ====
-    INTEGER,DIMENSION(:,:),POINTER :: clustermap
-    INTEGER,DIMENSION(:),POINTER :: iclust
+    INTEGER, DIMENSION(:,:), POINTER :: clustermap
+    INTEGER, DIMENSION(:), POINTER :: iclust
     
     !#### Variables  ####
-    INTEGER,DIMENSION(:),POINTER :: lclust
-    INTEGER,DIMENSION(:),POINTER :: listclust
+    INTEGER, DIMENSION(:), POINTER :: lclust
+    INTEGER, DIMENSION(:), POINTER :: listclust
     INTEGER status(MPI_STATUS_SIZE)
     INTEGER :: i
     INTEGER :: i0

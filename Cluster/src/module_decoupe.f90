@@ -15,20 +15,20 @@ CONTAINS
     !====  IN  ====
     TYPE(type_data) :: data
     DOUBLE PRECISION :: epsilon
-    INTEGER,DIMENSION(:),POINTER :: decoupe
+    INTEGER, DIMENSION(:), POINTER :: decoupe
     INTEGER :: nbproc
 
     !=== IN/OUT ===
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
 
     !====  OUT ====
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
-    INTEGER,DIMENSION(:),POINTER :: ldat
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
+    INTEGER, DIMENSION(:,:), POINTER :: ddat
+    INTEGER, DIMENSION(:), POINTER :: ldat
 
     !#### Variables  ####
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domaines
     INTEGER :: ierr 
 
     !###########################################
@@ -70,15 +70,15 @@ CONTAINS
     !====  IN  ====
     TYPE(type_data) :: data
     DOUBLE PRECISION :: epsilon
-    INTEGER,DIMENSION(:),POINTER :: decoupe
+    INTEGER,DIMENSION(:), POINTER :: decoupe
     INTEGER :: nbproc
 
     !=== IN/OUT ===
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
 
     !====  OUT ====
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
 
     !#### Variables  ####
     CHARACTER*30 :: num,files
@@ -177,15 +177,15 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
-    INTEGER,DIMENSION(:),POINTER :: decoupe
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
+    INTEGER, DIMENSION(:), POINTER :: decoupe
     INTEGER :: nbproc
 
     !====  OUT ====
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domaines
 
     !#### Variables  ####
-    INTEGER,DIMENSION(:),POINTER :: list
+    INTEGER, DIMENSION(:), POINTER :: list
     INTEGER :: k
     INTEGER :: n
     INTEGER :: ok !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
@@ -268,12 +268,12 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domaines
     DOUBLE PRECISION :: epsilon
     INTEGER :: nbproc
     !====  OUT ====
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
-    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER, DIMENSION(:,:), POINTER :: ddat
+    INTEGER, DIMENSION(:), POINTER :: ldat
 
     !#### Variables  ####
     INTEGER :: i
@@ -363,11 +363,11 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domaines
     INTEGER :: nbproc
     !====  OUT ====
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
-    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER, DIMENSION(:,:), POINTER :: ddat
+    INTEGER, DIMENSION(:), POINTER :: ldat
 
     !#### Variables  ####
     INTEGER :: i
@@ -420,8 +420,8 @@ CONTAINS
     INTEGER :: nbclust
 
     !=== IN/OUT ===
-    INTEGER,DIMENSION(:,:),POINTER :: clustermap
-    INTEGER,DIMENSION(:),POINTER :: iclust
+    INTEGER, DIMENSION(:,:), POINTER :: clustermap
+    INTEGER, DIMENSION(:), POINTER :: iclust
 
     !====  OUT ====
     TYPE(type_data) :: data

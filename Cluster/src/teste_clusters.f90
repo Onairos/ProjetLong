@@ -6,7 +6,7 @@ PROGRAM teste_clusters
   ! DECLARATIONS
   !###########################################
   !#### Variables  ####
-  TYPE(type_test),DIMENSION(:),POINTER :: test
+  TYPE(type_test), DIMENSION(:), POINTER :: test
   CHARACTER*30 :: files
   INTEGER :: i
   INTEGER :: nbtests

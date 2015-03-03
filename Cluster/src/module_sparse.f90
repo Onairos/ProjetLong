@@ -13,11 +13,11 @@ CONTAINS
     TYPE(type_data) :: dataw
     INTEGER :: numproc,nbproc
     DOUBLE PRECISION :: sigma
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: cluster_center
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: cluster_center
     INTEGER :: n, k, nbcluster
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: ratiomax,cluster_energy,&
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax,cluster_energy,&
          ratiomin,ratiomoy,ratiorii,ratiorij
-    INTEGER,DIMENSION(:),POINTER ::cluster,cluster_population,nbinfo
+    INTEGER, DIMENSION(:), POINTER ::cluster,cluster_population,nbinfo
     INTEGER :: nblimit,nbideal
     DOUBLE PRECISION :: norme,ratio,ratio1,ratio2,seuilrij
     CHARACTER*30 :: num,files
@@ -28,10 +28,10 @@ CONTAINS
     DOUBLE PRECISION :: facteur
     INTEGER :: l
     DOUBLE PRECISION :: treshold
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: AS
-    INTEGER, DIMENSION(:),POINTER :: IAS, JAS
-    DOUBLE PRECISION, DIMENSION(:),POINTER :: D
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: Z
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: AS
+    INTEGER, DIMENSION(:), POINTER :: IAS, JAS
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: D
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
     DOUBLE PRECISION, DIMENSION(:), POINTER :: W
 ! sparsification fin
 
@@ -302,20 +302,20 @@ PRINT *, 'ratio de frobenius'
 
     IMPLICIT NONE
     !TYPE(type_data) :: dataw
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER:: Z,cluster_center
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER:: Z,cluster_center
     INTEGER ::nbcluster,n,nbinfo,numproc
     DOUBLE PRECISION ::ratio,test,ratiomin,ratiorii,ratiorij, ratiomoy
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: cluster_energy,Z3
-    INTEGER,DIMENSION(:),POINTER ::cluster,cluster_population
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: cluster_energy,Z3
+    INTEGER, DIMENSION(:), POINTER ::cluster,cluster_population
     !INTEGER,DIMENSION(:),POINTER::ordaffperclus
-    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Frob
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER::Z1,Z2
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER::Z1,Z2
     INTEGER :: it_max,it_num,i,j,k
-    INTEGER,DIMENSION(:,:),POINTER :: clustercorresp
+    INTEGER, DIMENSION(:,:), POINTER :: clustercorresp
     INTEGER :: ki,kj,ni,nj,ok,nbmax
 
-    DOUBLE PRECISION,DIMENSION(:),POINTER:: AS
-    INTEGER,DIMENSION(:),POINTER:: IAS, JAS
+    DOUBLE PRECISION, DIMENSION(:), POINTER:: AS
+    INTEGER, DIMENSION(:), POINTER :: IAS, JAS
     INTEGER :: nnz
 
     INTEGER :: l

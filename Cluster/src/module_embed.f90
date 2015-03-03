@@ -19,31 +19,31 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: A
-    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Z ! matrice des vecteurs propres
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z ! matrice des vecteurs propres
     INTEGER :: n
     INTEGER :: nbcluster ! nbre de cluster
     INTEGER :: numproc
     
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: cluster_center ! centre des nbclusters clusters
-    DOUBLE PRECISION, DIMENSION(:),POINTER :: cluster_energy ! somme des energies par cluster
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: cluster_center ! centre des nbclusters clusters
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: cluster_energy ! somme des energies par cluster
     DOUBLE PRECISION :: ratio ! max des ration de frob sur matrice aff reordonnancee suivant
     DOUBLE PRECISION :: ratiomoy
     DOUBLE PRECISION :: ratiorii
     DOUBLE PRECISION :: ratiorij
-    INTEGER,DIMENSION(:),POINTER :: cluster ! appartenance des clusters
-    INTEGER,DIMENSION(:),POINTER :: cluster_population ! nbre de points par cluster
+    INTEGER, DIMENSION(:), POINTER :: cluster ! appartenance des clusters
+    INTEGER, DIMENSION(:), POINTER :: cluster_population ! nbre de points par cluster
     INTEGER :: nbinfo
     
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Frob
-    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Z1
-    DOUBLE PRECISION, DIMENSION(:,:),POINTER :: Z2
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z2
     DOUBLE PRECISION, DIMENSION(:), POINTER :: Z3
     DOUBLE PRECISION :: ratiomin
     DOUBLE PRECISION :: test
-    INTEGER,DIMENSION(:,:),POINTER :: clustercorresp
+    INTEGER, DIMENSION(:,:), POINTER :: clustercorresp
     INTEGER :: i
     INTEGER :: it_max
     INTEGER :: it_num

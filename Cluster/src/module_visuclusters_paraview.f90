@@ -15,12 +15,12 @@ CONTAINS
     
     !#### Variables  ####
     CHARACTER*30 :: num
-    DOUBLE PRECISION,POINTER,DIMENSION(:) :: xmax
-    DOUBLE PRECISION,POINTER,DIMENSION(:) :: xmin
-    DOUBLE PRECISION,POINTER,DIMENSION(:) :: ymax
-    DOUBLE PRECISION,POINTER,DIMENSION(:) :: ymin
-    DOUBLE PRECISION,POINTER,DIMENSION(:) :: zmax
-    DOUBLE PRECISION,POINTER,DIMENSION(:) :: zmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: xmax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: xmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ymax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ymin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: zmax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: zmin
     DOUBLE PRECISION :: x0
     DOUBLE PRECISION :: x1
     DOUBLE PRECISION :: y0
@@ -274,9 +274,9 @@ CONTAINS
     !#### Variables  ####
     CHARACTER*30 :: num
     CHARACTER*30 :: files
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
-    INTEGER,DIMENSION(:),POINTER :: ind
-    INTEGER,DIMENSION(:),POINTER :: indp
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    INTEGER, DIMENSION(:), POINTER :: ind
+    INTEGER, DIMENSION(:), POINTER :: indp
     INTEGER :: i
     INTEGER :: j
     INTEGER :: nb
@@ -402,13 +402,13 @@ CONTAINS
     TYPE(type_params) :: params
     
     !#### Variables  ####
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
     CHARACTER*30 :: files
     CHARACTER*30 :: num
     CHARACTER*30 :: star
-    INTEGER,DIMENSION(:),POINTER :: corresp
-    INTEGER,DIMENSION(:),POINTER :: ind
-    INTEGER,DIMENSION(:),POINTER :: indp
+    INTEGER, DIMENSION(:), POINTER :: corresp
+    INTEGER, DIMENSION(:), POINTER :: ind
+    INTEGER, DIMENSION(:), POINTER :: indp
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -531,9 +531,9 @@ CONTAINS
     !#### Variables  ####
     CHARACTER*30 :: files
     CHARACTER*30 :: num
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
-    INTEGER,DIMENSION(:),POINTER :: ind
-    INTEGER,DIMENSION(:),POINTER :: indp
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    INTEGER, DIMENSION(:), POINTER :: ind
+    INTEGER, DIMENSION(:), POINTER :: indp
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -622,8 +622,8 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
-    INTEGER,DIMENSION(:),POINTER :: ind
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    INTEGER, DIMENSION(:), POINTER :: ind
     INTEGER :: unitgeo
     INTEGER :: unitind
     INTEGER :: k
@@ -674,8 +674,8 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER,DIMENSION(:),POINTER :: ind
-    INTEGER,DIMENSION(:),POINTER :: indp
+    INTEGER, DIMENSION(:), POINTER :: ind
+    INTEGER, DIMENSION(:), POINTER :: indp
     INTEGER :: nbp
     INTEGER :: unitgeo
     INTEGER :: unitind
@@ -683,10 +683,10 @@ CONTAINS
     !====  OUT ====
     
     !#### Variables  ####
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: data
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: kx
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: ky
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: kz
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: data
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: kx
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ky
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: kz
     INTEGER :: i
     INTEGER :: ix
     INTEGER :: iy

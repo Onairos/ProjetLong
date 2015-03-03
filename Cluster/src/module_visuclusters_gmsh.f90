@@ -162,7 +162,7 @@ CONTAINS
     !#### Variables  ####
     CHARACTER*30 :: files
     CHARACTER*30 :: num
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -226,8 +226,8 @@ CONTAINS
     !#### Variables  ####
     CHARACTER*30 :: files
     CHARACTER*30 :: num
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
-    INTEGER,DIMENSION(:),POINTER :: corresp
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    INTEGER, DIMENSION(:), POINTER :: corresp
     INTEGER :: i
     INTEGER :: ind
     INTEGER :: j
@@ -300,7 +300,7 @@ CONTAINS
     !#### Variables  ####
     CHARACTER*30 :: files
     CHARACTER*30 :: num
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -365,7 +365,7 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION,DIMENSION(:,:),POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
     INTEGER :: dim
     INTEGER :: ind
     INTEGER :: k
@@ -399,7 +399,7 @@ CONTAINS
     INTEGER :: unit
 
     !#### Variables  ####
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: data
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: data
     DOUBLE PRECISION :: kx
     DOUBLE PRECISION :: ky
     DOUBLE PRECISION :: kz

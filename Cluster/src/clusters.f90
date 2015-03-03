@@ -14,15 +14,15 @@ PROGRAM clusters
   ! DECLARATIONS
   !###########################################
   !#### Variables  ####
-  TYPE(type_clusters),DIMENSION(:),POINTER :: nclust
+  TYPE(type_clusters), DIMENSION(:), POINTER :: nclust
   TYPE(type_data) :: data
   TYPE(type_data) :: dataw
   CHARACTER*80 :: procname ! variable MPI
   CHARACTER*30 :: entree
   CHARACTER*30 :: mesh
-  DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: bornes
-  DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
-  DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+  DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
+  DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
+  DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
   DOUBLE PRECISION :: elapsed(2) ! For receiving user and system time
   DOUBLE PRECISION :: endtime
   DOUBLE PRECISION :: epsilon
@@ -33,12 +33,12 @@ PROGRAM clusters
   DOUBLE PRECISION :: t1
   DOUBLE PRECISION :: t2
   DOUBLE PRECISION :: temps
-  INTEGER,DIMENSION(:,:),POINTER :: clustermap
-  INTEGER,DIMENSION(:,:),POINTER :: ddat
-  INTEGER,DIMENSION(:),POINTER :: decoupe
-  INTEGER,DIMENSION(:),POINTER :: iclust
-  INTEGER,DIMENSION(:),POINTER :: ldat
-  INTEGER,DIMENSION(:),POINTER :: listenbideal
+  INTEGER,DIMENSION(:,:), POINTER :: clustermap
+  INTEGER,DIMENSION(:,:) ,POINTER :: ddat
+  INTEGER,DIMENSION(:), POINTER :: decoupe
+  INTEGER,DIMENSION(:), POINTER :: iclust
+  INTEGER,DIMENSION(:), POINTER :: ldat
+  INTEGER,DIMENSION(:), POINTER :: listenbideal
   INTEGER :: i
   INTEGER :: ierr ! variable MPI
   INTEGER :: j

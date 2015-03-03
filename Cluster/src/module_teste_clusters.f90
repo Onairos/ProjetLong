@@ -4,7 +4,7 @@ MODULE module_teste_clusters
      CHARACTER*80 :: dir,output,visup,visug,fichier,datatype,decoupetype
      INTEGER :: nbproc
      DOUBLE PRECISION :: epaisseur
-     INTEGER,DIMENSION(:),POINTER :: decoupe
+     INTEGER, DIMENSION(:), POINTER :: decoupe
   END TYPE type_test
 
 CONTAINS

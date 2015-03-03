@@ -63,12 +63,12 @@ CONTAINS
 
     !====  OUT ====
     CHARACTER*30 :: mesh
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
     DOUBLE PRECISION :: epsilon
     DOUBLE PRECISION :: sigma
-    INTEGER,DIMENSION(:),POINTER :: decoupe
-    INTEGER,DIMENSION(:),POINTER :: listenbideal
+    INTEGER, DIMENSION(:), POINTER :: decoupe
+    INTEGER, DIMENSION(:), POINTER :: listenbideal
     INTEGER :: nblimit
 
     !#### Variables  ####
@@ -76,7 +76,7 @@ CONTAINS
     INTEGER :: decoupage
     INTEGER :: i
     INTEGER :: ierr
-    INTEGER :: ok !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok !TODO utilise comme un booleen, modifier en LOGICAL ??
     INTEGER :: tot
 
     !###########################################
@@ -280,8 +280,8 @@ CONTAINS
     TYPE(type_data) :: data
 
     !====  OUT ====
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
 
     !#### Variables  ####
     INTEGER :: i
@@ -339,8 +339,8 @@ CONTAINS
     !=== IN/OUT ===
     TYPE(type_data) :: data
     !====  OUT ====
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
 
     !#### Variables  ####
     INTEGER :: i
@@ -403,8 +403,8 @@ CONTAINS
     TYPE(type_data) :: data
 
     !====  OUT ====
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
 
     !#### Variables  ####
     DOUBLE PRECISION :: pasmax
@@ -486,8 +486,8 @@ CONTAINS
     TYPE(type_data) :: data
 
     !====  OUT ====
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmax
-    DOUBLE PRECISION,DIMENSION(:),POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
 
     !#### Variables  ####
     INTEGER :: i
@@ -553,11 +553,11 @@ CONTAINS
     TYPE(type_data) :: data
 
     !#### Variables  ####
-    INTEGER,DIMENSION(:),POINTER :: plan
+    INTEGER, DIMENSION(:), POINTER :: plan
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: ok !TODO utilisÃ© comme un booleen, modifier en LOGICAL ??
+    INTEGER :: ok !TODO utilise comme un booleen, modifier en LOGICAL ??
 
     !###########################################
     ! INSTRUCTIONS
