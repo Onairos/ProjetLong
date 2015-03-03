@@ -615,7 +615,7 @@ CONTAINS
 
   !*************************
   !SUBROUTINE ecriture de points
-  SUBROUTINE ecritpoint_paraview(unitgeo,unitind,nb,dim,coord,ind,k)
+  SUBROUTINE ecritpoint_paraview(unitgeo, unitind, nb, dim, coord, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -666,7 +666,7 @@ CONTAINS
 
   !*************************
   !SUBROUTINE ecriture de points en format image
-  SUBROUTINE write_picture_to_paraview(unitgeo,unitind,nbp,params,ind,indp)
+  SUBROUTINE write_picture_to_paraview(unitgeo, unitind, nbp, params, ind, indp)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

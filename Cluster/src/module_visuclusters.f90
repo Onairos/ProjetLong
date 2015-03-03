@@ -105,7 +105,7 @@ CONTAINS
 
   !*************************
   !ecriture de la geometrie du decoupage
-  SUBROUTINE write_partionning(formato,params)
+  SUBROUTINE write_partionning(formato, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -132,7 +132,7 @@ CONTAINS
 
   !***********************
   !ecriture des affectations de decoupage
-  SUBROUTINE affectation(formato,params)
+  SUBROUTINE affectation(formato, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -159,7 +159,7 @@ CONTAINS
 
   !***********************
   !ecriture des clusters avant regroupement
-  SUBROUTINE write_partial_clusters(formato,params)
+  SUBROUTINE write_partial_clusters(formato, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -186,7 +186,7 @@ CONTAINS
 
   !***********************
   !ecriture des clusters apres regroupement
-  SUBROUTINE write_final_clusters(formato,params)
+  SUBROUTINE write_final_clusters(formato, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

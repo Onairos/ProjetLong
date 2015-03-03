@@ -6,21 +6,21 @@ CONTAINS
 
   !*****************************************
   !calcul des clusters
-  SUBROUTINE sp_calculclusters(numproc,nblimit,nbideal,dataw,sigma)
+  SUBROUTINE sp_calculclusters(numproc, nblimit, nbideal, dataw, sigma)
 
-    IMPLICIT INTEGER(i,j,q)
+    IMPLICIT INTEGER(i, j, q)
     INCLUDE 'mpif.h'
     TYPE(type_data) :: dataw
-    INTEGER :: numproc,nbproc
+    INTEGER :: numproc, nbproc
     DOUBLE PRECISION :: sigma
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: cluster_center
     INTEGER :: n, k, nbcluster
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax,cluster_energy,&
-         ratiomin,ratiomoy,ratiorii,ratiorij
-    INTEGER, DIMENSION(:), POINTER ::cluster,cluster_population,nbinfo
-    INTEGER :: nblimit,nbideal
-    DOUBLE PRECISION :: norme,ratio,ratio1,ratio2,seuilrij
-    CHARACTER*30 :: num,files
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax, cluster_energy, &
+         ratiomin, ratiomoy, ratiorii, ratiorij
+    INTEGER, DIMENSION(:), POINTER ::cluster, cluster_population, nbinfo
+    INTEGER :: nblimit, nbideal
+    DOUBLE PRECISION :: norme, ratio, ratio1, ratio2, seuilrij
+    CHARACTER*30 :: num, files
 
 ! sparsification debut
     DOUBLE PRECISION :: t1, t2, t_cons_a, t_cons_vp
@@ -281,9 +281,9 @@ PRINT *, 'ratio de frobenius'
     RETURN
   END SUBROUTINE sp_calculclusters
 
-    SUBROUTINE sp_spectral_embedding(nbcluster,n,Z, nnz, AS, IAS, JAS, ratio,cluster,&
-       cluster_center,cluster_population,cluster_energy,nbinfo,numproc,&
-       ratiomoy,ratiorij,ratiorii)
+    SUBROUTINE sp_spectral_embedding(nbcluster, n, Z, nnz, AS, IAS, JAS, ratio, cluster, &
+       cluster_center, cluster_population, cluster_energy, nbinfo, numproc, &
+       ratiomoy, ratiorij, ratiorii)
 
     !*****************************************
     ! spectral embedding
@@ -302,17 +302,17 @@ PRINT *, 'ratio de frobenius'
 
     IMPLICIT NONE
     !TYPE(type_data) :: dataw
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER:: Z,cluster_center
-    INTEGER ::nbcluster,n,nbinfo,numproc
-    DOUBLE PRECISION ::ratio,test,ratiomin,ratiorii,ratiorij, ratiomoy
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: cluster_energy,Z3
-    INTEGER, DIMENSION(:), POINTER ::cluster,cluster_population
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z, cluster_center
+    INTEGER ::nbcluster, n, nbinfo, numproc
+    DOUBLE PRECISION ::ratio, test, ratiomin, ratiorii, ratiorij, ratiomoy
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: cluster_energy, Z3
+    INTEGER, DIMENSION(:), POINTER ::cluster, cluster_population
     !INTEGER,DIMENSION(:),POINTER::ordaffperclus
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER::Z1,Z2
-    INTEGER :: it_max,it_num,i,j,k
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1, Z2
+    INTEGER :: it_max, it_num, i, j, k
     INTEGER, DIMENSION(:,:), POINTER :: clustercorresp
-    INTEGER :: ki,kj,ni,nj,ok,nbmax
+    INTEGER :: ki, kj, ni, nj, ok, nbmax
 
     DOUBLE PRECISION, DIMENSION(:), POINTER:: AS
     INTEGER, DIMENSION(:), POINTER :: IAS, JAS
@@ -449,7 +449,7 @@ PRINT *, 'ratio de frobenius'
   INTEGER, INTENT(IN) :: ndim, nnz, nblimit
 
   DOUBLE PRECISION, INTENT(OUT), POINTER :: W(:)
-  DOUBLE PRECISION, INTENT(OUT), POINTER :: Z(:, :)
+  DOUBLE PRECISION, INTENT(OUT), POINTER :: Z(:,:)
   
   INTEGER :: maxn, maxnev, maxncv, ldv, i, nbite
 !

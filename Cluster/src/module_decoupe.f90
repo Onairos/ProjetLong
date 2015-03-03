@@ -5,8 +5,8 @@ CONTAINS
 
   !****************************************
   !decoupage pour transfert MPI
-  SUBROUTINE partition_data(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
-       ldat,ddat,bornes)
+  SUBROUTINE partition_data(data, epsilon, nbproc, coordmin, coordmax, decoupe,&
+       ldat, ddat, bornes)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -61,7 +61,7 @@ CONTAINS
 
   !****************************************
   !definition des bornes avec interface
-  SUBROUTINE define_bounds(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
+  SUBROUTINE define_bounds(data, coordmin, coordmax, bornes, decoupe, epsilon, nbproc)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -169,7 +169,7 @@ CONTAINS
 
   !****************************************
   !definition des domaines de decoupages
-  SUBROUTINE define_domains(nbproc,data,domaines,bornes,decoupe)
+  SUBROUTINE define_domains(nbproc, data, domaines, bornes, decoupe)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -260,7 +260,7 @@ CONTAINS
 
   !****************************************
   !decoupage avec interface
-  SUBROUTINE partition_with_interfaces(nbproc,data,ldat,ddat,domaines,epsilon)
+  SUBROUTINE partition_with_interfaces(nbproc, data, ldat, ddat, domaines, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -355,7 +355,7 @@ CONTAINS
 
   !****************************************
   !decoupage avec recouvrement
-  SUBROUTINE partition_with_overlappings(nbproc,data,ldat,ddat,domaines)
+  SUBROUTINE partition_with_overlappings(nbproc, data, ldat, ddat, domaines)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -410,7 +410,7 @@ CONTAINS
 
   !****************************************
   !elimine les doublons dans le clustering
-  SUBROUTINE group_clusters(nbclust,iclust,clustermap,data)
+  SUBROUTINE group_clusters(nbclust, iclust, clustermap, data)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

@@ -358,7 +358,7 @@ CONTAINS
 
   !*************************
   !SUBROUTINE ecriture de point
-  SUBROUTINE ecritpoint_gmsh(unit,dim,coord,ind,k)
+  SUBROUTINE ecritpoint_gmsh(unit, dim, coord, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -386,7 +386,7 @@ CONTAINS
 
   !*************************
   !SUBROUTINE ecriture de point en format image
-  SUBROUTINE write_picture_to_gmsh(unit,params,ind,k)
+  SUBROUTINE write_picture_to_gmsh(unit, params, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

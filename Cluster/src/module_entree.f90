@@ -48,8 +48,8 @@ CONTAINS
 
   !**********************************************
   !lecture du fichier d'entree
-  SUBROUTINE read_file(data,epsilon,coordmin,coordmax,nbproc,decoupe,&
-       mesh,sigma,nblimit,listenbideal)
+  SUBROUTINE read_file(data, epsilon, coordmin, coordmax, nbproc, decoupe, &
+       mesh, sigma, nblimit, listenbideal)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -267,7 +267,7 @@ CONTAINS
 
   !**********************************
   !lecture des datas en format coord
-  SUBROUTINE read_coordinates_data(mesh,data,coordmin,coordmax)
+  SUBROUTINE read_coordinates_data(mesh, data, coordmin, coordmax)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -328,7 +328,7 @@ CONTAINS
 
   !**********************************
   !lecture d'image
-  SUBROUTINE read_picture_data(mesh,data,coordmin,coordmax)
+  SUBROUTINE read_picture_data(mesh, data, coordmin, coordmax)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -390,7 +390,7 @@ CONTAINS
   
   !**********************************
   !lecture image en mode geom
-  SUBROUTINE read_geometric_data(mesh,data,coordmin,coordmax)
+  SUBROUTINE read_geometric_data(mesh, data, coordmin, coordmax)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -473,7 +473,7 @@ CONTAINS
 
   !**********************************
   !lecture des datas en format seuil
-  SUBROUTINE read_threshold_data(mesh,data,coordmin,coordmax)
+  SUBROUTINE read_threshold_data(mesh, data, coordmin, coordmax)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

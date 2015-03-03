@@ -4,7 +4,7 @@ CONTAINS
 
   !********************************
   !ecriture des domaines decoupes
-  SUBROUTINE write_domains(data,nbproc,domaines)
+  SUBROUTINE write_domains(data, nbproc, domaines)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -31,7 +31,7 @@ CONTAINS
 
   !********************************
   !ecriture des decoupages
-  SUBROUTINE write_partitionning(nbproc,data,ldat,ddat)
+  SUBROUTINE write_partitionning(nbproc, data, ldat, ddat)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -90,7 +90,7 @@ CONTAINS
 
   !********************************
   !ecriture des clusters regroupes
-  SUBROUTINE write_partial_clusters(numproc,dataw)
+  SUBROUTINE write_partial_clusters(numproc, dataw)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -129,7 +129,7 @@ CONTAINS
 
   !****************************
   !ecriture de cluster.final.
-  SUBROUTINE write_final_clusters(nbclust,iclust,clustermap)
+  SUBROUTINE write_final_clusters(nbclust, iclust, clustermap)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -175,7 +175,7 @@ CONTAINS
 
   !***************************
   !ecriture des informations
-  SUBROUTINE write_metadata(mesh,data,nbproc,nbclust)
+  SUBROUTINE write_metadata(mesh, data, nbproc, nbclust)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

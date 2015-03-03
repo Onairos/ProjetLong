@@ -4,9 +4,9 @@ CONTAINS
 
 
 
-  SUBROUTINE spectral_embedding(nbcluster,n,Z,A,ratio,cluster,&
-       cluster_center,cluster_population,cluster_energy,nbinfo,numproc,&
-       ratiomoy,ratiorij,ratiorii)
+  SUBROUTINE spectral_embedding(nbcluster, n, Z, A, ratio,cluster, &
+       cluster_center, cluster_population, cluster_energy, nbinfo, numproc, &
+       ratiomoy, ratiorij, ratiorii)
 
     !*****************************************
     ! spectral embedding
@@ -154,7 +154,7 @@ CONTAINS
 
   !********************************************************
   !K-means
-  SUBROUTINE apply_kmeans(dim_num,point_num,cluster_num,it_max, it_num, point, &
+  SUBROUTINE apply_kmeans(dim_num, point_num, cluster_num, it_max, it_num, point, &
        cluster, cluster_center, cluster_population, cluster_energy, numproc)
 
     !*****************************************************************************80
@@ -195,7 +195,7 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION :: point (dim_num,point_num) ! the points
+    DOUBLE PRECISION :: point (dim_num, point_num) ! the points
     INTEGER :: cluster_num ! the number of clusters
     INTEGER :: dim_num ! the number of spatial dimensions
     INTEGER :: it_max ! the maximum number of iterations

@@ -1,10 +1,16 @@
 MODULE module_teste_clusters
 
   TYPE type_test
-     CHARACTER*80 :: dir,output,visup,visug,fichier,datatype,decoupetype
-     INTEGER :: nbproc
+     CHARACTER*80 :: dir
+     CHARACTER*80 :: output
+     CHARACTER*80 :: visup
+     CHARACTER*80 :: visug
+     CHARACTER*80 :: fichier
+     CHARACTER*80 :: datatype,
+     CHARACTER*80 :: decoupetype
      DOUBLE PRECISION :: epaisseur
      INTEGER, DIMENSION(:), POINTER :: decoupe
+     INTEGER :: nbproc
   END TYPE type_test
 
 CONTAINS

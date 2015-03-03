@@ -5,7 +5,7 @@ CONTAINS
 
   !****************************************
   !envoi des decoupages
-  SUBROUTINE send_partitionning(nbproc,data,ldat,ddat,dataw)
+  SUBROUTINE send_partitionning(nbproc, data, ldat, ddat, dataw)
     IMPLICIT NONE    
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -84,7 +84,7 @@ CONTAINS
 
   !***************************************
   !reception des decoupages
-  SUBROUTINE receive_partitionning(numproc,dataw)
+  SUBROUTINE receive_partitionning(numproc, dataw)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -151,7 +151,7 @@ CONTAINS
 
   !***************************************
   !compte des clusters avec doublons
-  SUBROUTINE receive_number_clusters(nbproc,nbclust,ldat,dataw,nclust)
+  SUBROUTINE receive_number_clusters(nbproc, nbclust, ldat, dataw, nclust)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -207,7 +207,7 @@ CONTAINS
 
   !***************************************
   !envoi des nb de clusters
-  SUBROUTINE send_number_clusters(numproc,dataw)
+  SUBROUTINE send_number_clusters(numproc, dataw)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -246,7 +246,7 @@ CONTAINS
 
   !***************************************
   !envoi des clusters
-  SUBROUTINE send_clusters(numproc,dataw)
+  SUBROUTINE send_clusters(numproc, dataw)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -281,8 +281,8 @@ CONTAINS
 
   !***************************************
   !reception des clusters
-  SUBROUTINE receive_clusters(nbproc,nbclust,ldat,ddat,dataw,clustermap,&
-       nclust,iclust)
+  SUBROUTINE receive_clusters(nbproc, nbclust, ldat, ddat, dataw, clustermap, &
+       nclust, iclust)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'

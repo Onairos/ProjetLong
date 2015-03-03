@@ -6,7 +6,7 @@ CONTAINS
 
   !*****************************************
   !calcul du sigma
-  SUBROUTINE get_sigma(dataw,sigma)
+  SUBROUTINE get_sigma(dataw, sigma)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -49,7 +49,7 @@ CONTAINS
 
   !*****************************************
   !calcul du sigma pour l'interface
-  SUBROUTINE get_sigma_interface(numproc,dataw,sigma,bornes,decoupe,epsilon)
+  SUBROUTINE get_sigma_interface(numproc, dataw, sigma, bornes, decoupe, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -136,7 +136,7 @@ CONTAINS
 
   !*****************************************
   !calcul des clusters
-  SUBROUTINE apply_spectral_clustering(numproc,nblimit,nbideal,dataw,sigma)
+  SUBROUTINE apply_spectral_clustering(numproc, nblimit, nbideal, dataw, sigma)
     IMPLICIT NONE
     INCLUDE 'mpif.h'
     !###########################################
