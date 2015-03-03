@@ -4,8 +4,7 @@ MODULE module_visuclusters
   USE module_visuclusters_paraview
 CONTAINS
 
-  !************************
-  !lecture des fichiers d'entree
+
   SUBROUTINE read_params(params)
     IMPLICIT NONE
     !###########################################
@@ -103,8 +102,6 @@ CONTAINS
   END SUBROUTINE read_params
 
 
-  !*************************
-  !ecriture de la geometrie du decoupage
   SUBROUTINE write_partionning(formato, params)
     IMPLICIT NONE
     !###########################################
@@ -130,8 +127,8 @@ CONTAINS
   END SUBROUTINE write_partionning
 
 
-  !***********************
-  !ecriture des affectations de decoupage
+
+
   SUBROUTINE affectation(formato, params)
     IMPLICIT NONE
     !###########################################
@@ -157,8 +154,8 @@ CONTAINS
   END SUBROUTINE affectation
 
 
-  !***********************
-  !ecriture des clusters avant regroupement
+
+
   SUBROUTINE write_partial_clusters(formato, params)
     IMPLICIT NONE
     !###########################################
@@ -184,8 +181,8 @@ CONTAINS
   END SUBROUTINE write_partial_clusters
 
 
-  !***********************
-  !ecriture des clusters apres regroupement
+
+
   SUBROUTINE write_final_clusters(formato, params)
     IMPLICIT NONE
     !###########################################
@@ -211,8 +208,8 @@ CONTAINS
   END SUBROUTINE write_final_clusters
 
 
-  !***********************
-  !liste des commandes
+
+
   SUBROUTINE list_commands(formato)
     IMPLICIT NONE
     !###########################################

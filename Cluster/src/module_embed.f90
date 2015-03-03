@@ -152,8 +152,7 @@ CONTAINS
   END SUBROUTINE spectral_embedding
 
 
-  !********************************************************
-  !K-means
+
   SUBROUTINE apply_kmeans(dim_num, point_num, cluster_num, it_max, it_num, point, &
        cluster, cluster_center, cluster_population, cluster_energy, numproc)
 

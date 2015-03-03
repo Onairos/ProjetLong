@@ -1,8 +1,8 @@
  MODULE module_solve
 CONTAINS
 
-  !************************************************
-  !DGEEVX
+
+
   SUBROUTINE solve_dgeevx(N, A, VR, WR)
     IMPLICIT NONE
     EXTERNAL DGEEVX
@@ -39,8 +39,7 @@ CONTAINS
   END SUBROUTINE solve_dgeevx
 
 
-  !************************************************
-  !DGEEV
+
   SUBROUTINE solve_dgeev(N, A, VR, WR)
     IMPLICIT NONE
     EXTERNAL DGEEV
@@ -70,8 +69,7 @@ CONTAINS
     RETURN
   END SUBROUTINE solve_dgeev
 
-  !************************************************
-  !DSYEV
+
   SUBROUTINE solve_dsyev(N, A, W, LWORK)
     IMPLICIT NONE
     EXTERNAL DSYEV
@@ -88,8 +86,7 @@ CONTAINS
     RETURN
   END SUBROUTINE solve_dsyev
 
-  !**********************************************
-  !DSYEVR
+
   SUBROUTINE solve_dsyevr(k, N, A, Z, LWORK, LIWORK, W, M)
     IMPLICIT NONE
     EXTERNAL DSYEVR
@@ -124,8 +121,7 @@ CONTAINS
     IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
   END SUBROUTINE solve_dsyevr
 
-  !***********************************************
-  !DSYEVX
+
   SUBROUTINE solve_dsyevx(k, N, A, Z, LWORK, LIWORK, W, M)
     IMPLICIT NONE
     EXTERNAL DSYEVX

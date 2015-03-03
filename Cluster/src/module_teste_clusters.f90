@@ -15,8 +15,8 @@ MODULE module_teste_clusters
 
 CONTAINS
 
-  !*******************************************
-  !fichier de lancement de runclusters
+
+
   SUBROUTINE create_executable(test)
     IMPLICIT NONE
     !###########################################
@@ -53,8 +53,8 @@ CONTAINS
     RETURN
   END SUBROUTINE create_executable
 
-  !*******************************************
-  !fichier test
+
+
   SUBROUTINE create_test(test)
     IMPLICIT NONE
     !###########################################
@@ -91,8 +91,7 @@ CONTAINS
     RETURN
   END SUBROUTINE create_test
 
-  !*******************************************
-  !fichier test
+
   SUBROUTINE execute_test(test)
     IMPLICIT NONE
     !###########################################
@@ -124,8 +123,8 @@ CONTAINS
     RETURN
   END SUBROUTINE execute_test
 
-  !*******************************************
-  !genere les exemples de data
+
+
   SUBROUTINE create_data
     !###########################################
     ! INSTRUCTIONS

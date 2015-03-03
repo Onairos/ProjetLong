@@ -2,8 +2,8 @@ MODULE module_visuclusters_paraview
   USE module_visuclusters_structure
 CONTAINS
 
-  !************************
-  !ecriture de la geometrie du decoupage
+
+
   SUBROUTINE write_partionning_paraview(params)
     IMPLICIT NONE
     !###########################################
@@ -260,8 +260,8 @@ CONTAINS
     RETURN
   END SUBROUTINE write_partionning_paraview
 
-  !***********************
-  !initialisation du fichier de decoupage
+
+
   SUBROUTINE affectation_paraview(params)
     IMPLICIT NONE
     !###########################################
@@ -390,8 +390,8 @@ CONTAINS
     RETURN
   END SUBROUTINE affectation_paraview
 
-  !***********************
-  !ecriture des clusters avant regroupement
+
+
   SUBROUTINE write_partial_clusters_paraview(params)
     IMPLICIT NONE
     !###########################################
@@ -517,8 +517,8 @@ CONTAINS
     RETURN
   END SUBROUTINE write_partial_clusters_paraview
 
-  !***********************
-  !ecriture des clusters apres regroupement
+
+
   SUBROUTINE write_final_clusters_paraview(params)
     IMPLICIT NONE
     !###########################################
@@ -613,8 +613,8 @@ CONTAINS
     RETURN
   END SUBROUTINE write_final_clusters_paraview
 
-  !*************************
-  !SUBROUTINE ecriture de points
+
+
   SUBROUTINE ecritpoint_paraview(unitgeo, unitind, nb, dim, coord, ind, k)
     IMPLICIT NONE
     !###########################################
@@ -664,8 +664,8 @@ CONTAINS
     RETURN
   END SUBROUTINE ecritpoint_paraview
 
-  !*************************
-  !SUBROUTINE ecriture de points en format image
+
+
   SUBROUTINE write_picture_to_paraview(unitgeo, unitind, nbp, params, ind, indp)
     IMPLICIT NONE
     !###########################################
@@ -778,8 +778,8 @@ CONTAINS
     RETURN
   END SUBROUTINE write_picture_to_paraview
 
-  !************************
-  !liste des commandes
+
+
   SUBROUTINE list_commands_paraview
     PRINT *,'paraview --data=decoupe.CASE'
     PRINT *,'paraview --data=affectation.CASE'
