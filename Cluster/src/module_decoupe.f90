@@ -29,7 +29,6 @@ CONTAINS
 
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domaines
-    INTEGER :: ierr 
 
     !###########################################
     ! INSTRUCTIONS

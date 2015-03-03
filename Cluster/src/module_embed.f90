@@ -195,11 +195,12 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
+    INTEGER :: point_num ! the number of points
+    !TODO : à réfléhir sur l'ordre de déclaration
     DOUBLE PRECISION :: point (dim_num, point_num) ! the points
     INTEGER :: cluster_num ! the number of clusters
     INTEGER :: dim_num ! the number of spatial dimensions
     INTEGER :: it_max ! the maximum number of iterations
-    INTEGER :: point_num ! the number of points
 
     !=== IN/OUT ===
     DOUBLE PRECISION :: cluster_center (dim_num, cluster_num) ! the cluster centers
@@ -214,8 +215,6 @@ CONTAINS
     INTEGER :: numproc ! TODO: remove?
     
     !#### Variables  ####
-    CHARACTER*30 :: files
-    CHARACTER*30 :: num
     DOUBLE PRECISION :: listnorm (point_num, cluster_num)
     DOUBLE PRECISION :: stockcenter (dim_num, cluster_num)
     DOUBLE PRECISION :: stockenergy (cluster_num)
@@ -342,7 +341,7 @@ PRINT *, 'recherche des centres'
        ENDDO
 
        !!assignation par rapport au min des distances
-       cluster_population(:)=0.0
+       cluster_population(:)=0
        DO i=1,point_num
           DO j=1,cluster_num
              IF (listnorm(i,j)<listnorm(i,cluster(i))) THEN

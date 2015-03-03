@@ -171,7 +171,6 @@ CONTAINS
     !#### Variables  ####    
     INTEGER status(MPI_STATUS_SIZE)
     INTEGER :: i
-    INTEGER :: j
     INTEGER :: ierr
     INTEGER :: nb
     INTEGER :: tag
@@ -304,18 +303,14 @@ CONTAINS
     
     !#### Variables  ####
     INTEGER, DIMENSION(:), POINTER :: lclust
-    INTEGER, DIMENSION(:), POINTER :: listclust
     INTEGER status(MPI_STATUS_SIZE)
     INTEGER :: i
     INTEGER :: i0
     INTEGER :: ierr
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: longueur
-    INTEGER :: m
     INTEGER :: maxldat
     INTEGER :: p
-    INTEGER :: tag
     
     !###########################################      
     ! INSTRUCTIONS

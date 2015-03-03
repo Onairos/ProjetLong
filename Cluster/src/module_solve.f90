@@ -119,7 +119,7 @@ CONTAINS
     ENDDO
     CALL DSYEVR( JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL, IU, ABSTOL,&
          M, W, Z, LDZ, ISUPPZ, WORK, LWORK,IWORK, LIWORK, INFO )
-    LWORK = WORK(1)
+    LWORK = WORK(1) !TODO : Warning: Possible change of value in conversion from REAL(8) to INTEGER(4) at (1)
     LIWORK = IWORK(1)
     IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
   END SUBROUTINE solve_dsyevr
@@ -156,7 +156,7 @@ CONTAINS
     ENDDO
     CALL DSYEVX( JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL, IU,&
          ABSTOL, M, W, Z, LDZ, WORK, LWORK,IWORK, IFAIL, INFO )
-    LWORK = WORK(1)
+    LWORK = WORK(1) !TODO : Warning: Possible change of value in conversion from REAL(8) to INTEGER(4) at (1)
     LIWORK = IWORK(1)
     IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
   END SUBROUTINE solve_dsyevx

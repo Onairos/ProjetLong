@@ -20,7 +20,6 @@ CONTAINS
 
     !#### Variables  ####
     DOUBLE PRECISION :: norme
-    DOUBLE PRECISION :: norme1
     DOUBLE PRECISION :: sigma1
     INTEGER :: i1
     INTEGER :: j1
@@ -108,7 +107,8 @@ CONTAINS
     !valeur de sigma
     sigma0=0.0
     DO i=1,nb
-       volext=1.0; volint=1.0
+       volext=1.0
+       volint=1.0
        DO j=1,dataw%dim
           k=tableau(i,j)
           long=bornes(j,k,2)-bornes(j,k,1)
@@ -153,8 +153,6 @@ CONTAINS
     TYPE(type_data) :: dataw
 
     !#### Variables  ####
-    CHARACTER*30 :: files
-    CHARACTER*30 :: num
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A2
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: cluster_center
@@ -186,9 +184,8 @@ CONTAINS
     INTEGER :: n
     INTEGER :: nb
     INTEGER :: nbcluster
-    INTEGER :: nbproc
+    INTEGER :: nbproc !TODO : mettre en paramètre et WTF faut-il fair car on lit une variable vide
     INTEGER :: nbvp
-    INTEGER :: q
     INTEGER :: solver ! solveur au valeur propre => parametre de controle
 
     !###########################################
@@ -291,19 +288,29 @@ CONTAINS
 
     IF ((nbideal==0).AND.(n>2)) THEN
        !** recherche du meilleur decoupage
-       ALLOCATE(ratiomax(nblimit)); ratiomax(:)=0
-       ALLOCATE(ratiomin(nblimit)); ratiomin(:)=0
-       ALLOCATE(ratiomoy(nblimit)); ratiomoy(:)=0
-       ALLOCATE(ratiorii(nblimit)); ratiorii(:)=0
-       ALLOCATE(ratiorij(nblimit)); ratiorij(:)=0
+       ALLOCATE(ratiomax(nblimit))
+       ratiomax(:)=0
+       ALLOCATE(ratiomin(nblimit))
+       ratiomin(:)=0
+       ALLOCATE(ratiomoy(nblimit))
+       ratiomoy(:)=0
+       ALLOCATE(ratiorii(nblimit))
+       ratiorii(:)=0
+       ALLOCATE(ratiorij(nblimit))
+       ratiorij(:)=0
 
-       ALLOCATE(nbinfo(nblimit)); nbinfo(:)=0
+       ALLOCATE(nbinfo(nblimit))
+       nbinfo(:)=0
        DO nbcluster=2,min(n,nblimit)
 
-          ALLOCATE(cluster(n));cluster(:)=0.0
-          ALLOCATE(cluster_center(nbcluster,nbcluster)); cluster_center(:,:)=0.0
-          ALLOCATE(cluster_population(nbcluster));cluster_population(:)=0.0
-          ALLOCATE(cluster_energy(nbcluster));cluster_energy(:)=0.0
+          ALLOCATE(cluster(n))
+          cluster(:)=0
+          ALLOCATE(cluster_center(nbcluster,nbcluster))
+          cluster_center(:,:)=0.0
+          ALLOCATE(cluster_population(nbcluster))
+          cluster_population(:)=0
+          ALLOCATE(cluster_energy(nbcluster))
+          cluster_energy(:)=0.0
 
           CALL spectral_embedding(nbcluster,n,Z,A,&
                ratiomax(nbcluster),cluster,cluster_center,cluster_population,&
@@ -311,7 +318,8 @@ CONTAINS
                ratiorij(nbcluster),ratiorii(nbcluster))
 
 
-          DEALLOCATE(cluster);DEALLOCATE(cluster_center);
+          DEALLOCATE(cluster)
+          DEALLOCATE(cluster_center)
           DEALLOCATE(cluster_energy)
           DEALLOCATE(cluster_population);
        ENDDO

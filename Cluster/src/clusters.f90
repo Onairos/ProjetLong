@@ -23,7 +23,6 @@ PROGRAM clusters
   DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
-  DOUBLE PRECISION :: elapsed(2) ! For receiving user and system time
   DOUBLE PRECISION :: endtime
   DOUBLE PRECISION :: epsilon
   DOUBLE PRECISION :: sigma
@@ -32,7 +31,6 @@ PROGRAM clusters
   DOUBLE PRECISION :: t_parallg
   DOUBLE PRECISION :: t1
   DOUBLE PRECISION :: t2
-  DOUBLE PRECISION :: temps
   INTEGER,DIMENSION(:,:), POINTER :: clustermap
   INTEGER,DIMENSION(:,:) ,POINTER :: ddat
   INTEGER,DIMENSION(:), POINTER :: decoupe
@@ -51,12 +49,16 @@ PROGRAM clusters
   INTEGER :: numproc ! variable MPI
   INTEGER :: status(MPI_STATUS_SIZE) ! variable MPI
   INTEGER :: tag ! variable MPI
-  INTEGER :: test
   LOGICAL :: existe
 
   !###########################################
   ! INSTRUCTIONS
   !###########################################
+  !Initialisation des timers
+  t1 = 0.0
+  t2 = 0.0
+  starttime = 0.0
+  endtime = 0.0
   !initialisation MPI
   CALL MPI_INIT(ierr)
   CALL MPI_COMM_RANK(MPI_COMM_WORLD,numproc,ierr)
