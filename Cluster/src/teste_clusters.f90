@@ -31,16 +31,16 @@ PROGRAM teste_clusters
   PRINT *
   PRINT *,'-------------------------------------------------------'
   
-  !creation des datas
+  ! Data creation
   PRINT *
   PRINT *,'creation des datas...'
   CALL create_data
 
-  !declaration des tests
+  ! Tests declaration
   nbtests=12
   ALLOCATE(test(nbtests))
 
-  !test coord mono
+  ! Testing: coord_mono
   test(1)%dir='test_coord_mono'
   test(1)%nbproc=1
   test(1)%output='verif.coord_mono.txt'
@@ -53,7 +53,7 @@ PROGRAM teste_clusters
   test(1)%decoupe(:)=1
   test(1)%epaisseur=0.
 
-  !test coord multi interface
+  ! Testing: coord multi interface
   test(2)%dir='test_coord_multi_interface'
   test(2)%nbproc=5
   test(2)%output='verif.coord_multi_interface.txt'
@@ -67,7 +67,7 @@ PROGRAM teste_clusters
   test(2)%decoupe(2)=2
   test(2)%epaisseur=0.3
 
-  !test coord multi recouvrement
+  ! Testing: coord multi recouvre
   test(3)%dir='test_coord_multi_recouvre'
   test(3)%nbproc=4
   test(3)%output='verif.coord_multi_recouvre.txt'
@@ -81,7 +81,7 @@ PROGRAM teste_clusters
   test(3)%decoupe(2)=2
   test(3)%epaisseur=0.3
 
-  !test image mono
+  ! Testing: image mono
   test(4)%dir='test_image_mono'
   test(4)%nbproc=1
   test(4)%output='verif.image_mono.txt'
@@ -94,7 +94,7 @@ PROGRAM teste_clusters
   test(4)%decoupe(:)=1
   test(4)%epaisseur=0.
 
-  !test image multi interface
+  ! Testing: image multi interface
   test(5)%dir='test_image_multi_interface'
   test(5)%nbproc=7
   test(5)%output='verif.image_multi_interface.txt'
@@ -108,7 +108,7 @@ PROGRAM teste_clusters
   test(5)%decoupe(2)=2
   test(5)%epaisseur=1.01
 
-  !test image multi recouvrement
+  ! Testing: image multi recouvrem
   test(6)%dir='test_image_multi_recouvre'
   test(6)%nbproc=6
   test(6)%output='verif.image_multi_recouvre.txt'
@@ -122,7 +122,7 @@ PROGRAM teste_clusters
   test(6)%decoupe(2)=2
   test(6)%epaisseur=1.01
 
-  !test seuil mono
+  ! Testing: seuil mono
   test(7)%dir='test_seuil_mono'
   test(7)%nbproc=1
   test(7)%output='verif.seuil_mono.txt'
@@ -135,7 +135,7 @@ PROGRAM teste_clusters
   test(7)%decoupe(:)=1
   test(7)%epaisseur=0.
 
-  !test seuil multi interface
+  ! Testing: seuil multi interface
   test(8)%dir='test_seuil_multi_interface'
   test(8)%nbproc=9
   test(8)%output='verif.seuil_multi_interface.txt'
@@ -148,7 +148,7 @@ PROGRAM teste_clusters
   test(8)%decoupe(:)=8
   test(8)%epaisseur=0.01
 
-  !test seuil multi recouvrement
+  ! Testing: seuil multi recouvre
   test(9)%dir='test_seuil_multi_recouvre'
   test(9)%nbproc=8
   test(9)%output='verif.seuil_multi_recouvre.txt'
@@ -161,7 +161,7 @@ PROGRAM teste_clusters
   test(9)%decoupe(:)=8
   test(9)%epaisseur=0.01
 
-  !test geom mono
+  ! Testing: geom mono
   test(10)%dir='test_geom_mono'
   test(10)%nbproc=1
   test(10)%output='verif.geom_mono.txt'
@@ -174,7 +174,7 @@ PROGRAM teste_clusters
   test(10)%decoupe(:)=1
   test(10)%epaisseur=0.
 
-  !test geom multi interface
+  ! Testing: geom multi interface
   test(11)%dir='test_geom_multi_interface'
   test(11)%nbproc=28
   test(11)%output='verif.geom_multi_interface.txt'
@@ -187,7 +187,7 @@ PROGRAM teste_clusters
   test(11)%decoupe(:)=3
   test(11)%epaisseur=0.01
 
-  !test geom multi recouvrement
+  ! Testing: geom multi recouvre
   test(12)%dir='test_geom_multi_recouvre'
   test(12)%nbproc=27
   test(12)%output='verif.geom_multi_recouvre.txt'
@@ -200,7 +200,7 @@ PROGRAM teste_clusters
   test(12)%decoupe(:)=3
   test(12)%epaisseur=0.01
 
-  !lancement
+  ! Launching
   files=''
   DO i=1,nbtests
      PRINT *

@@ -33,10 +33,10 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    !directory
+    ! Directory
     files='mkdir '//trim(adjustl(test%dir))
     CALL system(files)
-    !fichier
+    ! File
     files=trim(adjustl(test%dir))//'/go'
     PRINT *,'  > creation du fichier '//files
     OPEN(FILE=files,UNIT=10)
@@ -47,7 +47,7 @@ CONTAINS
     WRITE(10,*) 'visuclusters paraview > ../'//trim(adjustl(test%visup))
     WRITE(10,*) 'visuclusters gmsh > ../'//trim(adjustl(test%visug))
     CLOSE(10)
-    !rendu executable
+    ! Make it executable
     files='chmod a+x '//trim(adjustl(files))
     CALL system(files)
     RETURN
@@ -85,7 +85,7 @@ CONTAINS
     WRITE(10,*) test%decoupe(:)
     WRITE(10,'(a)') 'END'
     CLOSE(10)
-    !copie du fichier de maillage
+    ! Copying the meshing files
     files='cp '//trim(adjustl(test%fichier))//' '//trim(adjustl(test%dir))//'/.'
     CALL system(files)
     RETURN
@@ -334,7 +334,7 @@ CONTAINS
     WRITE(1,*) '   0.00000000 '
     WRITE(1,*) '   0.00000000 '
     CLOSE(1)
-    !fichier cible
+    ! Target file
     PRINT *,'  > fichier : cible'
     OPEN(FILE='cible',UNIT=11)
     WRITE(11,*) '650 2  '

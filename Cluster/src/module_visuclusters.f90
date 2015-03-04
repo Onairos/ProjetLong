@@ -71,7 +71,7 @@ CONTAINS
        READ (3,*)
        READ(3,*) params%imgt
        PRINT *,'  > nb de temps :',params%imgt
-       !reference des points
+       ! Points referencing
        ALLOCATE(params%refimg(params%nbp,params%imgdim))
        params%refimg(:,:)=0
        n=0

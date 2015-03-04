@@ -27,7 +27,7 @@ PROGRAM visudecoup
   READ *,n
   PRINT *
   
-  !geometrie du decoupage
+  ! Geometry of partitionning
   OPEN(FILE='fort.2',UNIT=2)
   OPEN(FILE='decoupe.geo',UNIT=10)
   DO i=1,n-1
@@ -43,12 +43,12 @@ PROGRAM visudecoup
   ENDDO
   CLOSE(10)
 
-  !fichier de sortie
+  ! Output file
   OPEN(FILE='decoupe.visu',UNIT=1)
   WRITE(1,*) 'View "MPI" {'
-  !lecture des fichiers
+  ! Reads the files
   DO i=0,n-1
-     !nom du fichier
+     ! File name
      IF (i<10) THEN
         WRITE(num,'(i1)'),i
      ELSEIF (i<100) THEN

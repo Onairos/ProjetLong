@@ -32,7 +32,7 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################    
-    !lecture
+    ! Reading
     OPEN(FILE='fort.2',UNIT=2)
     ALLOCATE(xmin(params%nbproc))
     ALLOCATE(xmax(params%nbproc))
@@ -82,12 +82,6 @@ CONTAINS
              zmax(i)=z1
           ELSEIF ((params%image==1).OR.(params%geom==1)) THEN
              READ(2,*) x0,y0,z0,num,x1,y1,z1
-             !xmin(i)=-x0
-             !ymin(i)=y0
-             !zmin(i)=z0
-             !xmax(i)=-x1
-             !ymax(i)=y1
-             !zmax(i)=z1
              xmin(i)=y0
              ymin(i)=-x0
              zmin(i)=z0
@@ -98,7 +92,7 @@ CONTAINS
        ENDIF
     ENDDO
     CLOSE(2)
-    !ecriture
+    ! Writing
     PRINT *,'-> visu/decoupe.geo'
     PRINT *,'-> visu/decoupe.indices'
     OPEN(FILE='visu/decoupe.geo',UNIT=10)
@@ -245,7 +239,7 @@ CONTAINS
     DEALLOCATE(ymax)
     DEALLOCATE(zmin)
     DEALLOCATE(zmax)
-    !fichier maitre
+    ! Master file
     PRINT *,'-> decoupe.CASE'
     OPEN(FILE='decoupe.CASE',UNIT=12)
     WRITE(12,'(a)') 'FORMAT'
@@ -286,7 +280,7 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !########################################### 
-    !lecture des fichiers
+    ! Reading of files
     IF (params%nbproc==1) THEN
        offset=1
        totnum=1
@@ -296,7 +290,7 @@ CONTAINS
     ENDIF
     DO i=offset,totnum
        IF ((i==0).AND.(params%interface==1).AND.(params%nbproc>1)) THEN
-          !fichier a part pour l'interface
+          ! File aside for interfacing 
           PRINT *,'-> visu/affectation-interface.geo'
           PRINT *,'-> visu/affectation-interface.indices'
           OPEN(FILE='visu/affectation-interface.geo',UNIT=10)
@@ -308,7 +302,7 @@ CONTAINS
           WRITE(11,*) '** indices des process **'
        ELSEIF (((i==1).AND.(params%interface==1)).OR. &
             ((i==0).AND.(params%interface==0))) THEN
-          !fichier general pour les autres sous-domaines
+          ! General file for others subdomains
           PRINT *,'-> visu/affectation.geo'
           PRINT *,'-> visu/affectation.indices'
           OPEN(FILE='visu/affectation.geo',UNIT=10)
@@ -319,7 +313,7 @@ CONTAINS
           WRITE(10,'(a)') 'element id assign'
           WRITE(11,*) '** indices des process **'
        ENDIF
-       !nom du fichier
+       ! File name
        WRITE(num,*) i
        files='decoupe.'//trim(adjustl(num))
        OPEN(FILE=files,UNIT=20)
@@ -332,21 +326,21 @@ CONTAINS
        IF (nb>0) THEN
           DO j=1,nb
              IF (params%coord==1) THEN
-                !decoupage par coordonnees
+                ! Partitionning by coordinates
                 READ(20,*) coord(j,:)
                 ind(j)=i
              ELSE
-                !decoupage d'image 1D
+                ! Partitionning 1D picture
                 READ (20,*) indp(j)
                 ind(j)=i
              ENDIF
           ENDDO
-          !ecriture
+          ! Writing
           IF (params%coord==1) THEN
-             !decoupage par coordonnees
+             ! Partitionning by coordinates
              CALL ecritpoint_paraview(10,11,nb,params%dim,coord,ind,1)
           ELSE
-             !decoupage d'image 1D
+             ! Partitionning 1D picture
              CALL write_picture_to_paraview(10,11,nb,params,ind,indp)
           ENDIF
        ENDIF
@@ -354,14 +348,14 @@ CONTAINS
        DEALLOCATE(ind)
        CLOSE(20)
        IF ((i==0).AND.(params%interface==1)) THEN
-          !fermeture des fichiers de l'interface
+          ! Closes interfacing files
           CLOSE(10)
           CLOSE(11)
        ENDIF
     ENDDO
     CLOSE(10)
     CLOSE(11)
-    !main de l'interface
+    ! Writes interfacing data
     IF ((params%interface==1).AND.(params%nbproc>1)) THEN
        PRINT *,'-> affectation-interface.CASE'
        OPEN(FILE='affectation-interface.CASE',UNIT=12)
@@ -375,7 +369,7 @@ CONTAINS
        WRITE(12,'(a)') 'scalar per node:   process   visu/affectation-interface.indices'
        CLOSE(12)
     ENDIF
-    !main des autres sous-domaines
+    ! writes others subdomains
     PRINT *,'-> affectation.CASE'
     OPEN(FILE='affectation.CASE',UNIT=12)
     WRITE(12,'(a)') 'FORMAT'
@@ -419,21 +413,20 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################  
-    !nb de caracteres generiques a utiliser
+    ! Number of generic characters to be used
     nbstar=floor(log(real(params%nbproc-1))/log(real(10)))+1
     DO i=1,nbstar
        star(i:i)='0'
     ENDDO
     DO i=0,params%nbproc-1
-       !nom du fichier
-       !datas
+       ! File name
        WRITE(num,*) i
        num=adjustl(num)
        lenn=len(trim(num))
        files='cluster.partiel.'//trim(num)
        OPEN(FILE=files,UNIT=20)
-       !sortie
-       !fichier general pour les autres sous-domaines
+       ! Output
+       ! General file for others subdomains
        files='cluster.partiel.'//star(1:nbstar-lenn)//num(1:lenn)
        PRINT *,'-> visu/'//trim(files)//'.geo'
        PRINT *,'-> visu/'//trim(files)//'.indices'
@@ -444,14 +437,14 @@ CONTAINS
        WRITE(10,'(a)') 'node id assign'
        WRITE(10,'(a)') 'element id assign'
        WRITE(11,*) '** indices des elements clusterises **'
-       !lecture
+       ! Reading
        READ(20,*) nb,k
        PRINT *,'  > ',i,' :',nb,' -> ',files
        ALLOCATE(coord(nb,k))
        ALLOCATE(ind(max(1,nb))); ind(:)=0
        ALLOCATE(indp(max(1,nb))); indp(:)=0
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
-          !lecture des correspondances
+          ! Reading the matchings
           files='decoupe.'//trim(num)
           OPEN(FILE=files,UNIT=21)
           READ(21,*)
@@ -470,12 +463,12 @@ CONTAINS
           ENDIF
        ENDDO
        CLOSE(20); 
-       !ecriture
+       ! Writing
        IF (params%coord==1) THEN
-          !decoupage par coordonnees
+          ! partitionning by coordinates
           CALL ecritpoint_paraview(10,11,nb,params%dim,coord,ind,1)
        ELSE
-          !decoupage d'image 1D
+          ! partitionning 1D picture
           CALL write_picture_to_paraview(10,11,nb,params,ind,indp)
        ENDIF
        DEALLOCATE(coord)
@@ -487,7 +480,6 @@ CONTAINS
           DEALLOCATE(corresp)
        ENDIF
     ENDDO
-    !main
     PRINT *,'-> cluster.partiel.CASE'
     DO i=1,nbstar
        star(i:i)='*'
@@ -558,8 +550,8 @@ CONTAINS
        CLOSE(1)
     ENDIF
 
-    nb0=k !dim des points
-    !sortie
+    nb0=k ! Points dimension
+    ! Output
     PRINT *,'-> visu/cluster.final.geo'
     PRINT *,'-> visu/cluster.final.indices'
     OPEN(FILE='visu/cluster.final.geo',UNIT=10)
@@ -571,9 +563,9 @@ CONTAINS
     WRITE(11,*) '** clusters **'
     ALLOCATE(ind(max(1,params%nbp))); ind(:)=0
     ALLOCATE(indp(max(1,params%nbp))); indp(:)=0
-    !lecture des fichiers
+    ! Reading files
     DO i=1,params%nbclusters
-       !nom du fichier
+       ! File name
        WRITE(num,*) i
        files='cluster.final.'//trim(adjustl(num))
        OPEN(FILE=files,UNIT=20)
@@ -587,10 +579,10 @@ CONTAINS
        CLOSE(20)
     ENDDO
     IF (params%coord==1) THEN
-       !coordonnees classiques
+       ! classical coordinates
        CALL ecritpoint_paraview(10,11,params%nbp,params%dim,coord,ind,1)
     ELSE
-       !reassemblage des images
+       ! Pictures reassembly
        CALL write_picture_to_paraview(10,11,params%nbp,params,ind,indp)
     ENDIF
     CLOSE(10)
@@ -598,7 +590,7 @@ CONTAINS
     DEALLOCATE(ind)
     DEALLOCATE(indp)
     IF (params%coord==1) DEALLOCATE(coord)
-    !fichier maitre
+    ! Master file
     PRINT *,'-> cluster.final.CASE'
     OPEN(FILE='cluster.final.CASE',UNIT=12)
     WRITE(12,'(a)') 'FORMAT'
@@ -709,15 +701,14 @@ CONTAINS
        ENDDO
        CLOSE(50)
     ENDIF
-    !recherche des points
+    ! Search the points
     DO i=1,nbp
        k=indp(i)
        ix=params%refimg(k,1)
        iy=params%refimg(k,2)
        IF (params%imgdim==2) THEN
-          !points en 2D
+          ! 2D points
           IF (params%geom==1) THEN
-             !coordonnees redimensionnees
              kx(i)=iy*params%pas(2)
              ky(i)=-ix*params%pas(1)
           ELSE
@@ -731,22 +722,20 @@ CONTAINS
              kz(i)=0.
           ENDIF
        ELSEIF (params%imgdim==3) THEN
-          !points en 3D
+          ! 3D points
           IF (params%geom==1) THEN
              kx(i)=iy*params%pas(2)
              ky(i)=-ix*params%pas(1)
              kz(i)=float(params%refimg(k,3))*params%pas(3)
           ELSE
-             !kx(i)=-float(ix)
-             !ky(i)=float(iy)
-             !kz(i)=float(params%refimg(k,3))
+
              kx(i)=float(iy)
              ky(i)=-float(ix)
              kz(i)=float(params%refimg(k,3))
           ENDIF
        ENDIF
     ENDDO
-    !ecriture
+    ! Writing
     WRITE(unitgeo,'(a)') 'part'
     WRITE(unitgeo,*) ind(1)
     WRITE(unitgeo,*) '** decoupages **'
@@ -781,6 +770,9 @@ CONTAINS
 
 
   SUBROUTINE list_commands_paraview
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     PRINT *,'paraview --data=decoupe.CASE'
     PRINT *,'paraview --data=affectation.CASE'
     PRINT *,'paraview --data=affectation-interface.CASE'
