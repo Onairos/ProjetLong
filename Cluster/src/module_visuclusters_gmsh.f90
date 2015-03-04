@@ -108,12 +108,6 @@ CONTAINS
              zmax=z1
           ELSEIF ((params%image==1).OR.(params%geom==1)) THEN
              READ(2,*) x0,y0,z0,num,x1,y1,z1
-             !xmin=-x0
-             !ymin=y0
-             !zmin=z0
-             !xmax=-x1
-             !ymax=y1
-             !zmax=z1
              xmin=y0
              ymin=-x0
              zmin=z0
@@ -175,7 +169,7 @@ CONTAINS
     !###########################################
     OPEN(FILE='decoupe.visu',UNIT=1)
     WRITE(1,*) 'View "MPI" {'
-    !lecture des fichiers
+    !Reading files
     IF (params%nbproc==1) THEN
        offset=1
        totnum=1
@@ -185,7 +179,7 @@ CONTAINS
     ENDIF
     ALLOCATE(coord(1,params%dim))
     DO i=offset,totnum
-       !nom du fichier
+       ! File name
        WRITE(num,*) i
        files='decoupe.'//trim(adjustl(num))
        OPEN(FILE=files,UNIT=10)
@@ -193,12 +187,12 @@ CONTAINS
        PRINT *,'  > ',i,' :',nb
        DO j=1,nb
           IF (params%coord==1) THEN
-             !decoupage par coordonnees
+             ! Partitionning by coordinates
              coord(:,:)=0.
              READ(10,*) coord(1,:)
              CALL ecritpoint_gmsh(1,params%dim,coord,i,1)
           ELSE
-             !decoupage d'image 1D
+             ! Partitionning 1D pictures
              READ (10,*) k
              CALL write_picture_to_gmsh(1,params,i,k)
           ENDIF
@@ -239,14 +233,13 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     DO i=0,params%nbproc-1
-       !nom du fichier
-       !datas
+       ! File name
        WRITE(num,*) i
        num=adjustl(num)
        lenn=len(trim(num))
        files='cluster.partiel.'//trim(num)
        OPEN(FILE=files,UNIT=10)
-       !sortie
+       ! Output
        files='cluster.partiel.'//num(1:lenn)//'.visu'
        OPEN(FILE=files,UNIT=1)
        WRITE(1,*) 'View "Clusters for part '//num(1:lenn)//'" {'
@@ -254,7 +247,7 @@ CONTAINS
        PRINT *,'  > ',i,' :',nb,' -> ',files
        ALLOCATE(coord(1,k))
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
-          !lecture des correspondances
+          ! Reading the matchings
           files='decoupe.'//trim(num)
           OPEN(FILE=files,UNIT=11)
           READ(11,*)
@@ -273,7 +266,7 @@ CONTAINS
              CALL write_picture_to_gmsh(1,params,ind,corresp(k))
           ENDIF
        ENDDO
-       CLOSE(10); 
+       CLOSE(10) 
        WRITE(1,*) '};'
        CLOSE(1)
        DEALLOCATE(coord)
@@ -312,7 +305,7 @@ CONTAINS
     !###########################################
     OPEN(FILE=params%mesh,UNIT=1)
     IF (params%coord==1) THEN
-       !lecture au format coordonnes
+       ! Reading with coordinates format
        READ(1,*) j,k
        PRINT *,'lecture du fichier de maillage...',j,k
        ALLOCATE(coord(j,k))
@@ -326,12 +319,12 @@ CONTAINS
        CLOSE(1)
     ENDIF
 
-    nb0=k !dim des points
+    nb0=k ! Points dimension
     OPEN(FILE='cluster.final.visu',UNIT=1)
     WRITE(1,*) 'View "Clusters" {'
-    !lecture des fichiers
+    ! Reading files
     DO i=1,params%nbclusters
-       !nom du fichier
+       ! File name
        WRITE(num,*) i
        files='cluster.final.'//trim(adjustl(num))
        OPEN(FILE=files,UNIT=10)
@@ -340,10 +333,10 @@ CONTAINS
        DO j=1,nb
           READ(10,*) k
           IF (params%coord==1) THEN
-             !coordonnees classiques
+             ! classic coordinates
              CALL ecritpoint_gmsh(1,nb0,coord,i,k)
           ELSE
-             !reassemblage des images
+             ! Pictures reassembly
              CALL write_picture_to_gmsh(1,params,i,k)
           ENDIF
        ENDDO
@@ -421,13 +414,12 @@ CONTAINS
        ENDDO
        CLOSE(50)
     ENDIF
-    !coordonnees
+    ! Coordinates
     ix=params%refimg(k,1)
     iy=params%refimg(k,2)
     IF (params%imgdim==2) THEN
-       !points en 2D
+       ! 2D points
        IF (params%geom==1) THEN
-          !coordonnees redimensionnees
           kx=iy*params%pas(2)
           ky=-ix*params%pas(1)
        ELSE
@@ -441,7 +433,7 @@ CONTAINS
           kz=0.
        ENDIF
     ELSEIF (params%imgdim==3) THEN
-       !points en 3D
+       ! 3D points
        IF (params%geom==1) THEN
           kx=iy*params%pas(2)
           ky=-ix*params%pas(1)
@@ -452,7 +444,7 @@ CONTAINS
           kz=float(params%refimg(k,3))
        ENDIF
     ENDIF
-    !ecriture
+    ! Writing
     WRITE(unit,*) 'SP(',kx,',',ky,',',kz,'){',ind,'};'
     RETURN
   END SUBROUTINE write_picture_to_gmsh

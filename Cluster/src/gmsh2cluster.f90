@@ -42,6 +42,7 @@ PROGRAM gmsh2cluster
         WRITE (2,*) x,y,z
      ENDIF
   ENDDO
-  CLOSE(1); CLOSE(2)
+  CLOSE(1)
+  CLOSE(2)
   STOP
 END PROGRAM gmsh2cluster

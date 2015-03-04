@@ -54,18 +54,19 @@ CONTAINS
     INTEGER :: nbmax
     INTEGER :: ni
     INTEGER :: nj
-    INTEGER :: ok ! TODO: booleen ?
+    LOGICAL :: ok
     
     !###########################################      
     ! INSTRUCTIONS
     !###########################################  
-    ALLOCATE(cluster(n));
-    ALLOCATE(cluster_center(nbcluster,nbcluster));
-    ALLOCATE(cluster_population(nbcluster));
-    ALLOCATE(cluster_energy(nbcluster));
+    ALLOCATE(cluster(n))
+    ALLOCATE(cluster_center(nbcluster,nbcluster))
+    ALLOCATE(cluster_population(nbcluster))
+    ALLOCATE(cluster_energy(nbcluster))
     ALLOCATE(Z1(n,nbcluster))
-    ALLOCATE(Z2(nbcluster,n));
-    ALLOCATE(Z3(n));Z3(:)=0.0
+    ALLOCATE(Z2(nbcluster,n))
+    ALLOCATE(Z3(n))
+    Z3(:)=0.0
 
     DO i=1,n
        DO j=1,nbcluster
@@ -94,20 +95,23 @@ CONTAINS
     DO i=1,nbcluster
        nbmax=max(nbmax,cluster_population(i))
     ENDDO
-    ALLOCATE(clustercorresp(nbcluster,nbmax)); clustercorresp(:,:)=0
+    ALLOCATE(clustercorresp(nbcluster,nbmax))
+    clustercorresp(:,:)=0
     DO i=1,n
        j=cluster(i)
-       ok=0;k=1
-       DO WHILE(ok==0)
+       ok=.FALSE.
+       k=1
+       DO WHILE(.NOT. ok)
           IF (clustercorresp(j,k)==0) THEN
-             ok=1
+             ok=.TRUE.
           ELSE
              k=k+1
           ENDIF
        ENDDO
        clustercorresp(j,k)=i
     ENDDO
-    ALLOCATE(Frob(nbcluster,nbcluster)); Frob(:,:)=0.0 
+    ALLOCATE(Frob(nbcluster,nbcluster))
+    Frob(:,:)=0.0 
     DO i=1,nbcluster
        DO j=1,nbcluster
           DO ki=1,cluster_population(i)
@@ -140,7 +144,6 @@ CONTAINS
           nbinfo=nbinfo-1
        ENDIF
        ratiorij=ratiorij*2/(nbcluster*(nbcluster-1))
-       ratiorii=ratiorii!/nbcluster
     ENDDO
     DEALLOCATE(Frob)
 
@@ -195,7 +198,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     INTEGER :: point_num ! the number of points
-    !TODO : ÃÂ  rÃÂ©flÃÂ©hir sur l'ordre de dÃÂ©claration
+                !TODO : a reflechir sur l'ordre de declaration
     DOUBLE PRECISION :: point (dim_num, point_num) ! the points
     INTEGER :: cluster_num ! the number of clusters
     INTEGER :: dim_num ! the number of spatial dimensions
@@ -211,7 +214,7 @@ CONTAINS
     INTEGER :: cluster_population (cluster_num) ! the number of points in each cluster
 
     !== USELESS ===
-    INTEGER :: numproc ! TODO: remove?
+    INTEGER :: numproc ! TODO : etudier si garder ou pas
     
     !#### Variables  ####
     DOUBLE PRECISION :: listnorm (point_num, cluster_num)
@@ -226,10 +229,10 @@ CONTAINS
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: ok ! TODO: booleen ?
-    INTEGER :: ok2 ! TODO: booleen ?
     INTEGER :: swap
     INTEGER :: p
+    LOGICAL :: ok
+    LOGICAL :: ok2
     
     !###########################################      
     ! INSTRUCTIONS
@@ -267,36 +270,38 @@ CONTAINS
     !  Assign one point to each cluster center.
     !
     cluster_center(:,1) = point(:,1)
-    cluster_id(:)=0; cluster_id(1)=1
+    cluster_id(:)=0
+    cluster_id(1)=1
     p=2
     seuil=0.4
 #if aff
 PRINT *, 'recherche des centres'
 #endif
     DO i = 2, cluster_num
-       ok=0
-       DO WHILE(ok==0)
+       ok=.FALSE.
+       DO WHILE(.NOT. ok)
           valmax=2.0*seuil
-          !recherche si le point est deja utilise dans comme centre
-          ok2=0
+          ! Test if the point is already used as center
+          ok2=.FALSE.
           DO j=1,i-1
-             IF (cluster_id(j)==p) ok2=1
+             IF (cluster_id(j)==p) ok2=.TRUE.
           ENDDO
-          !si point pas centre, teste par rapport au seuil
-          IF (ok2==0) THEN
+          ! If the point is not a center, test against the threshold
+          IF (.NOT. ok2) THEN
              DO j=1,i-1
-                val=0.0; norme=0.0
+                val=0.0
+                norme=0.0
                 DO k=1,dim_num
                    val=max(val,abs(cluster_center(k,j)-point(k,p)))
                 ENDDO
                 valmax=min(val,valmax)
              ENDDO
-             IF (valmax>=seuil) ok=1
+             IF (valmax>=seuil) ok=.TRUE.
           ENDIF
          p=p+1
 
-         !abaisse le seuil si pas assez de centre sont trouves
-         IF ((p>point_num).AND.(ok==0)) THEN 
+         ! Lower the threshold if not enough centers found
+         IF ((p>point_num).AND.(.NOT. ok)) THEN 
             seuil=0.9*seuil
 #if aff
             PRINT *,'abaisse seuil :',seuil
@@ -311,9 +316,6 @@ PRINT *, 'recherche des centres'
 #if aff
    PRINT *,'centres initiaux',p
 #endif
-!cluster_center
-
-!!! boucle            
     it_num = 0
     swap=1
     cluster(:)=1
@@ -321,14 +323,14 @@ PRINT *, 'recherche des centres'
        it_num = it_num + 1
        swap=0
        DO i=1,cluster_num
-          stockenergy(i)=cluster_energy(i);
-          stockpopulation(i)=cluster_population(i);
+          stockenergy(i)=cluster_energy(i)
+          stockpopulation(i)=cluster_population(i)
           DO j=1,dim_num
              stockcenter(j,i)=cluster_center(j,i)
           ENDDO
        ENDDO
 
-       !! Calcul de toutes les distances
+       ! Computing of the distances
        cluster_population(1:cluster_num) = 1
        listnorm(:,:)=0.0
        DO i=1,point_num
@@ -339,7 +341,7 @@ PRINT *, 'recherche des centres'
           ENDDO
        ENDDO
 
-       !!assignation par rapport au min des distances
+       ! Allocation related to the minimum of the distances
        cluster_population(:)=0
        DO i=1,point_num
           DO j=1,cluster_num
@@ -353,7 +355,7 @@ PRINT *, 'recherche des centres'
           cluster_population(cluster(i))=cluster_population(cluster(i))+1
        ENDDO
 
-       !! mise a jour des centres
+       ! Update of centers
        cluster_center(:,:)=0.0
        DO j=1,point_num
           i=cluster(j) 

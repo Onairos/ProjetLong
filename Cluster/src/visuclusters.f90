@@ -20,10 +20,10 @@ PROGRAM visuclusters
   PRINT *,'visualisation des clusters en 2D/3D'
   PRINT *,'-----------------------------------'
 
-  !lecture des infos
+  ! Reads infos
   CALL read_params(params)
 
-  !choix du format de sortie
+  ! Choice of output format
   IF (iargc()>0) THEN
      CALL getarg(1,formato)
      PRINT *,' > format de sortie ? [gmsh,paraview]'
@@ -38,28 +38,26 @@ PROGRAM visuclusters
 
 11 IF ((formato/='gmsh').AND.(formato/='paraview')) GOTO 10
 
-  !creation de la sub-directory visu/ pour stocker les fichiers paraview
+  ! Builds a sub-directory visu/ to store paraview files
 
   IF (formato=='paraview') CALL system('mkdir visu')
 
-  !geometrie du decoupage
-  !if (params%image==0) 
+  ! Geometry of partitionning
   CALL write_partionning(formato,params)
 
-  !fichier de sortie
+  ! Output file
   CALL affectation(formato,params)
 
-  !fichier de sortie des clusters avant regroupement
+  ! Outout file of clusters before regrouping
   IF (params%nbproc>1) CALL write_partial_clusters(formato,params)
 
-  !fichier de sortie des clusters apres regroupement
+  ! Outout file of clusters after regrouping
   CALL write_final_clusters(formato,params)
 
-  !liste des commandes
+  ! Commands list
   CALL list_commands(formato)
 
-  !fin du fichier
-!  temps = etime(elapsed)
+  ! End file
   SELECT CASE(formato)
   CASE('gmsh')
      OPEN(FILE='visuclusters.gmsh',UNIT=100)
