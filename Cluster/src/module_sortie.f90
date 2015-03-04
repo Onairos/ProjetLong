@@ -65,17 +65,17 @@ CONTAINS
     ENDIF
     DO i=offset,nbdom
        PRINT *,'    > zone ',i,':',ldat(i)
-       !nom du fichier
+       ! File name
        WRITE(num,*) i
        files='decoupe.'//trim(adjustl(num))
        OPEN(FILE=files,UNIT=10)
        WRITE(10,*) ldat(i)
        DO j=1,ldat(i)
           IF (data%coord==1) THEN
-             !ecriture en coordonnees
+             ! Writing in coordinates
              WRITE(10,*) data%point(ddat(i,j))%coord(:)
           ELSEIF ((data%image==1).OR.(data%seuil==1).OR.(data%geom==1)) THEN
-             !ecriture en image
+             ! Writing in picture format
              WRITE(10,*) ddat(i,j)
           ENDIF
        ENDDO
@@ -105,7 +105,7 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################
-    !nom du fichier
+    ! File name
     WRITE(num,*),numproc
     num=adjustl(num)
     files='cluster.partiel.'//trim(num)

@@ -95,7 +95,7 @@ CONTAINS
        ALLOCATE(listenbideal(1))
     ENDIF
     listenbideal(:)=0
-    !lecture
+    ! Reading
     ok=0
     DO WHILE (ok/=1)
        ok=1
@@ -135,7 +135,7 @@ CONTAINS
              CALL help
           ENDIF
           IF ((data%image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
-             !creation du tableau de correspondances pixel/coord
+             ! Creation of array pixels/coordinates
              PRINT *,'  > decodage du format image...'
              CALL tableau_image(data)
           ENDIF
@@ -182,7 +182,7 @@ CONTAINS
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ALLOCATE(decoupe(data%dim))
           ELSEIF (data%image==1) THEN
-             !decoupage par pixel
+             ! Partitionning per pixel
              ALLOCATE(decoupe(data%imgdim))
           ENDIF
           READ(1,*) decoupe(:)
@@ -194,7 +194,7 @@ CONTAINS
                    tot=tot*decoupe(i)
                 ENDDO
              ELSEIF (data%image==1) THEN
-                !decoupage par pixel
+                ! Partitionning per pixel
                 DO i=1,data%imgdim
                    tot=tot*decoupe(i)
                 ENDDO
@@ -206,14 +206,14 @@ CONTAINS
                 STOP
              ENDIF
           ELSE
-             !mode 1 proc
+             ! 1 proc
              IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
                 DO i=1,data%dim
                    decoupe(i)=1
                 ENDDO
                 tot=1
              ELSEIF (data%image==1) THEN
-                !decoupage par pixel
+                ! Partitionning per pixel
                 DO i=1,data%imgdim
                    decoupe(i)=1
                 ENDDO
@@ -228,15 +228,15 @@ CONTAINS
           PRINT *,'mot cle inconnu :',mot
        END SELECT
     ENDDO
-    !parametre de decoupage
+    ! Partitionning parameter
     IF ((nbproc>1).AND.(decoupage==0)) THEN
        PRINT *
        PRINT *,'mot cle DECOUPAGE absent !'
        CALL help 
     ENDIF
-    !cas monoproc
+    ! 1 proc
     IF (nbproc==1) THEN
-       !initialisation par defaut a 1 de tous les parametres de decoupage
+       ! Initialization to 1 by default of all the partitionning parameters
        IF (decoupage==1) DEALLOCATE(decoupe)
        IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
           ALLOCATE(decoupe(data%dim) )
@@ -246,7 +246,7 @@ CONTAINS
        decoupe(:)=1
        epsilon=1.0
     ENDIF   
-    !validation des combinaisons de parametres d'entree
+    ! Validation of the combinations of input parameters
     tot=data%geom+data%seuil+data%coord+data%image
     IF (tot/=1) THEN
        PRINT *
@@ -287,7 +287,7 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    !lecture de donnees classiques
+    ! Reading classic data
     OPEN(FILE=mesh,UNIT=2)
     READ(2,*) data%nb,data%dim
     data%nbclusters=0
@@ -455,7 +455,7 @@ CONTAINS
        PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
     ENDDO
     PRINT *,'  > pas max :',pasmax
-    !recherche des pas par DIMENSION d'image
+    ! Searching steps by picture dimension
     DO j=1,data%imgdim
        data%pas(j)=pasmax/data%imgmap(j)
        PRINT *,'  > pas :',j,data%pas(j)
@@ -491,7 +491,7 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    !lecture de donnees classiques
+    ! Reading classic data
     OPEN(FILE=mesh,UNIT=2)
     READ(2,*) data%imgdim,data%imgt
     PRINT *,'    >dimension de l image:',data%imgdim
@@ -556,15 +556,15 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    !creation du tableau de references points/coordonnes_images
+    ! Creation of array points/image_coordinates
     ALLOCATE(data%refimg(data%nb,data%imgdim))
     ALLOCATE(plan(data%imgdim)); plan(:)=1
     DO i=1,data%nb
        DO j=1,data%imgdim
-          !index dans le tableau de reference points/pixel
+          ! Index in the array points/pixel
           data%refimg(i,j)=plan(j)
           IF (data%geom==1) THEN
-             !entree des coordonnees 1:imgdim pour le cluster geom
+             ! Input of coordinates 1:imgdim for the geometric cluster
              data%point(i)%coord(j)=plan(j)*data%pas(j)
           ENDIF
        ENDDO
