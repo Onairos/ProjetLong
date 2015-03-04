@@ -184,7 +184,7 @@ CONTAINS
     INTEGER, DIMENSION(:), POINTER :: list
     INTEGER :: k
     INTEGER :: n
-    INTEGER :: ok !TODO utilise comme un booleen, modifier en LOGICAL ??
+    LOGICAL :: ok
 
 
     !###########################################
@@ -201,14 +201,14 @@ CONTAINS
              DO k=1,data%dim
                 domaines(n,k,:)=bornes(k,list(k),:)
              ENDDO
-             ok=1
+             ok=.TRUE.
              DO k=data%dim,1,-1
-                IF (ok==1) THEN
+                IF (ok) THEN
                    list(k)=list(k)+1
                    IF (list(k)>decoupe(k)) THEN
                       list(k)=1
                    ELSE
-                      ok=0
+                      ok=.FALSE.
                    ENDIF
                 ENDIF
              ENDDO
@@ -231,14 +231,14 @@ CONTAINS
              DO k=1,data%imgdim
                 domaines(n,k,:)=bornes(k,list(k),:)
              ENDDO
-             ok=1
+             ok=.TRUE.
              DO k=data%imgdim,1,-1
-                IF (ok==1) THEN
+                IF (ok) THEN
                    list(k)=list(k)+1
                    IF (list(k)>decoupe(k)) THEN
                       list(k)=1
                    ELSE
-                      ok=0
+                      ok=.FALSE.
                    ENDIF
                 ENDIF
              ENDDO
@@ -274,8 +274,8 @@ CONTAINS
     INTEGER :: i
     INTEGER :: ierr
     INTEGER :: j
-    INTEGER :: ok
     INTEGER :: n
+    LOGICAL :: ok
 
     !###########################################
     ! INSTRUCTIONS
@@ -286,20 +286,20 @@ CONTAINS
     ddat(:,:)=0
     DO i=1,data%nb
        ! Search of packages
-       n=0; ok=0
-       DO WHILE(ok==0)
-          n=n+1; ok=1
+       n=0; ok=.FALSE.
+       DO WHILE(.NOT. ok)
+          n=n+1; ok=.TRUE.
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
                 IF ((data%point(i)%coord(j)>domaines(n,j,2)).OR.&
-                     (data%point(i)%coord(j)<domaines(n,j,1))) ok=0
+                     (data%point(i)%coord(j)<domaines(n,j,1))) ok=.FALSE.
              ENDDO
           ELSEIF (data%image==1) THEN
              ! Processing for partitionning in pixels of picture
              DO j=1,data%imgdim
                 IF ((data%refimg(i,j)>domaines(n,j,2)).OR.&
-                     (data%refimg(i,j)<domaines(n,j,1))) ok=0
+                     (data%refimg(i,j)<domaines(n,j,1))) ok=.FALSE.
              ENDDO
           ENDIF
           IF ((n>nbproc-1).AND.(nbproc>1)) THEN
@@ -323,21 +323,21 @@ CONTAINS
        ddat(n,ldat(n))=i
        IF (nbproc>1) THEN
           ! Search of interface if > 1 proc
-          ok=0
+          ok=.FALSE.
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
                 IF ((abs(data%point(i)%coord(j)-domaines(n,j,1))<epsilon).OR.&
-                     (abs(data%point(i)%coord(j)-domaines(n,j,2))<epsilon)) ok=1
+                     (abs(data%point(i)%coord(j)-domaines(n,j,2))<epsilon)) ok=.TRUE.
              ENDDO
           ELSEIF (data%image==1) THEN
              ! Processing for partitionning in pixels of picture
              DO j=1,data%imgdim
                 IF ((abs(data%refimg(i,j)-domaines(n,j,1))<epsilon).OR.&
-                     (abs(data%refimg(i,j)-domaines(n,j,2))<epsilon)) ok=1
+                     (abs(data%refimg(i,j)-domaines(n,j,2))<epsilon)) ok=.TRUE.
              ENDDO
           ENDIF
-          IF (ok==1) THEN
+          IF (.NOT. ok) THEN
              ldat(0)=ldat(0)+1
              ddat(0,ldat(0))=i
              WRITE(7,*) ddat(0,ldat(0))
@@ -368,7 +368,7 @@ CONTAINS
     INTEGER :: i
     INTEGER :: j
     INTEGER :: n
-    INTEGER :: ok
+    LOGICAL :: ok
 
     !###########################################
     ! INSTRUCTIONS
@@ -380,21 +380,21 @@ CONTAINS
     DO i=1,data%nb
        ! Search of packages
        DO n=1,nbproc
-          ok=1
+          ok=.TRUE.
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
                 IF ((data%point(i)%coord(j)>domaines(n,j,2)).OR.&
-                     (data%point(i)%coord(j)<domaines(n,j,1))) ok=0
+                     (data%point(i)%coord(j)<domaines(n,j,1))) ok=.FALSE.
              ENDDO
           ELSEIF (data%image==1) THEN
              ! Processing for partitionning in pixels of picture
              DO j=1,data%imgdim
                 IF ((data%refimg(i,j)>domaines(n,j,2)).OR.&
-                     (data%refimg(i,j)<domaines(n,j,1))) ok=0
+                     (data%refimg(i,j)<domaines(n,j,1))) ok=.FALSE.
              ENDDO
           ENDIF
-          IF (ok==1) THEN
+          IF (ok) THEN
              ldat(n-1)=ldat(n-1)+1
              ddat(n-1,ldat(n-1))=i
           ENDIF
@@ -428,19 +428,19 @@ CONTAINS
     INTEGER :: j3
     INTEGER :: k
     INTEGER :: n
-    INTEGER :: ok !TODO utilise comme un booleen, modifier en LOGICAL ??
-    INTEGER :: ok2 !TODO utilise comme un booleen, modifier en LOGICAL ??
-    INTEGER :: ok3 !TODO utilise comme un booleen, modifier en LOGICAL ??
+    LOGICAL :: ok
+    LOGICAL :: ok2
+    LOGICAL :: ok3
 
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    ok=0; i=1; j=0
+    ok=.FALSE.; i=1; j=0
 #if aff
     PRINT *,'  > elimination des doublons...'
     PRINT *,'    > regroupement du sous-cluster ',1
 #endif
-    DO WHILE(ok==0)
+    DO WHILE(.NOT.ok)
        j=j+1 
        IF (j>iclust(i)) THEN
           ! Line n°1 is entirely tested
@@ -454,20 +454,20 @@ CONTAINS
        ENDIF
        IF (i>nbclust-1) THEN
           ! No more points to test
-          ok=1
+          ok=.TRUE.
        ELSEIF (iclust(i)>0) THEN
           ! Storage of index
           data%point(clustermap(i,j))%cluster=i
           ! Test of overlappings
-          ok2=0; i2=i+1; j2=1
-          DO WHILE(ok2==0)
+          ok2=.FALSE.; i2=i+1; j2=1
+          DO WHILE(.NOT. ok2)
              IF (j2>iclust(i2)) THEN
                 ! Line n°i2 entirely tested for the point (i,j)
                 i2=i2+1; j2=1
              ENDIF
              IF (i2>nbclust) THEN
                ! End of test for the point (i,j)
-                ok2=1
+                ok2=.TRUE.
              ELSE
                 ! Intersections test
                 IF (clustermap(i,j)==clustermap(i2,j2)) THEN
@@ -475,11 +475,11 @@ CONTAINS
                    n=0
                    DO k=1,iclust(i2)
                       ! Test of removal of duplications
-                      ok3=1
+                      ok3=.TRUE.
                       DO j3=1,iclust(i)
-                         IF (clustermap(i2,k)==clustermap(i,j3)) ok3=0
+                         IF (clustermap(i2,k)==clustermap(i,j3)) ok3=.FALSE.
                       ENDDO
-                      IF (ok3==1) THEN
+                      IF (ok3) THEN
                          n=n+1
                          clustermap(i,iclust(i)+n)=clustermap(i2,k)
                          clustermap(i2,k)=0                         

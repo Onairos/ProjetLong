@@ -54,7 +54,7 @@ CONTAINS
     INTEGER :: nbmax
     INTEGER :: ni
     INTEGER :: nj
-    INTEGER :: ok ! TODO: booleen ?
+    LOGICAL :: ok
     
     !###########################################      
     ! INSTRUCTIONS
@@ -97,10 +97,10 @@ CONTAINS
     ALLOCATE(clustercorresp(nbcluster,nbmax)); clustercorresp(:,:)=0
     DO i=1,n
        j=cluster(i)
-       ok=0;k=1
-       DO WHILE(ok==0)
+       ok=.FALSE.;k=1
+       DO WHILE(.NOT. ok)
           IF (clustercorresp(j,k)==0) THEN
-             ok=1
+             ok=.TRUE.
           ELSE
              k=k+1
           ENDIF
@@ -225,10 +225,10 @@ CONTAINS
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: ok ! TODO: booleen ?
-    INTEGER :: ok2 ! TODO: booleen ?
     INTEGER :: swap
     INTEGER :: p
+    LOGICAL :: ok
+    LOGICAL :: ok2
     
     !###########################################      
     ! INSTRUCTIONS
@@ -273,16 +273,16 @@ CONTAINS
 PRINT *, 'recherche des centres'
 #endif
     DO i = 2, cluster_num
-       ok=0
-       DO WHILE(ok==0)
+       ok=.FALSE.
+       DO WHILE(.NOT. ok)
           valmax=2.0*seuil
           ! Test if the point is already used as center
-          ok2=0
+          ok2=.FALSE.
           DO j=1,i-1
-             IF (cluster_id(j)==p) ok2=1
+             IF (cluster_id(j)==p) ok2=.TRUE.
           ENDDO
           ! If the point is not a center, test against the threshold
-          IF (ok2==0) THEN
+          IF (.NOT. ok2) THEN
              DO j=1,i-1
                 val=0.0; norme=0.0
                 DO k=1,dim_num
@@ -290,12 +290,12 @@ PRINT *, 'recherche des centres'
                 ENDDO
                 valmax=min(val,valmax)
              ENDDO
-             IF (valmax>=seuil) ok=1
+             IF (valmax>=seuil) ok=.TRUE.
           ENDIF
          p=p+1
 
          ! Lower the threshold if not enough centers found
-         IF ((p>point_num).AND.(ok==0)) THEN 
+         IF ((p>point_num).AND.(.NOT. ok)) THEN 
             seuil=0.9*seuil
 #if aff
             PRINT *,'abaisse seuil :',seuil

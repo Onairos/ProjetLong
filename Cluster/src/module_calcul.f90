@@ -69,7 +69,6 @@ CONTAINS
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb
-    INTEGER :: ok !TODO sert comme booleen, changer en LOGICAL ?
     DOUBLE PRECISION :: long
     DOUBLE PRECISION :: sigma0
     DOUBLE PRECISION :: volext
@@ -91,14 +90,10 @@ CONTAINS
           tableau(i,j)=decoupe0(j)
        ENDDO
        decoupe0(1)=decoupe0(1)+1
-       ok=0; k=1
-       DO WHILE(ok==0)
-          IF (decoupe0(k)>decoupe(k)) THEN
-             decoupe0(k)=1
-             IF (k<dataw%dim) decoupe0(k+1)=decoupe0(k+1)+1
-          ELSE
-             ok=1
-          ENDIF
+       k=1
+       DO WHILE(decoupe0(k)>decoupe(k))
+          decoupe0(k)=1
+          IF (k<dataw%dim) decoupe0(k+1)=decoupe0(k+1)+1
        ENDDO
     ENDDO
     DEALLOCATE(decoupe0)

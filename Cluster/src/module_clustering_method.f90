@@ -139,10 +139,10 @@ apply_kmeans( nbcluster, n, nbcluster, it_max, it_num,Z2,&
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: ok ! TODO: booleen ?
-    INTEGER :: ok2 ! TODO: booleen ?
     INTEGER :: swap
     INTEGER :: p
+    LOGICAL :: ok
+    LOGICAL :: ok2
     
 
     ALLOCATE(cluster(n));
@@ -194,16 +194,16 @@ apply_kmeans( nbcluster, n, nbcluster, it_max, it_num,Z2,&
 PRINT *, 'recherche des centres'
 #endif
     DO i = 2, cluster_num
-       ok=0
-       DO WHILE(ok==0)
+       ok=.FALSE.
+       DO WHILE(.NOT. ok)
           valmax=2.0*seuil
           !recherche si le point est deja utilise dans comme centre
-          ok2=0
+          ok2=.FALSE.
           DO j=1,i-1
-             IF (cluster_id(j)==p) ok2=1
+             IF (cluster_id(j)==p) ok2=.TRUE.
           ENDDO
           !si point pas centre, teste par rapport au seuil
-          IF (ok2==0) THEN
+          IF (.NOT. ok2) THEN
              DO j=1,i-1
                 val=0.0; norme=0.0
                 DO k=1,dim_num
@@ -211,12 +211,12 @@ PRINT *, 'recherche des centres'
                 ENDDO
                 valmax=min(val,valmax)
              ENDDO
-             IF (valmax>=seuil) ok=1
+             IF (valmax>=seuil) ok = .TRUE.
           ENDIF
          p=p+1
 
          !abaisse le seuil si pas assez de centre sont trouves
-         IF ((p>point_num).AND.(ok==0)) THEN 
+         IF ((p>point_num).AND.(.NOT. ok)) THEN 
             seuil=0.9*seuil
 #if aff
             PRINT *,'abaisse seuil :',seuil

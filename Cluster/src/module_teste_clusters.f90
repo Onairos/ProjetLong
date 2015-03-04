@@ -1,13 +1,13 @@
 MODULE module_teste_clusters
 
   TYPE type_test
+     CHARACTER (LEN=80) :: datatype
+     CHARACTER (LEN=80) :: decoupetype
      CHARACTER (LEN=80) :: dir
+     CHARACTER (LEN=80) :: fichier
      CHARACTER (LEN=80) :: output
      CHARACTER (LEN=80) :: visup
      CHARACTER (LEN=80) :: visug
-     CHARACTER (LEN=80) :: fichier
-     CHARACTER (LEN=80) :: datatype
-     CHARACTER (LEN=80) :: decoupetype
      DOUBLE PRECISION :: epaisseur
      INTEGER, DIMENSION(:), POINTER :: decoupe
      INTEGER :: nbproc

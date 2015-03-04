@@ -73,8 +73,8 @@ CONTAINS
     INTEGER :: decoupage
     INTEGER :: i
     INTEGER :: ierr
-    INTEGER :: ok !TODO utilise comme un booleen, modifier en LOGICAL ??
     INTEGER :: tot
+    LOGICAL :: ok
 
     !###########################################
     ! INSTRUCTIONS
@@ -96,14 +96,14 @@ CONTAINS
     ENDIF
     listenbideal(:)=0
     ! Reading
-    ok=0
-    DO WHILE (ok/=1)
-       ok=1
+    ok=.FALSE.
+    DO WHILE (.NOT. ok)
+       ok=.TRUE.
        READ(1,*) mot
        PRINT *,mot
        SELECT CASE(mot)
        CASE('DATA')
-          ok=0
+          ok=.FALSE.
           READ(1,*) mesh
           IF (mesh=='IMAGE') THEN
              data%image=1
@@ -140,19 +140,19 @@ CONTAINS
              CALL tableau_image(data)
           ENDIF
        CASE('EPAISSEUR')
-          ok=0
+          ok=.FALSE.
           READ(1,*) epsilon
           PRINT *,'  > epaisseur de la tranche :',epsilon
        CASE('NBLIMIT')
-          ok=0
+          ok=.FALSE.
           READ(1,*) nblimit
           PRINT *,'  > nb maximal de clusters recherches :',nblimit
        CASE('NBCLUST')
-          ok=0
+          ok=.FALSE.
           READ(1,*) listenbideal(:)
           PRINT *,'  > test pour nb de clusters=',listenbideal
        CASE('SIGMA')
-          ok=0
+          ok=.FALSE.
           READ(1,*) sigma
           PRINT *,'  > valeur de sigma imposee :',sigma
           IF (data%image==1) THEN
@@ -163,7 +163,7 @@ CONTAINS
           ENDIF
        CASE('DECOUPAGE')
           decoupage=1
-          ok=0
+          ok=.FALSE.
           READ (1,*) mot
           SELECT CASE(mot)
           CASE('INTERFACE')
@@ -222,9 +222,9 @@ CONTAINS
           ENDIF
           PRINT *,'  > decoupage :',decoupe
        CASE('END')
-          ok=1
+          ok=.TRUE.
        CASE DEFAULT
-          ok=0
+          ok=.FALSE.
           PRINT *,'mot cle inconnu :',mot
        END SELECT
     ENDDO
@@ -551,7 +551,7 @@ CONTAINS
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: ok !TODO utilise comme un booleen, modifier en LOGICAL ??
+    LOGICAL :: ok
 
     !###########################################
     ! INSTRUCTIONS
@@ -568,17 +568,17 @@ CONTAINS
              data%point(i)%coord(j)=plan(j)*data%pas(j)
           ENDIF
        ENDDO
-       ok=0
+       ok=.FALSE.
        k=data%imgdim
-       DO WHILE(ok==0)
+       DO WHILE(.NOT. ok)
           IF (plan(k)<data%imgmap(k)) THEN
              plan(k)=plan(k)+1
-             ok=1
+             ok=.TRUE.
           ELSE
              plan(k)=1
              k=k-1
           ENDIF
-          IF (k==0) ok=1
+          IF (k==0) ok=.TRUE.
        ENDDO
     ENDDO
     DEALLOCATE(plan)

@@ -5,18 +5,18 @@ MODULE module_visuclusters_structure
      DOUBLE PRECISION, DIMENSION(:), POINTER :: pas
      INTEGER, DIMENSION(:,:), POINTER :: refimg
      INTEGER, DIMENSION(:), POINTER :: imgmap
-     INTEGER :: nbp
+     INTEGER :: coord
      INTEGER :: dim
-     INTEGER :: nbproc
-     INTEGER :: nbclusters
-     INTEGER :: seuil
+     INTEGER :: geom
      INTEGER :: image
      INTEGER :: imgdim
      INTEGER :: imgt
-     INTEGER :: coord
-     INTEGER :: geom
      INTEGER :: interface
+     INTEGER :: nbclusters
+     INTEGER :: nbp
+     INTEGER :: nbproc
      INTEGER :: recouvrement
+     INTEGER :: seuil
   END TYPE type_params
 
 END MODULE module_visuclusters_structure
