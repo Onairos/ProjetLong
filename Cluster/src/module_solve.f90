@@ -22,11 +22,16 @@ CONTAINS
     JOBVR='V'
     BALANC='N'
     SENSE='B'
-    ALLOCATE(WORK(LWORK)); WORK(:)=0.0
-    ALLOCATE(WR(N)); WR(:)=0.0
-    ALLOCATE(WI(N)); WI(:)=0.0
-    ALLOCATE(VL(LDVL,N)); VL(:,:)=0.0
-    ALLOCATE(VR(LDVR,N)); VR(:,:)=0.0
+    ALLOCATE(WORK(LWORK))
+    WORK(:)=0.0
+    ALLOCATE(WR(N))
+    WR(:)=0.0
+    ALLOCATE(WI(N))
+    WI(:)=0.0
+    ALLOCATE(VL(LDVL,N))
+    VL(:,:)=0.0
+    ALLOCATE(VR(LDVR,N))
+    VR(:,:)=0.0
     CALL DGEEVX( BALANC, JOBVL, JOBVR, SENSE, N, A, LDA, WR, WI,&
          VL, LDVL, VR, LDVR, ILO, IHI, SCALE, ABNRM,&
          RCONDE, RCONDV, WORK, LWORK, IWORK, INFO )
@@ -55,11 +60,16 @@ CONTAINS
     INFO=0
     JOBVL='N'
     JOBVR='V'
-    ALLOCATE(WORK(LWORK)); WORK(:)=0.0
-    ALLOCATE(WR(N)); WR(:)=0.0
-    ALLOCATE(WI(N)); WI(:)=0.0
-    ALLOCATE(VL(LDVL,N)); VL(:,:)=0.0
-    ALLOCATE(VR(LDVR,N)); VR(:,:)=0.0
+    ALLOCATE(WORK(LWORK))
+    WORK(:)=0.0
+    ALLOCATE(WR(N))
+    WR(:)=0.0
+    ALLOCATE(WI(N))
+    WI(:)=0.0
+    ALLOCATE(VL(LDVL,N))
+    VL(:,:)=0.0
+    ALLOCATE(VR(LDVR,N))
+    VR(:,:)=0.0
     CALL DGEEV( JOBVL, JOBVR, N, A, LDA, WR, WI, VL, LDVL, VR,&
          LDVR, WORK, LWORK, INFO )
     DEALLOCATE(WORK)

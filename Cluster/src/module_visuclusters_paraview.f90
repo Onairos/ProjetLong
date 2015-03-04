@@ -321,8 +321,10 @@ CONTAINS
        PRINT *,'  > ',i,' :',nb
         ALLOCATE(coord(nb,params%dim))
        coord(:,:)=0.
-       ALLOCATE(ind(nb)); ind(:)=0
-       ALLOCATE(indp(nb)); indp(:)=0
+       ALLOCATE(ind(nb))
+       ind(:)=0
+       ALLOCATE(indp(nb))
+       indp(:)=0
        IF (nb>0) THEN
           DO j=1,nb
              IF (params%coord==1) THEN
@@ -441,8 +443,10 @@ CONTAINS
        READ(20,*) nb,k
        PRINT *,'  > ',i,' :',nb,' -> ',files
        ALLOCATE(coord(nb,k))
-       ALLOCATE(ind(max(1,nb))); ind(:)=0
-       ALLOCATE(indp(max(1,nb))); indp(:)=0
+       ALLOCATE(ind(max(1,nb)))
+       ind(:)=0
+       ALLOCATE(indp(max(1,nb)))
+       indp(:)=0
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
           ! Reading the matchings
           files='decoupe.'//trim(num)
@@ -462,7 +466,7 @@ CONTAINS
              indp(j)=corresp(indp(j))
           ENDIF
        ENDDO
-       CLOSE(20); 
+       CLOSE(20) 
        ! Writing
        IF (params%coord==1) THEN
           ! partitionning by coordinates
@@ -561,8 +565,10 @@ CONTAINS
     WRITE(10,'(a)') 'node id assign'
     WRITE(10,'(a)') 'element id assign'
     WRITE(11,*) '** clusters **'
-    ALLOCATE(ind(max(1,params%nbp))); ind(:)=0
-    ALLOCATE(indp(max(1,params%nbp))); indp(:)=0
+    ALLOCATE(ind(max(1,params%nbp)))
+    ind(:)=0
+    ALLOCATE(indp(max(1,params%nbp)))
+    indp(:)=0
     ! Reading files
     DO i=1,params%nbclusters
        ! File name
@@ -687,9 +693,12 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    ALLOCATE(kx(nbp)); kx(:)=0
-    ALLOCATE(ky(nbp)); ky(:)=0
-    ALLOCATE(kz(nbp)); kz(:)=0
+    ALLOCATE(kx(nbp))
+    kx(:)=0
+    ALLOCATE(ky(nbp))
+    ky(:)=0
+    ALLOCATE(kz(nbp))
+    kz(:)=0
     IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
          .AND.(params%imgdim==2)) THEN
        ALLOCATE(data(params%nbp))

@@ -266,7 +266,7 @@ CONTAINS
              CALL write_picture_to_gmsh(1,params,ind,corresp(k))
           ENDIF
        ENDDO
-       CLOSE(10); 
+       CLOSE(10) 
        WRITE(1,*) '};'
        CLOSE(1)
        DEALLOCATE(coord)

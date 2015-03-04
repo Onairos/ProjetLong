@@ -558,7 +558,8 @@ CONTAINS
     !###########################################
     ! Creation of array points/image_coordinates
     ALLOCATE(data%refimg(data%nb,data%imgdim))
-    ALLOCATE(plan(data%imgdim)); plan(:)=1
+    ALLOCATE(plan(data%imgdim))
+    plan(:)=1
     DO i=1,data%nb
        DO j=1,data%imgdim
           ! Index in the array points/pixel
