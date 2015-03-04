@@ -36,13 +36,15 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################  
     DO i=1,nbproc-1
-       m=ldat(i); n=data%dim
+       m=ldat(i)
+       n=data%dim
        tag=i
        CALL MPI_SEND(m,1,MPI_INTEGER,i,tag,MPI_COMM_WORLD,ierr)
        CALL MPI_SEND(n,1,MPI_INTEGER,i,tag,MPI_COMM_WORLD,ierr)   
        IF (m>0) THEN
           ! Creation of coordinates arrays
-          ALLOCATE(coord(m,n)); coord=0.0
+          ALLOCATE(coord(m,n))
+          coord=0.0
           DO j=1,m
              coord(j,1:n)=data%point(ddat(i,j))%coord(1:n)
           ENDDO
@@ -53,8 +55,11 @@ CONTAINS
        ENDIF
     ENDDO
     ! Creation of TYPE dataw of interface
-    m=ldat(0); n=data%dim
-    dataw%nb=m; dataw%dim=n; dataw%nbclusters=0
+    m=ldat(0)
+    n=data%dim
+    dataw%nb=m
+    dataw%dim=n
+    dataw%nbclusters=0
     IF (m>0) THEN
        ALLOCATE(dataw%point(m))
        DO i=1,m
@@ -64,19 +69,26 @@ CONTAINS
        ENDDO
     ENDIF
     ! Sending flags picture, threshold, geometric...
-    n=data%coord; dataw%coord=n
+    n=data%coord
+    dataw%coord=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%image; dataw%image=n
+    n=data%image
+    dataw%image=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%geom; dataw%geom=n
+    n=data%geom
+    dataw%geom=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%seuil; dataw%seuil=n
+    n=data%seuil
+    dataw%seuil=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%recouvrement; dataw%recouvrement=n
+    n=data%recouvrement
+    dataw%recouvrement=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%interface; dataw%interface=n
+    n=data%interface
+    dataw%interface=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%dim; dataw%dim=n
+    n=data%dim
+    dataw%dim=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     RETURN
   END SUBROUTINE send_partitionning
@@ -112,9 +124,12 @@ CONTAINS
     tag=numproc
     CALL MPI_RECV(m,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
     CALL MPI_RECV(n,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
-    dataw%nb=m; dataw%dim=n; dataw%nbclusters=0
+    dataw%nb=m
+    dataw%dim=n
+    dataw%nbclusters=0
     IF (m>0) THEN
-       ALLOCATE(coord(m,n)); coord=0.0
+       ALLOCATE(coord(m,n))
+       coord=0.0
        ! Receiving arrays
        tag=numproc*10
        CALL MPI_RECV(coord,m*n,MPI_DOUBLE_PRECISION,0,tag,&
@@ -181,13 +196,14 @@ CONTAINS
        nbclust=0
     ENDIF
     ! Numebr of clusters
-    ALLOCATE(nclust(nbproc)); nclust(:)%nb=0
+    ALLOCATE(nclust(nbproc))
+    nclust(:)%nb=0
     DO i=1,nbproc-1
        IF (ldat(i)>0) THEN
           tag=i*11
           CALL MPI_RECV(nb,1,MPI_INTEGER,i,tag,MPI_COMM_WORLD,status,ierr)
           nbclust=nbclust+nb
-          nclust(i)%nb=nb;
+          nclust(i)%nb=nb
        ENDIF
     ENDDO
     ! Number of points by cluster
@@ -311,7 +327,9 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################    
-    i0=0; ALLOCATE(iclust(nbclust)); iclust(:)=0
+    i0=0
+    ALLOCATE(iclust(nbclust))
+    iclust(:)=0
     IF (dataw%nb>0) THEN
        ! Storage of local clusters in the global array
        DO i=1,dataw%nb

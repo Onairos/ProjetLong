@@ -67,7 +67,7 @@ PROGRAM clusters
   PRINT*, 'rank', numproc, ' procname',procname
 
   IF(numproc==0) THEN
-    starttime = MPI_WTIME();
+    starttime = MPI_WTIME()
   ENDIF
 #if aff
   PRINT *,'lancement du proc',numproc,' de ',nbproc
@@ -113,15 +113,15 @@ PROGRAM clusters
      PRINT *
      PRINT *,'decoupage des datas...'
 #endif
-    t1 = MPI_WTIME();
+    t1 = MPI_WTIME()
     CALL partition_data(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
          ldat,ddat,bornes)
-    t2 = MPI_WTIME();
+    t2 = MPI_WTIME()
     PRINT *,'temps decoupage des datas...', t2-t1
   ENDIF
      
   IF(numproc==0) THEN
-    t1 = MPI_WTIME();
+    t1 = MPI_WTIME()
   ENDIF
 
   ! Exchanges
@@ -175,7 +175,9 @@ PROGRAM clusters
 
   ELSE
      ! Case of 1 proc alone
-     dataw%nb=data%nb; dataw%dim=data%dim; dataw%nbclusters=0
+     dataw%nb=data%nb
+     dataw%dim=data%dim
+     dataw%nbclusters=0
      ALLOCATE(dataw%point(data%nb))
      DO i=1,data%nb
         ALLOCATE(dataw%point(i)%coord(data%dim))
@@ -208,20 +210,20 @@ PROGRAM clusters
   ENDIF
 
   IF(numproc==0) THEN
-    t2 = MPI_WTIME();
+    t2 = MPI_WTIME()
     PRINT *,'temps envoi donnees et calcul sigma', t2-t1
   ENDIF
 
   ! Clusters computing
   ! Parallel part
-  t1 = MPI_WTIME();
+  t1 = MPI_WTIME()
   IF (dataw%nb>0) THEN
 #if aff
      PRINT *,numproc,'calcul des clusters...'
 #endif
      CALL apply_spectral_clustering(numproc,nblimit,nbideal,dataw,sigma)
   ENDIF
-  t2 = MPI_WTIME();
+  t2 = MPI_WTIME()
   t_parall = t2 - t1
   PRINT *, numproc, 'calcul cluster //', t_parall
 
@@ -229,7 +231,7 @@ PROGRAM clusters
   IF(numproc==0) PRINT *, 'temps calcul cluster global //', t_parallg
 
   IF(numproc==0) THEN
-    t1 = MPI_WTIME();
+    t1 = MPI_WTIME()
   ENDIF
 
   ! Saves the partial clusters
@@ -268,13 +270,16 @@ PROGRAM clusters
   ELSE
      ! Case of 1 proc alone
      nbclust=dataw%nbclusters
-     ALLOCATE(iclust(nbclust)); iclust(:)=0; nmax=0
+     ALLOCATE(iclust(nbclust))
+     iclust(:)=0
+     nmax=0
      DO i=1,dataw%nb
         j=dataw%point(i)%cluster
         iclust(j)=iclust(j)+1
         nmax=max(nmax,iclust(j))
      ENDDO
-     ALLOCATE(clustermap(nbclust,nmax)); clustermap(:,:)=0
+     ALLOCATE(clustermap(nbclust,nmax))
+     clustermap(:,:)=0
      iclust(:)=0
      DO i=1,dataw%nb
         j=dataw%point(i)%cluster
@@ -284,12 +289,12 @@ PROGRAM clusters
   ENDIF
 
   IF(numproc==0) THEN
-    t2 = MPI_WTIME();
+    t2 = MPI_WTIME()
     PRINT *,'temps regroupement des clusters', t2-t1
   ENDIF
 
   IF(numproc==0) THEN
-    t1 = MPI_WTIME();
+    t1 = MPI_WTIME()
   ENDIF
   ! Outputs
   IF (numproc==0) THEN
@@ -300,13 +305,13 @@ PROGRAM clusters
      CALL write_metadata(mesh,data,nbproc,nbclust)
   ENDIF
   IF(numproc==0) THEN
-    t2 = MPI_WTIME();
+    t2 = MPI_WTIME()
     PRINT *,'temps ecriture des clusters', t2-t1
   ENDIF
   
   ! Ending of MPI
   IF (numproc==0) THEN
-    endtime = MPI_WTIME();
+    endtime = MPI_WTIME()
     PRINT *,' Fin du calcul'
     PRINT *,'  > temps total=', endtime-starttime
   ENDIF

@@ -49,7 +49,7 @@ CONTAINS
     facteur = 3.0
     treshold = facteur*sigma
 
-    t1 = MPI_WTIME();
+    t1 = MPI_WTIME()
     DO i=1,n-1  ! borne ?
        DO j=i+1,n ! borne ?
 
@@ -60,17 +60,17 @@ CONTAINS
           ENDDO
 
           IF(sqrt(norme) <= treshold) THEN
-            nnz = nnz + 1;
+            nnz = nnz + 1
           ENDIF
 
        ENDDO
     ENDDO
 
-    t2 = MPI_WTIME();
+    t2 = MPI_WTIME()
     t_cons_a = t2 - t1
     PRINT *, numproc, 'surcout A', t_cons_a
 
-    t1 = MPI_WTIME();
+    t1 = MPI_WTIME()
     nnz2 = nnz*2
 
     ALLOCATE(AS(nnz2))
@@ -101,7 +101,8 @@ CONTAINS
     ENDDO
     WRITE(*,*) '========== facteur, n*n nnz2 = ', facteur, n*n, nnz2
 
-  ALLOCATE(D(n)); D(:)=0.0
+  ALLOCATE(D(n))
+  D(:)=0.0
   DO l=1, nnz2
     D(IAS(l)) = D(IAS(l)) + AS(l)
   ENDDO
@@ -127,9 +128,13 @@ CONTAINS
     DO i=1,nb-1
        DO j=i+1,nb
           IF (W(i)<W(j)) THEN
-             value=W(i); W(i)=W(j); W(j)=value
+             value=W(i)
+             W(i)=W(j)
+             W(j)=value
              DO k=1,n
-                value=Z(k,i); Z(k,i)=Z(k,j); Z(k,j)=value
+                value=Z(k,i)
+                Z(k,i)=Z(k,j)
+                Z(k,j)=value
              ENDDO
           ENDIF
        ENDDO
@@ -144,13 +149,19 @@ CONTAINS
 
     IF ((nbideal==0).AND.(n>2)) THEN
        !** recherche du meilleur decoupage
-       ALLOCATE(ratiomax(nblimit)); ratiomax(:)=0
-       ALLOCATE(ratiomin(nblimit)); ratiomin(:)=0
-       ALLOCATE(ratiomoy(nblimit)); ratiomoy(:)=0
-       ALLOCATE(ratiorii(nblimit)); ratiorii(:)=0
-       ALLOCATE(ratiorij(nblimit)); ratiorij(:)=0
+       ALLOCATE(ratiomax(nblimit))
+       ratiomax(:)=0
+       ALLOCATE(ratiomin(nblimit))
+       ratiomin(:)=0
+       ALLOCATE(ratiomoy(nblimit))
+       ratiomoy(:)=0
+       ALLOCATE(ratiorii(nblimit))
+       ratiorii(:)=0
+       ALLOCATE(ratiorij(nblimit))
+       ratiorij(:)=0
 
-       ALLOCATE(nbinfo(nblimit)); nbinfo(:)=0
+       ALLOCATE(nbinfo(nblimit))
+       nbinfo(:)=0
 
        DO nbcluster = 2 ,min(n,nblimit)
 
@@ -168,10 +179,10 @@ CONTAINS
                cluster_energy,nbinfo(nbcluster),numproc,ratiomoy(nbcluster), &
                ratiorij(nbcluster),ratiorii(nbcluster))
 
-          DEALLOCATE(cluster);
-          DEALLOCATE(cluster_center);
+          DEALLOCATE(cluster)
+          DEALLOCATE(cluster_center)
           DEALLOCATE(cluster_energy)
-          DEALLOCATE(cluster_population);
+          DEALLOCATE(cluster_population)
        ENDDO
 
 
@@ -321,12 +332,14 @@ PRINT *, 'ratio de frobenius'
     INTEGER :: l
     INTEGER :: num1, num2
 
-    ALLOCATE(cluster(n));
-    ALLOCATE(cluster_center(nbcluster,nbcluster));
-    ALLOCATE(cluster_population(nbcluster));
-    ALLOCATE(cluster_energy(nbcluster));
-    ALLOCATE(Z1(n,nbcluster));  ALLOCATE(Z2(nbcluster,n));
-    ALLOCATE(Z3(n));Z3(:)=0.0
+    ALLOCATE(cluster(n))
+    ALLOCATE(cluster_center(nbcluster,nbcluster))
+    ALLOCATE(cluster_population(nbcluster))
+    ALLOCATE(cluster_energy(nbcluster))
+    ALLOCATE(Z1(n,nbcluster))
+    ALLOCATE(Z2(nbcluster,n))
+    ALLOCATE(Z3(n))
+    Z3(:)=0.0
 
     PRINT *, '************ sp_spectral_embedding *************'
     DO i=1,n
@@ -361,10 +374,12 @@ PRINT *, 'ratio de frobenius'
        nbmax=max(nbmax,cluster_population(i))
     ENDDO
     PRINT *, cluster_population
-    ALLOCATE(clustercorresp(nbcluster,nbmax)); clustercorresp(:,:)=0
+    ALLOCATE(clustercorresp(nbcluster,nbmax))
+    clustercorresp(:,:)=0
     DO i=1,n
        j=cluster(i)
-       ok=0;k=1
+       ok=0
+       k=1
        DO WHILE(ok==0)
           IF (clustercorresp(j,k)==0) THEN
              ok=1
@@ -377,7 +392,8 @@ PRINT *, 'ratio de frobenius'
 
 
 ! sparsification debut
-    ALLOCATE(Frob(nbcluster,nbcluster)); Frob(:,:)=0.0
+    ALLOCATE(Frob(nbcluster,nbcluster))
+    Frob(:,:)=0.0
     DO i=1, nnz
       num1 = cluster(IAS(i))
       num2 = cluster(JAS(i))
@@ -387,7 +403,10 @@ PRINT *, 'ratio de frobenius'
 
 
 ! sparsification debut
-    ratio=0.0; ratiomin=1.D+16;ratiorii=0.0;ratiorij=0.0
+    ratio=0.0
+    ratiomin=1.D+16
+    ratiorii=0.0
+    ratiorij=0.0
     ratiomoy = 0.0
     nbinfo=nbcluster
     DO i=1,nbcluster

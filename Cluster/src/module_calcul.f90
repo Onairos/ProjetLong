@@ -84,7 +84,8 @@ CONTAINS
     ENDDO
     ! Creation of partitionning
     ALLOCATE(tableau(nb,0:dataw%dim))
-    ALLOCATE(decoupe0(dataw%dim)); decoupe0(:)=1
+    ALLOCATE(decoupe0(dataw%dim))
+    decoupe0(:)=1
     DO i=1,nb
        DO j=1,dataw%dim
           tableau(i,j)=decoupe0(j)
@@ -205,7 +206,8 @@ CONTAINS
     ENDDO
 
     ! Normalizing of affinity matrix
-    ALLOCATE(D(n)); D(:)=0.0
+    ALLOCATE(D(n))
+    D(:)=0.0
     DO i=1,n
        DO j=1,i-1
           D(i)=D(i)+A(i,j)
@@ -230,7 +232,8 @@ CONTAINS
 
       nbvp = n
 
-      ALLOCATE(A2(n,n)); A2(:,:)=0.0
+      ALLOCATE(A2(n,n))
+      A2(:,:)=0.0
       DO i=1,n
         DO j=1,n
           A2(i,j)=A(i,j)
@@ -256,9 +259,13 @@ CONTAINS
     DO i=1,nbvp-1
        DO j=i+1,nbvp
           IF (W(i)<W(j)) THEN
-             val=W(i); W(i)=W(j); W(j)=val
+             val=W(i)
+             W(i)=W(j)
+             W(j)=val
              DO k=1,n
-                val=Z(k,i); Z(k,i)=Z(k,j); Z(k,j)=val
+                val=Z(k,i)
+                Z(k,i)=Z(k,j)
+                Z(k,j)=val
              ENDDO
           ENDIF
        ENDDO
@@ -300,7 +307,7 @@ CONTAINS
           DEALLOCATE(cluster)
           DEALLOCATE(cluster_center)
           DEALLOCATE(cluster_energy)
-          DEALLOCATE(cluster_population);
+          DEALLOCATE(cluster_population)
        ENDDO
 
 #if aff
@@ -309,7 +316,8 @@ PRINT *, 'ratio de frobenius'
        ! Ratio of frobenius norm
        ratio=ratiomax(nblimit)
        dataw%nbclusters=nblimit
-       ratio1=0.0;ratio2=1e+10
+       ratio1=0.0
+       ratio2=1e+10
        DO i=2,nblimit
           IF ((numproc==0).AND.(nbproc>1)) THEN 
              seuilrij=1e-1
@@ -325,19 +333,28 @@ PRINT *, 'ratio de frobenius'
 
     ELSEIF ((nbideal==1).AND.(n>nbideal)) THEN
        ! Test with an imposed cluster
-       ALLOCATE(nbinfo(nbideal)); nbinfo(:)=0
-       ALLOCATE(ratiomin(1)); ratiomin(:)=0.0
+       ALLOCATE(nbinfo(nbideal))
+       nbinfo(:)=0
+       ALLOCATE(ratiomin(1))
+       ratiomin(:)=0.0
        dataw%nbclusters=nbideal
     ELSE
        ! Case of a domain with less points than nbideal or only one point
-       ALLOCATE(nbinfo(n)); nbinfo(:)=0
-       ALLOCATE(ratiomin(1)); ratiomin(:)=0.0
+       ALLOCATE(nbinfo(n))
+       nbinfo(:)=0
+       ALLOCATE(ratiomin(1))
+       ratiomin(:)=0.0
        dataw%nbclusters=n
-       ALLOCATE(ratiomax(n)); ratiomax(:)=0
-       ALLOCATE(ratiomoy(n)); ratiomoy(:)=0
-       ALLOCATE(ratiomin(n)); ratiomin(:)=0
-       ALLOCATE(ratiorii(n)); ratiorii(:)=0
-       ALLOCATE(ratiorij(n)); ratiorij(:)=0
+       ALLOCATE(ratiomax(n))
+       ratiomax(:)=0
+       ALLOCATE(ratiomoy(n))
+       ratiomoy(:)=0
+       ALLOCATE(ratiomin(n))
+       ratiomin(:)=0
+       ALLOCATE(ratiorii(n))
+       ratiorii(:)=0
+       ALLOCATE(ratiorij(n))
+       ratiorij(:)=0
     ENDIF
     ! Case of nbcluster==1
     IF (dataw%nbclusters==2) THEN

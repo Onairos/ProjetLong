@@ -59,13 +59,14 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################  
-    ALLOCATE(cluster(n));
-    ALLOCATE(cluster_center(nbcluster,nbcluster));
-    ALLOCATE(cluster_population(nbcluster));
-    ALLOCATE(cluster_energy(nbcluster));
+    ALLOCATE(cluster(n))
+    ALLOCATE(cluster_center(nbcluster,nbcluster))
+    ALLOCATE(cluster_population(nbcluster))
+    ALLOCATE(cluster_energy(nbcluster))
     ALLOCATE(Z1(n,nbcluster))
-    ALLOCATE(Z2(nbcluster,n));
-    ALLOCATE(Z3(n));Z3(:)=0.0
+    ALLOCATE(Z2(nbcluster,n))
+    ALLOCATE(Z3(n))
+    Z3(:)=0.0
 
     DO i=1,n
        DO j=1,nbcluster
@@ -94,10 +95,12 @@ CONTAINS
     DO i=1,nbcluster
        nbmax=max(nbmax,cluster_population(i))
     ENDDO
-    ALLOCATE(clustercorresp(nbcluster,nbmax)); clustercorresp(:,:)=0
+    ALLOCATE(clustercorresp(nbcluster,nbmax))
+    clustercorresp(:,:)=0
     DO i=1,n
        j=cluster(i)
-       ok=.FALSE.;k=1
+       ok=.FALSE.
+       k=1
        DO WHILE(.NOT. ok)
           IF (clustercorresp(j,k)==0) THEN
              ok=.TRUE.
@@ -107,7 +110,8 @@ CONTAINS
        ENDDO
        clustercorresp(j,k)=i
     ENDDO
-    ALLOCATE(Frob(nbcluster,nbcluster)); Frob(:,:)=0.0 
+    ALLOCATE(Frob(nbcluster,nbcluster))
+    Frob(:,:)=0.0 
     DO i=1,nbcluster
        DO j=1,nbcluster
           DO ki=1,cluster_population(i)
@@ -266,7 +270,8 @@ CONTAINS
     !  Assign one point to each cluster center.
     !
     cluster_center(:,1) = point(:,1)
-    cluster_id(:)=0; cluster_id(1)=1
+    cluster_id(:)=0
+    cluster_id(1)=1
     p=2
     seuil=0.4
 #if aff
@@ -284,7 +289,8 @@ PRINT *, 'recherche des centres'
           ! If the point is not a center, test against the threshold
           IF (.NOT. ok2) THEN
              DO j=1,i-1
-                val=0.0; norme=0.0
+                val=0.0
+                norme=0.0
                 DO k=1,dim_num
                    val=max(val,abs(cluster_center(k,j)-point(k,p)))
                 ENDDO
@@ -317,8 +323,8 @@ PRINT *, 'recherche des centres'
        it_num = it_num + 1
        swap=0
        DO i=1,cluster_num
-          stockenergy(i)=cluster_energy(i);
-          stockpopulation(i)=cluster_population(i);
+          stockenergy(i)=cluster_energy(i)
+          stockpopulation(i)=cluster_population(i)
           DO j=1,dim_num
              stockcenter(j,i)=cluster_center(j,i)
           ENDDO

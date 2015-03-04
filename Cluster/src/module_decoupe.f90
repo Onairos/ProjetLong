@@ -135,7 +135,8 @@ CONTAINS
        ENDDO
     ELSEIF (data%image==1) THEN
        ! Processing for partionning pixels of picture
-       ALLOCATE(bornes(data%imgdim,max(nbproc-1,1),2));bornes(:,:,:)=0.0
+       ALLOCATE(bornes(data%imgdim,max(nbproc-1,1),2))
+       bornes(:,:,:)=0.0
        IF ((data%imgdim/=2).AND.(data%imgdim/=3)) THEN
 #if aff
           PRINT *
@@ -194,7 +195,8 @@ CONTAINS
        ! Processing : coordinates, coordinates picture or thresholded picture
        ALLOCATE(domaines(max(1,nbproc-data%interface),data%dim,2))
        domaines(:,:,:)=0.0
-       ALLOCATE(list(data%dim)); list(:)=1
+       ALLOCATE(list(data%dim))
+       list(:)=1
        IF (nbproc>1) THEN
           ! >1 proc
           DO n=1,nbproc-data%interface
@@ -224,7 +226,8 @@ CONTAINS
        ! Processing for partitionning in pixels of picture
        ALLOCATE(domaines(max(1,nbproc-data%interface),data%imgdim,2))
        domaines(:,:,:)=0.0
-       ALLOCATE(list(data%imgdim)); list(:)=1
+       ALLOCATE(list(data%imgdim))
+       list(:)=1
        IF (nbproc>1) THEN
           ! >1 proc
           DO n=1,nbproc-data%interface
@@ -286,9 +289,11 @@ CONTAINS
     ddat(:,:)=0
     DO i=1,data%nb
        ! Search of packages
-       n=0; ok=.FALSE.
+       n=0
+       ok=.FALSE.
        DO WHILE(.NOT. ok)
-          n=n+1; ok=.TRUE.
+          n=n+1
+          ok=.TRUE.
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
@@ -435,7 +440,9 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    ok=.FALSE.; i=1; j=0
+    ok=.FALSE.
+    i=1
+    j=0
 #if aff
     PRINT *,'  > elimination des doublons...'
     PRINT *,'    > regroupement du sous-cluster ',1
@@ -447,7 +454,8 @@ CONTAINS
 #if aff
           PRINT *,'      > nb d elements apres regroupement :',iclust(i)
 #endif
-          i=i+1; j=1
+          i=i+1
+          j=1
 #if aff
           PRINT *,'    > regroupement du cluster ',i
 #endif
@@ -459,11 +467,14 @@ CONTAINS
           ! Storage of index
           data%point(clustermap(i,j))%cluster=i
           ! Test of overlappings
-          ok2=.FALSE.; i2=i+1; j2=1
+          ok2=.FALSE.
+          i2=i+1
+          j2=1
           DO WHILE(.NOT. ok2)
              IF (j2>iclust(i2)) THEN
                 ! Line n°i2 entirely tested for the point (i,j)
-                i2=i2+1; j2=1
+                i2=i2+1
+                j2=1
              ENDIF
              IF (i2>nbclust) THEN
                ! End of test for the point (i,j)
