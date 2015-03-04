@@ -140,7 +140,6 @@ CONTAINS
           nbinfo=nbinfo-1
        ENDIF
        ratiorij=ratiorij*2/(nbcluster*(nbcluster-1))
-       ratiorii=ratiorii!/nbcluster
     ENDDO
     DEALLOCATE(Frob)
 
@@ -195,7 +194,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     INTEGER :: point_num ! the number of points
-    !TODO : ÃÂ  rÃÂ©flÃÂ©hir sur l'ordre de dÃÂ©claration
+                !TODO : a reflechir sur l'ordre de declaration
     DOUBLE PRECISION :: point (dim_num, point_num) ! the points
     INTEGER :: cluster_num ! the number of clusters
     INTEGER :: dim_num ! the number of spatial dimensions
@@ -211,7 +210,7 @@ CONTAINS
     INTEGER :: cluster_population (cluster_num) ! the number of points in each cluster
 
     !== USELESS ===
-    INTEGER :: numproc ! TODO: remove?
+    INTEGER :: numproc ! TODO : etudier si garder ou pas
     
     !#### Variables  ####
     DOUBLE PRECISION :: listnorm (point_num, cluster_num)
@@ -277,12 +276,12 @@ PRINT *, 'recherche des centres'
        ok=0
        DO WHILE(ok==0)
           valmax=2.0*seuil
-          !recherche si le point est deja utilise dans comme centre
+          ! Test if the point is already used as center
           ok2=0
           DO j=1,i-1
              IF (cluster_id(j)==p) ok2=1
           ENDDO
-          !si point pas centre, teste par rapport au seuil
+          ! If the point is not a center, test against the threshold
           IF (ok2==0) THEN
              DO j=1,i-1
                 val=0.0; norme=0.0
@@ -295,7 +294,7 @@ PRINT *, 'recherche des centres'
           ENDIF
          p=p+1
 
-         !abaisse le seuil si pas assez de centre sont trouves
+         ! Lower the threshold if not enough centers found
          IF ((p>point_num).AND.(ok==0)) THEN 
             seuil=0.9*seuil
 #if aff
@@ -311,9 +310,6 @@ PRINT *, 'recherche des centres'
 #if aff
    PRINT *,'centres initiaux',p
 #endif
-!cluster_center
-
-!!! boucle            
     it_num = 0
     swap=1
     cluster(:)=1
@@ -328,7 +324,7 @@ PRINT *, 'recherche des centres'
           ENDDO
        ENDDO
 
-       !! Calcul de toutes les distances
+       ! Computing of the distances
        cluster_population(1:cluster_num) = 1
        listnorm(:,:)=0.0
        DO i=1,point_num
@@ -339,7 +335,7 @@ PRINT *, 'recherche des centres'
           ENDDO
        ENDDO
 
-       !!assignation par rapport au min des distances
+       ! Allocation related to the minimum of the distances
        cluster_population(:)=0
        DO i=1,point_num
           DO j=1,cluster_num
@@ -353,7 +349,7 @@ PRINT *, 'recherche des centres'
           cluster_population(cluster(i))=cluster_population(cluster(i))+1
        ENDDO
 
-       !! mise a jour des centres
+       ! Update of centers
        cluster_center(:,:)=0.0
        DO j=1,point_num
           i=cluster(j) 

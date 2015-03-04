@@ -108,7 +108,7 @@ CONTAINS
     IL = N-k+1
     IU = N
     LDZ = N
-    !on enleve la partie triangulaire inferieure
+    ! Removing lower triangular part
     DO i=1,N
        DO j=1,i-1
           A(i,j)=0.0
@@ -116,7 +116,7 @@ CONTAINS
     ENDDO
     CALL DSYEVR( JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL, IU, ABSTOL,&
          M, W, Z, LDZ, ISUPPZ, WORK, LWORK,IWORK, LIWORK, INFO )
-    LWORK = WORK(1) !TODO : Warning: Possible change of value in conversion from REAL(8) to INTEGER(4) at (1)
+    LWORK = WORK(1)
     LIWORK = IWORK(1)
     IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
   END SUBROUTINE solve_dsyevr
@@ -144,7 +144,7 @@ CONTAINS
     IU = N
     LDZ = N
     IFAIL=0
-    !on enleve la partie triangulaire inferieure
+    ! removing upper triangular part
     DO i=1,N
        DO j=1,i-1
           A(i,j)=0.0
@@ -152,7 +152,7 @@ CONTAINS
     ENDDO
     CALL DSYEVX( JOBZ, RANGE, UPLO, N, A, LDA, VL, VU, IL, IU,&
          ABSTOL, M, W, Z, LDZ, WORK, LWORK,IWORK, IFAIL, INFO )
-    LWORK = WORK(1) !TODO : Warning: Possible change of value in conversion from REAL(8) to INTEGER(4) at (1)
+    LWORK = WORK(1)
     LIWORK = IWORK(1)
     IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
   END SUBROUTINE solve_dsyevx
