@@ -4,7 +4,7 @@ MODULE module_decoupe
 CONTAINS
 
 
-  SUBROUTINE partition_data(data, epsilon, nbproc, coordmin, coord_max, partitionning,&
+  SUBROUTINE partition_data(data, epsilon, nbproc, coord_min, coord_max, partitionning,&
        ldat, ddat, bounds)
     IMPLICIT NONE
     !###########################################
@@ -19,7 +19,7 @@ CONTAINS
 
     !=== IN/OUT ===
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
@@ -33,7 +33,7 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     ! Bounds definition
-    CALL define_bounds(data,coordmin,coord_max,bounds,partitionning,epsilon,nbproc)
+    CALL define_bounds(data,coord_min,coord_max,bounds,partitionning,epsilon,nbproc)
 
     ! Subdomains definition
     CALL define_domains(nbproc,data,domains,bounds,partitionning)
@@ -58,7 +58,7 @@ CONTAINS
   END SUBROUTINE partition_data
 
 
-  SUBROUTINE define_bounds(data, coordmin, coord_max, bounds, partitionning, epsilon, nbproc)
+  SUBROUTINE define_bounds(data, coord_min, coord_max, bounds, partitionning, epsilon, nbproc)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -72,7 +72,7 @@ CONTAINS
 
     !=== IN/OUT ===
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
@@ -95,7 +95,7 @@ CONTAINS
     prod=1.0
     ! Maximum volume
     DO i=1,data%dim
-       prod=prod*(coord_max(i)-coordmin(i))
+       prod=prod*(coord_max(i)-coord_min(i))
     ENDDO
     files='diminterface'
     WRITE(num,*),0
@@ -104,7 +104,7 @@ CONTAINS
     OPEN(FILE=files,UNIT=20)
     DO i=1,data%dim
        som1=som1*(partitionning(i)-1)
-       prod2=prod2+(partitionning(i)-1)*prod/(coord_max(i)-coordmin(i))    
+       prod2=prod2+(partitionning(i)-1)*prod/(coord_max(i)-coord_min(i))    
     ENDDO    
     WRITE(20,*)  prod,epsilon*prod2-som1*(epsilon)**data%dim
     CLOSE(20)
@@ -117,11 +117,11 @@ CONTAINS
        ALLOCATE(bounds(data%dim,max(nbproc-data%interface,1),2))
        bounds(:,:,:)=0.0
        DO i=1,data%dim
-          coordmin(i)=coordmin(i)-epsilon*1.1
+          coord_min(i)=coord_min(i)-epsilon*1.1
           coord_max(i)=coord_max(i)+epsilon*1.1
           DO j=1,partitionning(i)
-             bounds(i,j,1)=coordmin(i)+(j-1)*(coord_max(i)-coordmin(i))/partitionning(i)
-             bounds(i,j,2)=coordmin(i)+j*(coord_max(i)-coordmin(i))/partitionning(i)
+             bounds(i,j,1)=coord_min(i)+(j-1)*(coord_max(i)-coord_min(i))/partitionning(i)
+             bounds(i,j,2)=coord_min(i)+j*(coord_max(i)-coord_min(i))/partitionning(i)
           ENDDO
           IF (data%recouvrement==1) THEN
             ! Partitionning with interface mode
@@ -130,7 +130,7 @@ CONTAINS
                 bounds(i,j,2)=bounds(i,j,2)+epsilon
              ENDDO
           ENDIF
-          bounds(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
+          bounds(i,1,1)=coord_min(i)-0.01*abs(coord_min(i))
           bounds(i,partitionning(i),2)=coord_max(i)+0.01*abs(coord_max(i))
        ENDDO
     ELSEIF (data%image==1) THEN
@@ -145,11 +145,11 @@ CONTAINS
           STOP
        ENDIF
        DO i=1,data%imgdim
-          coordmin(i)=1.0-epsilon*1.1
+          coord_min(i)=1.0-epsilon*1.1
           coord_max(i)=data%imgmap(i)+epsilon*1.1
           DO j=1,partitionning(i)
-             bounds(i,j,1)=coordmin(i)+(j-1)*(coord_max(i)-coordmin(i))/partitionning(i)
-             bounds(i,j,2)=coordmin(i)+j*(coord_max(i)-coordmin(i))/partitionning(i)
+             bounds(i,j,1)=coord_min(i)+(j-1)*(coord_max(i)-coord_min(i))/partitionning(i)
+             bounds(i,j,2)=coord_min(i)+j*(coord_max(i)-coord_min(i))/partitionning(i)
           ENDDO
           IF (data%recouvrement==1) THEN
             ! Partitionning with interface mode
@@ -158,7 +158,7 @@ CONTAINS
                 bounds(i,j,2)=bounds(i,j,2)+epsilon
              ENDDO
           ENDIF
-          bounds(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
+          bounds(i,1,1)=coord_min(i)-0.01*abs(coord_min(i))
           bounds(i,partitionning(i),2)=coord_max(i)+0.01*abs(coord_max(i))
        ENDDO
     ENDIF

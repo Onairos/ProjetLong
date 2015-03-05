@@ -22,7 +22,7 @@ PROGRAM clusters
   CHARACTER (LEN=30) :: mesh
   DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
-  DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
   DOUBLE PRECISION :: endtime
   DOUBLE PRECISION :: epsilon
   DOUBLE PRECISION :: sigma
@@ -99,7 +99,7 @@ PROGRAM clusters
      PRINT *,'lecture des data... ',entree
 #endif
      OPEN(FILE=entree,UNIT=1)
-     CALL read_file(data,epsilon,coordmin,coord_max,nbproc,partitionning,mesh,&
+     CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,mesh,&
           sigma,nblimit,listenbideal)
      t2 = MPI_WTIME()
      PRINT *, 'temps lecture data ', t2-t1
@@ -114,7 +114,7 @@ PROGRAM clusters
      PRINT *,'decoupage des datas...'
 #endif
     t1 = MPI_WTIME()
-    CALL partition_data(data,epsilon,nbproc,coordmin,coord_max,partitionning,&
+    CALL partition_data(data,epsilon,nbproc,coord_min,coord_max,partitionning,&
          ldat,ddat,bounds)
     t2 = MPI_WTIME()
     PRINT *,'temps decoupage des datas...', t2-t1
