@@ -3,7 +3,7 @@ MODULE module_sortie
 CONTAINS
 
 
-  SUBROUTINE write_domains(data, nbproc, domaines)
+  SUBROUTINE write_domains(data, nbproc, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -11,7 +11,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domaines  
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domains  
     INTEGER :: nbproc
     
     !#### Variables  ####
@@ -21,7 +21,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################    
     DO i=1,nbproc-data%interface
-       WRITE(2,*) domaines(i,:,1),'|', domaines(i,:,2)
+       WRITE(2,*) domains(i,:,1),'|', domains(i,:,2)
     ENDDO
     CALL flush(2)
     CLOSE(2)
