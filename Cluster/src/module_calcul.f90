@@ -5,14 +5,14 @@ MODULE module_calcul
 CONTAINS
 
 
-  SUBROUTINE get_sigma(dataw, sigma)
+  SUBROUTINE get_sigma(partitioned_data, sigma)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    TYPE(type_data) :: dataw
+    TYPE(type_data) :: partitioned_data
 
     !====  OUT ====
     DOUBLE PRECISION :: sigma
@@ -29,31 +29,31 @@ CONTAINS
     !###########################################
     sigma=0.0
     sigma1=0.0
-    DO i1=1,dataw%nb
-       DO j1=i1+1,dataw%nb
+    DO i1=1,partitioned_data%nb
+       DO j1=i1+1,partitioned_data%nb
           norme=0.0
-          DO k1=1,dataw%dim
+          DO k1=1,partitioned_data%dim
              norme=norme+&
-                  (dataw%point(i1)%coord(k1)-dataw%point(j1)%coord(k1))**2
+                  (partitioned_data%point(i1)%coord(k1)-partitioned_data%point(j1)%coord(k1))**2
           ENDDO
           sigma=max(sigma,sqrt(norme))
        ENDDO
     ENDDO
-    sigma=sigma/(2*exp(log(float(dataw%nb))*(1.0/float(dataw%dim))))
+    sigma=sigma/(2*exp(log(float(partitioned_data%nb))*(1.0/float(partitioned_data%dim))))
     ! Safety
     IF (sigma==0.0) sigma=1.0
     RETURN
   END SUBROUTINE get_sigma
 
 
-  SUBROUTINE get_sigma_interface(numproc, dataw, sigma, bounds, decoupe, epsilon)
+  SUBROUTINE get_sigma_interface(numproc, partitioned_data, sigma, bounds, decoupe, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    TYPE(type_data) :: dataw
+    TYPE(type_data) :: partitioned_data
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
     DOUBLE PRECISION :: epsilon
     INTEGER, DIMENSION(:), POINTER :: decoupe
@@ -79,22 +79,22 @@ CONTAINS
     !###########################################
     !nb de decoupes
     nb=1
-    DO i=1,dataw%dim
+    DO i=1,partitioned_data%dim
        nb=nb*decoupe(i)
     ENDDO
     ! Creation of partitionning
-    ALLOCATE(tableau(nb,0:dataw%dim))
-    ALLOCATE(decoupe0(dataw%dim))
+    ALLOCATE(tableau(nb,0:partitioned_data%dim))
+    ALLOCATE(decoupe0(partitioned_data%dim))
     decoupe0(:)=1
     DO i=1,nb
-       DO j=1,dataw%dim
+       DO j=1,partitioned_data%dim
           tableau(i,j)=decoupe0(j)
        ENDDO
        decoupe0(1)=decoupe0(1)+1
        k=1
        DO WHILE(decoupe0(k)>decoupe(k))
           decoupe0(k)=1
-          IF (k<dataw%dim) decoupe0(k+1)=decoupe0(k+1)+1
+          IF (k<partitioned_data%dim) decoupe0(k+1)=decoupe0(k+1)+1
        ENDDO
     ENDDO
     DEALLOCATE(decoupe0)
@@ -104,7 +104,7 @@ CONTAINS
     DO i=1,nb
        volext=1.0
        volint=1.0
-       DO j=1,dataw%dim
+       DO j=1,partitioned_data%dim
           k=tableau(i,j)
           long=bounds(j,k,2)-bounds(j,k,1)
           volext=volext*long
@@ -114,22 +114,22 @@ CONTAINS
     ENDDO
     DEALLOCATE(tableau)
     ! Computing of scale length
-    sigma0=exp(1.0/float(dataw%dim)*log(sigma0))
+    sigma0=exp(1.0/float(partitioned_data%dim)*log(sigma0))
     ! Sigma computing
-    sigma0=sigma0/(2.0*exp(log(float(dataw%nb))*(1.0/float(dataw%dim))))
+    sigma0=sigma0/(2.0*exp(log(float(partitioned_data%nb))*(1.0/float(partitioned_data%dim))))
 !!======================TODO : fin de #if aff ??????
 #if aff
     PRINT *,numproc,'valeur de sigma calculee pour interface:',sigma0
 #endif
     ! Sigma computing, global formula
-    CALL get_sigma(dataw,sigma)
+    CALL get_sigma(partitioned_data,sigma)
 #if aff
     PRINT *,numproc,'valeur sigma interface',sigma
 #endif
     RETURN
   END SUBROUTINE get_sigma_interface
 
-  SUBROUTINE apply_spectral_clustering(numproc, nblimit, nbideal, dataw, sigma)
+  SUBROUTINE apply_spectral_clustering(numproc, nblimit, nbideal, partitioned_data, sigma)
     IMPLICIT NONE
     INCLUDE 'mpif.h'
     !###########################################
@@ -143,7 +143,7 @@ CONTAINS
     INTEGER :: numproc
 
     !=== IN/OUT ===
-    TYPE(type_data) :: dataw
+    TYPE(type_data) :: partitioned_data
 
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
@@ -186,7 +186,7 @@ CONTAINS
     !###########################################
     ! Matrix creation
     PRINT *,numproc,'valeur du sigma',sigma
-    n=dataw%nb
+    n=partitioned_data%nb
     ! Forall i, A(i,i) = 0
     ALLOCATE(A(n,n))
     A(:,:)=0.0
@@ -194,8 +194,8 @@ CONTAINS
     DO i=1,n-1
        DO j=i+1,n
           norme=0.0
-          DO k=1,dataw%dim
-             norme=norme+(dataw%point(i)%coord(k)-dataw%point(j)%coord(k))**2
+          DO k=1,partitioned_data%dim
+             norme=norme+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
           ENDDO
           value=exp(-norme/sigma)
           ! Upper triangular part
@@ -315,7 +315,7 @@ PRINT *, 'ratio de frobenius'
 #endif
        ! Ratio of frobenius norm
        ratio=ratiomax(nblimit)
-       dataw%nbclusters=nblimit
+       partitioned_data%nbclusters=nblimit
        ratio1=0.0
        ratio2=1e+10
        DO i=2,nblimit
@@ -325,7 +325,7 @@ PRINT *, 'ratio de frobenius'
              seuilrij=1e-4
           ENDIF
           IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
-             dataw%nbclusters=i
+             partitioned_data%nbclusters=i
              ratio1=ratiorii(i)
              ratio2=ratiorij(i)
           ENDIF
@@ -337,14 +337,14 @@ PRINT *, 'ratio de frobenius'
        nbinfo(:)=0
        ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
-       dataw%nbclusters=nbideal
+       partitioned_data%nbclusters=nbideal
     ELSE
        ! Case of a domain with less points than nbideal or only one point
        ALLOCATE(nbinfo(n))
        nbinfo(:)=0
        ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
-       dataw%nbclusters=n
+       partitioned_data%nbclusters=n
        ALLOCATE(ratiomax(n))
        ratiomax(:)=0
        ALLOCATE(ratiomoy(n))
@@ -357,25 +357,25 @@ PRINT *, 'ratio de frobenius'
        ratiorij(:)=0
     ENDIF
     ! Case of nbcluster==1
-    IF (dataw%nbclusters==2) THEN
+    IF (partitioned_data%nbclusters==2) THEN
        PRINT *, 'difference ratio',ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 
-          dataw%nbclusters=1
+          partitioned_data%nbclusters=1
        ELSE 
-          dataw%nbclusters=2
+          partitioned_data%nbclusters=2
        ENDIF
     ENDIF
 #if aff
-    PRINT *,numproc,'cluster final obtenu : ',dataw%nbclusters
+    PRINT *,numproc,'cluster final obtenu : ',partitioned_data%nbclusters
 #endif
 
     ! Final clustering computing
-    IF (dataw%nbclusters>1) THEN
-       CALL spectral_embedding(dataw%nbclusters,n,Z,A,ratio,cluster,&
+    IF (partitioned_data%nbclusters>1) THEN
+       CALL spectral_embedding(partitioned_data%nbclusters,n,Z,A,ratio,cluster,&
             cluster_center,cluster_population,cluster_energy,&
-            nbinfo(dataw%nbclusters),numproc,ratiomin(1),ratiorij(1),ratiorii(1))
-       DO i=1,dataw%nb
-          dataw%point(i)%cluster=cluster(i)
+            nbinfo(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),ratiorii(1))
+       DO i=1,partitioned_data%nb
+          partitioned_data%point(i)%cluster=cluster(i)
        ENDDO
        DEALLOCATE(cluster)
        DEALLOCATE(cluster_population)
@@ -394,8 +394,8 @@ PRINT *, 'ratio de frobenius'
 #if aff
        PRINT *, numproc, 'ok'
 #endif
-       DO i=1,dataw%nb
-          dataw%point(i)%cluster=1
+       DO i=1,partitioned_data%nb
+          partitioned_data%point(i)%cluster=1
        ENDDO
 #if aff
        PRINT *,numproc,'cluster'

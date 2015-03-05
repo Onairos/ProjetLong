@@ -87,14 +87,14 @@ CONTAINS
   END SUBROUTINE write_partitionning
 
 
-  SUBROUTINE write_partial_clusters(numproc, dataw)
+  SUBROUTINE write_partial_clusters(numproc, partitioned_data)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====  
-    TYPE(type_data) :: dataw
+    TYPE(type_data) :: partitioned_data
     INTEGER :: numproc
     
     !#### Variables  ####
@@ -111,12 +111,12 @@ CONTAINS
     files='cluster.partiel.'//trim(num)
     PRINT *,numproc,'ecriture des clusters : ',files
     OPEN(FILE=files,UNIT=10)
-    WRITE(10,*) dataw%nb,dataw%dim
-    DO i=1,dataw%nb
-       IF (dataw%coord==1) THEN
-          WRITE(10,*) dataw%point(i)%coord(:),dataw%point(i)%cluster
+    WRITE(10,*) partitioned_data%nb,partitioned_data%dim
+    DO i=1,partitioned_data%nb
+       IF (partitioned_data%coord==1) THEN
+          WRITE(10,*) partitioned_data%point(i)%coord(:),partitioned_data%point(i)%cluster
        ELSE
-          WRITE(10,*) i,dataw%point(i)%cluster
+          WRITE(10,*) i,partitioned_data%point(i)%cluster
        ENDIF
     ENDDO
     CALL flush(10)
