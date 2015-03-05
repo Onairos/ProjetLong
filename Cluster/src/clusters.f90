@@ -20,7 +20,7 @@ PROGRAM clusters
   CHARACTER (LEN=80) :: procname ! MPI variable
   CHARACTER (LEN=30) :: entree
   CHARACTER (LEN=30) :: mesh
-  DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
+  DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
   DOUBLE PRECISION :: endtime
@@ -64,7 +64,7 @@ PROGRAM clusters
   CALL MPI_COMM_RANK(MPI_COMM_WORLD,numproc,ierr)
   CALL MPI_COMM_SIZE(MPI_COMM_WORLD,nbproc,ierr)
   CALL MPI_GET_PROCESSOR_NAME(procname,len,ierr)
-  PRINT*, 'rank', numproc, ' procname',procname
+  PRINT *, 'rank', numproc, ' procname',procname
 
   IF(numproc==0) THEN
     starttime = MPI_WTIME()
@@ -115,7 +115,7 @@ PROGRAM clusters
 #endif
     t1 = MPI_WTIME()
     CALL partition_data(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
-         ldat,ddat,bornes)
+         ldat,ddat,bounds)
     t2 = MPI_WTIME()
     PRINT *,'temps decoupage des datas...', t2-t1
   ENDIF
@@ -131,7 +131,7 @@ PROGRAM clusters
      ! Sigma computing if auto global mode
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF ((sigma==0.0).AND.(numproc==0)) THEN
-        CALL get_sigma_interface(numproc,data,sigma,bornes,decoupe,epsilon)
+        CALL get_sigma_interface(numproc,data,sigma,bounds,decoupe,epsilon)
      ENDIF
 
      ! Sigma sending
@@ -200,7 +200,7 @@ PROGRAM clusters
         PRINT *,numproc,'calcule le sigma global :',sigma
 #endif
         IF (data%interface==1) THEN 
-           CALL get_sigma_interface(numproc,dataw,sigma,bornes,decoupe,epsilon) 
+           CALL get_sigma_interface(numproc,dataw,sigma,bounds,decoupe,epsilon) 
            PRINT *,numproc,'calcule le sigma interface :',sigma
 #if aff
            PRINT *,numproc,'calcule le sigma interface :',sigma

@@ -5,7 +5,7 @@ CONTAINS
 
 
   SUBROUTINE partition_data(data, epsilon, nbproc, coordmin, coordmax, decoupe,&
-       ldat, ddat, bornes)
+       ldat, ddat, bounds)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -22,7 +22,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
 
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
     INTEGER, DIMENSION(:,:), POINTER :: ddat
     INTEGER, DIMENSION(:), POINTER :: ldat
 
@@ -33,10 +33,10 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     ! Bounds definition
-    CALL define_bounds(data,coordmin,coordmax,bornes,decoupe,epsilon,nbproc)
+    CALL define_bounds(data,coordmin,coordmax,bounds,decoupe,epsilon,nbproc)
 
     ! Subdomains definition
-    CALL define_domains(nbproc,data,domaines,bornes,decoupe)
+    CALL define_domains(nbproc,data,domaines,bounds,decoupe)
 
     ! Writing of partionned subdomains
     CALL write_domains(data,nbproc,domaines)
@@ -58,7 +58,7 @@ CONTAINS
   END SUBROUTINE partition_data
 
 
-  SUBROUTINE define_bounds(data, coordmin, coordmax, bornes, decoupe, epsilon, nbproc)
+  SUBROUTINE define_bounds(data, coordmin, coordmax, bounds, decoupe, epsilon, nbproc)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -75,7 +75,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
 
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
 
     !#### Variables  ####
     CHARACTER (LEN=30) :: num,files
@@ -114,29 +114,29 @@ CONTAINS
 
  IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        ! Processing : coordinates, coordinates picture or thresholded picture
-       ALLOCATE(bornes(data%dim,max(nbproc-data%interface,1),2))
-       bornes(:,:,:)=0.0
+       ALLOCATE(bounds(data%dim,max(nbproc-data%interface,1),2))
+       bounds(:,:,:)=0.0
        DO i=1,data%dim
           coordmin(i)=coordmin(i)-epsilon*1.1
           coordmax(i)=coordmax(i)+epsilon*1.1
           DO j=1,decoupe(i)
-             bornes(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/decoupe(i)
-             bornes(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/decoupe(i)
+             bounds(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/decoupe(i)
+             bounds(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/decoupe(i)
           ENDDO
           IF (data%recouvrement==1) THEN
             ! Partitionning with interface mode
              DO j=1,decoupe(i)
-                bornes(i,j,1)=bornes(i,j,1)-epsilon
-                bornes(i,j,2)=bornes(i,j,2)+epsilon
+                bounds(i,j,1)=bounds(i,j,1)-epsilon
+                bounds(i,j,2)=bounds(i,j,2)+epsilon
              ENDDO
           ENDIF
-          bornes(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
-          bornes(i,decoupe(i),2)=coordmax(i)+0.01*abs(coordmax(i))
+          bounds(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
+          bounds(i,decoupe(i),2)=coordmax(i)+0.01*abs(coordmax(i))
        ENDDO
     ELSEIF (data%image==1) THEN
        ! Processing for partionning pixels of picture
-       ALLOCATE(bornes(data%imgdim,max(nbproc-1,1),2))
-       bornes(:,:,:)=0.0
+       ALLOCATE(bounds(data%imgdim,max(nbproc-1,1),2))
+       bounds(:,:,:)=0.0
        IF ((data%imgdim/=2).AND.(data%imgdim/=3)) THEN
 #if aff
           PRINT *
@@ -148,25 +148,25 @@ CONTAINS
           coordmin(i)=1.0-epsilon*1.1
           coordmax(i)=data%imgmap(i)+epsilon*1.1
           DO j=1,decoupe(i)
-             bornes(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/decoupe(i)
-             bornes(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/decoupe(i)
+             bounds(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/decoupe(i)
+             bounds(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/decoupe(i)
           ENDDO
           IF (data%recouvrement==1) THEN
             ! Partitionning with interface mode
              DO j=1,decoupe(i)
-                bornes(i,j,1)=bornes(i,j,1)-epsilon
-                bornes(i,j,2)=bornes(i,j,2)+epsilon
+                bounds(i,j,1)=bounds(i,j,1)-epsilon
+                bounds(i,j,2)=bounds(i,j,2)+epsilon
              ENDDO
           ENDIF
-          bornes(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
-          bornes(i,decoupe(i),2)=coordmax(i)+0.01*abs(coordmax(i))
+          bounds(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
+          bounds(i,decoupe(i),2)=coordmax(i)+0.01*abs(coordmax(i))
        ENDDO
     ENDIF
     RETURN
   END SUBROUTINE define_bounds
 
 
-  SUBROUTINE define_domains(nbproc, data, domaines, bornes, decoupe)
+  SUBROUTINE define_domains(nbproc, data, domaines, bounds, decoupe)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -174,7 +174,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
     INTEGER, DIMENSION(:), POINTER :: decoupe
     INTEGER :: nbproc
 
@@ -201,7 +201,7 @@ CONTAINS
           ! >1 proc
           DO n=1,nbproc-data%interface
              DO k=1,data%dim
-                domaines(n,k,:)=bornes(k,list(k),:)
+                domaines(n,k,:)=bounds(k,list(k),:)
              ENDDO
              ok=.TRUE.
              DO k=data%dim,1,-1
@@ -218,7 +218,7 @@ CONTAINS
        ELSE
           ! 1 proc
           DO k=1,data%dim
-             domaines(1,k,:)=bornes(k,1,:)
+             domaines(1,k,:)=bounds(k,1,:)
           ENDDO
        ENDIF
        DEALLOCATE(list)
@@ -232,7 +232,7 @@ CONTAINS
           ! >1 proc
           DO n=1,nbproc-data%interface
              DO k=1,data%imgdim
-                domaines(n,k,:)=bornes(k,list(k),:)
+                domaines(n,k,:)=bounds(k,list(k),:)
              ENDDO
              ok=.TRUE.
              DO k=data%imgdim,1,-1
@@ -249,7 +249,7 @@ CONTAINS
        ELSE
           ! 1 proc
           DO k=1,data%imgdim
-             domaines(1,k,:)=bornes(k,1,:)
+             domaines(1,k,:)=bounds(k,1,:)
           ENDDO
        ENDIF
        DEALLOCATE(list)

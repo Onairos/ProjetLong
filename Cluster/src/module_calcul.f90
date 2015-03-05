@@ -46,7 +46,7 @@ CONTAINS
   END SUBROUTINE get_sigma
 
 
-  SUBROUTINE get_sigma_interface(numproc, dataw, sigma, bornes, decoupe, epsilon)
+  SUBROUTINE get_sigma_interface(numproc, dataw, sigma, bounds, decoupe, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -54,7 +54,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: dataw
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
     DOUBLE PRECISION :: epsilon
     INTEGER, DIMENSION(:), POINTER :: decoupe
     INTEGER :: numproc
@@ -106,7 +106,7 @@ CONTAINS
        volint=1.0
        DO j=1,dataw%dim
           k=tableau(i,j)
-          long=bornes(j,k,2)-bornes(j,k,1)
+          long=bounds(j,k,2)-bounds(j,k,1)
           volext=volext*long
           volint=volint*max(0.0D1,long-2.0*epsilon)
        ENDDO
