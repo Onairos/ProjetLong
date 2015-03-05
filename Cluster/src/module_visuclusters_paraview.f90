@@ -613,7 +613,7 @@ CONTAINS
 
 
 
-  SUBROUTINE ecritpoint_paraview(unitgeo, unitind, nb, dim, coord, ind, k)
+  SUBROUTINE ecritpoint_paraview(unitgeo, unitind, nb, dimension, coord, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -627,7 +627,7 @@ CONTAINS
     INTEGER :: k
     INTEGER :: nb
     INTEGER :: i
-    INTEGER :: dim
+    INTEGER :: dimension
     
     !###########################################
     ! INSTRUCTIONS
@@ -648,7 +648,7 @@ CONTAINS
        WRITE(unitgeo,*) coord(i,2)
     ENDDO
     DO i=1,nb
-       IF (dim==2) THEN
+       IF (dimension==2) THEN
           WRITE(unitgeo,*) 0.
        ELSE
           WRITE(unitgeo,*) coord(i,3)

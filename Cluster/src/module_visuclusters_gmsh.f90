@@ -351,7 +351,7 @@ CONTAINS
 
 
 
-  SUBROUTINE ecritpoint_gmsh(unit, dim, coord, ind, k)
+  SUBROUTINE ecritpoint_gmsh(unit, dimension, coord, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -359,7 +359,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
-    INTEGER :: dim
+    INTEGER :: dimension
     INTEGER :: ind
     INTEGER :: k
     INTEGER :: unit
@@ -367,10 +367,10 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    IF (dim==2) THEN
+    IF (dimension==2) THEN
        !2D
        WRITE(unit,*) 'SP(',coord(k,1),',',coord(k,2),',',0.,'){',ind,'};' 
-    ELSEIF (dim==3) THEN
+    ELSEIF (dimension==3) THEN
        !3D
        WRITE(unit,*) 'SP(',coord(k,1),',',coord(k,2),',',coord(k,3),'){',ind,'};'
     ENDIF
@@ -404,7 +404,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
-         .AND.(params%imgdim==2)) THEN
+         .AND.(params%imgdimension==2)) THEN
        ALLOCATE(data(params%nbp))
        OPEN(FILE=params%mesh,UNIT=50)
        READ(50,*)
@@ -417,7 +417,7 @@ CONTAINS
     ! Coordinates
     ix=params%refimg(k,1)
     iy=params%refimg(k,2)
-    IF (params%imgdim==2) THEN
+    IF (params%imgdimension==2) THEN
        ! 2D points
        IF (params%geom==1) THEN
           kx=iy*params%pas(2)
@@ -427,12 +427,12 @@ CONTAINS
           ky=-float(ix)
        ENDIF
        IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
-            .AND.(params%imgdim==2)) THEN
+            .AND.(params%imgdimension==2)) THEN
           kz=data(k)
        ELSE
           kz=0.
        ENDIF
-    ELSEIF (params%imgdim==3) THEN
+    ELSEIF (params%imgdimension==3) THEN
        ! 3D points
        IF (params%geom==1) THEN
           kx=iy*params%pas(2)
