@@ -8,7 +8,7 @@ PROGRAM visuclusters
   !###########################################
   !#### Variables  ####
   TYPE(type_params) :: params
-  CHARACTER (LEN=30) :: formato
+  CHARACTER (LEN=30) :: format_output
   REAL :: elapsed(2) ! For receiving user and system time
   REAL :: temps
 
@@ -25,40 +25,40 @@ PROGRAM visuclusters
 
   ! Choice of output format
   IF (iargc()>0) THEN
-     CALL getarg(1,formato)
+     CALL getarg(1,format_output)
      PRINT *,' > format de sortie ? [gmsh,paraview]'
-     PRINT *,formato
+     PRINT *,format_output
      GOTO 11
   ENDIF
 
 10  PRINT *
   PRINT *,' > format de sortie ? [gmsh,paraview]'
-  READ *,formato
-  formato=trim(adjustl(formato))
+  READ *,format_output
+  format_output=trim(adjustl(format_output))
 
-11 IF ((formato/='gmsh').AND.(formato/='paraview')) GOTO 10
+11 IF ((format_output/='gmsh').AND.(format_output/='paraview')) GOTO 10
 
   ! Builds a sub-directory visu/ to store paraview files
 
-  IF (formato=='paraview') CALL system('mkdir visu')
+  IF (format_output=='paraview') CALL system('mkdir visu')
 
   ! Geometry of partitionning
-  CALL write_partionning(formato,params)
+  CALL write_partionning(format_output,params)
 
   ! Output file
-  CALL affectation(formato,params)
+  CALL affectation(format_output,params)
 
   ! Outout file of clusters before regrouping
-  IF (params%nbproc>1) CALL write_partial_clusters(formato,params)
+  IF (params%nbproc>1) CALL write_partial_clusters(format_output,params)
 
   ! Outout file of clusters after regrouping
-  CALL write_final_clusters(formato,params)
+  CALL write_final_clusters(format_output,params)
 
   ! Commands list
-  CALL list_commands(formato)
+  CALL list_commands(format_output)
 
   ! End file
-  SELECT CASE(formato)
+  SELECT CASE(format_output)
   CASE('gmsh')
      OPEN(FILE='visuclusters.gmsh',UNIT=100)
   CASE('paraview')

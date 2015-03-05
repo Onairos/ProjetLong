@@ -102,7 +102,7 @@ CONTAINS
   END SUBROUTINE read_params
 
 
-  SUBROUTINE write_partionning(formato, params)
+  SUBROUTINE write_partionning(format_output, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -110,14 +110,14 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    CHARACTER (LEN=30) :: formato
+    CHARACTER (LEN=30) :: format_output
     
     !###########################################      
     ! INSTRUCTIONS
     !###########################################    
     PRINT *
     PRINT *,'ecriture de la geometrie du decoupage...'
-    SELECT CASE(formato)
+    SELECT CASE(format_output)
     CASE('gmsh')
        CALL write_partionning_gmsh(params)
     CASE('paraview')
@@ -129,7 +129,7 @@ CONTAINS
 
 
 
-  SUBROUTINE affectation(formato, params)
+  SUBROUTINE affectation(format_output, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -137,14 +137,14 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    CHARACTER (LEN=30) :: formato
+    CHARACTER (LEN=30) :: format_output
     
     !###########################################      
     ! INSTRUCTIONS
     !###########################################    
     PRINT *
     PRINT *,'ecriture des affectations du decoupage...'
-    SELECT CASE(formato)
+    SELECT CASE(format_output)
     CASE('gmsh')
        CALL affectation_gmsh(params)
     CASE('paraview')
@@ -156,7 +156,7 @@ CONTAINS
 
 
 
-  SUBROUTINE write_partial_clusters(formato, params)
+  SUBROUTINE write_partial_clusters(format_output, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -164,14 +164,14 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    CHARACTER (LEN=30) :: formato
+    CHARACTER (LEN=30) :: format_output
 
     !###########################################      
     ! INSTRUCTIONS
     !###########################################    
     PRINT *
     PRINT *,'lecture des clusters avant regroupement...'
-    SELECT CASE(formato)
+    SELECT CASE(format_output)
     CASE('gmsh')
        CALL write_partial_clusters_gmsh(params)
     CASE('paraview')
@@ -183,7 +183,7 @@ CONTAINS
 
 
 
-  SUBROUTINE write_final_clusters(formato, params)
+  SUBROUTINE write_final_clusters(format_output, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -191,14 +191,14 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    CHARACTER (LEN=30) :: formato
+    CHARACTER (LEN=30) :: format_output
 
     !###########################################      
     ! INSTRUCTIONS
     !###########################################  
     PRINT *
     PRINT *,'lecture des clusters apres regroupement...'
-    SELECT CASE(formato)
+    SELECT CASE(format_output)
     CASE('gmsh')
        CALL write_final_clusters_gmsh(params)
     CASE('paraview')
@@ -210,14 +210,14 @@ CONTAINS
 
 
 
-  SUBROUTINE list_commands(formato)
+  SUBROUTINE list_commands(format_output)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    CHARACTER (LEN=30) :: formato
+    CHARACTER (LEN=30) :: format_output
     
     !###########################################      
     ! INSTRUCTIONS
@@ -226,7 +226,7 @@ CONTAINS
     PRINT *,'-------------------------------------'
     PRINT *,'liste de commandes de visualisation :'
     PRINT *
-    SELECT CASE(formato)
+    SELECT CASE(format_output)
     CASE('gmsh')
        CALL list_commands_gmsh
     CASE('paraview')
