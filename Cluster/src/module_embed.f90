@@ -5,7 +5,7 @@ CONTAINS
 
 
   SUBROUTINE spectral_embedding(nbcluster, n, Z, A, ratio,cluster, &
-       cluster_center, cluster_population, clusters_energies, nbinfo, numproc, &
+       clusters_centers, cluster_population, clusters_energies, nbinfo, numproc, &
        ratiomoy, ratiorij, ratiorii)
     IMPLICIT NONE
     !###########################################
@@ -20,7 +20,7 @@ CONTAINS
     INTEGER :: numproc
     
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: cluster_center ! centre des nbclusters clusters
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers ! centre des nbclusters clusters
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies ! somme des energies par cluster
     DOUBLE PRECISION :: ratio ! max des ration de frob sur matrice aff reordonnancee suivant
     DOUBLE PRECISION :: ratiomoy
@@ -54,7 +54,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################  
     ALLOCATE(cluster(n))
-    ALLOCATE(cluster_center(nbcluster,nbcluster))
+    ALLOCATE(clusters_centers(nbcluster,nbcluster))
     ALLOCATE(cluster_population(nbcluster))
     ALLOCATE(clusters_energies(nbcluster))
     ALLOCATE(Z1(n,nbcluster))
@@ -80,7 +80,7 @@ CONTAINS
     it_max=n*n
 
     CALL apply_kmeans( nbcluster, n, nbcluster, it_max, it_num,Z2,&
-         cluster, cluster_center, cluster_population, clusters_energies, &
+         cluster, clusters_centers, cluster_population, clusters_energies, &
          numproc)
 
     !*****************************
@@ -151,7 +151,7 @@ CONTAINS
 
 
   SUBROUTINE apply_kmeans(dimension, point_num, nb_clusters, it_max, it_num, point, &
-       cluster, cluster_center, cluster_population, clusters_energies, numproc)
+       cluster, clusters_centers, cluster_population, clusters_energies, numproc)
 
     !*****************************************************************************80
     !
@@ -199,7 +199,7 @@ CONTAINS
     INTEGER :: it_max ! the maximum number of iterations
 
     !=== IN/OUT ===
-    DOUBLE PRECISION :: cluster_center (dimension, nb_clusters) ! the cluster centers
+    DOUBLE PRECISION :: clusters_centers (dimension, nb_clusters) ! the cluster centers
 
     !====  OUT ====
     DOUBLE PRECISION :: clusters_energies (nb_clusters) ! the cluster energies
@@ -263,7 +263,7 @@ CONTAINS
     !
     !  Assign one point to each cluster center.
     !
-    cluster_center(:,1) = point(:,1)
+    clusters_centers(:,1) = point(:,1)
     cluster_id(:)=0
     cluster_id(1)=1
     p=2
@@ -286,7 +286,7 @@ PRINT *, 'recherche des centres'
                 val=0.0
                 norme=0.0
                 DO k=1,dimension
-                   val=max(val,abs(cluster_center(k,j)-point(k,p)))
+                   val=max(val,abs(clusters_centers(k,j)-point(k,p)))
                 ENDDO
                 valmax=min(val,valmax)
              ENDDO
@@ -304,7 +304,7 @@ PRINT *, 'recherche des centres'
           ENDIF
        ENDDO
        p=p-1
-       cluster_center(:,i)=point(:,p)
+       clusters_centers(:,i)=point(:,p)
        cluster_id(i)=p
     ENDDO
 #if aff
@@ -320,7 +320,7 @@ PRINT *, 'recherche des centres'
           stockenergy(i)=clusters_energies(i)
           stockpopulation(i)=cluster_population(i)
           DO j=1,dimension
-             stockcenter(j,i)=cluster_center(j,i)
+             stockcenter(j,i)=clusters_centers(j,i)
           ENDDO
        ENDDO
 
@@ -330,7 +330,7 @@ PRINT *, 'recherche des centres'
        DO i=1,point_num
           DO j=1,nb_clusters
              DO k=1,dimension
-                listnorm(i,j)=listnorm(i,j)+(point(k,i)-cluster_center(k,j))**2
+                listnorm(i,j)=listnorm(i,j)+(point(k,i)-clusters_centers(k,j))**2
              ENDDO
           ENDDO
        ENDDO
@@ -350,15 +350,15 @@ PRINT *, 'recherche des centres'
        ENDDO
 
        ! Update of centers
-       cluster_center(:,:)=0.0
+       clusters_centers(:,:)=0.0
        DO j=1,point_num
           i=cluster(j) 
           DO k=1,dimension
-             cluster_center(k,i)=cluster_center(k,i)+point(k,j)
+             clusters_centers(k,i)=clusters_centers(k,i)+point(k,j)
           ENDDO
        ENDDO
        DO i=1,nb_clusters
-          cluster_center(:,i)=cluster_center(:,i)/cluster_population(i)
+          clusters_centers(:,i)=clusters_centers(:,i)/cluster_population(i)
        ENDDO
 
 

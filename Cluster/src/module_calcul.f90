@@ -148,7 +148,7 @@ CONTAINS
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A2
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: cluster_center
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
     DOUBLE PRECISION, DIMENSION(:), POINTER :: D
@@ -291,21 +291,21 @@ CONTAINS
 
           ALLOCATE(cluster(n))
           cluster(:)=0
-          ALLOCATE(cluster_center(nbcluster,nbcluster))
-          cluster_center(:,:)=0.0
+          ALLOCATE(clusters_centers(nbcluster,nbcluster))
+          clusters_centers(:,:)=0.0
           ALLOCATE(cluster_population(nbcluster))
           cluster_population(:)=0
           ALLOCATE(clusters_energies(nbcluster))
           clusters_energies(:)=0.0
 
           CALL spectral_embedding(nbcluster,n,Z,A,&
-               ratiomax(nbcluster),cluster,cluster_center,cluster_population,&
+               ratiomax(nbcluster),cluster,clusters_centers,cluster_population,&
                clusters_energies,nbinfo(nbcluster),numproc,ratiomoy(nbcluster), &
                ratiorij(nbcluster),ratiorii(nbcluster))
 
 
           DEALLOCATE(cluster)
-          DEALLOCATE(cluster_center)
+          DEALLOCATE(clusters_centers)
           DEALLOCATE(clusters_energies)
           DEALLOCATE(cluster_population)
        ENDDO
@@ -372,7 +372,7 @@ PRINT *, 'ratio de frobenius'
     ! Final clustering computing
     IF (partitioned_data%nbclusters>1) THEN
        CALL spectral_embedding(partitioned_data%nbclusters,n,Z,A,ratio,cluster,&
-            cluster_center,cluster_population,clusters_energies,&
+            clusters_centers,cluster_population,clusters_energies,&
             nbinfo(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),ratiorii(1))
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%cluster=cluster(i)
@@ -388,7 +388,7 @@ PRINT *, 'ratio de frobenius'
        DEALLOCATE(A)
        DEALLOCATE(Z)
        IF(solver == 0) DEALLOCATE(A2)
-       DEALLOCATE(cluster_center)
+       DEALLOCATE(clusters_centers)
        DEALLOCATE(W)
     ELSE 
 #if aff
