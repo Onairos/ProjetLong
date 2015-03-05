@@ -6,11 +6,11 @@ CONTAINS
 
   !*****************************************
   !calcul des clusters
-  SUBROUTINE sp_calculclusters(numproc, nblimit, nbideal, dataw, sigma)
+  SUBROUTINE sp_calculclusters(numproc, nblimit, nbideal, partitioned_data, sigma)
 
     IMPLICIT INTEGER(i, j, q)
     INCLUDE 'mpif.h'
-    TYPE(type_data) :: dataw
+    TYPE(type_data) :: partitioned_data
     INTEGER :: numproc, nbproc
     DOUBLE PRECISION :: sigma
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: cluster_center
@@ -39,7 +39,7 @@ CONTAINS
 #if aff
     PRINT *,numproc,'valeur du sigma',sigma
 #endif
-    n=dataw%nb
+    n=partitioned_data%nb
 
 ! sparsification debut
     nnz = 0
@@ -55,8 +55,8 @@ CONTAINS
 
           norme=0.0
 
-          DO k=1,dataw%dim
-             norme=norme+(dataw%point(i)%coord(k)-dataw%point(j)%coord(k))**2
+          DO k=1,partitioned_data%dim
+             norme=norme+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
           ENDDO
 
           IF(sqrt(norme) <= treshold) THEN
@@ -80,8 +80,8 @@ CONTAINS
     DO i=1,n-1
        DO j=i+1,n
           norme=0.0
-          DO k=1,dataw%dim
-             norme=norme+(dataw%point(i)%coord(k)-dataw%point(j)%coord(k))**2
+          DO k=1,partitioned_data%dim
+             norme=norme+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
           ENDDO
           value=exp(-norme/sigma)
           ! on garde si value <= treshold
@@ -192,7 +192,7 @@ PRINT *, 'ratio de frobenius'
        !*******************************
        ! Ratio de norme de frobenius
        ratio=ratiomax(nblimit)
-       dataw%nbclusters=nblimit
+       partitioned_data%nbclusters=nblimit
        ratio1=0.0
        ratio2=1e+10
 
@@ -204,7 +204,7 @@ PRINT *, 'ratio de frobenius'
           ENDIF
 
           IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
-             dataw%nbclusters=i
+             partitioned_data%nbclusters=i
              ratio1=ratiorii(i)
              ratio2=ratiorij(i)
           ENDIF
@@ -216,14 +216,14 @@ PRINT *, 'ratio de frobenius'
        nbinfo(:) = 0
        ALLOCATE(ratiomin(1))
        ratiomin(:) = 0.0
-       dataw%nbclusters = nbideal
+       partitioned_data%nbclusters = nbideal
     ELSE
        !** cas d'un domaine avec moins de points que nbideal ou 1 seul point
        ALLOCATE(nbinfo(n))
        nbinfo(:)=0
        ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
-       dataw%nbclusters=n
+       partitioned_data%nbclusters=n
        ALLOCATE(ratiomax(n))
        ratiomax(:)=0
        ALLOCATE(ratiomoy(n))
@@ -236,28 +236,28 @@ PRINT *, 'ratio de frobenius'
        ratiorij(:)=0
     ENDIF
     ! cas avec nbcluster==1
-    IF (dataw%nbclusters==2) THEN
+    IF (partitioned_data%nbclusters==2) THEN
        PRINT *, 'difference ratio',ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 
-          dataw%nbclusters=1
+          partitioned_data%nbclusters=1
        ELSE 
-          dataw%nbclusters=2
+          partitioned_data%nbclusters=2
        ENDIF
     ENDIF
 #if aff
-    PRINT *,numproc,'cluster final obtenu : ',dataw%nbclusters
+    PRINT *,numproc,'cluster final obtenu : ',partitioned_data%nbclusters
 #endif
 
     !** calcul du clustering final
-    IF (dataw%nbclusters>1) THEN
+    IF (partitioned_data%nbclusters>1) THEN
 
-       CALL sp_spectral_embedding(dataw%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,cluster,&
+       CALL sp_spectral_embedding(partitioned_data%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,cluster,&
             cluster_center,cluster_population,cluster_energy,&
-            nbinfo(dataw%nbclusters),numproc,ratiomin(1),ratiorij(1),&
+            nbinfo(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),&
             ratiorii(1))
 
-       DO i=1,dataw%nb
-          dataw%point(i)%cluster=cluster(i)
+       DO i=1,partitioned_data%nb
+          partitioned_data%point(i)%cluster=cluster(i)
        ENDDO
 
        DEALLOCATE(cluster)
@@ -274,8 +274,8 @@ PRINT *, 'ratio de frobenius'
 #if aff
        PRINT *, numproc, 'ok'
 #endif
-       DO i=1,dataw%nb
-          dataw%point(i)%cluster=1
+       DO i=1,partitioned_data%nb
+          partitioned_data%point(i)%cluster=1
        ENDDO
 #if aff
        PRINT *,numproc,'cluster'
@@ -300,7 +300,6 @@ PRINT *, 'ratio de frobenius'
     ! spectral embedding
     !
     ! nbcluster = nbre de cluster
-    ! dataw : points
     ! Z : matrice des vecteurs propres
     ! M : nbre de vp trouvees
     ! ratio : max des ration de frob sur matrice aff reordonnancee suivant
@@ -312,7 +311,6 @@ PRINT *, 'ratio de frobenius'
     !
 
     IMPLICIT NONE
-    !TYPE(type_data) :: dataw
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z, cluster_center
     INTEGER ::nbcluster, n, nbinfo, numproc
     DOUBLE PRECISION ::ratio, test, ratiomin, ratiorii, ratiorij, ratiomoy

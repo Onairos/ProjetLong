@@ -4,7 +4,7 @@ CONTAINS
 
 
 
-  SUBROUTINE send_partitionning(nbproc, data, ldat, ddat, dataw)
+  SUBROUTINE send_partitionning(nbproc, data, ldat, ddat, partitioned_data)
     IMPLICIT NONE    
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -21,7 +21,7 @@ CONTAINS
     TYPE(type_data) :: data
 
     !====  OUT ====
-    TYPE(type_data) :: dataw
+    TYPE(type_data) :: partitioned_data
     
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
@@ -54,47 +54,47 @@ CONTAINS
           DEALLOCATE(coord)
        ENDIF
     ENDDO
-    ! Creation of TYPE dataw of interface
+    ! Creation of TYPE partitioned_data of interface
     m=ldat(0)
     n=data%dim
-    dataw%nb=m
-    dataw%dim=n
-    dataw%nbclusters=0
+    partitioned_data%nb=m
+    partitioned_data%dim=n
+    partitioned_data%nbclusters=0
     IF (m>0) THEN
-       ALLOCATE(dataw%point(m))
+       ALLOCATE(partitioned_data%point(m))
        DO i=1,m
-          ALLOCATE(dataw%point(i)%coord(n))
-          dataw%point(i)%coord(:)=data%point(ddat(0,i))%coord(:)
-          dataw%point(i)%cluster=0
+          ALLOCATE(partitioned_data%point(i)%coord(n))
+          partitioned_data%point(i)%coord(:)=data%point(ddat(0,i))%coord(:)
+          partitioned_data%point(i)%cluster=0
        ENDDO
     ENDIF
     ! Sending flags picture, threshold, geometric...
     n=data%coord
-    dataw%coord=n
+    partitioned_data%coord=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     n=data%image
-    dataw%image=n
+    partitioned_data%image=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     n=data%geom
-    dataw%geom=n
+    partitioned_data%geom=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     n=data%seuil
-    dataw%seuil=n
+    partitioned_data%seuil=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     n=data%recouvrement
-    dataw%recouvrement=n
+    partitioned_data%recouvrement=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     n=data%interface
-    dataw%interface=n
+    partitioned_data%interface=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     n=data%dim
-    dataw%dim=n
+    partitioned_data%dim=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     RETURN
   END SUBROUTINE send_partitionning
 
 
-  SUBROUTINE receive_partitionning(numproc, dataw)
+  SUBROUTINE receive_partitionning(numproc, partitioned_data)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -106,7 +106,7 @@ CONTAINS
     INTEGER :: numproc
 
     !====  OUT ====
-    TYPE(type_data) :: dataw
+    TYPE(type_data) :: partitioned_data
     
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
@@ -124,9 +124,9 @@ CONTAINS
     tag=numproc
     CALL MPI_RECV(m,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
     CALL MPI_RECV(n,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
-    dataw%nb=m
-    dataw%dim=n
-    dataw%nbclusters=0
+    partitioned_data%nb=m
+    partitioned_data%dim=n
+    partitioned_data%nbclusters=0
     IF (m>0) THEN
        ALLOCATE(coord(m,n))
        coord=0.0
@@ -134,36 +134,36 @@ CONTAINS
        tag=numproc*10
        CALL MPI_RECV(coord,m*n,MPI_DOUBLE_PRECISION,0,tag,&
             MPI_COMM_WORLD,status,ierr)
-       ! Creation of TYPE dataw of subdomain
-       ALLOCATE(dataw%point(m))
+       ! Creation of TYPE partitioned_data of subdomain
+       ALLOCATE(partitioned_data%point(m))
        DO i=1,m
-          ALLOCATE(dataw%point(i)%coord(n))
-          dataw%point(i)%coord=coord(i,:)
-          dataw%point(i)%cluster=0
+          ALLOCATE(partitioned_data%point(i)%coord(n))
+          partitioned_data%point(i)%coord=coord(i,:)
+          partitioned_data%point(i)%cluster=0
        ENDDO
        DEALLOCATE(coord)
     ENDIF
     ! Sending flags picture, threshold, geometric...
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    dataw%coord=n
+    partitioned_data%coord=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    dataw%image=n
+    partitioned_data%image=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    dataw%geom=n
+    partitioned_data%geom=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    dataw%seuil=n
+    partitioned_data%seuil=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    dataw%recouvrement=n
+    partitioned_data%recouvrement=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    dataw%interface=n
+    partitioned_data%interface=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    dataw%dim=n
+    partitioned_data%dim=n
     RETURN
   END SUBROUTINE receive_partitionning
 
 
 
-  SUBROUTINE receive_number_clusters(nbproc, nbclust, ldat, dataw, nclust)
+  SUBROUTINE receive_number_clusters(nbproc, nbclust, ldat, partitioned_data, nclust)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -172,7 +172,7 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ==== 
-    TYPE(type_data) ::dataw
+    TYPE(type_data) ::partitioned_data
     INTEGER, DIMENSION(:), POINTER :: ldat
     INTEGER :: nbproc
 
@@ -190,8 +190,8 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !########################################### 
-    IF (dataw%nb>0) THEN
-       nbclust=dataw%nbclusters
+    IF (partitioned_data%nb>0) THEN
+       nbclust=partitioned_data%nbclusters
     ELSE
        nbclust=0
     ENDIF
@@ -218,7 +218,7 @@ CONTAINS
   END SUBROUTINE receive_number_clusters
 
 
-  SUBROUTINE send_number_clusters(numproc, dataw)
+  SUBROUTINE send_number_clusters(numproc, partitioned_data)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -227,7 +227,7 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    TYPE(type_data) ::dataw
+    TYPE(type_data) ::partitioned_data
     INTEGER :: numproc
 
     !#### Variables  ####
@@ -239,25 +239,25 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################
-    IF (dataw%nb>0) THEN
+    IF (partitioned_data%nb>0) THEN
        ! Number of clusters
        tag=numproc*11
-       CALL MPI_SEND(dataw%nbclusters,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,ierr)
+       CALL MPI_SEND(partitioned_data%nbclusters,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,ierr)
        ! Number of points by cluster
-       ALLOCATE(list(dataw%nbclusters))
+       ALLOCATE(list(partitioned_data%nbclusters))
        list(:) = 0
-       DO i=1,dataw%nb
-          list(dataw%point(i)%cluster)=list(dataw%point(i)%cluster)+1
+       DO i=1,partitioned_data%nb
+          list(partitioned_data%point(i)%cluster)=list(partitioned_data%point(i)%cluster)+1
        ENDDO
        tag=tag+1
-       CALL MPI_SEND(list,dataw%nbclusters,MPI_INTEGER,0,tag,MPI_COMM_WORLD,ierr)
+       CALL MPI_SEND(list,partitioned_data%nbclusters,MPI_INTEGER,0,tag,MPI_COMM_WORLD,ierr)
     ENDIF
     RETURN
   END SUBROUTINE send_number_clusters
 
 
 
-  SUBROUTINE send_clusters(numproc, dataw)
+  SUBROUTINE send_clusters(numproc, partitioned_data)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -266,7 +266,7 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    TYPE(type_data) :: dataw
+    TYPE(type_data) :: partitioned_data
     INTEGER :: numproc
     
     !#### Variables  ####  
@@ -278,13 +278,13 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################    
-    IF (dataw%nb>0) THEN
-       ALLOCATE(lclust(dataw%nb))
-       DO i=1,dataw%nb
-          lclust(i)=dataw%point(i)%cluster
+    IF (partitioned_data%nb>0) THEN
+       ALLOCATE(lclust(partitioned_data%nb))
+       DO i=1,partitioned_data%nb
+          lclust(i)=partitioned_data%point(i)%cluster
        ENDDO
        tag=numproc*12
-       CALL MPI_SEND(lclust,dataw%nb,MPI_INTEGER,0,tag,MPI_COMM_WORLD,ierr)
+       CALL MPI_SEND(lclust,partitioned_data%nb,MPI_INTEGER,0,tag,MPI_COMM_WORLD,ierr)
        DEALLOCATE(lclust)
     ENDIF
     RETURN
@@ -292,7 +292,7 @@ CONTAINS
 
 
 
-  SUBROUTINE receive_clusters(nbproc, nbclust, ldat, ddat, dataw, clustermap, &
+  SUBROUTINE receive_clusters(nbproc, nbclust, ldat, ddat, partitioned_data, clustermap, &
        nclust, iclust)
     IMPLICIT NONE
     ! librairie MPI
@@ -303,7 +303,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_clusters), DIMENSION(:), POINTER :: nclust
-    TYPE(type_data) ::dataw
+    TYPE(type_data) ::partitioned_data
     INTEGER, DIMENSION(:,:), POINTER :: ddat
     INTEGER, DIMENSION(:), POINTER :: ldat 
     INTEGER :: nbproc
@@ -330,14 +330,14 @@ CONTAINS
     i0=0
     ALLOCATE(iclust(nbclust))
     iclust(:)=0
-    IF (dataw%nb>0) THEN
+    IF (partitioned_data%nb>0) THEN
        ! Storage of local clusters in the global array
-       DO i=1,dataw%nb
-          j=dataw%point(i)%cluster
+       DO i=1,partitioned_data%nb
+          j=partitioned_data%point(i)%cluster
           iclust(j)=iclust(j)+1
           clustermap(j,iclust(j))=ddat(0,i)
        ENDDO
-       i0=i0+dataw%nbclusters
+       i0=i0+partitioned_data%nbclusters
     ENDIF
     maxldat = maxval(ldat)
     ALLOCATE(lclust(maxldat))

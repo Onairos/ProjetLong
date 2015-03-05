@@ -16,11 +16,11 @@ PROGRAM clusters
   !#### Variables  ####
   TYPE(type_clusters), DIMENSION(:), POINTER :: nclust
   TYPE(type_data) :: data
-  TYPE(type_data) :: dataw
+  TYPE(type_data) :: partitioned_data
   CHARACTER (LEN=80) :: procname ! MPI variable
   CHARACTER (LEN=30) :: entree
   CHARACTER (LEN=30) :: mesh
-  DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bornes
+  DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
   DOUBLE PRECISION :: endtime
@@ -64,7 +64,7 @@ PROGRAM clusters
   CALL MPI_COMM_RANK(MPI_COMM_WORLD,numproc,ierr)
   CALL MPI_COMM_SIZE(MPI_COMM_WORLD,nbproc,ierr)
   CALL MPI_GET_PROCESSOR_NAME(procname,len,ierr)
-  PRINT*, 'rank', numproc, ' procname',procname
+  PRINT *, 'rank', numproc, ' procname',procname
 
   IF(numproc==0) THEN
     starttime = MPI_WTIME()
@@ -115,7 +115,7 @@ PROGRAM clusters
 #endif
     t1 = MPI_WTIME()
     CALL partition_data(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
-         ldat,ddat,bornes)
+         ldat,ddat,bounds)
     t2 = MPI_WTIME()
     PRINT *,'temps decoupage des datas...', t2-t1
   ENDIF
@@ -131,7 +131,7 @@ PROGRAM clusters
      ! Sigma computing if auto global mode
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF ((sigma==0.0).AND.(numproc==0)) THEN
-        CALL get_sigma_interface(numproc,data,sigma,bornes,decoupe,epsilon)
+        CALL get_sigma_interface(numproc,data,sigma,bounds,decoupe,epsilon)
      ENDIF
 
      ! Sigma sending
@@ -163,26 +163,26 @@ PROGRAM clusters
         PRINT *
         PRINT *,'transfert des datas decoupees...'
 #endif
-        CALL send_partitionning(nbproc,data,ldat,ddat,dataw)
+        CALL send_partitionning(nbproc,data,ldat,ddat,partitioned_data)
 #if aff
         PRINT *
         PRINT *,'calcul des clusters...'
 #endif
      ELSE
         ! Data receiving
-        CALL receive_partitionning(numproc,dataw)
+        CALL receive_partitionning(numproc,partitioned_data)
      ENDIF
 
   ELSE
      ! Case of 1 proc alone
-     dataw%nb=data%nb
-     dataw%dim=data%dim
-     dataw%nbclusters=0
-     ALLOCATE(dataw%point(data%nb))
+     partitioned_data%nb=data%nb
+     partitioned_data%dim=data%dim
+     partitioned_data%nbclusters=0
+     ALLOCATE(partitioned_data%point(data%nb))
      DO i=1,data%nb
-        ALLOCATE(dataw%point(i)%coord(data%dim))
-        dataw%point(i)%coord=data%point(i)%coord
-        dataw%point(i)%cluster=0
+        ALLOCATE(partitioned_data%point(i)%coord(data%dim))
+        partitioned_data%point(i)%coord=data%point(i)%coord
+        partitioned_data%point(i)%cluster=0
      ENDDO
      nbideal=listenbideal(1)
   ENDIF
@@ -200,7 +200,7 @@ PROGRAM clusters
         PRINT *,numproc,'calcule le sigma global :',sigma
 #endif
         IF (data%interface==1) THEN 
-           CALL get_sigma_interface(numproc,dataw,sigma,bornes,decoupe,epsilon) 
+           CALL get_sigma_interface(numproc,partitioned_data,sigma,bounds,decoupe,epsilon) 
            PRINT *,numproc,'calcule le sigma interface :',sigma
 #if aff
            PRINT *,numproc,'calcule le sigma interface :',sigma
@@ -217,11 +217,11 @@ PROGRAM clusters
   ! Clusters computing
   ! Parallel part
   t1 = MPI_WTIME()
-  IF (dataw%nb>0) THEN
+  IF (partitioned_data%nb>0) THEN
 #if aff
      PRINT *,numproc,'calcul des clusters...'
 #endif
-     CALL apply_spectral_clustering(numproc,nblimit,nbideal,dataw,sigma)
+     CALL apply_spectral_clustering(numproc,nblimit,nbideal,partitioned_data,sigma)
   ENDIF
   t2 = MPI_WTIME()
   t_parall = t2 - t1
@@ -235,7 +235,7 @@ PROGRAM clusters
   ENDIF
 
   ! Saves the partial clusters
-  CALL write_partial_clusters(numproc,dataw)
+  CALL write_partial_clusters(numproc,partitioned_data)
 
   ! Exchanges part
   IF (nbproc>1) THEN
@@ -246,19 +246,19 @@ PROGRAM clusters
         PRINT *,'regroupement des clusters...'
 #endif
         ! Receiving of the number of clusters with duplications
-        CALL receive_number_clusters(nbproc,nbclust,ldat,dataw,nclust)
+        CALL receive_number_clusters(nbproc,nbclust,ldat,partitioned_data,nclust)
 #if aff
         PRINT *,'  > nb de clusters avec doublons obtenus :',nbclust
 #endif
         ! Receiving of clusters info
         ALLOCATE(clustermap(nbclust,data%nb))
-        CALL receive_clusters(nbproc,nbclust,ldat,ddat,dataw,&
+        CALL receive_clusters(nbproc,nbclust,ldat,ddat,partitioned_data,&
              clustermap,nclust,iclust)
      ELSE
         ! Sends the number of clusters
-        CALL send_number_clusters(numproc,dataw)
+        CALL send_number_clusters(numproc,partitioned_data)
         ! Sends the clusters
-        CALL send_clusters(numproc,dataw)
+        CALL send_clusters(numproc,partitioned_data)
      ENDIF
 
      ! End of post-process
@@ -269,20 +269,20 @@ PROGRAM clusters
 
   ELSE
      ! Case of 1 proc alone
-     nbclust=dataw%nbclusters
+     nbclust=partitioned_data%nbclusters
      ALLOCATE(iclust(nbclust))
      iclust(:)=0
      nmax=0
-     DO i=1,dataw%nb
-        j=dataw%point(i)%cluster
+     DO i=1,partitioned_data%nb
+        j=partitioned_data%point(i)%cluster
         iclust(j)=iclust(j)+1
         nmax=max(nmax,iclust(j))
      ENDDO
      ALLOCATE(clustermap(nbclust,nmax))
      clustermap(:,:)=0
      iclust(:)=0
-     DO i=1,dataw%nb
-        j=dataw%point(i)%cluster
+     DO i=1,partitioned_data%nb
+        j=partitioned_data%point(i)%cluster
         iclust(j)=iclust(j)+1
         clustermap(j,iclust(j))=i
      ENDDO
