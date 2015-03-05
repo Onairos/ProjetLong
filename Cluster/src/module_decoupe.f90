@@ -4,7 +4,7 @@ MODULE module_decoupe
 CONTAINS
 
 
-  SUBROUTINE partition_data(data, epsilon, nbproc, coordmin, coordmax, decoupe,&
+  SUBROUTINE partition_data(data, epsilon, nbproc, coordmin, coordmax, partitionning,&
        ldat, ddat, bounds)
     IMPLICIT NONE
     !###########################################
@@ -14,7 +14,7 @@ CONTAINS
     !====  IN  ====
     TYPE(type_data) :: data
     DOUBLE PRECISION :: epsilon
-    INTEGER, DIMENSION(:), POINTER :: decoupe
+    INTEGER, DIMENSION(:), POINTER :: partitionning
     INTEGER :: nbproc
 
     !=== IN/OUT ===
@@ -33,10 +33,10 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     ! Bounds definition
-    CALL define_bounds(data,coordmin,coordmax,bounds,decoupe,epsilon,nbproc)
+    CALL define_bounds(data,coordmin,coordmax,bounds,partitionning,epsilon,nbproc)
 
     ! Subdomains definition
-    CALL define_domains(nbproc,data,domaines,bounds,decoupe)
+    CALL define_domains(nbproc,data,domaines,bounds,partitionning)
 
     ! Writing of partionned subdomains
     CALL write_domains(data,nbproc,domaines)
@@ -58,7 +58,7 @@ CONTAINS
   END SUBROUTINE partition_data
 
 
-  SUBROUTINE define_bounds(data, coordmin, coordmax, bounds, decoupe, epsilon, nbproc)
+  SUBROUTINE define_bounds(data, coordmin, coordmax, bounds, partitionning, epsilon, nbproc)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -67,7 +67,7 @@ CONTAINS
     !====  IN  ====
     TYPE(type_data) :: data
     DOUBLE PRECISION :: epsilon
-    INTEGER,DIMENSION(:), POINTER :: decoupe
+    INTEGER,DIMENSION(:), POINTER :: partitionning
     INTEGER :: nbproc
 
     !=== IN/OUT ===
@@ -103,8 +103,8 @@ CONTAINS
     files=trim(files)//'.'//trim(num)
     OPEN(FILE=files,UNIT=20)
     DO i=1,data%dim
-       som1=som1*(decoupe(i)-1)
-       prod2=prod2+(decoupe(i)-1)*prod/(coordmax(i)-coordmin(i))    
+       som1=som1*(partitionning(i)-1)
+       prod2=prod2+(partitionning(i)-1)*prod/(coordmax(i)-coordmin(i))    
     ENDDO    
     WRITE(20,*)  prod,epsilon*prod2-som1*(epsilon)**data%dim
     CLOSE(20)
@@ -119,19 +119,19 @@ CONTAINS
        DO i=1,data%dim
           coordmin(i)=coordmin(i)-epsilon*1.1
           coordmax(i)=coordmax(i)+epsilon*1.1
-          DO j=1,decoupe(i)
-             bounds(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/decoupe(i)
-             bounds(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/decoupe(i)
+          DO j=1,partitionning(i)
+             bounds(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/partitionning(i)
+             bounds(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/partitionning(i)
           ENDDO
           IF (data%recouvrement==1) THEN
             ! Partitionning with interface mode
-             DO j=1,decoupe(i)
+             DO j=1,partitionning(i)
                 bounds(i,j,1)=bounds(i,j,1)-epsilon
                 bounds(i,j,2)=bounds(i,j,2)+epsilon
              ENDDO
           ENDIF
           bounds(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
-          bounds(i,decoupe(i),2)=coordmax(i)+0.01*abs(coordmax(i))
+          bounds(i,partitionning(i),2)=coordmax(i)+0.01*abs(coordmax(i))
        ENDDO
     ELSEIF (data%image==1) THEN
        ! Processing for partionning pixels of picture
@@ -147,26 +147,26 @@ CONTAINS
        DO i=1,data%imgdim
           coordmin(i)=1.0-epsilon*1.1
           coordmax(i)=data%imgmap(i)+epsilon*1.1
-          DO j=1,decoupe(i)
-             bounds(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/decoupe(i)
-             bounds(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/decoupe(i)
+          DO j=1,partitionning(i)
+             bounds(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/partitionning(i)
+             bounds(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/partitionning(i)
           ENDDO
           IF (data%recouvrement==1) THEN
             ! Partitionning with interface mode
-             DO j=1,decoupe(i)
+             DO j=1,partitionning(i)
                 bounds(i,j,1)=bounds(i,j,1)-epsilon
                 bounds(i,j,2)=bounds(i,j,2)+epsilon
              ENDDO
           ENDIF
           bounds(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
-          bounds(i,decoupe(i),2)=coordmax(i)+0.01*abs(coordmax(i))
+          bounds(i,partitionning(i),2)=coordmax(i)+0.01*abs(coordmax(i))
        ENDDO
     ENDIF
     RETURN
   END SUBROUTINE define_bounds
 
 
-  SUBROUTINE define_domains(nbproc, data, domaines, bounds, decoupe)
+  SUBROUTINE define_domains(nbproc, data, domaines, bounds, partitionning)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -175,7 +175,7 @@ CONTAINS
     !====  IN  ====
     TYPE(type_data) :: data
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-    INTEGER, DIMENSION(:), POINTER :: decoupe
+    INTEGER, DIMENSION(:), POINTER :: partitionning
     INTEGER :: nbproc
 
     !====  OUT ====
@@ -207,7 +207,7 @@ CONTAINS
              DO k=data%dim,1,-1
                 IF (ok) THEN
                    list(k)=list(k)+1
-                   IF (list(k)>decoupe(k)) THEN
+                   IF (list(k)>partitionning(k)) THEN
                       list(k)=1
                    ELSE
                       ok=.FALSE.
@@ -238,7 +238,7 @@ CONTAINS
              DO k=data%imgdim,1,-1
                 IF (ok) THEN
                    list(k)=list(k)+1
-                   IF (list(k)>decoupe(k)) THEN
+                   IF (list(k)>partitionning(k)) THEN
                       list(k)=1
                    ELSE
                       ok=.FALSE.

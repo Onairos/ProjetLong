@@ -33,7 +33,7 @@ PROGRAM clusters
   DOUBLE PRECISION :: t2
   INTEGER,DIMENSION(:,:), POINTER :: clustermap
   INTEGER,DIMENSION(:,:) ,POINTER :: ddat
-  INTEGER,DIMENSION(:), POINTER :: decoupe
+  INTEGER,DIMENSION(:), POINTER :: partitionning
   INTEGER,DIMENSION(:), POINTER :: iclust
   INTEGER,DIMENSION(:), POINTER :: ldat
   INTEGER,DIMENSION(:), POINTER :: listenbideal
@@ -99,7 +99,7 @@ PROGRAM clusters
      PRINT *,'lecture des data... ',entree
 #endif
      OPEN(FILE=entree,UNIT=1)
-     CALL read_file(data,epsilon,coordmin,coordmax,nbproc,decoupe,mesh,&
+     CALL read_file(data,epsilon,coordmin,coordmax,nbproc,partitionning,mesh,&
           sigma,nblimit,listenbideal)
      t2 = MPI_WTIME()
      PRINT *, 'temps lecture data ', t2-t1
@@ -114,7 +114,7 @@ PROGRAM clusters
      PRINT *,'decoupage des datas...'
 #endif
     t1 = MPI_WTIME()
-    CALL partition_data(data,epsilon,nbproc,coordmin,coordmax,decoupe,&
+    CALL partition_data(data,epsilon,nbproc,coordmin,coordmax,partitionning,&
          ldat,ddat,bounds)
     t2 = MPI_WTIME()
     PRINT *,'temps decoupage des datas...', t2-t1
@@ -131,7 +131,7 @@ PROGRAM clusters
      ! Sigma computing if auto global mode
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF ((sigma==0.0).AND.(numproc==0)) THEN
-        CALL get_sigma_interface(numproc,data,sigma,bounds,decoupe,epsilon)
+        CALL get_sigma_interface(numproc,data,sigma,bounds,partitionning,epsilon)
      ENDIF
 
      ! Sigma sending
@@ -200,7 +200,7 @@ PROGRAM clusters
         PRINT *,numproc,'calcule le sigma global :',sigma
 #endif
         IF (data%interface==1) THEN 
-           CALL get_sigma_interface(numproc,partitioned_data,sigma,bounds,decoupe,epsilon) 
+           CALL get_sigma_interface(numproc,partitioned_data,sigma,bounds,partitionning,epsilon) 
            PRINT *,numproc,'calcule le sigma interface :',sigma
 #if aff
            PRINT *,numproc,'calcule le sigma interface :',sigma

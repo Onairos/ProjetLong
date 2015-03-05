@@ -45,7 +45,7 @@ CONTAINS
   END SUBROUTINE help
 
 
-  SUBROUTINE read_file(data, epsilon, coordmin, coordmax, nbproc, decoupe, &
+  SUBROUTINE read_file(data, epsilon, coordmin, coordmax, nbproc, partitionning, &
        mesh, sigma, nblimit, listenbideal)
     IMPLICIT NONE
     !###########################################
@@ -64,7 +64,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
     DOUBLE PRECISION :: epsilon
     DOUBLE PRECISION :: sigma
-    INTEGER, DIMENSION(:), POINTER :: decoupe
+    INTEGER, DIMENSION(:), POINTER :: partitionning
     INTEGER, DIMENSION(:), POINTER :: listenbideal
     INTEGER :: nblimit
 
@@ -180,23 +180,23 @@ CONTAINS
           END SELECT
           PRINT *, 'dim', data%dim
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
-             ALLOCATE(decoupe(data%dim))
+             ALLOCATE(partitionning(data%dim))
           ELSEIF (data%image==1) THEN
              ! Partitionning per pixel
-             ALLOCATE(decoupe(data%imgdim))
+             ALLOCATE(partitionning(data%imgdim))
           ENDIF
-          READ(1,*) decoupe(:)
-          PRINT *, 'decoupe', decoupe
+          READ(1,*) partitionning(:)
+          PRINT *, 'partitionning', partitionning
           IF (nbproc>1) THEN
              tot=1
              IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
                 DO i=1,data%dim
-                   tot=tot*decoupe(i)
+                   tot=tot*partitionning(i)
                 ENDDO
              ELSEIF (data%image==1) THEN
                 ! Partitionning per pixel
                 DO i=1,data%imgdim
-                   tot=tot*decoupe(i)
+                   tot=tot*partitionning(i)
                 ENDDO
              ENDIF
              IF (tot/=nbproc-data%interface) THEN
@@ -209,18 +209,18 @@ CONTAINS
              ! 1 proc
              IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
                 DO i=1,data%dim
-                   decoupe(i)=1
+                   partitionning(i)=1
                 ENDDO
                 tot=1
              ELSEIF (data%image==1) THEN
                 ! Partitionning per pixel
                 DO i=1,data%imgdim
-                   decoupe(i)=1
+                   partitionning(i)=1
                 ENDDO
                 tot=1
              ENDIF
           ENDIF
-          PRINT *,'  > decoupage :',decoupe
+          PRINT *,'  > decoupage :',partitionning
        CASE('END')
           ok=.TRUE.
        CASE DEFAULT
@@ -237,13 +237,13 @@ CONTAINS
     ! 1 proc
     IF (nbproc==1) THEN
        ! Initialization to 1 by default of all the partitionning parameters
-       IF (decoupage==1) DEALLOCATE(decoupe)
+       IF (decoupage==1) DEALLOCATE(partitionning)
        IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
-          ALLOCATE(decoupe(data%dim) )
+          ALLOCATE(partitionning(data%dim) )
        ELSEIF (data%image==1) THEN
-          ALLOCATE(decoupe(data%imgdim))
+          ALLOCATE(partitionning(data%imgdim))
        ENDIF
-       decoupe(:)=1
+       partitionning(:)=1
        epsilon=1.0
     ENDIF   
     ! Validation of the combinations of input parameters

@@ -46,7 +46,7 @@ CONTAINS
   END SUBROUTINE get_sigma
 
 
-  SUBROUTINE get_sigma_interface(numproc, partitioned_data, sigma, bounds, decoupe, epsilon)
+  SUBROUTINE get_sigma_interface(numproc, partitioned_data, sigma, bounds, partitionning, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -56,7 +56,7 @@ CONTAINS
     TYPE(type_data) :: partitioned_data
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
     DOUBLE PRECISION :: epsilon
-    INTEGER, DIMENSION(:), POINTER :: decoupe
+    INTEGER, DIMENSION(:), POINTER :: partitionning
     INTEGER :: numproc
 
     !====  OUT ====
@@ -64,7 +64,7 @@ CONTAINS
 
     !#### Variables  ####
     INTEGER, DIMENSION(:,:), POINTER :: tableau
-    INTEGER, DIMENSION(:), POINTER :: decoupe0
+    INTEGER, DIMENSION(:), POINTER :: partitionning_tmp
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -77,28 +77,28 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    !nb de decoupes
+!!======================TODO : debut de #if aff ??????
+    ! Number of partitionnings
     nb=1
     DO i=1,partitioned_data%dim
-       nb=nb*decoupe(i)
+       nb=nb*partitionning(i)
     ENDDO
     ! Creation of partitionning
     ALLOCATE(tableau(nb,0:partitioned_data%dim))
-    ALLOCATE(decoupe0(partitioned_data%dim))
-    decoupe0(:)=1
+    ALLOCATE(partitionning_tmp(partitioned_data%dim))
+    partitionning_tmp(:)=1
     DO i=1,nb
        DO j=1,partitioned_data%dim
-          tableau(i,j)=decoupe0(j)
+          tableau(i,j)=partitionning_tmp(j)
        ENDDO
-       decoupe0(1)=decoupe0(1)+1
+       partitionning_tmp(1)=partitionning_tmp(1)+1
        k=1
-       DO WHILE(decoupe0(k)>decoupe(k))
-          decoupe0(k)=1
-          IF (k<partitioned_data%dim) decoupe0(k+1)=decoupe0(k+1)+1
+       DO WHILE(partitionning_tmp(k)>partitionning(k))
+          partitionning_tmp(k)=1
+          IF (k<partitioned_data%dim) partitionning_tmp(k+1)=partitionning_tmp(k+1)+1
        ENDDO
     ENDDO
-    DEALLOCATE(decoupe0)
-!!======================TODO : debut de #if aff ??????
+    DEALLOCATE(partitionning_tmp)
     ! Value of sigma
     sigma0=0.0
     DO i=1,nb
@@ -117,10 +117,10 @@ CONTAINS
     sigma0=exp(1.0/float(partitioned_data%dim)*log(sigma0))
     ! Sigma computing
     sigma0=sigma0/(2.0*exp(log(float(partitioned_data%nb))*(1.0/float(partitioned_data%dim))))
-!!======================TODO : fin de #if aff ??????
 #if aff
     PRINT *,numproc,'valeur de sigma calculee pour interface:',sigma0
 #endif
+!!======================TODO : fin de #if aff ??????
     ! Sigma computing, global formula
     CALL get_sigma(partitioned_data,sigma)
 #if aff
