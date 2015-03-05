@@ -339,7 +339,7 @@ PRINT *, 'recherche des centres'
        cluster_population(:)=0
        DO i=1,point_num
           DO j=1,nb_clusters
-             IF (listnorm(i,j)<listnorm(i,cluster(i))) THEN
+             IF (listnorm(i,j)<listnorm(i,clusters(i))) THEN
                 clusters(i)=j
                 swap=swap+1
              ENDIF

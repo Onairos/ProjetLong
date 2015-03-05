@@ -268,7 +268,7 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: num
     CHARACTER (LEN=30) :: files
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER, DIMENSION(:), POINTER :: ind
     INTEGER, DIMENSION(:), POINTER :: indp
     INTEGER :: i
@@ -319,8 +319,8 @@ CONTAINS
        OPEN(FILE=files,UNIT=20)
        READ(20,*) nb
        PRINT *,'  > ',i,' :',nb
-        ALLOCATE(coord(nb,params%dim))
-       coord(:,:)=0.
+        ALLOCATE(coords(nb,params%dim))
+       coords(:,:)=0.
        ALLOCATE(ind(nb))
        ind(:)=0
        ALLOCATE(indp(nb))
@@ -329,7 +329,7 @@ CONTAINS
           DO j=1,nb
              IF (params%coord==1) THEN
                 ! Partitionning by coordinates
-                READ(20,*) coord(j,:)
+                READ(20,*) coords(j,:)
                 ind(j)=i
              ELSE
                 ! Partitionning 1D picture
@@ -340,13 +340,13 @@ CONTAINS
           ! Writing
           IF (params%coord==1) THEN
              ! Partitionning by coordinates
-             CALL ecritpoint_paraview(10,11,nb,params%dim,coord,ind,1)
+             CALL ecritpoint_paraview(10,11,nb,params%dim,coords,ind,1)
           ELSE
              ! Partitionning 1D picture
              CALL write_picture_to_paraview(10,11,nb,params,ind,indp)
           ENDIF
        ENDIF
-       DEALLOCATE(coord)
+       DEALLOCATE(coords)
        DEALLOCATE(ind)
        CLOSE(20)
        IF ((i==0).AND.(params%interface==1)) THEN
@@ -398,7 +398,7 @@ CONTAINS
     TYPE(type_params) :: params
     
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
     CHARACTER (LEN=30) :: star
@@ -442,7 +442,7 @@ CONTAINS
        ! Reading
        READ(20,*) nb,k
        PRINT *,'  > ',i,' :',nb,' -> ',files
-       ALLOCATE(coord(nb,k))
+       ALLOCATE(coords(nb,k))
        ALLOCATE(ind(max(1,nb)))
        ind(:)=0
        ALLOCATE(indp(max(1,nb)))
@@ -460,7 +460,7 @@ CONTAINS
        ENDIF
        DO j=1,nb
           IF (params%coord==1) THEN
-             READ(20,*) coord(j,:),ind(j)
+             READ(20,*) coords(j,:),ind(j)
           ELSE
              READ(20,*) indp(j),ind(j)
              indp(j)=corresp(indp(j))
@@ -470,12 +470,12 @@ CONTAINS
        ! Writing
        IF (params%coord==1) THEN
           ! partitionning by coordinates
-          CALL ecritpoint_paraview(10,11,nb,params%dim,coord,ind,1)
+          CALL ecritpoint_paraview(10,11,nb,params%dim,coords,ind,1)
        ELSE
           ! partitionning 1D picture
           CALL write_picture_to_paraview(10,11,nb,params,ind,indp)
        ENDIF
-       DEALLOCATE(coord)
+       DEALLOCATE(coords)
        DEALLOCATE(ind)
        DEALLOCATE(indp)
        CLOSE(10)
@@ -527,7 +527,7 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER, DIMENSION(:), POINTER :: ind
     INTEGER, DIMENSION(:), POINTER :: indp
     INTEGER :: i
@@ -543,10 +543,10 @@ CONTAINS
        OPEN(FILE=params%mesh,UNIT=1)
        READ(1,*) j,k
        PRINT *,'lecture du fichier de maillage...',j,k
-       ALLOCATE(coord(j,k))
+       ALLOCATE(coords(j,k))
        nb0=0
        DO i=1,j
-          READ(1,*,END=100) coord(i,:)
+          READ(1,*,END=100) coords(i,:)
           nb0=nb0+1
        ENDDO
 100    PRINT *,'nb de points ',nb0
@@ -586,7 +586,7 @@ CONTAINS
     ENDDO
     IF (params%coord==1) THEN
        ! classical coordinates
-       CALL ecritpoint_paraview(10,11,params%nbp,params%dim,coord,ind,1)
+       CALL ecritpoint_paraview(10,11,params%nbp,params%dim,coords,ind,1)
     ELSE
        ! Pictures reassembly
        CALL write_picture_to_paraview(10,11,params%nbp,params,ind,indp)
@@ -595,7 +595,7 @@ CONTAINS
     CLOSE(11)
     DEALLOCATE(ind)
     DEALLOCATE(indp)
-    IF (params%coord==1) DEALLOCATE(coord)
+    IF (params%coord==1) DEALLOCATE(coords)
     ! Master file
     PRINT *,'-> cluster.final.CASE'
     OPEN(FILE='cluster.final.CASE',UNIT=12)
@@ -613,14 +613,14 @@ CONTAINS
 
 
 
-  SUBROUTINE ecritpoint_paraview(unitgeo, unitind, nb, dimension, coord, ind, k)
+  SUBROUTINE ecritpoint_paraview(unitgeo, unitind, nb, dimension, coords, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER, DIMENSION(:), POINTER :: ind
     INTEGER :: unitgeo
     INTEGER :: unitind
@@ -641,17 +641,17 @@ CONTAINS
     WRITE(unitind,*) ind(k)
     WRITE(unitind,'(a)') 'point'
     DO i=1,nb
-       WRITE(unitgeo,*) coord(i,1)
+       WRITE(unitgeo,*) coords(i,1)
        WRITE(unitind,*) ind(i)
     ENDDO
     DO i=1,nb
-       WRITE(unitgeo,*) coord(i,2)
+       WRITE(unitgeo,*) coords(i,2)
     ENDDO
     DO i=1,nb
        IF (dimension==2) THEN
           WRITE(unitgeo,*) 0.
        ELSE
-          WRITE(unitgeo,*) coord(i,3)
+          WRITE(unitgeo,*) coords(i,3)
        ENDIF
     ENDDO
     WRITE(unitgeo,'(a)') 'point'

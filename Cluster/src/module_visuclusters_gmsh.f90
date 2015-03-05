@@ -156,7 +156,7 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -177,7 +177,7 @@ CONTAINS
        offset=0
        totnum=params%nbproc-1
     ENDIF
-    ALLOCATE(coord(1,params%dim))
+    ALLOCATE(coords(1,params%dim))
     DO i=offset,totnum
        ! File name
        WRITE(num,*) i
@@ -188,9 +188,9 @@ CONTAINS
        DO j=1,nb
           IF (params%coord==1) THEN
              ! Partitionning by coordinates
-             coord(:,:)=0.
-             READ(10,*) coord(1,:)
-             CALL ecritpoint_gmsh(1,params%dim,coord,i,1)
+             coords(:,:)=0.
+             READ(10,*) coords(1,:)
+             CALL ecritpoint_gmsh(1,params%dim,coords,i,1)
           ELSE
              ! Partitionning 1D pictures
              READ (10,*) k
@@ -199,7 +199,7 @@ CONTAINS
        ENDDO
        CLOSE(10)
     ENDDO
-    DEALLOCATE(coord)
+    DEALLOCATE(coords)
     WRITE(1,*) '};'
     CLOSE(1)
     PRINT *,'-> decoupe.visu'
@@ -220,7 +220,7 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER, DIMENSION(:), POINTER :: corresp
     INTEGER :: i
     INTEGER :: ind
@@ -245,7 +245,7 @@ CONTAINS
        WRITE(1,*) 'View "Clusters for part '//num(1:lenn)//'" {'
        READ(10,*) nb,k
        PRINT *,'  > ',i,' :',nb,' -> ',files
-       ALLOCATE(coord(1,k))
+       ALLOCATE(coords(1,k))
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
           ! Reading the matchings
           files='decoupe.'//trim(num)
@@ -259,8 +259,8 @@ CONTAINS
        ENDIF
        DO j=1,nb
           IF (params%coord==1) THEN
-             READ(10,*) coord(1,:),k
-             CALL ecritpoint_gmsh(1,params%dim,coord,k,1)
+             READ(10,*) coords(1,:),k
+             CALL ecritpoint_gmsh(1,params%dim,coords,k,1)
           ELSE
              READ(10,*) k,ind
              CALL write_picture_to_gmsh(1,params,ind,corresp(k))
@@ -269,7 +269,7 @@ CONTAINS
        CLOSE(10) 
        WRITE(1,*) '};'
        CLOSE(1)
-       DEALLOCATE(coord)
+       DEALLOCATE(coords)
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
           DEALLOCATE(corresp)
        ENDIF
@@ -293,7 +293,7 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -308,10 +308,10 @@ CONTAINS
        ! Reading with coordinates format
        READ(1,*) j,k
        PRINT *,'lecture du fichier de maillage...',j,k
-       ALLOCATE(coord(j,k))
+       ALLOCATE(coords(j,k))
        nb0=0
        DO i=1,j
-          READ(1,*,END=100) coord(i,:)
+          READ(1,*,END=100) coords(i,:)
           nb0=nb0+1
        ENDDO
 100    PRINT *,'nb de points ',nb0
@@ -334,7 +334,7 @@ CONTAINS
           READ(10,*) k
           IF (params%coord==1) THEN
              ! classic coordinates
-             CALL ecritpoint_gmsh(1,nb0,coord,i,k)
+             CALL ecritpoint_gmsh(1,nb0,coords,i,k)
           ELSE
              ! Pictures reassembly
              CALL write_picture_to_gmsh(1,params,i,k)
@@ -345,20 +345,20 @@ CONTAINS
     WRITE(1,*) '};'
     CLOSE(1)
     PRINT *,'-> cluster.final.visu'
-    IF (params%coord==1) DEALLOCATE(coord)
+    IF (params%coord==1) DEALLOCATE(coords)
     RETURN
   END SUBROUTINE write_final_clusters_gmsh
 
 
 
-  SUBROUTINE ecritpoint_gmsh(unit, dimension, coord, ind, k)
+  SUBROUTINE ecritpoint_gmsh(unit, dimension, coords, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: dimension
     INTEGER :: ind
     INTEGER :: k
@@ -369,10 +369,10 @@ CONTAINS
     !###########################################
     IF (dimension==2) THEN
        !2D
-       WRITE(unit,*) 'SP(',coord(k,1),',',coord(k,2),',',0.,'){',ind,'};' 
+       WRITE(unit,*) 'SP(',coords(k,1),',',coords(k,2),',',0.,'){',ind,'};' 
     ELSEIF (dimension==3) THEN
        !3D
-       WRITE(unit,*) 'SP(',coord(k,1),',',coord(k,2),',',coord(k,3),'){',ind,'};'
+       WRITE(unit,*) 'SP(',coords(k,1),',',coords(k,2),',',coords(k,3),'){',ind,'};'
     ENDIF
     RETURN
   END SUBROUTINE ecritpoint_gmsh
