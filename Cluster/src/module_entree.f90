@@ -45,7 +45,7 @@ CONTAINS
   END SUBROUTINE help
 
 
-  SUBROUTINE read_file(data, epsilon, coordmin, coordmax, nbproc, partitionning, &
+  SUBROUTINE read_file(data, epsilon, coord_min, coord_max, nbproc, partitionning, &
        mesh, sigma, nblimit, listenbideal)
     IMPLICIT NONE
     !###########################################
@@ -60,8 +60,8 @@ CONTAINS
 
     !====  OUT ====
     CHARACTER (LEN=30) :: mesh
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
     DOUBLE PRECISION :: epsilon
     DOUBLE PRECISION :: sigma
     INTEGER, DIMENSION(:), POINTER :: partitionning
@@ -110,25 +110,25 @@ CONTAINS
              READ (1,*) mesh
              PRINT *,'  > format d entree image + decoupage par pixel'
              PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL read_picture_data(mesh,data,coordmin,coordmax)
+             CALL read_picture_data(mesh,data,coord_min,coord_max)
           ELSEIF (mesh=='GEOM') THEN
              data%geom=1
              READ (1,*) mesh
              PRINT *,'  > format d entree image + decoupage geometrique'
              PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL read_geometric_data(mesh,data,coordmin,coordmax)
+             CALL read_geometric_data(mesh,data,coord_min,coord_max)
           ELSEIF (mesh=='SEUIL') THEN
              data%seuil=1
              READ (1,*) mesh
              PRINT *,'  > format d entree image + decoupage par seuil'
              PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL read_threshold_data(mesh,data,coordmin,coordmax)
+             CALL read_threshold_data(mesh,data,coord_min,coord_max)
           ELSEIF (mesh=='COORD') THEN
              data%coord=1
              READ (1,*) mesh
              PRINT *,'  > format d entree image + decoupage par seuil'
              PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL read_coordinates_data(mesh,data,coordmin,coordmax)
+             CALL read_coordinates_data(mesh,data,coord_min,coord_max)
           ELSE
              PRINT *
              PRINT *,'format de donnees non reconnu !!!'
@@ -263,7 +263,7 @@ CONTAINS
   END SUBROUTINE read_file
 
 
-  SUBROUTINE read_coordinates_data(mesh, data, coordmin, coordmax)
+  SUBROUTINE read_coordinates_data(mesh, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -276,8 +276,8 @@ CONTAINS
     TYPE(type_data) :: data
 
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !#### Variables  ####
     INTEGER :: i
@@ -294,8 +294,8 @@ CONTAINS
     PRINT *,'    > nb de points :',data%nb
     PRINT *,'    > dimension :',data%dim
     ALLOCATE(data%point(data%nb))
-    ALLOCATE(coordmax(data%dim))
-    ALLOCATE(coordmin(data%dim))
+    ALLOCATE(coord_max(data%dim))
+    ALLOCATE(coord_min(data%dim))
     nb=0
     DO i=1,data%nb
        ALLOCATE(data%point(i)%coord(data%dim))
@@ -303,12 +303,12 @@ CONTAINS
        nb=nb+1
        data%point(i)%cluster=-1
        IF (i==1) THEN
-          coordmax(:)=data%point(1)%coord(:)
-          coordmin(:)=data%point(1)%coord(:)
+          coord_max(:)=data%point(1)%coord(:)
+          coord_min(:)=data%point(1)%coord(:)
        ELSE
           DO j=1,data%dim
-             coordmin(j)=min(coordmin(j),data%point(i)%coord(j))
-             coordmax(j)=max(coordmax(j),data%point(i)%coord(j))
+             coord_min(j)=min(coord_min(j),data%point(i)%coord(j))
+             coord_max(j)=max(coord_max(j),data%point(i)%coord(j))
           ENDDO
        ENDIF
     ENDDO
@@ -317,13 +317,13 @@ CONTAINS
     CLOSE(2)
     PRINT *,'  > coordonnees min/max :'
     DO j=1,data%dim
-       PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
+       PRINT *,'    > ',j,':',coord_min(j),coord_max(j)
     ENDDO
     RETURN
   END SUBROUTINE read_coordinates_data
 
 
-  SUBROUTINE read_picture_data(mesh, data, coordmin, coordmax)
+  SUBROUTINE read_picture_data(mesh, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -334,8 +334,8 @@ CONTAINS
     !=== IN/OUT ===
     TYPE(type_data) :: data
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !#### Variables  ####
     INTEGER :: i
@@ -360,11 +360,11 @@ CONTAINS
     data%nbclusters=0
     PRINT *,'    > nb de points a lire :',data%nb
     ALLOCATE(data%point(data%nb))
-    ALLOCATE(coordmax(data%imgdim))
-    ALLOCATE(coordmin(data%imgdim))
-    coordmin(:)=0.9
+    ALLOCATE(coord_max(data%imgdim))
+    ALLOCATE(coord_min(data%imgdim))
+    coord_min(:)=0.9
     DO i=1,data%imgdim
-       coordmax(i)=data%imgmap(i)+0.1
+       coord_max(i)=data%imgmap(i)+0.1
     ENDDO
     nb=0
     DO i=1,data%nb
@@ -378,13 +378,13 @@ CONTAINS
     CLOSE(2)
     PRINT *,'  > coordonnees min/max :'
     DO j=1,data%dim
-       PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
+       PRINT *,'    > ',j,':',coord_min(j),coord_max(j)
     ENDDO
     RETURN
   END SUBROUTINE read_picture_data
   
 
-  SUBROUTINE read_geometric_data(mesh, data, coordmin, coordmax)
+  SUBROUTINE read_geometric_data(mesh, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -397,8 +397,8 @@ CONTAINS
     TYPE(type_data) :: data
 
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !#### Variables  ####
     DOUBLE PRECISION :: pasmax
@@ -426,8 +426,8 @@ CONTAINS
     data%nbclusters=0
     PRINT *,'    > nb de points a lire :',data%nb
     ALLOCATE(data%point(data%nb))
-    ALLOCATE(coordmax(data%dim))
-    ALLOCATE(coordmin(data%dim))
+    ALLOCATE(coord_max(data%dim))
+    ALLOCATE(coord_min(data%dim))
     nb=0
     DO i=1,data%nb
        ALLOCATE(data%point(i)%coord(data%dim))
@@ -436,12 +436,12 @@ CONTAINS
        nb=nb+1
        data%point(i)%cluster=-1
        IF (i==1) THEN
-          coordmax(:)=data%point(1)%coord(:)
-          coordmin(:)=data%point(1)%coord(:)
+          coord_max(:)=data%point(1)%coord(:)
+          coord_min(:)=data%point(1)%coord(:)
        ELSE
           DO j=1,data%dim
-             coordmin(j)=min(coordmin(j),data%point(i)%coord(j))
-             coordmax(j)=max(coordmax(j),data%point(i)%coord(j))
+             coord_min(j)=min(coord_min(j),data%point(i)%coord(j))
+             coord_max(j)=max(coord_max(j),data%point(i)%coord(j))
           ENDDO
        ENDIF
     ENDDO
@@ -451,23 +451,23 @@ CONTAINS
     PRINT *,'  > coordonnees min/max :'
     pasmax=1.e-13
     DO j=data%imgdim+1,data%imgdim+data%imgt
-       pasmax=max(pasmax,coordmax(j)-coordmin(j))
-       PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
+       pasmax=max(pasmax,coord_max(j)-coord_min(j))
+       PRINT *,'    > ',j,':',coord_min(j),coord_max(j)
     ENDDO
     PRINT *,'  > pas max :',pasmax
     ! Searching steps by picture dimension
     DO j=1,data%imgdim
        data%pas(j)=pasmax/data%imgmap(j)
        PRINT *,'  > pas :',j,data%pas(j)
-       coordmin(j)=0.9*data%pas(j)
-       coordmax(j)=(data%imgmap(j)+1)*data%pas(j)
+       coord_min(j)=0.9*data%pas(j)
+       coord_max(j)=(data%imgmap(j)+1)*data%pas(j)
     ENDDO
     RETURN
   END SUBROUTINE read_geometric_data
 
 
 
-  SUBROUTINE read_threshold_data(mesh, data, coordmin, coordmax)
+  SUBROUTINE read_threshold_data(mesh, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -480,8 +480,8 @@ CONTAINS
     TYPE(type_data) :: data
 
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !#### Variables  ####
     INTEGER :: i
@@ -507,8 +507,8 @@ CONTAINS
     data%nbclusters=0
     PRINT *,'    > nb de points a lire :',data%nb
     ALLOCATE(data%point(data%nb))
-    ALLOCATE(coordmax(data%dim))
-    ALLOCATE(coordmin(data%dim))
+    ALLOCATE(coord_max(data%dim))
+    ALLOCATE(coord_min(data%dim))
     nb=0
     DO i=1,data%nb
        ALLOCATE(data%point(i)%coord(data%dim))
@@ -516,12 +516,12 @@ CONTAINS
        nb=nb+1
        data%point(i)%cluster=-1
        IF (i==1) THEN
-          coordmax(:)=data%point(1)%coord(:)
-          coordmin(:)=data%point(1)%coord(:)
+          coord_max(:)=data%point(1)%coord(:)
+          coord_min(:)=data%point(1)%coord(:)
        ELSE
           DO j=1,data%dim
-             coordmin(j)=min(coordmin(j),data%point(i)%coord(j))
-             coordmax(j)=max(coordmax(j),data%point(i)%coord(j))
+             coord_min(j)=min(coord_min(j),data%point(i)%coord(j))
+             coord_max(j)=max(coord_max(j),data%point(i)%coord(j))
           ENDDO
        ENDIF
     ENDDO
@@ -530,7 +530,7 @@ CONTAINS
     CLOSE(2)
     PRINT *,'  > coordonnees min/max :'
     DO j=1,data%dim
-       PRINT *,'    > ',j,':',coordmin(j),coordmax(j)
+       PRINT *,'    > ',j,':',coord_min(j),coord_max(j)
     ENDDO
     RETURN
   END SUBROUTINE read_threshold_data

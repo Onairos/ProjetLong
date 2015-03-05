@@ -125,14 +125,14 @@ CONTAINS
   END SUBROUTINE write_partial_clusters
 
 
-  SUBROUTINE write_final_clusters(nbclust, iclust, clustermap)
+  SUBROUTINE write_final_clusters(nbclust, iclust, cluster_map)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    INTEGER,DIMENSION(:,:),POINTER :: clustermap
+    INTEGER,DIMENSION(:,:),POINTER :: cluster_map
     INTEGER,DIMENSION(:),POINTER :: iclust
 
     !=== IN/OUT === 
@@ -159,7 +159,7 @@ CONTAINS
           PRINT *,'    > cluster ',k,' :',iclust(i),' -> ',files
           WRITE(20,*) iclust(i)
           DO j=1,iclust(i)
-             WRITE(20,*) clustermap(i,j)
+             WRITE(20,*) cluster_map(i,j)
           ENDDO
           CALL flush(20)
           CLOSE(20)

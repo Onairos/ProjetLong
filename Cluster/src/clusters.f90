@@ -21,8 +21,8 @@ PROGRAM clusters
   CHARACTER (LEN=30) :: entree
   CHARACTER (LEN=30) :: mesh
   DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-  DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
-  DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
   DOUBLE PRECISION :: endtime
   DOUBLE PRECISION :: epsilon
   DOUBLE PRECISION :: sigma
@@ -31,7 +31,7 @@ PROGRAM clusters
   DOUBLE PRECISION :: t_parallg
   DOUBLE PRECISION :: t1
   DOUBLE PRECISION :: t2
-  INTEGER,DIMENSION(:,:), POINTER :: clustermap
+  INTEGER,DIMENSION(:,:), POINTER :: cluster_map
   INTEGER,DIMENSION(:,:) ,POINTER :: ddat
   INTEGER,DIMENSION(:), POINTER :: partitionning
   INTEGER,DIMENSION(:), POINTER :: iclust
@@ -99,7 +99,7 @@ PROGRAM clusters
      PRINT *,'lecture des data... ',entree
 #endif
      OPEN(FILE=entree,UNIT=1)
-     CALL read_file(data,epsilon,coordmin,coordmax,nbproc,partitionning,mesh,&
+     CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,mesh,&
           sigma,nblimit,listenbideal)
      t2 = MPI_WTIME()
      PRINT *, 'temps lecture data ', t2-t1
@@ -114,7 +114,7 @@ PROGRAM clusters
      PRINT *,'decoupage des datas...'
 #endif
     t1 = MPI_WTIME()
-    CALL partition_data(data,epsilon,nbproc,coordmin,coordmax,partitionning,&
+    CALL partition_data(data,epsilon,nbproc,coord_min,coord_max,partitionning,&
          ldat,ddat,bounds)
     t2 = MPI_WTIME()
     PRINT *,'temps decoupage des datas...', t2-t1
@@ -251,9 +251,9 @@ PROGRAM clusters
         PRINT *,'  > nb de clusters avec doublons obtenus :',nbclust
 #endif
         ! Receiving of clusters info
-        ALLOCATE(clustermap(nbclust,data%nb))
+        ALLOCATE(cluster_map(nbclust,data%nb))
         CALL receive_clusters(nbproc,nbclust,ldat,ddat,partitioned_data,&
-             clustermap,nclust,iclust)
+             cluster_map,nclust,iclust)
      ELSE
         ! Sends the number of clusters
         CALL send_number_clusters(numproc,partitioned_data)
@@ -264,7 +264,7 @@ PROGRAM clusters
      ! End of post-process
      IF (numproc==0) THEN
         ! Groups the clusters and removes duplicates from the set of found clusters
-        CALL group_clusters(nbclust,iclust,clustermap,data)
+        CALL group_clusters(nbclust,iclust,cluster_map,data)
      ENDIF
 
   ELSE
@@ -278,13 +278,13 @@ PROGRAM clusters
         iclust(j)=iclust(j)+1
         nmax=max(nmax,iclust(j))
      ENDDO
-     ALLOCATE(clustermap(nbclust,nmax))
-     clustermap(:,:)=0
+     ALLOCATE(cluster_map(nbclust,nmax))
+     cluster_map(:,:)=0
      iclust(:)=0
      DO i=1,partitioned_data%nb
         j=partitioned_data%point(i)%cluster
         iclust(j)=iclust(j)+1
-        clustermap(j,iclust(j))=i
+        cluster_map(j,iclust(j))=i
      ENDDO
   ENDIF
 
@@ -299,7 +299,7 @@ PROGRAM clusters
   ! Outputs
   IF (numproc==0) THEN
      ! Writing of the cluster.final files
-     CALL write_final_clusters(nbclust,iclust,clustermap)
+     CALL write_final_clusters(nbclust,iclust,cluster_map)
 
      ! Information writing
      CALL write_metadata(mesh,data,nbproc,nbclust)

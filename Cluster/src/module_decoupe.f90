@@ -4,7 +4,7 @@ MODULE module_decoupe
 CONTAINS
 
 
-  SUBROUTINE partition_data(data, epsilon, nbproc, coordmin, coordmax, partitionning,&
+  SUBROUTINE partition_data(data, epsilon, nbproc, coord_min, coord_max, partitionning,&
        ldat, ddat, bounds)
     IMPLICIT NONE
     !###########################################
@@ -18,8 +18,8 @@ CONTAINS
     INTEGER :: nbproc
 
     !=== IN/OUT ===
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
@@ -33,7 +33,7 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     ! Bounds definition
-    CALL define_bounds(data,coordmin,coordmax,bounds,partitionning,epsilon,nbproc)
+    CALL define_bounds(data,coord_min,coord_max,bounds,partitionning,epsilon,nbproc)
 
     ! Subdomains definition
     CALL define_domains(nbproc,data,domains,bounds,partitionning)
@@ -58,7 +58,7 @@ CONTAINS
   END SUBROUTINE partition_data
 
 
-  SUBROUTINE define_bounds(data, coordmin, coordmax, bounds, partitionning, epsilon, nbproc)
+  SUBROUTINE define_bounds(data, coord_min, coord_max, bounds, partitionning, epsilon, nbproc)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -71,8 +71,8 @@ CONTAINS
     INTEGER :: nbproc
 
     !=== IN/OUT ===
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coordmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
@@ -95,7 +95,7 @@ CONTAINS
     prod=1.0
     ! Maximum volume
     DO i=1,data%dim
-       prod=prod*(coordmax(i)-coordmin(i))
+       prod=prod*(coord_max(i)-coord_min(i))
     ENDDO
     files='diminterface'
     WRITE(num,*),0
@@ -104,7 +104,7 @@ CONTAINS
     OPEN(FILE=files,UNIT=20)
     DO i=1,data%dim
        som1=som1*(partitionning(i)-1)
-       prod2=prod2+(partitionning(i)-1)*prod/(coordmax(i)-coordmin(i))    
+       prod2=prod2+(partitionning(i)-1)*prod/(coord_max(i)-coord_min(i))    
     ENDDO    
     WRITE(20,*)  prod,epsilon*prod2-som1*(epsilon)**data%dim
     CLOSE(20)
@@ -117,11 +117,11 @@ CONTAINS
        ALLOCATE(bounds(data%dim,max(nbproc-data%interface,1),2))
        bounds(:,:,:)=0.0
        DO i=1,data%dim
-          coordmin(i)=coordmin(i)-epsilon*1.1
-          coordmax(i)=coordmax(i)+epsilon*1.1
+          coord_min(i)=coord_min(i)-epsilon*1.1
+          coord_max(i)=coord_max(i)+epsilon*1.1
           DO j=1,partitionning(i)
-             bounds(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/partitionning(i)
-             bounds(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/partitionning(i)
+             bounds(i,j,1)=coord_min(i)+(j-1)*(coord_max(i)-coord_min(i))/partitionning(i)
+             bounds(i,j,2)=coord_min(i)+j*(coord_max(i)-coord_min(i))/partitionning(i)
           ENDDO
           IF (data%recouvrement==1) THEN
             ! Partitionning with interface mode
@@ -130,8 +130,8 @@ CONTAINS
                 bounds(i,j,2)=bounds(i,j,2)+epsilon
              ENDDO
           ENDIF
-          bounds(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
-          bounds(i,partitionning(i),2)=coordmax(i)+0.01*abs(coordmax(i))
+          bounds(i,1,1)=coord_min(i)-0.01*abs(coord_min(i))
+          bounds(i,partitionning(i),2)=coord_max(i)+0.01*abs(coord_max(i))
        ENDDO
     ELSEIF (data%image==1) THEN
        ! Processing for partionning pixels of picture
@@ -145,11 +145,11 @@ CONTAINS
           STOP
        ENDIF
        DO i=1,data%imgdim
-          coordmin(i)=1.0-epsilon*1.1
-          coordmax(i)=data%imgmap(i)+epsilon*1.1
+          coord_min(i)=1.0-epsilon*1.1
+          coord_max(i)=data%imgmap(i)+epsilon*1.1
           DO j=1,partitionning(i)
-             bounds(i,j,1)=coordmin(i)+(j-1)*(coordmax(i)-coordmin(i))/partitionning(i)
-             bounds(i,j,2)=coordmin(i)+j*(coordmax(i)-coordmin(i))/partitionning(i)
+             bounds(i,j,1)=coord_min(i)+(j-1)*(coord_max(i)-coord_min(i))/partitionning(i)
+             bounds(i,j,2)=coord_min(i)+j*(coord_max(i)-coord_min(i))/partitionning(i)
           ENDDO
           IF (data%recouvrement==1) THEN
             ! Partitionning with interface mode
@@ -158,8 +158,8 @@ CONTAINS
                 bounds(i,j,2)=bounds(i,j,2)+epsilon
              ENDDO
           ENDIF
-          bounds(i,1,1)=coordmin(i)-0.01*abs(coordmin(i))
-          bounds(i,partitionning(i),2)=coordmax(i)+0.01*abs(coordmax(i))
+          bounds(i,1,1)=coord_min(i)-0.01*abs(coord_min(i))
+          bounds(i,partitionning(i),2)=coord_max(i)+0.01*abs(coord_max(i))
        ENDDO
     ENDIF
     RETURN
@@ -409,7 +409,7 @@ CONTAINS
   END SUBROUTINE partition_with_overlappings
 
 
-  SUBROUTINE group_clusters(nbclust, iclust, clustermap, data)
+  SUBROUTINE group_clusters(nbclust, iclust, cluster_map, data)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -419,7 +419,7 @@ CONTAINS
     INTEGER :: nbclust
 
     !=== IN/OUT ===
-    INTEGER, DIMENSION(:,:), POINTER :: clustermap
+    INTEGER, DIMENSION(:,:), POINTER :: cluster_map
     INTEGER, DIMENSION(:), POINTER :: iclust
 
     !====  OUT ====
@@ -465,7 +465,7 @@ CONTAINS
           ok=.TRUE.
        ELSEIF (iclust(i)>0) THEN
           ! Storage of index
-          data%point(clustermap(i,j))%cluster=i
+          data%point(cluster_map(i,j))%cluster=i
           ! Test of overlappings
           ok2=.FALSE.
           i2=i+1
@@ -481,19 +481,19 @@ CONTAINS
                 ok2=.TRUE.
              ELSE
                 ! Intersections test
-                IF (clustermap(i,j)==clustermap(i2,j2)) THEN
+                IF (cluster_map(i,j)==cluster_map(i2,j2)) THEN
                    ! Intersection found : line n°i2 added to line n°i
                    n=0
                    DO k=1,iclust(i2)
                       ! Test of removal of duplications
                       ok3=.TRUE.
                       DO j3=1,iclust(i)
-                         IF (clustermap(i2,k)==clustermap(i,j3)) ok3=.FALSE.
+                         IF (cluster_map(i2,k)==cluster_map(i,j3)) ok3=.FALSE.
                       ENDDO
                       IF (ok3) THEN
                          n=n+1
-                         clustermap(i,iclust(i)+n)=clustermap(i2,k)
-                         clustermap(i2,k)=0                         
+                         cluster_map(i,iclust(i)+n)=cluster_map(i2,k)
+                         cluster_map(i2,k)=0                         
                       ENDIF
                    ENDDO
                    iclust(i)=iclust(i)+n
