@@ -27,7 +27,7 @@ CONTAINS
     INTEGER, DIMENSION(:), POINTER :: ldat
 
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domaines
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
 
     !###########################################
     ! INSTRUCTIONS
@@ -36,20 +36,20 @@ CONTAINS
     CALL define_bounds(data,coordmin,coordmax,bounds,partitionning,epsilon,nbproc)
 
     ! Subdomains definition
-    CALL define_domains(nbproc,data,domaines,bounds,partitionning)
+    CALL define_domains(nbproc,data,domains,bounds,partitionning)
 
     ! Writing of partionned subdomains
-    CALL write_domains(data,nbproc,domaines)
+    CALL write_domains(data,nbproc,domains)
 
     ! Partitionning definition
     IF ((data%interface==1).OR.(nbproc==1)) THEN
        ! Partitionning by interfacing
-       CALL partition_with_interfaces(nbproc,data,ldat,ddat,domaines,epsilon)
+       CALL partition_with_interfaces(nbproc,data,ldat,ddat,domains,epsilon)
     ELSE
        ! Partitionning by overlapping
-       CALL partition_with_overlappings(nbproc,data,ldat,ddat,domaines)
+       CALL partition_with_overlappings(nbproc,data,ldat,ddat,domains)
     ENDIF
-    DEALLOCATE(domaines)
+    DEALLOCATE(domains)
 
     ! Saving partitionning
     CALL write_partitionning(nbproc,data,ldat,ddat)
@@ -166,7 +166,7 @@ CONTAINS
   END SUBROUTINE define_bounds
 
 
-  SUBROUTINE define_domains(nbproc, data, domaines, bounds, partitionning)
+  SUBROUTINE define_domains(nbproc, data, domains, bounds, partitionning)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -179,7 +179,7 @@ CONTAINS
     INTEGER :: nbproc
 
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domaines
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
 
     !#### Variables  ####
     INTEGER, DIMENSION(:), POINTER :: list
@@ -193,15 +193,15 @@ CONTAINS
     !###########################################
     IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        ! Processing : coordinates, coordinates picture or thresholded picture
-       ALLOCATE(domaines(max(1,nbproc-data%interface),data%dim,2))
-       domaines(:,:,:)=0.0
+       ALLOCATE(domains(max(1,nbproc-data%interface),data%dim,2))
+       domains(:,:,:)=0.0
        ALLOCATE(list(data%dim))
        list(:)=1
        IF (nbproc>1) THEN
           ! >1 proc
           DO n=1,nbproc-data%interface
              DO k=1,data%dim
-                domaines(n,k,:)=bounds(k,list(k),:)
+                domains(n,k,:)=bounds(k,list(k),:)
              ENDDO
              ok=.TRUE.
              DO k=data%dim,1,-1
@@ -218,21 +218,21 @@ CONTAINS
        ELSE
           ! 1 proc
           DO k=1,data%dim
-             domaines(1,k,:)=bounds(k,1,:)
+             domains(1,k,:)=bounds(k,1,:)
           ENDDO
        ENDIF
        DEALLOCATE(list)
     ELSEIF (data%image==1) THEN
        ! Processing for partitionning in pixels of picture
-       ALLOCATE(domaines(max(1,nbproc-data%interface),data%imgdim,2))
-       domaines(:,:,:)=0.0
+       ALLOCATE(domains(max(1,nbproc-data%interface),data%imgdim,2))
+       domains(:,:,:)=0.0
        ALLOCATE(list(data%imgdim))
        list(:)=1
        IF (nbproc>1) THEN
           ! >1 proc
           DO n=1,nbproc-data%interface
              DO k=1,data%imgdim
-                domaines(n,k,:)=bounds(k,list(k),:)
+                domains(n,k,:)=bounds(k,list(k),:)
              ENDDO
              ok=.TRUE.
              DO k=data%imgdim,1,-1
@@ -249,7 +249,7 @@ CONTAINS
        ELSE
           ! 1 proc
           DO k=1,data%imgdim
-             domaines(1,k,:)=bounds(k,1,:)
+             domains(1,k,:)=bounds(k,1,:)
           ENDDO
        ENDIF
        DEALLOCATE(list)
@@ -258,7 +258,7 @@ CONTAINS
   END SUBROUTINE define_domains
 
 
-  SUBROUTINE partition_with_interfaces(nbproc, data, ldat, ddat, domaines, epsilon)
+  SUBROUTINE partition_with_interfaces(nbproc, data, ldat, ddat, domains, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -266,7 +266,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domaines
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
     DOUBLE PRECISION :: epsilon
     INTEGER :: nbproc
     !====  OUT ====
@@ -297,14 +297,14 @@ CONTAINS
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
-                IF ((data%point(i)%coord(j)>domaines(n,j,2)).OR.&
-                     (data%point(i)%coord(j)<domaines(n,j,1))) ok=.FALSE.
+                IF ((data%point(i)%coord(j)>domains(n,j,2)).OR.&
+                     (data%point(i)%coord(j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
           ELSEIF (data%image==1) THEN
              ! Processing for partitionning in pixels of picture
              DO j=1,data%imgdim
-                IF ((data%refimg(i,j)>domaines(n,j,2)).OR.&
-                     (data%refimg(i,j)<domaines(n,j,1))) ok=.FALSE.
+                IF ((data%refimg(i,j)>domains(n,j,2)).OR.&
+                     (data%refimg(i,j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
           ENDIF
           IF ((n>nbproc-1).AND.(nbproc>1)) THEN
@@ -332,14 +332,14 @@ CONTAINS
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
-                IF ((abs(data%point(i)%coord(j)-domaines(n,j,1))<epsilon).OR.&
-                     (abs(data%point(i)%coord(j)-domaines(n,j,2))<epsilon)) ok=.TRUE.
+                IF ((abs(data%point(i)%coord(j)-domains(n,j,1))<epsilon).OR.&
+                     (abs(data%point(i)%coord(j)-domains(n,j,2))<epsilon)) ok=.TRUE.
              ENDDO
           ELSEIF (data%image==1) THEN
              ! Processing for partitionning in pixels of picture
              DO j=1,data%imgdim
-                IF ((abs(data%refimg(i,j)-domaines(n,j,1))<epsilon).OR.&
-                     (abs(data%refimg(i,j)-domaines(n,j,2))<epsilon)) ok=.TRUE.
+                IF ((abs(data%refimg(i,j)-domains(n,j,1))<epsilon).OR.&
+                     (abs(data%refimg(i,j)-domains(n,j,2))<epsilon)) ok=.TRUE.
              ENDDO
           ENDIF
           IF (.NOT. ok) THEN
@@ -355,7 +355,7 @@ CONTAINS
 
 
 
-  SUBROUTINE partition_with_overlappings(nbproc, data, ldat, ddat, domaines)
+  SUBROUTINE partition_with_overlappings(nbproc, data, ldat, ddat, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -363,7 +363,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domaines
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
     INTEGER :: nbproc
     !====  OUT ====
     INTEGER, DIMENSION(:,:), POINTER :: ddat
@@ -389,14 +389,14 @@ CONTAINS
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
-                IF ((data%point(i)%coord(j)>domaines(n,j,2)).OR.&
-                     (data%point(i)%coord(j)<domaines(n,j,1))) ok=.FALSE.
+                IF ((data%point(i)%coord(j)>domains(n,j,2)).OR.&
+                     (data%point(i)%coord(j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
           ELSEIF (data%image==1) THEN
              ! Processing for partitionning in pixels of picture
              DO j=1,data%imgdim
-                IF ((data%refimg(i,j)>domaines(n,j,2)).OR.&
-                     (data%refimg(i,j)<domaines(n,j,1))) ok=.FALSE.
+                IF ((data%refimg(i,j)>domains(n,j,2)).OR.&
+                     (data%refimg(i,j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
           ENDIF
           IF (ok) THEN
