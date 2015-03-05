@@ -409,7 +409,7 @@ CONTAINS
   END SUBROUTINE partition_with_overlappings
 
 
-  SUBROUTINE group_clusters(nbclust, iclust, clustermap, data)
+  SUBROUTINE group_clusters(nbclust, iclust, cluster_map, data)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -419,7 +419,7 @@ CONTAINS
     INTEGER :: nbclust
 
     !=== IN/OUT ===
-    INTEGER, DIMENSION(:,:), POINTER :: clustermap
+    INTEGER, DIMENSION(:,:), POINTER :: cluster_map
     INTEGER, DIMENSION(:), POINTER :: iclust
 
     !====  OUT ====
@@ -465,7 +465,7 @@ CONTAINS
           ok=.TRUE.
        ELSEIF (iclust(i)>0) THEN
           ! Storage of index
-          data%point(clustermap(i,j))%cluster=i
+          data%point(cluster_map(i,j))%cluster=i
           ! Test of overlappings
           ok2=.FALSE.
           i2=i+1
@@ -481,19 +481,19 @@ CONTAINS
                 ok2=.TRUE.
              ELSE
                 ! Intersections test
-                IF (clustermap(i,j)==clustermap(i2,j2)) THEN
+                IF (cluster_map(i,j)==cluster_map(i2,j2)) THEN
                    ! Intersection found : line n°i2 added to line n°i
                    n=0
                    DO k=1,iclust(i2)
                       ! Test of removal of duplications
                       ok3=.TRUE.
                       DO j3=1,iclust(i)
-                         IF (clustermap(i2,k)==clustermap(i,j3)) ok3=.FALSE.
+                         IF (cluster_map(i2,k)==cluster_map(i,j3)) ok3=.FALSE.
                       ENDDO
                       IF (ok3) THEN
                          n=n+1
-                         clustermap(i,iclust(i)+n)=clustermap(i2,k)
-                         clustermap(i2,k)=0                         
+                         cluster_map(i,iclust(i)+n)=cluster_map(i2,k)
+                         cluster_map(i2,k)=0                         
                       ENDIF
                    ENDDO
                    iclust(i)=iclust(i)+n

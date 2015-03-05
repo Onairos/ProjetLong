@@ -292,7 +292,7 @@ CONTAINS
 
 
 
-  SUBROUTINE receive_clusters(nbproc, nbclust, ldat, ddat, partitioned_data, clustermap, &
+  SUBROUTINE receive_clusters(nbproc, nbclust, ldat, ddat, partitioned_data, cluster_map, &
        nclust, iclust)
     IMPLICIT NONE
     ! librairie MPI
@@ -310,7 +310,7 @@ CONTAINS
     INTEGER :: nbclust
 
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: clustermap
+    INTEGER, DIMENSION(:,:), POINTER :: cluster_map
     INTEGER, DIMENSION(:), POINTER :: iclust
     
     !#### Variables  ####
@@ -335,7 +335,7 @@ CONTAINS
        DO i=1,partitioned_data%nb
           j=partitioned_data%point(i)%cluster
           iclust(j)=iclust(j)+1
-          clustermap(j,iclust(j))=ddat(0,i)
+          cluster_map(j,iclust(j))=ddat(0,i)
        ENDDO
        i0=i0+partitioned_data%nbclusters
     ENDIF
@@ -353,7 +353,7 @@ CONTAINS
           DO j=1,ldat(p)
              k=lclust(j)+i0
              iclust(k)=iclust(k)+1
-             clustermap(k,iclust(k))=ddat(p,j)
+             cluster_map(k,iclust(k))=ddat(p,j)
           ENDDO
           i0=i0+nclust(p)%nb
        ENDIF
