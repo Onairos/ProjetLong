@@ -156,7 +156,7 @@ CONTAINS
 
 
 
-  SUBROUTINE apply_kmeans(dim_num, point_num, nb_clusters, it_max, it_num, point, &
+  SUBROUTINE apply_kmeans(dimension, point_num, nb_clusters, it_max, it_num, point, &
        cluster, cluster_center, cluster_population, cluster_energy, numproc)
 
     !*****************************************************************************80
@@ -165,7 +165,7 @@ CONTAINS
     !
     !  Discussion:
     !
-    !    Given a matrix of POINT_NUM observations on DIM_NUM variables, the
+    !    Given a matrix of POINT_NUM observations on DIMENSION variables, the
     !    observations are to be ALLOCATEd to NB_CLUSTERS clusters in such 
     !    a way that the within-cluster sum of squares is minimized.
     !
@@ -199,13 +199,13 @@ CONTAINS
     !====  IN  ====
     INTEGER :: point_num ! the number of points
                 !TODO : a reflechir sur l'ordre de declaration
-    DOUBLE PRECISION :: point (dim_num, point_num) ! the points
+    DOUBLE PRECISION :: point (dimension, point_num) ! the points
     INTEGER :: nb_clusters ! the number of clusters
-    INTEGER :: dim_num ! the number of spatial dimensions
+    INTEGER :: dimension ! the number of spatial dimensions
     INTEGER :: it_max ! the maximum number of iterations
 
     !=== IN/OUT ===
-    DOUBLE PRECISION :: cluster_center (dim_num, nb_clusters) ! the cluster centers
+    DOUBLE PRECISION :: cluster_center (dimension, nb_clusters) ! the cluster centers
 
     !====  OUT ====
     DOUBLE PRECISION :: cluster_energy (nb_clusters) ! the cluster energies
@@ -218,7 +218,7 @@ CONTAINS
     
     !#### Variables  ####
     DOUBLE PRECISION :: listnorm (point_num, nb_clusters)
-    DOUBLE PRECISION :: stockcenter (dim_num, nb_clusters)
+    DOUBLE PRECISION :: stockcenter (dimension, nb_clusters)
     DOUBLE PRECISION :: stockenergy (nb_clusters)
     DOUBLE PRECISION :: norme
     DOUBLE PRECISION :: seuil
@@ -248,10 +248,10 @@ CONTAINS
        STOP
     ENDIF
 
-    IF ( dim_num < 1 ) THEN
+    IF ( dimension < 1 ) THEN
        WRITE ( *, '(a)' ) ' '
        WRITE ( *, '(a)' ) 'KMEANS_01 - Fatal error!'
-       WRITE ( *, '(a)' ) '  DIM_NUM < 1.0'
+       WRITE ( *, '(a)' ) '  DIMENSION < 1.0'
        STOP
     ENDIF
 
@@ -291,7 +291,7 @@ PRINT *, 'recherche des centres'
              DO j=1,i-1
                 val=0.0
                 norme=0.0
-                DO k=1,dim_num
+                DO k=1,dimension
                    val=max(val,abs(cluster_center(k,j)-point(k,p)))
                 ENDDO
                 valmax=min(val,valmax)
@@ -325,7 +325,7 @@ PRINT *, 'recherche des centres'
        DO i=1,nb_clusters
           stockenergy(i)=cluster_energy(i)
           stockpopulation(i)=cluster_population(i)
-          DO j=1,dim_num
+          DO j=1,dimension
              stockcenter(j,i)=cluster_center(j,i)
           ENDDO
        ENDDO
@@ -335,7 +335,7 @@ PRINT *, 'recherche des centres'
        listnorm(:,:)=0.0
        DO i=1,point_num
           DO j=1,nb_clusters
-             DO k=1,dim_num
+             DO k=1,dimension
                 listnorm(i,j)=listnorm(i,j)+(point(k,i)-cluster_center(k,j))**2
              ENDDO
           ENDDO
@@ -359,7 +359,7 @@ PRINT *, 'recherche des centres'
        cluster_center(:,:)=0.0
        DO j=1,point_num
           i=cluster(j) 
-          DO k=1,dim_num
+          DO k=1,dimension
              cluster_center(k,i)=cluster_center(k,i)+point(k,j)
           ENDDO
        ENDDO
