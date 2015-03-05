@@ -5,7 +5,7 @@ CONTAINS
 
 
   SUBROUTINE spectral_embedding(nbcluster, n, Z, A, ratio,cluster, &
-       cluster_center, cluster_population, cluster_energy, nbinfo, numproc, &
+       cluster_center, cluster_population, clusters_energies, nbinfo, numproc, &
        ratiomoy, ratiorij, ratiorii)
     IMPLICIT NONE
     !###########################################
@@ -21,7 +21,7 @@ CONTAINS
     
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: cluster_center ! centre des nbclusters clusters
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: cluster_energy ! somme des energies par cluster
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies ! somme des energies par cluster
     DOUBLE PRECISION :: ratio ! max des ration de frob sur matrice aff reordonnancee suivant
     DOUBLE PRECISION :: ratiomoy
     DOUBLE PRECISION :: ratiorii
@@ -56,7 +56,7 @@ CONTAINS
     ALLOCATE(cluster(n))
     ALLOCATE(cluster_center(nbcluster,nbcluster))
     ALLOCATE(cluster_population(nbcluster))
-    ALLOCATE(cluster_energy(nbcluster))
+    ALLOCATE(clusters_energies(nbcluster))
     ALLOCATE(Z1(n,nbcluster))
     ALLOCATE(Z2(nbcluster,n))
     ALLOCATE(Z3(n))
@@ -80,7 +80,7 @@ CONTAINS
     it_max=n*n
 
     CALL apply_kmeans( nbcluster, n, nbcluster, it_max, it_num,Z2,&
-         cluster, cluster_center, cluster_population, cluster_energy, &
+         cluster, cluster_center, cluster_population, clusters_energies, &
          numproc)
 
     !*****************************
@@ -151,7 +151,7 @@ CONTAINS
 
 
   SUBROUTINE apply_kmeans(dimension, point_num, nb_clusters, it_max, it_num, point, &
-       cluster, cluster_center, cluster_population, cluster_energy, numproc)
+       cluster, cluster_center, cluster_population, clusters_energies, numproc)
 
     !*****************************************************************************80
     !
@@ -202,7 +202,7 @@ CONTAINS
     DOUBLE PRECISION :: cluster_center (dimension, nb_clusters) ! the cluster centers
 
     !====  OUT ====
-    DOUBLE PRECISION :: cluster_energy (nb_clusters) ! the cluster energies
+    DOUBLE PRECISION :: clusters_energies (nb_clusters) ! the cluster energies
     INTEGER :: it_num ! the number of iterations taken
     INTEGER :: cluster (point_num) ! indicates which cluster each point belongs to
     INTEGER :: cluster_population (nb_clusters) ! the number of points in each cluster
@@ -317,7 +317,7 @@ PRINT *, 'recherche des centres'
        it_num = it_num + 1
        swap=0
        DO i=1,nb_clusters
-          stockenergy(i)=cluster_energy(i)
+          stockenergy(i)=clusters_energies(i)
           stockpopulation(i)=cluster_population(i)
           DO j=1,dimension
              stockcenter(j,i)=cluster_center(j,i)
@@ -344,7 +344,7 @@ PRINT *, 'recherche des centres'
                 swap=swap+1
              ENDIF
           ENDDO
-          cluster_energy(cluster(i))=cluster_energy(cluster(i))&
+          clusters_energies(cluster(i))=clusters_energies(cluster(i))&
                +listnorm(i,cluster(i))
           cluster_population(cluster(i))=cluster_population(cluster(i))+1
        ENDDO
