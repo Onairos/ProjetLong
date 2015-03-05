@@ -150,7 +150,7 @@ CONTAINS
 
 
 
-  SUBROUTINE apply_kmeans(dim_num, point_num, cluster_num, it_max, it_num, point, &
+  SUBROUTINE apply_kmeans(dim_num, point_num, nb_clusters, it_max, it_num, point, &
        cluster, cluster_center, cluster_population, cluster_energy, numproc)
 
     !*****************************************************************************80
@@ -160,7 +160,7 @@ CONTAINS
     !  Discussion:
     !
     !    Given a matrix of POINT_NUM observations on DIM_NUM variables, the
-    !    observations are to be ALLOCATEd to CLUSTER_NUM clusters in such 
+    !    observations are to be ALLOCATEd to NB_CLUSTERS clusters in such 
     !    a way that the within-cluster sum of squares is minimized.
     !
     !  Licensing:
@@ -194,32 +194,32 @@ CONTAINS
     INTEGER :: point_num ! the number of points
                 !TODO : a reflechir sur l'ordre de declaration
     DOUBLE PRECISION :: point (dim_num, point_num) ! the points
-    INTEGER :: cluster_num ! the number of clusters
+    INTEGER :: nb_clusters ! the number of clusters
     INTEGER :: dim_num ! the number of spatial dimensions
     INTEGER :: it_max ! the maximum number of iterations
 
     !=== IN/OUT ===
-    DOUBLE PRECISION :: cluster_center (dim_num, cluster_num) ! the cluster centers
+    DOUBLE PRECISION :: cluster_center (dim_num, nb_clusters) ! the cluster centers
 
     !====  OUT ====
-    DOUBLE PRECISION :: cluster_energy (cluster_num) ! the cluster energies
+    DOUBLE PRECISION :: cluster_energy (nb_clusters) ! the cluster energies
     INTEGER :: it_num ! the number of iterations taken
     INTEGER :: cluster (point_num) ! indicates which cluster each point belongs to
-    INTEGER :: cluster_population (cluster_num) ! the number of points in each cluster
+    INTEGER :: cluster_population (nb_clusters) ! the number of points in each cluster
 
     !== USELESS ===
     INTEGER :: numproc ! TODO : etudier si garder ou pas
     
     !#### Variables  ####
-    DOUBLE PRECISION :: listnorm (point_num, cluster_num)
-    DOUBLE PRECISION :: stockcenter (dim_num, cluster_num)
-    DOUBLE PRECISION :: stockenergy (cluster_num)
+    DOUBLE PRECISION :: listnorm (point_num, nb_clusters)
+    DOUBLE PRECISION :: stockcenter (dim_num, nb_clusters)
+    DOUBLE PRECISION :: stockenergy (nb_clusters)
     DOUBLE PRECISION :: norme
     DOUBLE PRECISION :: seuil
     DOUBLE PRECISION :: val
     DOUBLE PRECISION :: valmax
-    INTEGER :: cluster_id (cluster_num)
-    INTEGER :: stockpopulation (cluster_num)
+    INTEGER :: cluster_id (nb_clusters)
+    INTEGER :: stockpopulation (nb_clusters)
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -235,10 +235,10 @@ CONTAINS
     !
     !  Idiot checks.
     !
-    IF ( cluster_num < 1 ) THEN
+    IF ( nb_clusters < 1 ) THEN
        WRITE ( *, '(a)' ) ' '
        WRITE ( *, '(a)' ) 'KMEANS_01 - Fatal error!'
-       WRITE ( *, '(a)' ) '  CLUSTER_NUM < 1.0'
+       WRITE ( *, '(a)' ) '  NB_CLUSTERS < 1.0'
        STOP
     ENDIF
 
@@ -271,7 +271,7 @@ CONTAINS
 #if aff
 PRINT *, 'recherche des centres'
 #endif
-    DO i = 2, cluster_num
+    DO i = 2, nb_clusters
        ok=.FALSE.
        DO WHILE(.NOT. ok)
           valmax=2.0*seuil
@@ -316,7 +316,7 @@ PRINT *, 'recherche des centres'
     DO WHILE ((it_num<it_max).AND.(swap/=0))
        it_num = it_num + 1
        swap=0
-       DO i=1,cluster_num
+       DO i=1,nb_clusters
           stockenergy(i)=cluster_energy(i)
           stockpopulation(i)=cluster_population(i)
           DO j=1,dim_num
@@ -325,10 +325,10 @@ PRINT *, 'recherche des centres'
        ENDDO
 
        ! Computing of the distances
-       cluster_population(1:cluster_num) = 1
+       cluster_population(1:nb_clusters) = 1
        listnorm(:,:)=0.0
        DO i=1,point_num
-          DO j=1,cluster_num
+          DO j=1,nb_clusters
              DO k=1,dim_num
                 listnorm(i,j)=listnorm(i,j)+(point(k,i)-cluster_center(k,j))**2
              ENDDO
@@ -338,7 +338,7 @@ PRINT *, 'recherche des centres'
        ! Allocation related to the minimum of the distances
        cluster_population(:)=0
        DO i=1,point_num
-          DO j=1,cluster_num
+          DO j=1,nb_clusters
              IF (listnorm(i,j)<listnorm(i,cluster(i))) THEN
                 cluster(i)=j
                 swap=swap+1
@@ -357,7 +357,7 @@ PRINT *, 'recherche des centres'
              cluster_center(k,i)=cluster_center(k,i)+point(k,j)
           ENDDO
        ENDDO
-       DO i=1,cluster_num
+       DO i=1,nb_clusters
           cluster_center(:,i)=cluster_center(:,i)/cluster_population(i)
        ENDDO
 
