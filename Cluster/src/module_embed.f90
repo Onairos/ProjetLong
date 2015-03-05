@@ -7,12 +7,6 @@ CONTAINS
   SUBROUTINE spectral_embedding(nbcluster, n, Z, A, ratio,cluster, &
        cluster_center, cluster_population, cluster_energy, nbinfo, numproc, &
        ratiomoy, ratiorij, ratiorii)
-
-    !*****************************************
-    ! spectral embedding
-    !
-    ! dataw : points              TODO: WTF?
-    ! M : nbre de vp trouvees     TODO: WTF?
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
