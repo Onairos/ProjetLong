@@ -19,7 +19,7 @@ PROGRAM clusters
   TYPE(type_data) :: partitioned_data
   CHARACTER (LEN=80) :: procname ! MPI variable
   CHARACTER (LEN=30) :: entree
-  CHARACTER (LEN=30) :: mesh
+  CHARACTER (LEN=30) :: input_file
   DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
@@ -36,7 +36,7 @@ PROGRAM clusters
   INTEGER,DIMENSION(:), POINTER :: partitionning
   INTEGER,DIMENSION(:), POINTER :: iclust
   INTEGER,DIMENSION(:), POINTER :: ldat
-  INTEGER,DIMENSION(:), POINTER :: listenbideal
+  INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
   INTEGER :: i
   INTEGER :: ierr ! MPI variable
   INTEGER :: j
@@ -99,8 +99,8 @@ PROGRAM clusters
      PRINT *,'lecture des data... ',entree
 #endif
      OPEN(FILE=entree,UNIT=1)
-     CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,mesh,&
-          sigma,nblimit,listenbideal)
+     CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,input_file,&
+          sigma,nblimit,list_nb_clusters)
      t2 = MPI_WTIME()
      PRINT *, 'temps lecture data ', t2-t1
      CLOSE(1)
@@ -147,9 +147,9 @@ PROGRAM clusters
      IF (numproc==0) THEN
         DO i=1,nbproc-1
            tag=i
-           CALL MPI_SEND(listenbideal(i),1,MPI_INTEGER,i,tag,MPI_COMM_WORLD,ierr)
+           CALL MPI_SEND(list_nb_clusters(i),1,MPI_INTEGER,i,tag,MPI_COMM_WORLD,ierr)
         ENDDO
-        nbideal=listenbideal(0)
+        nbideal=list_nb_clusters(0)
      ELSE
         tag=numproc
         CALL MPI_RECV(nbideal,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
@@ -184,7 +184,7 @@ PROGRAM clusters
         partitioned_data%point(i)%coord=data%point(i)%coord
         partitioned_data%point(i)%cluster=0
      ENDDO
-     nbideal=listenbideal(1)
+     nbideal=list_nb_clusters(1)
   ENDIF
 
   ! Sigma computing if auto individual mode
@@ -302,7 +302,7 @@ PROGRAM clusters
      CALL write_final_clusters(nbclust,iclust,cluster_map)
 
      ! Information writing
-     CALL write_metadata(mesh,data,nbproc,nbclust)
+     CALL write_metadata(input_file,data,nbproc,nbclust)
   ENDIF
   IF(numproc==0) THEN
     t2 = MPI_WTIME()
