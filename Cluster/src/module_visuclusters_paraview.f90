@@ -613,7 +613,7 @@ CONTAINS
 
 
 
-  SUBROUTINE ecritpoint_paraview(unitgeo, unitind, nb_points, dimension, coords, ind, k)
+  SUBROUTINE ecritpoint_paraview(unit_geo, unit_ind, nb_points, dimension, coords, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -622,8 +622,8 @@ CONTAINS
     !====  IN  ====
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER, DIMENSION(:), POINTER :: ind
-    INTEGER :: unitgeo
-    INTEGER :: unitind
+    INTEGER :: unit_geo
+    INTEGER :: unit_ind
     INTEGER :: k
     INTEGER :: nb_points
     INTEGER :: i
@@ -632,39 +632,39 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    WRITE(unitgeo,'(a)') 'part'
-    WRITE(unitgeo,*) ind(k)
-    WRITE(unitgeo,*) '** decoupages **'
-    WRITE(unitgeo,'(a)') 'coordinates'
-    WRITE(unitgeo,*) nb_points
-    WRITE(unitind,'(a)') 'part'
-    WRITE(unitind,*) ind(k)
-    WRITE(unitind,'(a)') 'point'
+    WRITE(unit_geo,'(a)') 'part'
+    WRITE(unit_geo,*) ind(k)
+    WRITE(unit_geo,*) '** decoupages **'
+    WRITE(unit_geo,'(a)') 'coordinates'
+    WRITE(unit_geo,*) nb_points
+    WRITE(unit_ind,'(a)') 'part'
+    WRITE(unit_ind,*) ind(k)
+    WRITE(unit_ind,'(a)') 'point'
     DO i=1,nb_points
-       WRITE(unitgeo,*) coords(i,1)
-       WRITE(unitind,*) ind(i)
+       WRITE(unit_geo,*) coords(i,1)
+       WRITE(unit_ind,*) ind(i)
     ENDDO
     DO i=1,nb_points
-       WRITE(unitgeo,*) coords(i,2)
+       WRITE(unit_geo,*) coords(i,2)
     ENDDO
     DO i=1,nb_points
        IF (dimension==2) THEN
-          WRITE(unitgeo,*) 0.
+          WRITE(unit_geo,*) 0.
        ELSE
-          WRITE(unitgeo,*) coords(i,3)
+          WRITE(unit_geo,*) coords(i,3)
        ENDIF
     ENDDO
-    WRITE(unitgeo,'(a)') 'point'
-    WRITE(unitgeo,*)nb_points
+    WRITE(unit_geo,'(a)') 'point'
+    WRITE(unit_geo,*)nb_points
     DO i=1,nb_points
-       WRITE(unitgeo,*) i
+       WRITE(unit_geo,*) i
     ENDDO
     RETURN
   END SUBROUTINE ecritpoint_paraview
 
 
 
-  SUBROUTINE write_picture_to_paraview(unitgeo, unitind, nbp, params, ind, indp)
+  SUBROUTINE write_picture_to_paraview(unit_geo, unit_ind, nbp, params, ind, indp)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -675,8 +675,8 @@ CONTAINS
     INTEGER, DIMENSION(:), POINTER :: ind
     INTEGER, DIMENSION(:), POINTER :: indp
     INTEGER :: nbp
-    INTEGER :: unitgeo
-    INTEGER :: unitind
+    INTEGER :: unit_geo
+    INTEGER :: unit_ind
     !=== IN/OUT ===
     !====  OUT ====
     
@@ -745,28 +745,28 @@ CONTAINS
        ENDIF
     ENDDO
     ! Writing
-    WRITE(unitgeo,'(a)') 'part'
-    WRITE(unitgeo,*) ind(1)
-    WRITE(unitgeo,*) '** decoupages **'
-    WRITE(unitgeo,'(a)') 'coordinates'
-    WRITE(unitgeo,*) nbp
-    WRITE(unitind,'(a)') 'part'
-    WRITE(unitind,*) ind(1)
-    WRITE(unitind,'(a)') 'point'
+    WRITE(unit_geo,'(a)') 'part'
+    WRITE(unit_geo,*) ind(1)
+    WRITE(unit_geo,*) '** decoupages **'
+    WRITE(unit_geo,'(a)') 'coordinates'
+    WRITE(unit_geo,*) nbp
+    WRITE(unit_ind,'(a)') 'part'
+    WRITE(unit_ind,*) ind(1)
+    WRITE(unit_ind,'(a)') 'point'
     DO i=1,nbp
-       WRITE(unitgeo,*) kx(i)
-       WRITE(unitind,*) ind(i)
+       WRITE(unit_geo,*) kx(i)
+       WRITE(unit_ind,*) ind(i)
     ENDDO
     DO i=1,nbp
-       WRITE(unitgeo,*) ky(i)
+       WRITE(unit_geo,*) ky(i)
     ENDDO
     DO i=1,nbp
-       WRITE(unitgeo,*) kz(i)
+       WRITE(unit_geo,*) kz(i)
     ENDDO
-    WRITE(unitgeo,'(a)') 'point'
-    WRITE(unitgeo,*)nbp
+    WRITE(unit_geo,'(a)') 'point'
+    WRITE(unit_geo,*)nbp
     DO i=1,nbp
-       WRITE(unitgeo,*) i
+       WRITE(unit_geo,*) i
     ENDDO
     DEALLOCATE(kx)
     DEALLOCATE(ky)
