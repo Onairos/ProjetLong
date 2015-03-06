@@ -46,7 +46,7 @@ CONTAINS
 
 
   SUBROUTINE read_file(data, epsilon, coord_min, coord_max, nbproc, partitionning, &
-       mesh, sigma, nblimit, listenbideal)
+       mesh, sigma, nblimit, list_nb_clusters)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -65,7 +65,7 @@ CONTAINS
     DOUBLE PRECISION :: epsilon
     DOUBLE PRECISION :: sigma
     INTEGER, DIMENSION(:), POINTER :: partitionning
-    INTEGER, DIMENSION(:), POINTER :: listenbideal
+    INTEGER, DIMENSION(:), POINTER :: list_nb_clusters
     INTEGER :: nblimit
 
     !#### Variables  ####
@@ -90,11 +90,11 @@ CONTAINS
     nblimit=4
     decoupage=0
     IF (nbproc>1) THEN
-       ALLOCATE(listenbideal(0:nbproc-1))
+       ALLOCATE(list_nb_clusters(0:nbproc-1))
     ELSE
-       ALLOCATE(listenbideal(1))
+       ALLOCATE(list_nb_clusters(1))
     ENDIF
-    listenbideal(:)=0
+    list_nb_clusters(:)=0
     ! Reading
     ok=.FALSE.
     DO WHILE (.NOT. ok)
@@ -149,8 +149,8 @@ CONTAINS
           PRINT *,'  > nb maximal de clusters recherches :',nblimit
        CASE('NBCLUST')
           ok=.FALSE.
-          READ(1,*) listenbideal(:)
-          PRINT *,'  > test pour nb de clusters=',listenbideal
+          READ(1,*) list_nb_clusters(:)
+          PRINT *,'  > test pour nb de clusters=',list_nb_clusters
        CASE('SIGMA')
           ok=.FALSE.
           READ(1,*) sigma
