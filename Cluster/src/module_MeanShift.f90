@@ -1,6 +1,8 @@
 SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
+	USE module_structure
 
-   INCLUDE 'mpif.h'
+   !INCLUDE 'mpif.h'
+    !IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
@@ -15,29 +17,27 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
     !=== IN/OUT ===
     TYPE(type_data) :: dataw
     
-    IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################      
-    INTEGER ::point_num=dataw%nb								!number of points
-    INTEGER ::dim_num=dataw%dim								!number of dimensions
-    INTEGER ::cluster_num=dataw%nbclusters						!number of clusters
+    INTEGER ::point_num												!number of points
+    INTEGER ::dim_num													!number of dimensions
+    INTEGER ::cluster_num												!number of clusters
     
     !#### Variables  ####
-    INTEGER :: numClust 										!the cluster number  
-    DOUBLE PRECISION :: bandSq								!square of bandWidth
-    DOUBLE PRECISION :: stopThresh							!when mean has converged
-    INTEGER :: beenVisitedFlag(point_num)						!track if a point has been seen already
-    INTEGER :: numInitPts										!number of points to possibly use as initialization points
-    INTEGER :: clusterVotes(point_num)							!used to resolve conflicts on cluster membership
-    INTEGER :: stInd											!start point of mean
-    DOUBLE PRECISION :: myMean(dim_num)						!mean of this cluster
-    DOUBLE PRECISION :: myOldMean(dim_num)					!old mean computed for this cluster
-    INTEGER :: myMembers(point_num)							!1 if the point belongs to the cluster, else 0
-    INTEGER :: thisClusterVotes(point_num)						!number of votes for each point for this cluster
-    INTEGER :: mergeWith										!used to merge clusters
-    DOUBLE PRECISION :: clustCent(dim_num,cluster_num)		!centers of each cluster
-	DOUBLE PRECISION :: clusterVotes(cluster_num,point_num)	!number of votes for each point for each cluster
+    INTEGER :: numClust 												!the cluster number  
+    DOUBLE PRECISION :: bandSq										!square of bandWidth
+    DOUBLE PRECISION :: stopThresh									!when mean has converged
+    INTEGER :: beenVisitedFlag(dataw%nb)								!track if a point has been seen already
+    INTEGER :: numInitPts												!number of points to possibly use as initialization points
+    INTEGER :: thisClusterVotes(dataw%nb)								!used to resolve conflicts on cluster membership
+    INTEGER :: stInd													!start point of mean
+    DOUBLE PRECISION :: myMean(dataw%dim)								!mean of this cluster
+    DOUBLE PRECISION :: myOldMean(dataw%dim)							!old mean computed for this cluster
+    INTEGER :: myMembers(dataw%nb)										!1 if the point belongs to the cluster, else 0
+    INTEGER :: mergeWith												!used to merge clusters
+    DOUBLE PRECISION :: clustCent(dataw%dim,dataw%nbclusters)			!centers of each cluster
+	INTEGER :: clusterVotes(dataw%nbclusters,dataw%nb)					!number of votes for each point for each cluster
     INTEGER :: i
     INTEGER :: j
     INTEGER :: num
@@ -45,24 +45,24 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
     
     
     
-    !INITIALIZE STUFF
+    !INITIALIZE STUFF    
     point_num=dataw%nb
     dim_num=dataw%dim
     numClust = 1
-    bandSq = bandWidth^2
+    bandSq = bandWidth**2
     stopThresh = 1e-3*bandWidth
     beenVisitedFlag(:) = 0
     numInitPts = point_num
-    clusterVotes(:) = 0		
+    clusterVotes(:,:) = 0		
     
     DO WHILE (numInitPts>0)
     
 		!take the first point as start of mean
 		DO i=1, point_num
-			IF (beenVisitedFlag(i)=0) THEN
+			IF (beenVisitedFlag(i)==0) THEN
 				stInd = i
 				EXIT
-			END
+			ENDIF
 		ENDDO
 		myMean = dataw%point(stInd)%coord	!initialize mean to this points location
 		DO j=1, dim_num
@@ -77,13 +77,13 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
 				!dist squared from mean to all points still active
 				sqDist = 0
 				DO j=1, dim_num
-					sqDist = sqDist + (dataw%point(i)%coord(j) - myMean(j))^2
+					sqDist = sqDist + (dataw%point(i)%coord(j) - myMean(j))**2
 				ENDDO
 				IF (sqDist < bandSq) THEN
 					thisClusterVotes(i) = thisClusterVotes(i) + 1	!add a vote for all the in points belonging to this cluster
 					myMembers(i) = 1								!add any point within bandWidth to the cluster
 					beenVisitedFlag(i) = 1							!mark that these points have been visited
-				END
+				ENDIF
 			ENDDO
 			
 			myOldMean = myMean
@@ -96,18 +96,18 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
 						myMean(j) = myMean(j) + dataw%point(i)%coord(j)
 					ENDDO
 					num = num + 1
-				END
+				ENDIF
 			ENDDO
 			myMean = myMean/num
 			
 			!compute the distance from myMean to myOldMean
 			sqDist = 0
 			DO j=1, dim_num
-				sqDist = sqDist + (myOldMean(j) - myMean(j))^2
+				sqDist = sqDist + (myOldMean(j) - myMean(j))**2
 			ENDDO
 			
 			!if mean doesn't move much stop this cluster
-			IF (sqDist < stopThresh^2) THEN
+			IF (sqDist < stopThresh**2) THEN
 			
 				!check for merge posibilities
 				mergeWith = 0
@@ -115,12 +115,12 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
 					!compute the distance from possible new clust max to old clust max
 					sqDist = 0
 					DO j=1, dim_num
-						sqDist = sqDist + (clustCent(j,cN) - myMean(j))^2
+						sqDist = sqDist + (clustCent(j,cN) - myMean(j))**2
 					ENDDO
-					IF (sqDist < (bandWidth/2)^2) THEN
+					IF (sqDist < (bandWidth/2)**2) THEN
 						mergeWith = cN
 						EXIT
-					END
+					ENDIF
 				ENDDO
 				
 				IF (mergeWith > 0) THEN		!something to merge
@@ -133,10 +133,10 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
 					numClust = numClust + 1
 					clustCent(:,numClust) = myMean
 					clusterVotes(numClust,:) = thisClusterVotes
-				END
+				ENDIF
 				EXIT
 				
-			END
+			ENDIF
 		
 		ENDDO
 			
@@ -144,13 +144,13 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
 			numInitPts = 0
 			IF (beenVisitedFlag(i)==0) THEN
 				numInitPts = numInitPts + 1
-			END
+			ENDIF
 		ENDDO
 			
 	ENDDO
 	
 	DO i=1, point_num
-		dataw%point(i)%cluster = MAXLOC(clusterVotes(:,i))
+		dataw%point(i)%cluster = MAXLOC(clusterVotes(:,i), DIM=1)
 	ENDDO
 	
 END SUBROUTINE mean_shift
