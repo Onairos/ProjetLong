@@ -664,7 +664,7 @@ CONTAINS
 
 
 
-  SUBROUTINE write_picture_to_paraview(unit_geo, unit_ind, nbp, params, ind, indp)
+  SUBROUTINE write_picture_to_paraview(unit_geo, unit_ind, nb_pixels, params, ind, indp)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -674,7 +674,7 @@ CONTAINS
     TYPE(type_params) :: params
     INTEGER, DIMENSION(:), POINTER :: ind
     INTEGER, DIMENSION(:), POINTER :: indp
-    INTEGER :: nbp
+    INTEGER :: nb_pixels
     INTEGER :: unit_geo
     INTEGER :: unit_ind
     !=== IN/OUT ===
@@ -693,11 +693,11 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    ALLOCATE(kx(nbp))
+    ALLOCATE(kx(nb_pixels))
     kx(:)=0
-    ALLOCATE(ky(nbp))
+    ALLOCATE(ky(nb_pixels))
     ky(:)=0
-    ALLOCATE(kz(nbp))
+    ALLOCATE(kz(nb_pixels))
     kz(:)=0
     IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
          .AND.(params%imgdim==2)) THEN
@@ -711,7 +711,7 @@ CONTAINS
        CLOSE(50)
     ENDIF
     ! Search the points
-    DO i=1,nbp
+    DO i=1,nb_pixels
        k=indp(i)
        ix=params%refimg(k,1)
        iy=params%refimg(k,2)
@@ -749,23 +749,23 @@ CONTAINS
     WRITE(unit_geo,*) ind(1)
     WRITE(unit_geo,*) '** decoupages **'
     WRITE(unit_geo,'(a)') 'coordinates'
-    WRITE(unit_geo,*) nbp
+    WRITE(unit_geo,*) nb_pixels
     WRITE(unit_ind,'(a)') 'part'
     WRITE(unit_ind,*) ind(1)
     WRITE(unit_ind,'(a)') 'point'
-    DO i=1,nbp
+    DO i=1,nb_pixels
        WRITE(unit_geo,*) kx(i)
        WRITE(unit_ind,*) ind(i)
     ENDDO
-    DO i=1,nbp
+    DO i=1,nb_pixels
        WRITE(unit_geo,*) ky(i)
     ENDDO
-    DO i=1,nbp
+    DO i=1,nb_pixels
        WRITE(unit_geo,*) kz(i)
     ENDDO
     WRITE(unit_geo,'(a)') 'point'
-    WRITE(unit_geo,*)nbp
-    DO i=1,nbp
+    WRITE(unit_geo,*)nb_pixels
+    DO i=1,nb_pixels
        WRITE(unit_geo,*) i
     ENDDO
     DEALLOCATE(kx)
