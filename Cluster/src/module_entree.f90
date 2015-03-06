@@ -46,7 +46,7 @@ CONTAINS
 
 
   SUBROUTINE read_file(data, epsilon, coord_min, coord_max, nbproc, partitionning, &
-       mesh, sigma, nblimit, list_nb_clusters)
+       input_file, sigma, nblimit, list_nb_clusters)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -59,7 +59,7 @@ CONTAINS
     TYPE(type_data) :: data
 
     !====  OUT ====
-    CHARACTER (LEN=30) :: mesh
+    CHARACTER (LEN=30) :: input_file
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
     DOUBLE PRECISION :: epsilon
@@ -104,31 +104,31 @@ CONTAINS
        SELECT CASE(mot)
        CASE('DATA')
           ok=.FALSE.
-          READ(1,*) mesh
-          IF (mesh=='IMAGE') THEN
+          READ(1,*) input_file
+          IF (input_file=='IMAGE') THEN
              data%image=1
-             READ (1,*) mesh
+             READ (1,*) input_file
              PRINT *,'  > format d entree image + decoupage par pixel'
-             PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL read_picture_data(mesh,data,coord_min,coord_max)
-          ELSEIF (mesh=='GEOM') THEN
+             PRINT *,'  > lecture du fichier de data : ',input_file
+             CALL read_picture_data(input_file,data,coord_min,coord_max)
+          ELSEIF (input_file=='GEOM') THEN
              data%geom=1
-             READ (1,*) mesh
+             READ (1,*) input_file
              PRINT *,'  > format d entree image + decoupage geometrique'
-             PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL read_geometric_data(mesh,data,coord_min,coord_max)
-          ELSEIF (mesh=='SEUIL') THEN
+             PRINT *,'  > lecture du fichier de data : ',input_file
+             CALL read_geometric_data(input_file,data,coord_min,coord_max)
+          ELSEIF (input_file=='SEUIL') THEN
              data%seuil=1
-             READ (1,*) mesh
+             READ (1,*) input_file
              PRINT *,'  > format d entree image + decoupage par seuil'
-             PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL read_threshold_data(mesh,data,coord_min,coord_max)
-          ELSEIF (mesh=='COORD') THEN
+             PRINT *,'  > lecture du fichier de data : ',input_file
+             CALL read_threshold_data(input_file,data,coord_min,coord_max)
+          ELSEIF (input_file=='COORD') THEN
              data%coord=1
-             READ (1,*) mesh
+             READ (1,*) input_file
              PRINT *,'  > format d entree image + decoupage par seuil'
-             PRINT *,'  > lecture du fichier de data : ',mesh
-             CALL read_coordinates_data(mesh,data,coord_min,coord_max)
+             PRINT *,'  > lecture du fichier de data : ',input_file
+             CALL read_coordinates_data(input_file,data,coord_min,coord_max)
           ELSE
              PRINT *
              PRINT *,'format de donnees non reconnu !!!'
@@ -263,14 +263,14 @@ CONTAINS
   END SUBROUTINE read_file
 
 
-  SUBROUTINE read_coordinates_data(mesh, data, coord_min, coord_max)
+  SUBROUTINE read_coordinates_data(input_file, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    CHARACTER (LEN=30) :: mesh
+    CHARACTER (LEN=30) :: input_file
 
     !=== IN/OUT ===
     TYPE(type_data) :: data
@@ -288,7 +288,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     ! Reading classic data
-    OPEN(FILE=mesh,UNIT=2)
+    OPEN(FILE=input_file,UNIT=2)
     READ(2,*) data%nb,data%dim
     data%nbclusters=0
     PRINT *,'    > nb de points :',data%nb
@@ -323,14 +323,14 @@ CONTAINS
   END SUBROUTINE read_coordinates_data
 
 
-  SUBROUTINE read_picture_data(mesh, data, coord_min, coord_max)
+  SUBROUTINE read_picture_data(input_file, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    CHARACTER (LEN=30) :: mesh
+    CHARACTER (LEN=30) :: input_file
     !=== IN/OUT ===
     TYPE(type_data) :: data
     !====  OUT ====
@@ -345,7 +345,7 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    OPEN(FILE=mesh,UNIT=2)
+    OPEN(FILE=input_file,UNIT=2)
     READ(2,*) data%imgdim,data%imgt
     PRINT *,'    >dimension de l image:',data%imgdim
     PRINT *,'    >nb de temps:',data%imgt
@@ -384,14 +384,14 @@ CONTAINS
   END SUBROUTINE read_picture_data
   
 
-  SUBROUTINE read_geometric_data(mesh, data, coord_min, coord_max)
+  SUBROUTINE read_geometric_data(input_file, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    CHARACTER (LEN=30) :: mesh
+    CHARACTER (LEN=30) :: input_file
 
     !=== IN/OUT ===
     TYPE(type_data) :: data
@@ -409,7 +409,7 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    OPEN(FILE=mesh,UNIT=2)
+    OPEN(FILE=input_file,UNIT=2)
     READ(2,*) data%imgdim,data%imgt
     PRINT *,'    >dimension de l image:',data%imgdim
     PRINT *,'    >nb de temps:',data%imgt
@@ -467,14 +467,14 @@ CONTAINS
 
 
 
-  SUBROUTINE read_threshold_data(mesh, data, coord_min, coord_max)
+  SUBROUTINE read_threshold_data(input_file, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    CHARACTER (LEN=30) :: mesh
+    CHARACTER (LEN=30) :: input_file
 
     !=== IN/OUT ===
     TYPE(type_data) :: data
@@ -492,7 +492,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     ! Reading classic data
-    OPEN(FILE=mesh,UNIT=2)
+    OPEN(FILE=input_file,UNIT=2)
     READ(2,*) data%imgdim,data%imgt
     PRINT *,'    >dimension de l image:',data%imgdim
     PRINT *,'    >nb de temps:',data%imgt

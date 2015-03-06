@@ -19,7 +19,7 @@ PROGRAM clusters
   TYPE(type_data) :: partitioned_data
   CHARACTER (LEN=80) :: procname ! MPI variable
   CHARACTER (LEN=30) :: entree
-  CHARACTER (LEN=30) :: mesh
+  CHARACTER (LEN=30) :: input_file
   DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
@@ -99,7 +99,7 @@ PROGRAM clusters
      PRINT *,'lecture des data... ',entree
 #endif
      OPEN(FILE=entree,UNIT=1)
-     CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,mesh,&
+     CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,input_file,&
           sigma,nblimit,list_nb_clusters)
      t2 = MPI_WTIME()
      PRINT *, 'temps lecture data ', t2-t1
@@ -302,7 +302,7 @@ PROGRAM clusters
      CALL write_final_clusters(nbclust,iclust,cluster_map)
 
      ! Information writing
-     CALL write_metadata(mesh,data,nbproc,nbclust)
+     CALL write_metadata(input_file,data,nbproc,nbclust)
   ENDIF
   IF(numproc==0) THEN
     t2 = MPI_WTIME()
