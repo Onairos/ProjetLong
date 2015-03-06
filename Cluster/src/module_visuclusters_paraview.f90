@@ -273,7 +273,7 @@ CONTAINS
     INTEGER, DIMENSION(:), POINTER :: indp
     INTEGER :: i
     INTEGER :: j
-    INTEGER :: nb
+    INTEGER :: nb_points
     INTEGER :: offset
     INTEGER :: totnum
     
@@ -317,16 +317,16 @@ CONTAINS
        WRITE(num,*) i
        files='decoupe.'//trim(adjustl(num))
        OPEN(FILE=files,UNIT=20)
-       READ(20,*) nb
-       PRINT *,'  > ',i,' :',nb
-        ALLOCATE(coords(nb,params%dim))
+       READ(20,*) nb_points
+       PRINT *,'  > ',i,' :',nb_points
+        ALLOCATE(coords(nb_points,params%dim))
        coords(:,:)=0.
-       ALLOCATE(ind(nb))
+       ALLOCATE(ind(nb_points))
        ind(:)=0
-       ALLOCATE(indp(nb))
+       ALLOCATE(indp(nb_points))
        indp(:)=0
-       IF (nb>0) THEN
-          DO j=1,nb
+       IF (nb_points>0) THEN
+          DO j=1,nb_points
              IF (params%coord==1) THEN
                 ! Partitionning by coordinates
                 READ(20,*) coords(j,:)
@@ -340,10 +340,10 @@ CONTAINS
           ! Writing
           IF (params%coord==1) THEN
              ! Partitionning by coordinates
-             CALL ecritpoint_paraview(10,11,nb,params%dim,coords,ind,1)
+             CALL ecritpoint_paraview(10,11,nb_points,params%dim,coords,ind,1)
           ELSE
              ! Partitionning 1D picture
-             CALL write_picture_to_paraview(10,11,nb,params,ind,indp)
+             CALL write_picture_to_paraview(10,11,nb_points,params,ind,indp)
           ENDIF
        ENDIF
        DEALLOCATE(coords)
@@ -409,7 +409,7 @@ CONTAINS
     INTEGER :: j
     INTEGER :: k
     INTEGER :: lenn
-    INTEGER :: nb
+    INTEGER :: nb_points
     INTEGER :: nbstar
     
     !###########################################      
@@ -440,25 +440,25 @@ CONTAINS
        WRITE(10,'(a)') 'element id assign'
        WRITE(11,*) '** indices des elements clusterises **'
        ! Reading
-       READ(20,*) nb,k
-       PRINT *,'  > ',i,' :',nb,' -> ',files
-       ALLOCATE(coords(nb,k))
-       ALLOCATE(ind(max(1,nb)))
+       READ(20,*) nb_points,k
+       PRINT *,'  > ',i,' :',nb_points,' -> ',files
+       ALLOCATE(coords(nb_points,k))
+       ALLOCATE(ind(max(1,nb_points)))
        ind(:)=0
-       ALLOCATE(indp(max(1,nb)))
+       ALLOCATE(indp(max(1,nb_points)))
        indp(:)=0
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
           ! Reading the matchings
           files='decoupe.'//trim(num)
           OPEN(FILE=files,UNIT=21)
           READ(21,*)
-          ALLOCATE(corresp(nb))
-          DO j=1,nb
+          ALLOCATE(corresp(nb_points))
+          DO j=1,nb_points
              READ(21,*) corresp(j)
           ENDDO
           CLOSE(21)
        ENDIF
-       DO j=1,nb
+       DO j=1,nb_points
           IF (params%coord==1) THEN
              READ(20,*) coords(j,:),ind(j)
           ELSE
@@ -470,10 +470,10 @@ CONTAINS
        ! Writing
        IF (params%coord==1) THEN
           ! partitionning by coordinates
-          CALL ecritpoint_paraview(10,11,nb,params%dim,coords,ind,1)
+          CALL ecritpoint_paraview(10,11,nb_points,params%dim,coords,ind,1)
        ELSE
           ! partitionning 1D picture
-          CALL write_picture_to_paraview(10,11,nb,params,ind,indp)
+          CALL write_picture_to_paraview(10,11,nb_points,params,ind,indp)
        ENDIF
        DEALLOCATE(coords)
        DEALLOCATE(ind)
@@ -533,8 +533,8 @@ CONTAINS
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: nb
-    INTEGER :: nb0
+    INTEGER :: nb_points
+    INTEGER :: nb_points_temp
     
     !###########################################
     ! INSTRUCTIONS
@@ -544,17 +544,17 @@ CONTAINS
        READ(1,*) j,k
        PRINT *,'lecture du fichier de maillage...',j,k
        ALLOCATE(coords(j,k))
-       nb0=0
+       nb_points_temp=0
        DO i=1,j
           READ(1,*,END=100) coords(i,:)
-          nb0=nb0+1
+          nb_points_temp=nb_points_temp+1
        ENDDO
-100    PRINT *,'nb de points ',nb0
-       j=nb0
+100    PRINT *,'nb de points ',nb_points_temp
+       j=nb_points_temp
        CLOSE(1)
     ENDIF
 
-    nb0=k ! Points dimension
+    nb_points_temp=k ! Points dimension
     ! Output
     PRINT *,'-> visu/cluster.final.geo'
     PRINT *,'-> visu/cluster.final.indices'
@@ -575,9 +575,9 @@ CONTAINS
        WRITE(num,*) i
        files='cluster.final.'//trim(adjustl(num))
        OPEN(FILE=files,UNIT=20)
-       READ(20,*) nb
-       PRINT *,'  > ',i,' :',nb
-       DO j=1,nb
+       READ(20,*) nb_points
+       PRINT *,'  > ',i,' :',nb_points
+       DO j=1,nb_points
           READ(20,*) k
           ind(k)=i
           indp(k)=k
@@ -613,7 +613,7 @@ CONTAINS
 
 
 
-  SUBROUTINE ecritpoint_paraview(unitgeo, unitind, nb, dimension, coords, ind, k)
+  SUBROUTINE ecritpoint_paraview(unitgeo, unitind, nb_points, dimension, coords, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -625,7 +625,7 @@ CONTAINS
     INTEGER :: unitgeo
     INTEGER :: unitind
     INTEGER :: k
-    INTEGER :: nb
+    INTEGER :: nb_points
     INTEGER :: i
     INTEGER :: dimension
     
@@ -636,18 +636,18 @@ CONTAINS
     WRITE(unitgeo,*) ind(k)
     WRITE(unitgeo,*) '** decoupages **'
     WRITE(unitgeo,'(a)') 'coordinates'
-    WRITE(unitgeo,*) nb
+    WRITE(unitgeo,*) nb_points
     WRITE(unitind,'(a)') 'part'
     WRITE(unitind,*) ind(k)
     WRITE(unitind,'(a)') 'point'
-    DO i=1,nb
+    DO i=1,nb_points
        WRITE(unitgeo,*) coords(i,1)
        WRITE(unitind,*) ind(i)
     ENDDO
-    DO i=1,nb
+    DO i=1,nb_points
        WRITE(unitgeo,*) coords(i,2)
     ENDDO
-    DO i=1,nb
+    DO i=1,nb_points
        IF (dimension==2) THEN
           WRITE(unitgeo,*) 0.
        ELSE
@@ -655,8 +655,8 @@ CONTAINS
        ENDIF
     ENDDO
     WRITE(unitgeo,'(a)') 'point'
-    WRITE(unitgeo,*)nb
-    DO i=1,nb
+    WRITE(unitgeo,*)nb_points
+    DO i=1,nb_points
        WRITE(unitgeo,*) i
     ENDDO
     RETURN
