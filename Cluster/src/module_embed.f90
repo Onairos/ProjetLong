@@ -150,7 +150,7 @@ CONTAINS
 
 
 
-  SUBROUTINE apply_kmeans(dimension, point_num, nb_clusters, it_max, it_num, point, &
+  SUBROUTINE apply_kmeans(dimension, nb_points, nb_clusters, it_max, it_num, points, &
        clusters, clusters_centers, cluster_population, clusters_energies, numproc)
 
     !*****************************************************************************80
@@ -159,7 +159,7 @@ CONTAINS
     !
     !  Discussion:
     !
-    !    Given a matrix of POINT_NUM observations on DIMENSION variables, the
+    !    Given a matrix of NB_POINTS observations on DIMENSION variables, the
     !    observations are to be ALLOCATEd to NB_CLUSTERS clusters in such 
     !    a way that the within-cluster sum of squares is minimized.
     !
@@ -191,9 +191,9 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    INTEGER :: point_num ! the number of points
+    INTEGER :: nb_points ! the number of points
                 !TODO : a reflechir sur l'ordre de declaration
-    DOUBLE PRECISION :: point (dimension, point_num) ! the points
+    DOUBLE PRECISION :: points (dimension, nb_points) ! the points
     INTEGER :: nb_clusters ! the number of clusters
     INTEGER :: dimension ! the number of spatial dimensions
     INTEGER :: it_max ! the maximum number of iterations
@@ -204,14 +204,14 @@ CONTAINS
     !====  OUT ====
     DOUBLE PRECISION :: clusters_energies (nb_clusters) ! the cluster energies
     INTEGER :: it_num ! the number of iterations taken
-    INTEGER :: clusters (point_num) ! indicates which cluster each point belongs to
+    INTEGER :: clusters (nb_points) ! indicates which cluster each point belongs to
     INTEGER :: cluster_population (nb_clusters) ! the number of points in each cluster
 
     !== USELESS ===
     INTEGER :: numproc ! TODO : etudier si garder ou pas
     
     !#### Variables  ####
-    DOUBLE PRECISION :: listnorm (point_num, nb_clusters)
+    DOUBLE PRECISION :: listnorm (nb_points, nb_clusters)
     DOUBLE PRECISION :: stockcenter (dimension, nb_clusters)
     DOUBLE PRECISION :: stockenergy (nb_clusters)
     DOUBLE PRECISION :: norme
@@ -249,10 +249,10 @@ CONTAINS
        STOP
     ENDIF
 
-    IF ( point_num < 1 ) THEN
+    IF ( nb_points < 1 ) THEN
        WRITE ( *, '(a)' ) ' '
        WRITE ( *, '(a)' ) 'KMEANS_01 - Fatal error!'
-       WRITE ( *, '(a)' ) '  POINT_NUM < 1.0'
+       WRITE ( *, '(a)' ) '  NB_POINTS < 1.0'
        STOP
     ENDIF
     !
@@ -263,7 +263,7 @@ CONTAINS
     !
     !  Assign one point to each cluster center.
     !
-    clusters_centers(:,1) = point(:,1)
+    clusters_centers(:,1) = points(:,1)
     cluster_id(:)=0
     cluster_id(1)=1
     p=2
@@ -286,7 +286,7 @@ PRINT *, 'recherche des centres'
                 val=0.0
                 norme=0.0
                 DO k=1,dimension
-                   val=max(val,abs(clusters_centers(k,j)-point(k,p)))
+                   val=max(val,abs(clusters_centers(k,j)-points(k,p)))
                 ENDDO
                 valmax=min(val,valmax)
              ENDDO
@@ -295,7 +295,7 @@ PRINT *, 'recherche des centres'
          p=p+1
 
          ! Lower the threshold if not enough centers found
-         IF ((p>point_num).AND.(.NOT. ok)) THEN 
+         IF ((p>nb_points).AND.(.NOT. ok)) THEN 
             seuil=0.9*seuil
 #if aff
             PRINT *,'abaisse seuil :',seuil
@@ -304,7 +304,7 @@ PRINT *, 'recherche des centres'
           ENDIF
        ENDDO
        p=p-1
-       clusters_centers(:,i)=point(:,p)
+       clusters_centers(:,i)=points(:,p)
        cluster_id(i)=p
     ENDDO
 #if aff
@@ -327,17 +327,17 @@ PRINT *, 'recherche des centres'
        ! Computing of the distances
        cluster_population(1:nb_clusters) = 1
        listnorm(:,:)=0.0
-       DO i=1,point_num
+       DO i=1,nb_points
           DO j=1,nb_clusters
              DO k=1,dimension
-                listnorm(i,j)=listnorm(i,j)+(point(k,i)-clusters_centers(k,j))**2
+                listnorm(i,j)=listnorm(i,j)+(points(k,i)-clusters_centers(k,j))**2
              ENDDO
           ENDDO
        ENDDO
 
        ! Allocation related to the minimum of the distances
        cluster_population(:)=0
-       DO i=1,point_num
+       DO i=1,nb_points
           DO j=1,nb_clusters
              IF (listnorm(i,j)<listnorm(i,clusters(i))) THEN
                 clusters(i)=j
@@ -351,10 +351,10 @@ PRINT *, 'recherche des centres'
 
        ! Update of centers
        clusters_centers(:,:)=0.0
-       DO j=1,point_num
+       DO j=1,nb_points
           i=clusters(j) 
           DO k=1,dimension
-             clusters_centers(k,i)=clusters_centers(k,i)+point(k,j)
+             clusters_centers(k,i)=clusters_centers(k,i)+points(k,j)
           ENDDO
        ENDDO
        DO i=1,nb_clusters
