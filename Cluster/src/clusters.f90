@@ -43,7 +43,7 @@ PROGRAM clusters
   INTEGER :: len ! MPI variable
   INTEGER :: nbclust
   INTEGER :: nbideal
-  INTEGER :: nblimit
+  INTEGER :: nb_clusters_max
   INTEGER :: nbproc ! MPI variable
   INTEGER :: nmax
   INTEGER :: numproc ! MPI variable
@@ -100,7 +100,7 @@ PROGRAM clusters
 #endif
      OPEN(FILE=entree,UNIT=1)
      CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,input_file,&
-          sigma,nblimit,list_nb_clusters)
+          sigma,nb_clusters_max,list_nb_clusters)
      t2 = MPI_WTIME()
      PRINT *, 'temps lecture data ', t2-t1
      CLOSE(1)
@@ -141,7 +141,7 @@ PROGRAM clusters
 
      ! Nblimit sending
      CALL MPI_BARRIER(MPI_COMM_WORLD,ierr)
-     CALL MPI_BCAST(nblimit,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+     CALL MPI_BCAST(nb_clusters_max,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
 
      ! Nbideal sending
      IF (numproc==0) THEN
@@ -221,7 +221,7 @@ PROGRAM clusters
 #if aff
      PRINT *,numproc,'calcul des clusters...'
 #endif
-     CALL apply_spectral_clustering(numproc,nblimit,nbideal,partitioned_data,sigma)
+     CALL apply_spectral_clustering(numproc,nb_clusters_max,nbideal,partitioned_data,sigma)
   ENDIF
   t2 = MPI_WTIME()
   t_parall = t2 - t1

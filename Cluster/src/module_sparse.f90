@@ -6,7 +6,7 @@ CONTAINS
 
   !*****************************************
   !calcul des clusters
-  SUBROUTINE sp_calculclusters(numproc, nblimit, nbideal, partitioned_data, sigma)
+  SUBROUTINE sp_calculclusters(numproc, nb_clusters_max, nbideal, partitioned_data, sigma)
 
     IMPLICIT INTEGER(i, j, q)
     INCLUDE 'mpif.h'
@@ -18,7 +18,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax, clusters_energies, &
          ratiomin, ratiomoy, ratiorii, ratiorij
     INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters, nb_info
-    INTEGER :: nblimit, nbideal
+    INTEGER :: nb_clusters_max, nbideal
     DOUBLE PRECISION :: norme, ratio, ratio1, ratio2, seuilrij
     CHARACTER (LEN=30) :: num, files
 
@@ -113,8 +113,8 @@ CONTAINS
 
   DEALLOCATE(D)
 
-    ! nb et nblimit meme valeur ?
-    nb = 2*nblimit
+    ! nb et nb_clusters_max meme valeur ?
+    nb = 2*nb_clusters_max
 
     t1 = MPI_WTIME()
     CALL solve_arpack(AS, IAS, JAS, n, nnz2, nb, W, Z)
@@ -149,21 +149,21 @@ CONTAINS
 
     IF ((nbideal==0).AND.(n>2)) THEN
        !** recherche du meilleur decoupage
-       ALLOCATE(ratiomax(nblimit))
+       ALLOCATE(ratiomax(nb_clusters_max))
        ratiomax(:)=0
-       ALLOCATE(ratiomin(nblimit))
+       ALLOCATE(ratiomin(nb_clusters_max))
        ratiomin(:)=0
-       ALLOCATE(ratiomoy(nblimit))
+       ALLOCATE(ratiomoy(nb_clusters_max))
        ratiomoy(:)=0
-       ALLOCATE(ratiorii(nblimit))
+       ALLOCATE(ratiorii(nb_clusters_max))
        ratiorii(:)=0
-       ALLOCATE(ratiorij(nblimit))
+       ALLOCATE(ratiorij(nb_clusters_max))
        ratiorij(:)=0
 
-       ALLOCATE(nb_info(nblimit))
+       ALLOCATE(nb_info(nb_clusters_max))
        nb_info(:)=0
 
-       DO nbcluster = 2 ,min(n,nblimit)
+       DO nbcluster = 2 ,min(n,nb_clusters_max)
 
           ALLOCATE(clusters(n))
           clusters(:)=0.0
@@ -191,12 +191,12 @@ PRINT *, 'ratio de frobenius'
 #endif
        !*******************************
        ! Ratio de norme de frobenius
-       ratio=ratiomax(nblimit)
-       partitioned_data%nbclusters=nblimit
+       ratio=ratiomax(nb_clusters_max)
+       partitioned_data%nbclusters=nb_clusters_max
        ratio1=0.0
        ratio2=1e+10
 
-       DO i=2,nblimit
+       DO i=2,nb_clusters_max
           IF ((numproc==0).AND.(nbproc>1)) THEN 
              seuilrij=1e-1
           ELSE
@@ -459,11 +459,11 @@ PRINT *, 'ratio de frobenius'
 
   END SUBROUTINE sp_matvec
 
-  SUBROUTINE solve_arpack(A, IA, JA, ndim, nnz, nblimit, W, Z)
+  SUBROUTINE solve_arpack(A, IA, JA, ndim, nnz, nb_clusters_max, W, Z)
 
   DOUBLE PRECISION, INTENT(IN), DIMENSION(:) :: A
   INTEGER, INTENT(IN), DIMENSION(:) :: IA, JA
-  INTEGER, INTENT(IN) :: ndim, nnz, nblimit
+  INTEGER, INTENT(IN) :: ndim, nnz, nb_clusters_max
 
   DOUBLE PRECISION, INTENT(OUT), POINTER :: W(:)
   DOUBLE PRECISION, INTENT(OUT), POINTER :: Z(:,:)
@@ -532,7 +532,7 @@ PRINT *, 'ratio de frobenius'
 ! lien entre les tailles
       maxn = ndim
       ldv = maxn
-      maxnev = nblimit
+      maxnev = nb_clusters_max
       maxncv = 2*maxnev + 1
 
 ! allocation memoire
@@ -880,12 +880,12 @@ PRINT *, 'ratio de frobenius'
 !
  9000 CONTINUE
 
-      ALLOCATE(W(nblimit))
-      ALLOCATE(Z(n, nblimit))
+      ALLOCATE(W(nb_clusters_max))
+      ALLOCATE(Z(n, nb_clusters_max))
 
-      W(1:nblimit) = d(1:nblimit, 1)
+      W(1:nb_clusters_max) = d(1:nb_clusters_max, 1)
 
-      DO i = 1, nblimit
+      DO i = 1, nb_clusters_max
         Z(:,i) = v(:,i)
       ENDDO
 

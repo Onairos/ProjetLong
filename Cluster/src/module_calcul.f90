@@ -129,7 +129,7 @@ CONTAINS
     RETURN
   END SUBROUTINE get_sigma_interface
 
-  SUBROUTINE apply_spectral_clustering(numproc, nblimit, nbideal, partitioned_data, sigma)
+  SUBROUTINE apply_spectral_clustering(numproc, nb_clusters_max, nbideal, partitioned_data, sigma)
     IMPLICIT NONE
     INCLUDE 'mpif.h'
     !###########################################
@@ -139,7 +139,7 @@ CONTAINS
     !====  IN  ====
     DOUBLE PRECISION :: sigma
     INTEGER :: nbideal
-    INTEGER :: nblimit
+    INTEGER :: nb_clusters_max
     INTEGER :: numproc
 
     !=== IN/OUT ===
@@ -245,7 +245,7 @@ CONTAINS
     ELSE
       PRINT *, numproc, 'solveur arpack'
 
-      nb = 2*nblimit
+      nb = 2*nb_clusters_max
       nbvp = nb
       CALL solve_arpack_full(A, n, nb, W, Z)
 
@@ -274,20 +274,20 @@ CONTAINS
     ! Spectral embedding
     IF ((nbideal==0).AND.(n>2)) THEN
        ! Search of the best partitionning
-       ALLOCATE(ratiomax(nblimit))
+       ALLOCATE(ratiomax(nb_clusters_max))
        ratiomax(:)=0
-       ALLOCATE(ratiomin(nblimit))
+       ALLOCATE(ratiomin(nb_clusters_max))
        ratiomin(:)=0
-       ALLOCATE(ratiomoy(nblimit))
+       ALLOCATE(ratiomoy(nb_clusters_max))
        ratiomoy(:)=0
-       ALLOCATE(ratiorii(nblimit))
+       ALLOCATE(ratiorii(nb_clusters_max))
        ratiorii(:)=0
-       ALLOCATE(ratiorij(nblimit))
+       ALLOCATE(ratiorij(nb_clusters_max))
        ratiorij(:)=0
 
-       ALLOCATE(nb_info(nblimit))
+       ALLOCATE(nb_info(nb_clusters_max))
        nb_info(:)=0
-       DO nbcluster=2,min(n,nblimit)
+       DO nbcluster=2,min(n,nb_clusters_max)
 
           ALLOCATE(cluster(n))
           cluster(:)=0
@@ -314,11 +314,11 @@ CONTAINS
 PRINT *, 'ratio de frobenius'
 #endif
        ! Ratio of frobenius norm
-       ratio=ratiomax(nblimit)
-       partitioned_data%nbclusters=nblimit
+       ratio=ratiomax(nb_clusters_max)
+       partitioned_data%nbclusters=nb_clusters_max
        ratio1=0.0
        ratio2=1e+10
-       DO i=2,nblimit
+       DO i=2,nb_clusters_max
           IF ((numproc==0).AND.(nbproc>1)) THEN 
              seuilrij=1e-1
           ELSE
