@@ -29,7 +29,7 @@ CONTAINS
   END SUBROUTINE write_domains
 
 
-  SUBROUTINE write_partitionning(nbproc, data, ldat, assignements)
+  SUBROUTINE write_partitionning(nbproc, data, points_by_domain, assignements)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -38,7 +38,7 @@ CONTAINS
     !====  IN  ====
     TYPE(type_data) :: data
     INTEGER,DIMENSION(:,:),POINTER :: assignements
-    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER,DIMENSION(:),POINTER :: points_by_domain
     INTEGER :: nbproc
     
     !#### Variables  ####
@@ -64,13 +64,13 @@ CONTAINS
        nbdom=nbproc-1
     ENDIF
     DO i=offset,nbdom
-       PRINT *,'    > zone ',i,':',ldat(i)
+       PRINT *,'    > zone ',i,':',points_by_domain(i)
        ! File name
        WRITE(num,*) i
        files='decoupe.'//trim(adjustl(num))
        OPEN(FILE=files,UNIT=10)
-       WRITE(10,*) ldat(i)
-       DO j=1,ldat(i)
+       WRITE(10,*) points_by_domain(i)
+       DO j=1,points_by_domain(i)
           IF (data%coord==1) THEN
              ! Writing in coordinates
              WRITE(10,*) data%point(assignements(i,j))%coord(:)

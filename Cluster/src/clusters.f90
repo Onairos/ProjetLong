@@ -35,7 +35,7 @@ PROGRAM clusters
   INTEGER,DIMENSION(:,:) ,POINTER :: assignements
   INTEGER,DIMENSION(:), POINTER :: partitionning
   INTEGER,DIMENSION(:), POINTER :: points_by_cluster
-  INTEGER,DIMENSION(:), POINTER :: ldat
+  INTEGER,DIMENSION(:), POINTER :: points_by_domain
   INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
   INTEGER :: i
   INTEGER :: ierr ! MPI variable
@@ -115,7 +115,7 @@ PROGRAM clusters
 #endif
     t1 = MPI_WTIME()
     CALL partition_data(data,epsilon,nbproc,coord_min,coord_max,partitionning,&
-         ldat,assignements,bounds)
+         points_by_domain,assignements,bounds)
     t2 = MPI_WTIME()
     PRINT *,'temps decoupage des datas...', t2-t1
   ENDIF
@@ -163,7 +163,7 @@ PROGRAM clusters
         PRINT *
         PRINT *,'transfert des datas decoupees...'
 #endif
-        CALL send_partitionning(nbproc,data,ldat,assignements,partitioned_data)
+        CALL send_partitionning(nbproc,data,points_by_domain,assignements,partitioned_data)
 #if aff
         PRINT *
         PRINT *,'calcul des clusters...'
@@ -246,13 +246,13 @@ PROGRAM clusters
         PRINT *,'regroupement des clusters...'
 #endif
         ! Receiving of the number of clusters with duplications
-        CALL receive_number_clusters(nbproc,nbclust,ldat,partitioned_data,nclust)
+        CALL receive_number_clusters(nbproc,nbclust,points_by_domain,partitioned_data,nclust)
 #if aff
         PRINT *,'  > nb de clusters avec doublons obtenus :',nbclust
 #endif
         ! Receiving of clusters info
         ALLOCATE(cluster_map(nbclust,data%nb))
-        CALL receive_clusters(nbproc,nbclust,ldat,assignements,partitioned_data,&
+        CALL receive_clusters(nbproc,nbclust,points_by_domain,assignements,partitioned_data,&
              cluster_map,nclust,points_by_cluster)
      ELSE
         ! Sends the number of clusters

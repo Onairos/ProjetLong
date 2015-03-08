@@ -5,7 +5,7 @@ CONTAINS
 
 
   SUBROUTINE partition_data(data, epsilon, nbproc, coord_min, coord_max, partitionning,&
-       ldat, assignements, bounds)
+       points_by_domain, assignements, bounds)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -24,7 +24,7 @@ CONTAINS
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
     INTEGER, DIMENSION(:,:), POINTER :: assignements
-    INTEGER, DIMENSION(:), POINTER :: ldat
+    INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
@@ -44,15 +44,15 @@ CONTAINS
     ! Partitionning definition
     IF ((data%interface==1).OR.(nbproc==1)) THEN
        ! Partitionning by interfacing
-       CALL partition_with_interfaces(nbproc,data,ldat,assignements,domains,epsilon)
+       CALL partition_with_interfaces(nbproc,data,points_by_domain,assignements,domains,epsilon)
     ELSE
        ! Partitionning by overlapping
-       CALL partition_with_overlappings(nbproc,data,ldat,assignements,domains)
+       CALL partition_with_overlappings(nbproc,data,points_by_domain,assignements,domains)
     ENDIF
     DEALLOCATE(domains)
 
     ! Saving partitionning
-    CALL write_partitionning(nbproc,data,ldat,assignements)
+    CALL write_partitionning(nbproc,data,points_by_domain,assignements)
 
     RETURN
   END SUBROUTINE partition_data
@@ -258,7 +258,7 @@ CONTAINS
   END SUBROUTINE define_domains
 
 
-  SUBROUTINE partition_with_interfaces(nbproc, data, ldat, assignements, domains, epsilon)
+  SUBROUTINE partition_with_interfaces(nbproc, data, points_by_domain, assignements, domains, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -271,7 +271,7 @@ CONTAINS
     INTEGER :: nbproc
     !====  OUT ====
     INTEGER, DIMENSION(:,:), POINTER :: assignements
-    INTEGER, DIMENSION(:), POINTER :: ldat
+    INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
     INTEGER :: i
@@ -283,8 +283,8 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    ALLOCATE(ldat(0:max(1,nbproc-1)))
-    ldat(:)=0
+    ALLOCATE(points_by_domain(0:max(1,nbproc-1)))
+    points_by_domain(:)=0
     ALLOCATE(assignements(0:max(1,nbproc-1),data%nb))
     assignements(:,:)=0
     DO i=1,data%nb
@@ -324,8 +324,8 @@ CONTAINS
              STOP
           ENDIF
        ENDDO
-       ldat(n)=ldat(n)+1
-       assignements(n,ldat(n))=i
+       points_by_domain(n)=points_by_domain(n)+1
+       assignements(n,points_by_domain(n))=i
        IF (nbproc>1) THEN
           ! Search of interface if > 1 proc
           ok=.FALSE.
@@ -343,19 +343,19 @@ CONTAINS
              ENDDO
           ENDIF
           IF (.NOT. ok) THEN
-             ldat(0)=ldat(0)+1
-             assignements(0,ldat(0))=i
-             WRITE(7,*) assignements(0,ldat(0))
+             points_by_domain(0)=points_by_domain(0)+1
+             assignements(0,points_by_domain(0))=i
+             WRITE(7,*) assignements(0,points_by_domain(0))
           ENDIF
        ENDIF
     ENDDO
-    WRITE(7,*) ldat(0)
+    WRITE(7,*) points_by_domain(0)
     RETURN
   END SUBROUTINE partition_with_interfaces
 
 
 
-  SUBROUTINE partition_with_overlappings(nbproc, data, ldat, assignements, domains)
+  SUBROUTINE partition_with_overlappings(nbproc, data, points_by_domain, assignements, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -367,7 +367,7 @@ CONTAINS
     INTEGER :: nbproc
     !====  OUT ====
     INTEGER, DIMENSION(:,:), POINTER :: assignements
-    INTEGER, DIMENSION(:), POINTER :: ldat
+    INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
     INTEGER :: i
@@ -378,8 +378,8 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    ALLOCATE(ldat(0:max(1,nbproc-1)))
-    ldat(:)=0
+    ALLOCATE(points_by_domain(0:max(1,nbproc-1)))
+    points_by_domain(:)=0
     ALLOCATE(assignements(0:max(1,nbproc-1),data%nb))
     assignements(:,:)=0
     DO i=1,data%nb
@@ -400,8 +400,8 @@ CONTAINS
              ENDDO
           ENDIF
           IF (ok) THEN
-             ldat(n-1)=ldat(n-1)+1
-             assignements(n-1,ldat(n-1))=i
+             points_by_domain(n-1)=points_by_domain(n-1)+1
+             assignements(n-1,points_by_domain(n-1))=i
           ENDIF
        ENDDO
     ENDDO
