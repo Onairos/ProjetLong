@@ -40,7 +40,7 @@ CONTAINS
     INTEGER, DIMENSION(:,:), POINTER :: clustercorresp
     INTEGER :: i
     INTEGER :: nb_iter_max
-    INTEGER :: it_num
+    INTEGER :: nb_iter
     INTEGER :: j
     INTEGER :: k
     INTEGER :: ki
@@ -79,7 +79,7 @@ CONTAINS
 
     nb_iter_max=n*n
 
-    CALL apply_kmeans( nbcluster, n, nbcluster, nb_iter_max, it_num,Z2,&
+    CALL apply_kmeans( nbcluster, n, nbcluster, nb_iter_max, nb_iter,Z2,&
          clusters, clusters_centers, points_by_clusters, clusters_energies, &
          numproc)
 
@@ -150,7 +150,7 @@ CONTAINS
 
 
 
-  SUBROUTINE apply_kmeans(dimension, nb_points, nb_clusters, nb_iter_max, it_num, points, &
+  SUBROUTINE apply_kmeans(dimension, nb_points, nb_clusters, nb_iter_max, nb_iter, points, &
        clusters, clusters_centers, points_by_clusters, clusters_energies, numproc)
 
     !*****************************************************************************80
@@ -203,7 +203,7 @@ CONTAINS
 
     !====  OUT ====
     DOUBLE PRECISION :: clusters_energies (nb_clusters) ! the cluster energies
-    INTEGER :: it_num ! the number of iterations taken
+    INTEGER :: nb_iter ! the number of iterations taken
     INTEGER :: clusters (nb_points) ! indicates which cluster each point belongs to
     INTEGER :: points_by_clusters (nb_clusters) ! the number of points in each cluster
 
@@ -231,7 +231,7 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################   
-    it_num = 0
+    nb_iter = 0
     !
     !  Idiot checks.
     !
@@ -310,11 +310,11 @@ PRINT *, 'recherche des centres'
 #if aff
    PRINT *,'centres initiaux',p
 #endif
-    it_num = 0
+    nb_iter = 0
     swap=1
     clusters(:)=1
-    DO WHILE ((it_num<nb_iter_max).AND.(swap/=0))
-       it_num = it_num + 1
+    DO WHILE ((nb_iter<nb_iter_max).AND.(swap/=0))
+       nb_iter = nb_iter + 1
        swap=0
        DO i=1,nb_clusters
           stockenergy(i)=clusters_energies(i)
