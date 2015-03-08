@@ -459,11 +459,11 @@ PRINT *, 'ratio de frobenius'
 
   END SUBROUTINE sp_matvec
 
-  SUBROUTINE solve_arpack(A, IA, JA, ndim, nnz, nb_clusters_max, W, Z)
+  SUBROUTINE solve_arpack(A, IA, JA, dim, nnz, nb_clusters_max, W, Z)
 
   DOUBLE PRECISION, INTENT(IN), DIMENSION(:) :: A
   INTEGER, INTENT(IN), DIMENSION(:) :: IA, JA
-  INTEGER, INTENT(IN) :: ndim, nnz, nb_clusters_max
+  INTEGER, INTENT(IN) :: dim, nnz, nb_clusters_max
 
   DOUBLE PRECISION, INTENT(OUT), POINTER :: W(:)
   DOUBLE PRECISION, INTENT(OUT), POINTER :: Z(:,:)
@@ -530,7 +530,7 @@ PRINT *, 'ratio de frobenius'
       INCLUDE 'debug.h'
 
 ! lien entre les tailles
-      maxn = ndim
+      maxn = dim
       ldv = maxn
       maxnev = nb_clusters_max
       maxncv = 2*maxnev + 1
@@ -554,7 +554,7 @@ PRINT *, 'ratio de frobenius'
 !     | The following sets dimensions for this problem. |
 !     %-------------------------------------------------%
 !
-      n     = ndim
+      n     = dim
 
 !     %-----------------------------------------------%
 !     |                                               |
@@ -694,7 +694,7 @@ PRINT *, 'ratio de frobenius'
 !           %-------------------------------------------%
 !
             CALL sp_matvec(A, IA, JA, workd(ipntr(1)), workd(ipntr(2)), &
-                           ndim, nnz)
+                           dim, nnz)
 
             nbite = nbite + 1
 !
@@ -799,7 +799,7 @@ PRINT *, 'ratio de frobenius'
 !                 %--------------------%
 !
                   !CALL av(nx, v(1,j), ax)
-                  CALL sp_matvec(A, IA, JA, v(1,j), ax, ndim, nnz)
+                  CALL sp_matvec(A, IA, JA, v(1,j), ax, dim, nnz)
                   CALL daxpy(n, -d(j,1), v(1,j), 1, ax, 1)
                   d(j,3) = dnrm2(n, ax, 1)
                   d(j,3) = d(j,3) / abs(d(j,1))
@@ -814,12 +814,12 @@ PRINT *, 'ratio de frobenius'
 !                 %------------------------%
 !
                   !CALL av(nx, v(1,j), ax)
-                  CALL sp_matvec(A, IA, JA, v(1,j), ax, ndim, nnz)
+                  CALL sp_matvec(A, IA, JA, v(1,j), ax, dim, nnz)
                   CALL daxpy(n, -d(j,1), v(1,j), 1, ax, 1)
                   CALL daxpy(n, d(j,2), v(1,j+1), 1, ax, 1)
                   d(j,3) = dnrm2(n, ax, 1)
                   !CALL av(nx, v(1,j+1), ax)
-                  CALL sp_matvec(A, IA, JA, v(1,j+1), ax, ndim, nnz)
+                  CALL sp_matvec(A, IA, JA, v(1,j+1), ax, dim, nnz)
                   CALL daxpy(n, -d(j,2), v(1,j), 1, ax, 1)
                   CALL daxpy(n, -d(j,1), v(1,j+1), 1, ax, 1)
                   d(j,3) = dlapy2( d(j,3), dnrm2(n, ax, 1) )
