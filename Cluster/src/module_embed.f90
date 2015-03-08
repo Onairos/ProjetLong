@@ -5,7 +5,7 @@ CONTAINS
 
 
   SUBROUTINE spectral_embedding(nbcluster, n, Z, A, ratio,clusters, &
-       clusters_centers, points_by_clusters, clusters_energies, nbinfo, numproc, &
+       clusters_centers, points_by_clusters, clusters_energies, nb_info, numproc, &
        ratiomoy, ratiorij, ratiorii)
     IMPLICIT NONE
     !###########################################
@@ -28,7 +28,7 @@ CONTAINS
     DOUBLE PRECISION :: ratiorij
     INTEGER, DIMENSION(:), POINTER :: clusters ! appartenance des clusters
     INTEGER, DIMENSION(:), POINTER :: points_by_clusters ! nbre de points par cluster
-    INTEGER :: nbinfo
+    INTEGER :: nb_info
     
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
@@ -122,7 +122,7 @@ CONTAINS
     ratiomin=1.D+16
     ratiorii=0.0
     ratiorij=0.0
-    nbinfo=nbcluster
+    nb_info=nbcluster
     DO i=1,nbcluster
        IF ((points_by_clusters(i)/=0).AND.(Frob(i,i)/=0)) THEN
           DO j=1,nbcluster
@@ -135,14 +135,14 @@ CONTAINS
              ENDIF
           ENDDO
        ELSE
-          nbinfo=nbinfo-1
+          nb_info=nb_info-1
        ENDIF
        ratiorij=ratiorij*2/(nbcluster*(nbcluster-1))
     ENDDO
     DEALLOCATE(Frob)
 
 #if aff
-    PRINT *,numproc,'nbinfo=', nbinfo,' nbcluster=',nbcluster
+    PRINT *,numproc,'nb_info=', nb_info,' nbcluster=',nbcluster
 #endif
 
     RETURN 

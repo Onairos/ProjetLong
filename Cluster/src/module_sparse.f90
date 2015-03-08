@@ -17,7 +17,7 @@ CONTAINS
     INTEGER :: n, k, nbcluster
     DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax, clusters_energies, &
          ratiomin, ratiomoy, ratiorii, ratiorij
-    INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters, nbinfo
+    INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters, nb_info
     INTEGER :: nblimit, nbideal
     DOUBLE PRECISION :: norme, ratio, ratio1, ratio2, seuilrij
     CHARACTER (LEN=30) :: num, files
@@ -160,8 +160,8 @@ CONTAINS
        ALLOCATE(ratiorij(nblimit))
        ratiorij(:)=0
 
-       ALLOCATE(nbinfo(nblimit))
-       nbinfo(:)=0
+       ALLOCATE(nb_info(nblimit))
+       nb_info(:)=0
 
        DO nbcluster = 2 ,min(n,nblimit)
 
@@ -176,7 +176,7 @@ CONTAINS
 
           CALL sp_spectral_embedding(nbcluster, n, Z, nnz2, AS, IAS, JAS, &
                ratiomax(nbcluster),clusters,clusters_centers,points_by_clusters, &
-               clusters_energies,nbinfo(nbcluster),numproc,ratiomoy(nbcluster), &
+               clusters_energies,nb_info(nbcluster),numproc,ratiomoy(nbcluster), &
                ratiorij(nbcluster),ratiorii(nbcluster))
 
           DEALLOCATE(clusters)
@@ -212,15 +212,15 @@ PRINT *, 'ratio de frobenius'
 
     ELSEIF ((nbideal==1).AND.(n>nbideal)) THEN
        !** test avec un cluster impose
-       ALLOCATE(nbinfo(nbideal))
-       nbinfo(:) = 0
+       ALLOCATE(nb_info(nbideal))
+       nb_info(:) = 0
        ALLOCATE(ratiomin(1))
        ratiomin(:) = 0.0
        partitioned_data%nbclusters = nbideal
     ELSE
        !** cas d'un domaine avec moins de points que nbideal ou 1 seul point
-       ALLOCATE(nbinfo(n))
-       nbinfo(:)=0
+       ALLOCATE(nb_info(n))
+       nb_info(:)=0
        ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
        partitioned_data%nbclusters=n
@@ -253,7 +253,7 @@ PRINT *, 'ratio de frobenius'
 
        CALL sp_spectral_embedding(partitioned_data%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
             clusters_centers,points_by_clusters,clusters_energies,&
-            nbinfo(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),&
+            nb_info(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),&
             ratiorii(1))
 
        DO i=1,partitioned_data%nb
@@ -293,7 +293,7 @@ PRINT *, 'ratio de frobenius'
   END SUBROUTINE sp_calculclusters
 
     SUBROUTINE sp_spectral_embedding(nbcluster, n, Z, nnz, AS, IAS, JAS, ratio, clusters, &
-       clusters_centers, points_by_clusters, clusters_energies, nbinfo, numproc, &
+       clusters_centers, points_by_clusters, clusters_energies, nb_info, numproc, &
        ratiomoy, ratiorij, ratiorii)
 
     !*****************************************
@@ -312,7 +312,7 @@ PRINT *, 'ratio de frobenius'
 
     IMPLICIT NONE
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z, clusters_centers
-    INTEGER ::nbcluster, n, nbinfo, numproc
+    INTEGER ::nbcluster, n, nb_info, numproc
     DOUBLE PRECISION ::ratio, test, ratiomin, ratiorii, ratiorij, ratiomoy
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies, Z3
     INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters
@@ -406,7 +406,7 @@ PRINT *, 'ratio de frobenius'
     ratiorii=0.0
     ratiorij=0.0
     ratiomoy = 0.0
-    nbinfo=nbcluster
+    nb_info=nbcluster
     DO i=1,nbcluster
        IF ((points_by_clusters(i)/=0).AND.(Frob(i,i)/=0)) THEN
           DO j=1,nbcluster
@@ -419,7 +419,7 @@ PRINT *, 'ratio de frobenius'
              ENDIF
           ENDDO
        ELSE
-          nbinfo=nbinfo-1
+          nb_info=nb_info-1
        ENDIF
        ratiorij=ratiorij*2/(nbcluster*(nbcluster-1))
        ratiomoy=ratiomoy*2/(nbcluster*(nbcluster-1))
@@ -432,7 +432,7 @@ PRINT *, 'ratio de frobenius'
 ! sparsification fin
 
 #if aff
-    PRINT *,numproc,'nbinfo=', nbinfo,' nbcluster=',nbcluster
+    PRINT *,numproc,'nb_info=', nb_info,' nbcluster=',nbcluster
 #endif
 
     RETURN 

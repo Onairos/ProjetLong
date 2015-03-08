@@ -170,7 +170,7 @@ CONTAINS
     DOUBLE PRECISION :: value
     INTEGER, DIMENSION(:), POINTER :: cluster
     INTEGER, DIMENSION(:), POINTER :: points_by_clusters
-    INTEGER, DIMENSION(:), POINTER :: nbinfo
+    INTEGER, DIMENSION(:), POINTER :: nb_info
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -285,8 +285,8 @@ CONTAINS
        ALLOCATE(ratiorij(nblimit))
        ratiorij(:)=0
 
-       ALLOCATE(nbinfo(nblimit))
-       nbinfo(:)=0
+       ALLOCATE(nb_info(nblimit))
+       nb_info(:)=0
        DO nbcluster=2,min(n,nblimit)
 
           ALLOCATE(cluster(n))
@@ -300,7 +300,7 @@ CONTAINS
 
           CALL spectral_embedding(nbcluster,n,Z,A,&
                ratiomax(nbcluster),cluster,clusters_centers,points_by_clusters,&
-               clusters_energies,nbinfo(nbcluster),numproc,ratiomoy(nbcluster), &
+               clusters_energies,nb_info(nbcluster),numproc,ratiomoy(nbcluster), &
                ratiorij(nbcluster),ratiorii(nbcluster))
 
 
@@ -333,15 +333,15 @@ PRINT *, 'ratio de frobenius'
 
     ELSEIF ((nbideal==1).AND.(n>nbideal)) THEN
        ! Test with an imposed cluster
-       ALLOCATE(nbinfo(nbideal))
-       nbinfo(:)=0
+       ALLOCATE(nb_info(nbideal))
+       nb_info(:)=0
        ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
        partitioned_data%nbclusters=nbideal
     ELSE
        ! Case of a domain with less points than nbideal or only one point
-       ALLOCATE(nbinfo(n))
-       nbinfo(:)=0
+       ALLOCATE(nb_info(n))
+       nb_info(:)=0
        ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
        partitioned_data%nbclusters=n
@@ -373,7 +373,7 @@ PRINT *, 'ratio de frobenius'
     IF (partitioned_data%nbclusters>1) THEN
        CALL spectral_embedding(partitioned_data%nbclusters,n,Z,A,ratio,cluster,&
             clusters_centers,points_by_clusters,clusters_energies,&
-            nbinfo(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),ratiorii(1))
+            nb_info(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),ratiorii(1))
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%cluster=cluster(i)
        ENDDO
