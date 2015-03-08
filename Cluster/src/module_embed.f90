@@ -39,7 +39,7 @@ CONTAINS
     DOUBLE PRECISION :: test
     INTEGER, DIMENSION(:,:), POINTER :: clustercorresp
     INTEGER :: i
-    INTEGER :: it_max
+    INTEGER :: nb_iter_max
     INTEGER :: it_num
     INTEGER :: j
     INTEGER :: k
@@ -77,9 +77,9 @@ CONTAINS
        ENDDO
     ENDDO
 
-    it_max=n*n
+    nb_iter_max=n*n
 
-    CALL apply_kmeans( nbcluster, n, nbcluster, it_max, it_num,Z2,&
+    CALL apply_kmeans( nbcluster, n, nbcluster, nb_iter_max, it_num,Z2,&
          clusters, clusters_centers, points_by_clusters, clusters_energies, &
          numproc)
 
@@ -150,7 +150,7 @@ CONTAINS
 
 
 
-  SUBROUTINE apply_kmeans(dimension, nb_points, nb_clusters, it_max, it_num, points, &
+  SUBROUTINE apply_kmeans(dimension, nb_points, nb_clusters, nb_iter_max, it_num, points, &
        clusters, clusters_centers, points_by_clusters, clusters_energies, numproc)
 
     !*****************************************************************************80
@@ -196,7 +196,7 @@ CONTAINS
     DOUBLE PRECISION :: points (dimension, nb_points) ! the points
     INTEGER :: nb_clusters ! the number of clusters
     INTEGER :: dimension ! the number of spatial dimensions
-    INTEGER :: it_max ! the maximum number of iterations
+    INTEGER :: nb_iter_max ! the maximum number of iterations
 
     !=== IN/OUT ===
     DOUBLE PRECISION :: clusters_centers (dimension, nb_clusters) ! the cluster centers
@@ -313,7 +313,7 @@ PRINT *, 'recherche des centres'
     it_num = 0
     swap=1
     clusters(:)=1
-    DO WHILE ((it_num<it_max).AND.(swap/=0))
+    DO WHILE ((it_num<nb_iter_max).AND.(swap/=0))
        it_num = it_num + 1
        swap=0
        DO i=1,nb_clusters
