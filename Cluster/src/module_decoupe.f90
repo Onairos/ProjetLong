@@ -5,7 +5,7 @@ CONTAINS
 
 
   SUBROUTINE partition_data(data, epsilon, nbproc, coord_min, coord_max, partitionning,&
-       ldat, ddat, bounds)
+       ldat, assignements, bounds)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -23,7 +23,7 @@ CONTAINS
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-    INTEGER, DIMENSION(:,:), POINTER :: ddat
+    INTEGER, DIMENSION(:,:), POINTER :: assignements
     INTEGER, DIMENSION(:), POINTER :: ldat
 
     !#### Variables  ####
@@ -44,15 +44,15 @@ CONTAINS
     ! Partitionning definition
     IF ((data%interface==1).OR.(nbproc==1)) THEN
        ! Partitionning by interfacing
-       CALL partition_with_interfaces(nbproc,data,ldat,ddat,domains,epsilon)
+       CALL partition_with_interfaces(nbproc,data,ldat,assignements,domains,epsilon)
     ELSE
        ! Partitionning by overlapping
-       CALL partition_with_overlappings(nbproc,data,ldat,ddat,domains)
+       CALL partition_with_overlappings(nbproc,data,ldat,assignements,domains)
     ENDIF
     DEALLOCATE(domains)
 
     ! Saving partitionning
-    CALL write_partitionning(nbproc,data,ldat,ddat)
+    CALL write_partitionning(nbproc,data,ldat,assignements)
 
     RETURN
   END SUBROUTINE partition_data
@@ -258,7 +258,7 @@ CONTAINS
   END SUBROUTINE define_domains
 
 
-  SUBROUTINE partition_with_interfaces(nbproc, data, ldat, ddat, domains, epsilon)
+  SUBROUTINE partition_with_interfaces(nbproc, data, ldat, assignements, domains, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -270,7 +270,7 @@ CONTAINS
     DOUBLE PRECISION :: epsilon
     INTEGER :: nbproc
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: ddat
+    INTEGER, DIMENSION(:,:), POINTER :: assignements
     INTEGER, DIMENSION(:), POINTER :: ldat
 
     !#### Variables  ####
@@ -285,8 +285,8 @@ CONTAINS
     !###########################################
     ALLOCATE(ldat(0:max(1,nbproc-1)))
     ldat(:)=0
-    ALLOCATE(ddat(0:max(1,nbproc-1),data%nb))
-    ddat(:,:)=0
+    ALLOCATE(assignements(0:max(1,nbproc-1),data%nb))
+    assignements(:,:)=0
     DO i=1,data%nb
        ! Search of packages
        n=0
@@ -325,7 +325,7 @@ CONTAINS
           ENDIF
        ENDDO
        ldat(n)=ldat(n)+1
-       ddat(n,ldat(n))=i
+       assignements(n,ldat(n))=i
        IF (nbproc>1) THEN
           ! Search of interface if > 1 proc
           ok=.FALSE.
@@ -344,8 +344,8 @@ CONTAINS
           ENDIF
           IF (.NOT. ok) THEN
              ldat(0)=ldat(0)+1
-             ddat(0,ldat(0))=i
-             WRITE(7,*) ddat(0,ldat(0))
+             assignements(0,ldat(0))=i
+             WRITE(7,*) assignements(0,ldat(0))
           ENDIF
        ENDIF
     ENDDO
@@ -355,7 +355,7 @@ CONTAINS
 
 
 
-  SUBROUTINE partition_with_overlappings(nbproc, data, ldat, ddat, domains)
+  SUBROUTINE partition_with_overlappings(nbproc, data, ldat, assignements, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -366,7 +366,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
     INTEGER :: nbproc
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: ddat
+    INTEGER, DIMENSION(:,:), POINTER :: assignements
     INTEGER, DIMENSION(:), POINTER :: ldat
 
     !#### Variables  ####
@@ -380,8 +380,8 @@ CONTAINS
     !###########################################
     ALLOCATE(ldat(0:max(1,nbproc-1)))
     ldat(:)=0
-    ALLOCATE(ddat(0:max(1,nbproc-1),data%nb))
-    ddat(:,:)=0
+    ALLOCATE(assignements(0:max(1,nbproc-1),data%nb))
+    assignements(:,:)=0
     DO i=1,data%nb
        ! Search of packages
        DO n=1,nbproc
@@ -401,7 +401,7 @@ CONTAINS
           ENDIF
           IF (ok) THEN
              ldat(n-1)=ldat(n-1)+1
-             ddat(n-1,ldat(n-1))=i
+             assignements(n-1,ldat(n-1))=i
           ENDIF
        ENDDO
     ENDDO

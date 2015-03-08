@@ -32,7 +32,7 @@ PROGRAM clusters
   DOUBLE PRECISION :: t1
   DOUBLE PRECISION :: t2
   INTEGER,DIMENSION(:,:), POINTER :: cluster_map
-  INTEGER,DIMENSION(:,:) ,POINTER :: ddat
+  INTEGER,DIMENSION(:,:) ,POINTER :: assignements
   INTEGER,DIMENSION(:), POINTER :: partitionning
   INTEGER,DIMENSION(:), POINTER :: iclust
   INTEGER,DIMENSION(:), POINTER :: ldat
@@ -115,7 +115,7 @@ PROGRAM clusters
 #endif
     t1 = MPI_WTIME()
     CALL partition_data(data,epsilon,nbproc,coord_min,coord_max,partitionning,&
-         ldat,ddat,bounds)
+         ldat,assignements,bounds)
     t2 = MPI_WTIME()
     PRINT *,'temps decoupage des datas...', t2-t1
   ENDIF
@@ -163,7 +163,7 @@ PROGRAM clusters
         PRINT *
         PRINT *,'transfert des datas decoupees...'
 #endif
-        CALL send_partitionning(nbproc,data,ldat,ddat,partitioned_data)
+        CALL send_partitionning(nbproc,data,ldat,assignements,partitioned_data)
 #if aff
         PRINT *
         PRINT *,'calcul des clusters...'
@@ -252,7 +252,7 @@ PROGRAM clusters
 #endif
         ! Receiving of clusters info
         ALLOCATE(cluster_map(nbclust,data%nb))
-        CALL receive_clusters(nbproc,nbclust,ldat,ddat,partitioned_data,&
+        CALL receive_clusters(nbproc,nbclust,ldat,assignements,partitioned_data,&
              cluster_map,nclust,iclust)
      ELSE
         ! Sends the number of clusters

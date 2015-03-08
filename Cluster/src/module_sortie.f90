@@ -29,7 +29,7 @@ CONTAINS
   END SUBROUTINE write_domains
 
 
-  SUBROUTINE write_partitionning(nbproc, data, ldat, ddat)
+  SUBROUTINE write_partitionning(nbproc, data, ldat, assignements)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -37,7 +37,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
+    INTEGER,DIMENSION(:,:),POINTER :: assignements
     INTEGER,DIMENSION(:),POINTER :: ldat
     INTEGER :: nbproc
     
@@ -73,10 +73,10 @@ CONTAINS
        DO j=1,ldat(i)
           IF (data%coord==1) THEN
              ! Writing in coordinates
-             WRITE(10,*) data%point(ddat(i,j))%coord(:)
+             WRITE(10,*) data%point(assignements(i,j))%coord(:)
           ELSEIF ((data%image==1).OR.(data%seuil==1).OR.(data%geom==1)) THEN
              ! Writing in picture format
-             WRITE(10,*) ddat(i,j)
+             WRITE(10,*) assignements(i,j)
           ENDIF
        ENDDO
        CALL flush(10)
