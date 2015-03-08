@@ -8,38 +8,38 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     PRINT *
-    PRINT *,'syntaxe d appel : clusters fichier_d_entree'
+    PRINT *,'Calling syntax : clusters input_file'
     PRINT *
-    PRINT *,'mots cles du fichier d entree :'
+    PRINT *,'Input file keywords : '
     PRINT *
     PRINT *,'DATA'
-    PRINT *,'COORD (si donnees par coordonnees)'
-    PRINT *,'IMAGE (si fichier de maillage sous forme image + decoupage par pixel)'
-    PRINT *,'GEOM  (si fichier de maillage sous forme image + decoupage geom)'
-    PRINT *,'SEUIL  (si fichier de maillage sous forme image + decoupage par seuil)'
-    PRINT *,'  fichier_de_maillage'
+    PRINT *,'COORD (if data with coordinates)'
+    PRINT *,'IMAGE (if mesh file = image + partitioning by pixel)'
+    PRINT *,'GEOM  (if mesh file = image + geom partitioning)'
+    PRINT *,'SEUIL (if mesh file = image + threshold partitioning)'
+    PRINT *,'  mesh_file'
     PRINT *
     PRINT *,'EPAISSEUR'
-    PRINT *,'  epaisseur_de_la_tranche'
+    PRINT *,'  thickness_of_the_slice'
     PRINT *
     PRINT *,'NBLIMIT'
-    PRINT *,'  nb_max_de_clusters'
+    PRINT *,'  max_nb_of_clusters'
     PRINT *
     PRINT *,'NBCLUST'
     PRINT *,'  (facultatif)'
-    PRINT *,'  nb_de_clusters_par_sous-domaine'
+    PRINT *,'  nb_of_clusters_by_subdomain'
     PRINT *
     PRINT *,'SIGMA'
-    PRINT *,'  (facultatif)'
-    PRINT *,'  valeur_de_sigma_imposee'
+    PRINT *,'  (optional)'
+    PRINT *,'  imposed_value_of_sigma'
     PRINT *
     PRINT *,'DECOUPAGE'
-    PRINT *,'INTERFACE (decoupage + interface) '
-    PRINT *,'RECOUVREMENT (decoupage avec recouvrement)'
-    PRINT *,'  nb_de_sous-domaines_par_DIMENSION'
+    PRINT *,'INTERFACE (partitioning with interface) '
+    PRINT *,'RECOUVREMENT (partitioning with overlapping)'
+    PRINT *,'  nb_of_subdomains_by_DIMENSION'
     PRINT *
     PRINT *,'END'
-    PRINT *,'  (fin du fichier d entree)'
+    PRINT *,'  (end of input file)'
     STOP
     RETURN
   END SUBROUTINE help
@@ -100,7 +100,7 @@ CONTAINS
     DO WHILE (.NOT. ok)
        ok=.TRUE.
        READ(1,*) mot
-       PRINT *,mot
+       PRINT *, mot
        SELECT CASE(mot)
        CASE('DATA')
           ok=.FALSE.
@@ -108,56 +108,56 @@ CONTAINS
           IF (input_file=='IMAGE') THEN
              data%image=1
              READ (1,*) input_file
-             PRINT *,'  > format d entree image + decoupage par pixel'
-             PRINT *,'  > lecture du fichier de data : ',input_file
+             PRINT *, '> Input image format + partitioning by pixel'
+             PRINT *, '> Reading input data file : ', input_file
              CALL read_picture_data(input_file,data,coord_min,coord_max)
           ELSEIF (input_file=='GEOM') THEN
              data%geom=1
              READ (1,*) input_file
-             PRINT *,'  > format d entree image + decoupage geometrique'
-             PRINT *,'  > lecture du fichier de data : ',input_file
+             PRINT *, '> Input image format + geometric partitioning'
+             PRINT *, '> Reading input data file : ', input_file
              CALL read_geometric_data(input_file,data,coord_min,coord_max)
           ELSEIF (input_file=='SEUIL') THEN
              data%seuil=1
              READ (1,*) input_file
-             PRINT *,'  > format d entree image + decoupage par seuil'
-             PRINT *,'  > lecture du fichier de data : ',input_file
+             PRINT *, '> Input image format + partitioning by threshold'
+             PRINT *, '> Reading input data file : ', input_file
              CALL read_threshold_data(input_file,data,coord_min,coord_max)
           ELSEIF (input_file=='COORD') THEN
              data%coord=1
              READ (1,*) input_file
-             PRINT *,'  > format d entree image + decoupage par seuil'
-             PRINT *,'  > lecture du fichier de data : ',input_file
+             PRINT *, '> Input image format + partitioning by threshold'
+             PRINT *, '> Reading input data file : ', input_file
              CALL read_coordinates_data(input_file,data,coord_min,coord_max)
           ELSE
              PRINT *
-             PRINT *,'format de donnees non reconnu !!!'
+             PRINT *, 'Non-recognized data format !!!'
              CALL help
           ENDIF
           IF ((data%image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Creation of array pixels/coordinates
-             PRINT *,'  > decodage du format image...'
+             PRINT *, '> Decoding image format...'
              CALL tableau_image(data)
           ENDIF
        CASE('EPAISSEUR')
           ok=.FALSE.
           READ(1,*) epsilon
-          PRINT *,'  > epaisseur de la tranche :',epsilon
+          PRINT *, '> Thickness of the slice :', epsilon
        CASE('NBLIMIT')
           ok=.FALSE.
           READ(1,*) nblimit
-          PRINT *,'  > nb maximal de clusters recherches :',nblimit
+          PRINT *, '> Maximal number of searched clusters : ', nblimit
        CASE('NBCLUST')
           ok=.FALSE.
           READ(1,*) list_nb_clusters(:)
-          PRINT *,'  > test pour nb de clusters=',list_nb_clusters
+          PRINT *, '> Test for number of clusters=', list_nb_clusters
        CASE('SIGMA')
           ok=.FALSE.
           READ(1,*) sigma
-          PRINT *,'  > valeur de sigma imposee :',sigma
+          PRINT *, '> Imposed value of sigma : ', sigma
           IF (data%image==1) THEN
              IF (sigma<1.0) THEN
-                PRINT *,'epaisseur trop petite pour le mode image !!!!'
+                PRINT *, 'Too small thickness for image mode !!!!'
                 STOP
              ENDIF
           ENDIF
@@ -168,17 +168,17 @@ CONTAINS
           SELECT CASE(mot)
           CASE('INTERFACE')
              data%interface=1
-             PRINT *,'  > decoupage par interface active.'
+             PRINT *, '> Partitioning by interface activated.'
           CASE('RECOUVREMENT')
              data%recouvrement=1
-             PRINT *,'  > decoupage par recouvrement active.'
+             PRINT *, '> Partitioning by overlapping activated.'
           CASE DEFAULT
              PRINT *
-             PRINT *,'mauvais format de decoupage !!!'
+             PRINT *, 'Bad partitioning format !!!'
              PRINT *
              CALL help
           END SELECT
-          PRINT *, 'dim', data%dim
+          PRINT *, 'dim : ', data%dim
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ALLOCATE(partitionning(data%dim))
           ELSEIF (data%image==1) THEN
@@ -200,8 +200,8 @@ CONTAINS
                 ENDDO
              ENDIF
              IF (tot/=nbproc-data%interface) THEN
-                PRINT *,'decoupage non valide !'
-                PRINT *,'le nombre de proc doit etre egal a',tot+data%interface
+                PRINT *, 'Invalidated partitioning !'
+                PRINT *, 'Number of process must be equal to ', tot+data%interface
                 CALL MPI_ABORT(ierr)
                 STOP
              ENDIF
@@ -220,18 +220,18 @@ CONTAINS
                 tot=1
              ENDIF
           ENDIF
-          PRINT *,'  > decoupage :',partitionning
+          PRINT *, '> partitioning :',partitionning
        CASE('END')
           ok=.TRUE.
        CASE DEFAULT
           ok=.FALSE.
-          PRINT *,'mot cle inconnu :',mot
+          PRINT *, 'Unknown keyword : ', mot
        END SELECT
     ENDDO
     ! Partitionning parameter
     IF ((nbproc>1).AND.(decoupage==0)) THEN
        PRINT *
-       PRINT *,'mot cle DECOUPAGE absent !'
+       PRINT *, 'The keyword <<DECOUPAGE>> has not been found !'
        CALL help 
     ENDIF
     ! 1 proc
@@ -250,13 +250,13 @@ CONTAINS
     tot=data%geom+data%seuil+data%coord+data%image
     IF (tot/=1) THEN
        PRINT *
-       PRINT *,'pb dans les formats de data entres !'
+       PRINT *, 'Problem with data format !'
        CALL help
     ENDIF
     tot=data%interface+data%recouvrement
     IF (tot/=1) THEN
        PRINT *
-       PRINT *,'pb dans les formats de decoupage entres !'
+       PRINT *, 'Problem with data format !'
        CALL help
     ENDIF
     RETURN
@@ -291,8 +291,8 @@ CONTAINS
     OPEN(FILE=input_file,UNIT=2)
     READ(2,*) data%nb,data%dim
     data%nbclusters=0
-    PRINT *,'    > nb de points :',data%nb
-    PRINT *,'    > dimension :',data%dim
+    PRINT *, '> Number of points : ', data%nb
+    PRINT *, '> Dimension : ', data%dim
     ALLOCATE(data%point(data%nb))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
@@ -312,12 +312,12 @@ CONTAINS
           ENDDO
        ENDIF
     ENDDO
-100 PRINT *,'nb de points',nb
+100 PRINT *, 'Number of points : ',nb
     data%nb=nb
     CLOSE(2)
-    PRINT *,'  > coordonnees min/max :'
+    PRINT *, '> Min/max coordinates : '
     DO j=1,data%dim
-       PRINT *,'    > ',j,':',coord_min(j),coord_max(j)
+       PRINT *, '> ', j, ' : ', coord_min(j), coord_max(j)
     ENDDO
     RETURN
   END SUBROUTINE read_coordinates_data
@@ -347,18 +347,18 @@ CONTAINS
     !###########################################
     OPEN(FILE=input_file,UNIT=2)
     READ(2,*) data%imgdim,data%imgt
-    PRINT *,'    >dimension de l image:',data%imgdim
-    PRINT *,'    >nb de temps:',data%imgt
+    PRINT *, '> Image dimension : ', data%imgdim
+    PRINT *, '> Number of time : ', data%imgt
     ALLOCATE(data%imgmap(data%imgdim))
     READ(2,*) data%imgmap(:)
-    PRINT *,'    >decoupage spatial:',data%imgmap
+    PRINT *, '> Spatial partitioning : ', data%imgmap
     data%nb=1
     DO i=1,data%imgdim
        data%nb=data%nb*data%imgmap(i)
     ENDDO
     data%dim=data%imgt
     data%nbclusters=0
-    PRINT *,'    > nb de points a lire :',data%nb
+    PRINT *, '> Number of points to read : ', data%nb
     ALLOCATE(data%point(data%nb))
     ALLOCATE(coord_max(data%imgdim))
     ALLOCATE(coord_min(data%imgdim))
@@ -373,12 +373,12 @@ CONTAINS
        nb=nb+1
        data%point(i)%cluster=-1
     ENDDO
-200 PRINT *,'    > nb de points lus',nb       
+200 PRINT *, '> Number of points read : ', nb       
     data%nb=nb
     CLOSE(2)
-    PRINT *,'  > coordonnees min/max :'
+    PRINT *, '> Min/max coordinates :'
     DO j=1,data%dim
-       PRINT *,'    > ',j,':',coord_min(j),coord_max(j)
+       PRINT *, '> ', j, ' : ', coord_min(j), coord_max(j)
     ENDDO
     RETURN
   END SUBROUTINE read_picture_data
@@ -411,20 +411,20 @@ CONTAINS
     !###########################################
     OPEN(FILE=input_file,UNIT=2)
     READ(2,*) data%imgdim,data%imgt
-    PRINT *,'    >dimension de l image:',data%imgdim
-    PRINT *,'    >nb de temps:',data%imgt
+    PRINT *, '> Image dimension : ', data%imgdim
+    PRINT *, '> Number of time : ', data%imgt
     ALLOCATE(data%pas(data%imgdim))
     data%pas(:)=0.0
     ALLOCATE(data%imgmap(data%imgdim))
     READ(2,*) data%imgmap(:)
-    PRINT *,'    >decoupage spatial:',data%imgmap
+    PRINT *, '> Spatial partitioning : ', data%imgmap
     data%nb=1
     DO i=1,data%imgdim
        data%nb=data%nb*data%imgmap(i)
     ENDDO
     data%dim=data%imgdim+data%imgt
     data%nbclusters=0
-    PRINT *,'    > nb de points a lire :',data%nb
+    PRINT *,'> Number of points to read : ', data%nb
     ALLOCATE(data%point(data%nb))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
@@ -445,20 +445,20 @@ CONTAINS
           ENDDO
        ENDIF
     ENDDO
-300 PRINT *,'    > nb de points lus',nb
+300 PRINT *, '> Number of points read : ', nb
     data%nb=nb
     CLOSE(2)
-    PRINT *,'  > coordonnees min/max :'
+    PRINT *, '> Min/max coordinates : '
     pasmax=1.e-13
     DO j=data%imgdim+1,data%imgdim+data%imgt
        pasmax=max(pasmax,coord_max(j)-coord_min(j))
-       PRINT *,'    > ',j,':',coord_min(j),coord_max(j)
+       PRINT *, '> ', j, ' : ', coord_min(j), coord_max(j)
     ENDDO
-    PRINT *,'  > pas max :',pasmax
+    PRINT *,'> Maximal step : ', pasmax
     ! Searching steps by picture dimension
     DO j=1,data%imgdim
        data%pas(j)=pasmax/data%imgmap(j)
-       PRINT *,'  > pas :',j,data%pas(j)
+       PRINT *, '> Step : ', j, data%pas(j)
        coord_min(j)=0.9*data%pas(j)
        coord_max(j)=(data%imgmap(j)+1)*data%pas(j)
     ENDDO
@@ -494,18 +494,18 @@ CONTAINS
     ! Reading classic data
     OPEN(FILE=input_file,UNIT=2)
     READ(2,*) data%imgdim,data%imgt
-    PRINT *,'    >dimension de l image:',data%imgdim
-    PRINT *,'    >nb de temps:',data%imgt
+    PRINT *, '> Image dimension : ', data%imgdim
+    PRINT *, '> Number of time : ', data%imgt
     ALLOCATE(data%imgmap(data%imgdim))
     READ(2,*) data%imgmap(:)
-    PRINT *,'    >decoupage spatial:',data%imgmap
+    PRINT *, '> Spatial dimension : ', data%imgmap
     data%nb=1
     DO i=1,data%imgdim
        data%nb=data%nb*data%imgmap(i)
     ENDDO
     data%dim=data%imgt
     data%nbclusters=0
-    PRINT *,'    > nb de points a lire :',data%nb
+    PRINT *, '> Number of points to read : ', data%nb
     ALLOCATE(data%point(data%nb))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
@@ -525,12 +525,12 @@ CONTAINS
           ENDDO
        ENDIF
     ENDDO
-400 PRINT *,'nb de points',nb
+400 PRINT *, 'Number of points : ', nb
     data%nb=nb
     CLOSE(2)
-    PRINT *,'  > coordonnees min/max :'
+    PRINT *, '> Min/max coordinates : '
     DO j=1,data%dim
-       PRINT *,'    > ',j,':',coord_min(j),coord_max(j)
+       PRINT *, '> ', j, ' : ' , coord_min(j), coord_max(j)
     ENDDO
     RETURN
   END SUBROUTINE read_threshold_data

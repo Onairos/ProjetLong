@@ -52,7 +52,7 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !########################################### 
-    PRINT *,'  > bilan decoupage :'
+    PRINT *, '> Partitioning review :'
     offset=1
     nbdom=nbproc
     IF ((data%interface==1).AND.(nbproc>1)) THEN
@@ -64,7 +64,7 @@ CONTAINS
        nbdom=nbproc-1
     ENDIF
     DO i=offset,nbdom
-       PRINT *,'    > zone ',i,':',ldat(i)
+       PRINT *, '> Zone ', i, ' : ', ldat(i)
        ! File name
        WRITE(num,*) i
        files='decoupe.'//trim(adjustl(num))
@@ -109,14 +109,14 @@ CONTAINS
     WRITE(num,*),numproc
     num=adjustl(num)
     files='cluster.partiel.'//trim(num)
-    PRINT *,numproc,'ecriture des clusters : ',files
+    PRINT *, 'Process n', numproc, ' : clusters writing : ', files
     OPEN(FILE=files,UNIT=10)
     WRITE(10,*) partitioned_data%nb,partitioned_data%dim
     DO i=1,partitioned_data%nb
        IF (partitioned_data%coord==1) THEN
-          WRITE(10,*) partitioned_data%point(i)%coord(:),partitioned_data%point(i)%cluster
+          WRITE(10,*) partitioned_data%point(i)%coord(:), partitioned_data%point(i)%cluster
        ELSE
-          WRITE(10,*) i,partitioned_data%point(i)%cluster
+          WRITE(10,*) i, partitioned_data%point(i)%cluster
        ENDIF
     ENDDO
     CALL flush(10)
@@ -148,7 +148,7 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !########################################### 
-    PRINT *,'  > Ecriture du resultat...'
+    PRINT *, '> Result writing...'
     k=0
     DO i=1,nbclust
        IF (iclust(i)>0) THEN
@@ -156,7 +156,7 @@ CONTAINS
           WRITE(num,*) k
           files='cluster.final.'//trim(adjustl(num))
           OPEN(FILE=files,UNIT=20)     
-          PRINT *,'    > cluster ',k,' :',iclust(i),' -> ',files
+          PRINT *, '> Cluster n', k, ' : ', iclust(i), ' -> ', files
           WRITE(20,*) iclust(i)
           DO j=1,iclust(i)
              WRITE(20,*) cluster_map(i,j)
@@ -185,37 +185,37 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !########################################### 
-    WRITE(3,*) '# fichier de maillage :'
+    WRITE(3,*) '# Mesh file : '
     WRITE(3,*) mesh
-    WRITE(3,*) '#nb de points :'
+    WRITE(3,*) '# Number of points : '
     WRITE(3,*) data%nb
-    WRITE(3,*) '# DIMENSION :'
+    WRITE(3,*) '# DIMENSION : '
     WRITE(3,*) data%dim
-    WRITE(3,*) '# nb de proc :'
+    WRITE(3,*) '# Number of process : '
     WRITE(3,*) nbproc
-    WRITE(3,*) '# decoupage par interface :'
+    WRITE(3,*) '# Partitioning by interfacing : '
     WRITE(3,*) data%interface
-    WRITE(3,*) '# decoupage par recouvrement :'
+    WRITE(3,*) '# Partitioning by overlapping : '
     WRITE(3,*) data%recouvrement
-    WRITE(3,*) '# nb de clusters :'
+    WRITE(3,*) '# Number of clusters : '
     WRITE(3,*) nbclust
-    WRITE(3,*) '# format coord :'
+    WRITE(3,*) '# Coord format : '
     WRITE(3,*) data%coord
-    WRITE(3,*) '# format image :'
+    WRITE(3,*) '# Image format : '
     WRITE(3,*) data%image
-    WRITE(3,*) '# format geom :'
+    WRITE(3,*) '# Geom format : '
     WRITE(3,*) data%geom
-    WRITE(3,*) '# format seuil :'
+    WRITE(3,*) '# Threshold format : '
     WRITE(3,*) data%seuil
     IF ((data%image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
-       WRITE(3,*) '# DIMENSION :'
+       WRITE(3,*) '# DIMENSION : '
        WRITE(3,*) data%imgdim
-       WRITE(3,*) '# decoupage :'
+       WRITE(3,*) '# Partitioning : '
        WRITE(3,*) data%imgmap(:)
-       WRITE(3,*) '# nb de temps :'
+       WRITE(3,*) '# Number of time : '
        WRITE(3,*) data%imgt
        IF (data%geom==1) THEN
-          WRITE(3,*) '## pas de maillage :'
+          WRITE(3,*) '## No mesh : '
           WRITE(3,*) data%pas(:)
        ENDIF
     ENDIF

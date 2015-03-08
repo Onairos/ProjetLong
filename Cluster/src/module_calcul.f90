@@ -118,13 +118,13 @@ CONTAINS
     ! Sigma computing
     sigma0=sigma0/(2.0*exp(log(float(partitioned_data%nb))*(1.0/float(partitioned_data%dim))))
 #if aff
-    PRINT *,numproc,'valeur de sigma calculee pour interface:',sigma0
+    PRINT *, 'DEBUG : process n', numproc, ' : value of computed sigma for interfacing : ', sigma0
 #endif
 !!======================TODO : fin de #if aff ??????
     ! Sigma computing, global formula
     CALL get_sigma(partitioned_data,sigma)
 #if aff
-    PRINT *,numproc,'valeur sigma interface',sigma
+    PRINT *, 'DEBUG : process n', numproc,' : value of sigma for interfacing', sigma
 #endif
     RETURN
   END SUBROUTINE get_sigma_interface
@@ -185,7 +185,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     ! Matrix creation
-    PRINT *,numproc,'valeur du sigma',sigma
+    PRINT *, 'Process n', numproc, ' : value of sigma : ', sigma
     n=partitioned_data%nb
     ! Forall i, A(i,i) = 0
     ALLOCATE(A(n,n))
@@ -228,7 +228,7 @@ CONTAINS
     solver = 0
 
     IF(solver == 0) THEN
-      PRINT *, numproc, 'solveur lapack'
+      PRINT *, 'Process n', numproc, ' : Lapack solver'
 
       nbvp = n
 
@@ -243,7 +243,7 @@ CONTAINS
       t1 = MPI_WTIME()
       CALL solve_dgeev(n,A2,Z,W)
     ELSE
-      PRINT *, numproc, 'solveur arpack'
+      PRINT *, 'Process n', numproc, ' : Arpack solver'
 
       nb = 2*nblimit
       nbvp = nb
@@ -254,7 +254,7 @@ CONTAINS
     t2 = MPI_WTIME()
 
     t_cons_vp = t2 - t1
-    PRINT *, numproc, 'cout construction vp', t_cons_vp
+    PRINT *, 'Process n', numproc, ' : Time for eigen values construction : ', t_cons_vp
 
     DO i=1,nbvp-1
        DO j=i+1,nbvp
@@ -311,9 +311,9 @@ CONTAINS
        ENDDO
 
 #if aff
-PRINT *, 'ratio de frobenius'
+PRINT *, 'DEBUG : Frobenius ratio'
 #endif
-       ! Ratio of frobenius norm
+       ! Norm of frobenius ratio
        ratio=ratiomax(nblimit)
        partitioned_data%nbclusters=nblimit
        ratio1=0.0
@@ -358,7 +358,7 @@ PRINT *, 'ratio de frobenius'
     ENDIF
     ! Case of nbcluster==1
     IF (partitioned_data%nbclusters==2) THEN
-       PRINT *, 'difference ratio',ratiorij(2)/ratiorii(2)
+       PRINT *, 'Ratio difference : ', ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 
           partitioned_data%nbclusters=1
        ELSE 
@@ -366,7 +366,7 @@ PRINT *, 'ratio de frobenius'
        ENDIF
     ENDIF
 #if aff
-    PRINT *,numproc,'cluster final obtenu : ',partitioned_data%nbclusters
+    PRINT *, 'DEBUG : Process n', numproc,' : final cluster got : ', partitioned_data%nbclusters
 #endif
 
     ! Final clustering computing
@@ -392,13 +392,13 @@ PRINT *, 'ratio de frobenius'
        DEALLOCATE(W)
     ELSE 
 #if aff
-       PRINT *, numproc, 'ok'
+       PRINT *, 'Process n', numproc, ' : OK'
 #endif
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%cluster=1
        ENDDO
 #if aff
-       PRINT *,numproc,'cluster'
+       PRINT *, 'Process n', numproc,' : Cluster'
 #endif
     ENDIF
 

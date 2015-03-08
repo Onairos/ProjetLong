@@ -346,7 +346,7 @@ CONTAINS
           ! Receiving local allocations of subdomain points
           CALL MPI_RECV(lclust,maxldat,MPI_INTEGER,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,status,ierr)
 #if aff
-          PRINT *, 'mpi_recv', i, status(1), status(2), status(3), status(4) 
+          PRINT *, 'DEBUG : MPI_RECV ', i, status(1), status(2), status(3), status(4) 
 #endif
           p = status(MPI_SOURCE)
           ! Storage of local clusters in the global array

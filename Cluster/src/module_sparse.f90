@@ -37,7 +37,7 @@ CONTAINS
 
     !creation de la matrice
 #if aff
-    PRINT *,numproc,'valeur du sigma',sigma
+    PRINT *, 'DEBUG : process n', numproc, ' : value of sigma : ', sigma
 #endif
     n=partitioned_data%nb
 
@@ -68,7 +68,7 @@ CONTAINS
 
     t2 = MPI_WTIME()
     t_cons_a = t2 - t1
-    PRINT *, numproc, 'surcout A', t_cons_a
+    PRINT *, 'Process n', numproc, ' : t_cons A : ', t_cons_a
 
     t1 = MPI_WTIME()
     nnz2 = nnz*2
@@ -120,7 +120,7 @@ CONTAINS
     CALL solve_arpack(AS, IAS, JAS, n, nnz2, nb, W, Z)
     PRINT *, "---------- W -------------"
     DO i=1,nb
-       PRINT *,'valeurs propres arpack brutes',i, W(i)
+       PRINT *, 'Pure eigen values Arpack : ', i, W(i)
     ENDDO
     
 
@@ -140,7 +140,7 @@ CONTAINS
        ENDDO
     ENDDO
     DO i=1,nb
-       PRINT *,'valeurs propres arpack reordonnees',i, W(i)
+       PRINT *, 'Reordered eigen values Arpack : ', i, W(i)
     ENDDO
 
     !Test spectral embedding avec different nbcluster   
@@ -187,7 +187,7 @@ CONTAINS
 
 
 #if aff
-PRINT *, 'ratio de frobenius'
+PRINT *, 'DEBUG : Frobenius ratio'
 #endif
        !*******************************
        ! Ratio de norme de frobenius
@@ -237,7 +237,7 @@ PRINT *, 'ratio de frobenius'
     ENDIF
     ! cas avec nbcluster==1
     IF (partitioned_data%nbclusters==2) THEN
-       PRINT *, 'difference ratio',ratiorij(2)/ratiorii(2)
+       PRINT *, 'Ratio difference : ', ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 
           partitioned_data%nbclusters=1
        ELSE 
@@ -245,7 +245,7 @@ PRINT *, 'ratio de frobenius'
        ENDIF
     ENDIF
 #if aff
-    PRINT *,numproc,'cluster final obtenu : ',partitioned_data%nbclusters
+    PRINT *, 'DEBUG : process n', numproc,' : final clusters got : ', partitioned_data%nbclusters
 #endif
 
     !** calcul du clustering final
@@ -272,13 +272,13 @@ PRINT *, 'ratio de frobenius'
 
     ELSE 
 #if aff
-       PRINT *, numproc, 'ok'
+       PRINT *, 'DEBUG : process n', numproc, ' : OK'
 #endif
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%clusters=1
        ENDDO
 #if aff
-       PRINT *,numproc,'cluster'
+       PRINT *, 'DEBUG : process n', numproc, ' : cluster'
 #endif
     ENDIF
 
@@ -355,7 +355,7 @@ PRINT *, 'ratio de frobenius'
        ENDDO
     ENDDO
 
-    PRINT *, numproc,'methode kmeans'
+    PRINT *, 'Process n', numproc,' : kmeans method'
 
     it_max=n*n !1000.0
 
@@ -371,7 +371,7 @@ PRINT *, 'ratio de frobenius'
     DO i=1,nbcluster
        nbmax=max(nbmax,cluster_population(i))
     ENDDO
-    PRINT *, cluster_population
+    PRINT *, 'cluster_population : ', cluster_population
     ALLOCATE(clustercorresp(nbcluster,nbmax))
     clustercorresp(:,:)=0
     DO i=1,n
@@ -432,7 +432,7 @@ PRINT *, 'ratio de frobenius'
 ! sparsification fin
 
 #if aff
-    PRINT *,numproc,'nbinfo=', nbinfo,' nbcluster=',nbcluster
+    PRINT *, 'Process n', numproc,' : nbinfo=', nbinfo, ' nbcluster=', nbcluster
 #endif
 
     RETURN 

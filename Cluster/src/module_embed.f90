@@ -142,7 +142,7 @@ CONTAINS
     DEALLOCATE(Frob)
 
 #if aff
-    PRINT *,numproc,'nbinfo=', nbinfo,' nbcluster=',nbcluster
+    PRINT *, 'DEBUG : process n', numproc,' : nbinfo=', nbinfo, ' nbcluster=', nbcluster
 #endif
 
     RETURN 
@@ -269,7 +269,7 @@ CONTAINS
     p=2
     seuil=0.4
 #if aff
-PRINT *, 'recherche des centres'
+PRINT *, 'DEBUG : searching centers'
 #endif
     DO i = 2, nb_clusters
        ok=.FALSE.
@@ -298,7 +298,7 @@ PRINT *, 'recherche des centres'
          IF ((p>nb_points).AND.(.NOT. ok)) THEN 
             seuil=0.9*seuil
 #if aff
-            PRINT *,'abaisse seuil :',seuil
+            PRINT *, 'DEBUG : Lower threshold : ', seuil
 #endif
             p=1
           ENDIF
@@ -308,7 +308,7 @@ PRINT *, 'recherche des centres'
        cluster_id(i)=p
     ENDDO
 #if aff
-   PRINT *,'centres initiaux',p
+   PRINT *, 'DEBUG : initial centers : ', p
 #endif
     it_num = 0
     swap=1

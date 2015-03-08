@@ -38,7 +38,7 @@ CONTAINS
     CALL system(files)
     ! File
     files=trim(adjustl(test%dir))//'/go'
-    PRINT *,'  > creation du fichier '//files
+    PRINT *, '> Creation of file '//files
     OPEN(FILE=files,UNIT=10)
     WRITE(10,*) 'rm -rf visu/ fort.* *.CASE *.visu decoupe.* cluster* temps.MPI'
     WRITE(num,*) test%nbproc
@@ -71,7 +71,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     files=trim(adjustl(test%dir))//'/test'
-    PRINT *,'  > creation du fichier '//files
+    PRINT *,'> Creation of file '//files
     OPEN(FILE=files,UNIT=10)
     WRITE(10,'(a)') 'DATA'
     WRITE(10,'(a)') test%datatype
@@ -109,17 +109,17 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     files='cd '//trim(adjustl(test%dir))//'; go; cd ..'
-    PRINT *,'  > lancement du test...'
+    PRINT *, '> Launching test...'
     CALL system(files)
     files=trim(adjustl(test%dir))//'/temps.MPI'
     INQUIRE(FILE=files,EXIST=existe)
-    PRINT *,'     > calcul clusters :',existe
+    PRINT *, '> Computing clusters : ', existe
     files=trim(adjustl(test%dir))//'/visuclusters.paraview'
     INQUIRE(FILE=files,EXIST=existe)
-    PRINT *,'     > visu_clusters paraview :',existe
+    PRINT *, '> visu_clusters paraview :', existe
     files=trim(adjustl(test%dir))//'/visuclusters.gmsh'
     INQUIRE(FILE=files,EXIST=existe)
-    PRINT *,'     > visu_clusters gmsh :',existe
+    PRINT *, '> visu_clusters gmsh :', existe
     RETURN
   END SUBROUTINE execute_test
 
@@ -129,7 +129,7 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    PRINT *,'  > fichier : image1d'
+    PRINT *, '> File : image1d'
     OPEN(FILE='image1d',UNIT=1)
     WRITE(1,*) '2 1 '
     WRITE(1,*) '20 10 ' 
@@ -335,7 +335,7 @@ CONTAINS
     WRITE(1,*) '   0.00000000 '
     CLOSE(1)
     ! Target file
-    PRINT *,'  > fichier : cible'
+    PRINT *,'> File : target'
     OPEN(FILE='cible',UNIT=11)
     WRITE(11,*) '650 2  '
     WRITE(11,*) '3.3800517e+000  1.0000000e+000'

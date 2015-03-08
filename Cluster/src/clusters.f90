@@ -64,13 +64,13 @@ PROGRAM clusters
   CALL MPI_COMM_RANK(MPI_COMM_WORLD,numproc,ierr)
   CALL MPI_COMM_SIZE(MPI_COMM_WORLD,nbproc,ierr)
   CALL MPI_GET_PROCESSOR_NAME(procname,len,ierr)
-  PRINT *, 'rank', numproc, ' procname',procname
+  PRINT *, 'Process rank : ', numproc, '. Process name : ', procname
 
   IF(numproc==0) THEN
     starttime = MPI_WTIME()
   ENDIF
 #if aff
-  PRINT *,'lancement du proc',numproc,' de ',nbproc
+  PRINT *,'DEBUG : Launching process ',numproc,' of ',nbproc
 #endif
   PRINT *,'----------------------------------------'
 
@@ -80,7 +80,7 @@ PROGRAM clusters
 #if aff
      PRINT *
      PRINT *,'------------------------------'
-     PRINT *,'spectral clustering de datas'
+     PRINT *,'DEBUG : Spectral clustering of data'
      PRINT *,'------------------------------'
      PRINT *
 #endif
@@ -96,13 +96,13 @@ PROGRAM clusters
      ! File reading
 #if aff
      PRINT *
-     PRINT *,'lecture des data... ',entree
+     PRINT *,'DEBUG : Reading data : ',entree
 #endif
      OPEN(FILE=entree,UNIT=1)
      CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,input_file,&
           sigma,nblimit,list_nb_clusters)
      t2 = MPI_WTIME()
-     PRINT *, 'temps lecture data ', t2-t1
+     PRINT *, 'Time for reading data : ', t2-t1
      CLOSE(1)
   ENDIF
 
@@ -111,13 +111,13 @@ PROGRAM clusters
      ! Partitionning
 #if aff
      PRINT *
-     PRINT *,'decoupage des datas...'
+     PRINT *,'DEBUG : Partitioning data...'
 #endif
     t1 = MPI_WTIME()
     CALL partition_data(data,epsilon,nbproc,coord_min,coord_max,partitionning,&
          ldat,ddat,bounds)
     t2 = MPI_WTIME()
-    PRINT *,'temps decoupage des datas...', t2-t1
+    PRINT *,'Time for partitioning data : ', t2-t1
   ENDIF
      
   IF(numproc==0) THEN
@@ -161,12 +161,12 @@ PROGRAM clusters
         ! Data sending
 #if aff
         PRINT *
-        PRINT *,'transfert des datas decoupees...'
+        PRINT *,'DEBUG : Transferring partitioned data...'
 #endif
         CALL send_partitionning(nbproc,data,ldat,ddat,partitioned_data)
 #if aff
         PRINT *
-        PRINT *,'calcul des clusters...'
+        PRINT *,'DEBUG : Computing clusters...'
 #endif
      ELSE
         ! Data receiving
@@ -195,23 +195,17 @@ PROGRAM clusters
      IF (numproc==0) CALL get_sigma(data,sigma)
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF (numproc==0) THEN
-        PRINT *,numproc,'calcule le sigma global :',sigma
-#if aff
-        PRINT *,numproc,'calcule le sigma global :',sigma
-#endif
+        PRINT *,'Process n', numproc,' computes global sigma :',sigma
         IF (data%interface==1) THEN 
            CALL get_sigma_interface(numproc,partitioned_data,sigma,bounds,partitionning,epsilon) 
-           PRINT *,numproc,'calcule le sigma interface :',sigma
-#if aff
-           PRINT *,numproc,'calcule le sigma interface :',sigma
-#endif
+           PRINT *,'Process n', numproc,' computes interface sigma interface :',sigma
         ENDIF
      ENDIF
   ENDIF
 
   IF(numproc==0) THEN
     t2 = MPI_WTIME()
-    PRINT *,'temps envoi donnees et calcul sigma', t2-t1
+    PRINT *,'Time for sending data and computing sigma : ', t2-t1
   ENDIF
 
   ! Clusters computing
@@ -219,16 +213,16 @@ PROGRAM clusters
   t1 = MPI_WTIME()
   IF (partitioned_data%nb>0) THEN
 #if aff
-     PRINT *,numproc,'calcul des clusters...'
+     PRINT *,'DEBUG : Process n', numproc, ' : computing clusters...'
 #endif
      CALL apply_spectral_clustering(numproc,nblimit,nbideal,partitioned_data,sigma)
   ENDIF
   t2 = MPI_WTIME()
   t_parall = t2 - t1
-  PRINT *, numproc, 'calcul cluster //', t_parall
+  PRINT *, 'Process n', numproc, ' : computing parallel cluster : ', t_parall
 
   CALL MPI_REDUCE(t_parall, t_parallg, 1, MPI_DOUBLE_PRECISION, MPI_MAX, 0, MPI_COMM_WORLD, ierr)
-  IF(numproc==0) PRINT *, 'temps calcul cluster global //', t_parallg
+  IF(numproc==0) PRINT *, 'Time for computing global parallel cluster :', t_parallg
 
   IF(numproc==0) THEN
     t1 = MPI_WTIME()
@@ -243,12 +237,12 @@ PROGRAM clusters
      IF (numproc==0) THEN
 #if aff
         PRINT *
-        PRINT *,'regroupement des clusters...'
+        PRINT *,'DEBUG : Grouping clusters...'
 #endif
         ! Receiving of the number of clusters with duplications
         CALL receive_number_clusters(nbproc,nbclust,ldat,partitioned_data,nclust)
 #if aff
-        PRINT *,'  > nb de clusters avec doublons obtenus :',nbclust
+        PRINT *,'DEBUG : number of clusters with duplications found : ', nbclust
 #endif
         ! Receiving of clusters info
         ALLOCATE(cluster_map(nbclust,data%nb))
@@ -290,7 +284,7 @@ PROGRAM clusters
 
   IF(numproc==0) THEN
     t2 = MPI_WTIME()
-    PRINT *,'temps regroupement des clusters', t2-t1
+    PRINT *,'Time for grouping clusters : ', t2-t1
   ENDIF
 
   IF(numproc==0) THEN
@@ -306,14 +300,14 @@ PROGRAM clusters
   ENDIF
   IF(numproc==0) THEN
     t2 = MPI_WTIME()
-    PRINT *,'temps ecriture des clusters', t2-t1
+    PRINT *,'Time for writing clusters : ', t2-t1
   ENDIF
   
   ! Ending of MPI
   IF (numproc==0) THEN
     endtime = MPI_WTIME()
-    PRINT *,' Fin du calcul'
-    PRINT *,'  > temps total=', endtime-starttime
+    PRINT *,'End of computing'
+    PRINT *,'Overall time : ', endtime-starttime
   ENDIF
   
   CALL MPI_FINALIZE(ierr)

@@ -39,7 +39,7 @@ CONTAINS
     DEALLOCATE(WORK)
     DEALLOCATE(WI)
     DEALLOCATE(VL)
-    IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
+    IF (INFO/=0) PRINT *, 'Error in DSYERVR ? INFO=', INFO
     RETURN
   END SUBROUTINE solve_dgeevx
 
@@ -75,7 +75,7 @@ CONTAINS
     DEALLOCATE(WORK)
     DEALLOCATE(WI)
     DEALLOCATE(VL)
-    IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
+    IF (INFO/=0) PRINT *, 'Error in DSYERVR ? INFO=',INFO
     RETURN
   END SUBROUTINE solve_dgeev
 
@@ -92,7 +92,7 @@ CONTAINS
     UPLO = 'U'
     LDA = N
     CALL DSYEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO )
-    IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
+    IF (INFO/=0) PRINT *, 'Error in DSYERVR ? INFO=',INFO
     RETURN
   END SUBROUTINE solve_dsyev
 
@@ -128,7 +128,7 @@ CONTAINS
          M, W, Z, LDZ, ISUPPZ, WORK, LWORK,IWORK, LIWORK, INFO )
     LWORK = WORK(1)
     LIWORK = IWORK(1)
-    IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
+    IF (INFO/=0) PRINT *, 'Error in DSYERVR ? INFO=',INFO
   END SUBROUTINE solve_dsyevr
 
 
@@ -164,7 +164,7 @@ CONTAINS
          ABSTOL, M, W, Z, LDZ, WORK, LWORK,IWORK, IFAIL, INFO )
     LWORK = WORK(1)
     LIWORK = IWORK(1)
-    IF (INFO/=0) PRINT *,'erreur dans DSYERVR ? INFO=',INFO
+    IF (INFO/=0) PRINT *, 'Error in DSYERVR ? INFO=',INFO
   END SUBROUTINE solve_dsyevx
 
 END MODULE module_solve

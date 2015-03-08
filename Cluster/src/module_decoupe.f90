@@ -140,7 +140,7 @@ CONTAINS
        IF ((data%imgdim/=2).AND.(data%imgdim/=3)) THEN
 #if aff
           PRINT *
-          PRINT *,'format d images /= 2d, 3d pas supporte !!!!'
+          PRINT *, 'DEBUG : Picture format /= 2D, 3D is not supported !!!!'
 #endif
           STOP
        ENDIF
@@ -309,15 +309,15 @@ CONTAINS
           ENDIF
           IF ((n>nbproc-1).AND.(nbproc>1)) THEN
 #if aff
-             PRINT *,'bug dans le decoupage !',n,nbproc-1
+             PRINT *, 'DEBUG : there is a bug in the partitioning ! n=', n, '. Number of process : ', nbproc-1
 #endif
              IF (data%geom==0) THEN
 #if aff
-                PRINT *,data%point(i)%coord(:)
+                PRINT *, 'DEBUG : ', data%point(i)%coord(:)
 #endif
              ELSE
 #if aff
-                PRINT *,i,data%refimg(i,:)
+                PRINT *, 'DEBUG :', i, data%refimg(i,:)
 #endif
              ENDIF
              CALL MPI_ABORT(ierr)
@@ -444,20 +444,20 @@ CONTAINS
     i=1
     j=0
 #if aff
-    PRINT *,'  > elimination des doublons...'
-    PRINT *,'    > regroupement du sous-cluster ',1
+    PRINT *, 'DEBUG : removing duplications...'
+    PRINT *, 'DEBUG : grouping subcluster ', 1
 #endif
     DO WHILE(.NOT.ok)
        j=j+1 
        IF (j>iclust(i)) THEN
           ! Line n°1 is entirely tested
 #if aff
-          PRINT *,'      > nb d elements apres regroupement :',iclust(i)
+          PRINT *, 'DEBUG : number of elements after grouping :', iclust(i)
 #endif
           i=i+1
           j=1
 #if aff
-          PRINT *,'    > regroupement du cluster ',i
+          PRINT *, 'DEBUG : grouping cluster n', i
 #endif
        ENDIF
        IF (i>nbclust-1) THEN
@@ -507,7 +507,7 @@ CONTAINS
        ENDIF
     ENDDO
 #if aff
-    PRINT *,'      > nb d elements apres regroupement :',iclust(i)
+    PRINT *, 'DEBUG : number of elements after grouping : ', iclust(i)
 #endif
     RETURN
   END SUBROUTINE group_clusters
