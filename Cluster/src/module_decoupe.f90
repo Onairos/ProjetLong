@@ -5,7 +5,7 @@ CONTAINS
 
 
   SUBROUTINE partition_data(data, epsilon, nbproc, coord_min, coord_max, partitionning,&
-       ldat, ddat, bounds)
+       points_by_domain, assignements, bounds)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -23,8 +23,8 @@ CONTAINS
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-    INTEGER, DIMENSION(:,:), POINTER :: ddat
-    INTEGER, DIMENSION(:), POINTER :: ldat
+    INTEGER, DIMENSION(:,:), POINTER :: assignements
+    INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
@@ -44,15 +44,15 @@ CONTAINS
     ! Partitionning definition
     IF ((data%interface==1).OR.(nbproc==1)) THEN
        ! Partitionning by interfacing
-       CALL partition_with_interfaces(nbproc,data,ldat,ddat,domains,epsilon)
+       CALL partition_with_interfaces(nbproc,data,points_by_domain,assignements,domains,epsilon)
     ELSE
        ! Partitionning by overlapping
-       CALL partition_with_overlappings(nbproc,data,ldat,ddat,domains)
+       CALL partition_with_overlappings(nbproc,data,points_by_domain,assignements,domains)
     ENDIF
     DEALLOCATE(domains)
 
     ! Saving partitionning
-    CALL write_partitionning(nbproc,data,ldat,ddat)
+    CALL write_partitionning(nbproc,data,points_by_domain,assignements)
 
     RETURN
   END SUBROUTINE partition_data
@@ -258,7 +258,7 @@ CONTAINS
   END SUBROUTINE define_domains
 
 
-  SUBROUTINE partition_with_interfaces(nbproc, data, ldat, ddat, domains, epsilon)
+  SUBROUTINE partition_with_interfaces(nbproc, data, points_by_domain, assignements, domains, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -270,8 +270,8 @@ CONTAINS
     DOUBLE PRECISION :: epsilon
     INTEGER :: nbproc
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: ddat
-    INTEGER, DIMENSION(:), POINTER :: ldat
+    INTEGER, DIMENSION(:,:), POINTER :: assignements
+    INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
     INTEGER :: i
@@ -283,10 +283,10 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    ALLOCATE(ldat(0:max(1,nbproc-1)))
-    ldat(:)=0
-    ALLOCATE(ddat(0:max(1,nbproc-1),data%nb))
-    ddat(:,:)=0
+    ALLOCATE(points_by_domain(0:max(1,nbproc-1)))
+    points_by_domain(:)=0
+    ALLOCATE(assignements(0:max(1,nbproc-1),data%nb))
+    assignements(:,:)=0
     DO i=1,data%nb
        ! Search of packages
        n=0
@@ -324,8 +324,8 @@ CONTAINS
              STOP
           ENDIF
        ENDDO
-       ldat(n)=ldat(n)+1
-       ddat(n,ldat(n))=i
+       points_by_domain(n)=points_by_domain(n)+1
+       assignements(n,points_by_domain(n))=i
        IF (nbproc>1) THEN
           ! Search of interface if > 1 proc
           ok=.FALSE.
@@ -343,19 +343,19 @@ CONTAINS
              ENDDO
           ENDIF
           IF (.NOT. ok) THEN
-             ldat(0)=ldat(0)+1
-             ddat(0,ldat(0))=i
-             WRITE(7,*) ddat(0,ldat(0))
+             points_by_domain(0)=points_by_domain(0)+1
+             assignements(0,points_by_domain(0))=i
+             WRITE(7,*) assignements(0,points_by_domain(0))
           ENDIF
        ENDIF
     ENDDO
-    WRITE(7,*) ldat(0)
+    WRITE(7,*) points_by_domain(0)
     RETURN
   END SUBROUTINE partition_with_interfaces
 
 
 
-  SUBROUTINE partition_with_overlappings(nbproc, data, ldat, ddat, domains)
+  SUBROUTINE partition_with_overlappings(nbproc, data, points_by_domain, assignements, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -366,8 +366,8 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
     INTEGER :: nbproc
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: ddat
-    INTEGER, DIMENSION(:), POINTER :: ldat
+    INTEGER, DIMENSION(:,:), POINTER :: assignements
+    INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
     INTEGER :: i
@@ -378,10 +378,10 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    ALLOCATE(ldat(0:max(1,nbproc-1)))
-    ldat(:)=0
-    ALLOCATE(ddat(0:max(1,nbproc-1),data%nb))
-    ddat(:,:)=0
+    ALLOCATE(points_by_domain(0:max(1,nbproc-1)))
+    points_by_domain(:)=0
+    ALLOCATE(assignements(0:max(1,nbproc-1),data%nb))
+    assignements(:,:)=0
     DO i=1,data%nb
        ! Search of packages
        DO n=1,nbproc
@@ -400,8 +400,8 @@ CONTAINS
              ENDDO
           ENDIF
           IF (ok) THEN
-             ldat(n-1)=ldat(n-1)+1
-             ddat(n-1,ldat(n-1))=i
+             points_by_domain(n-1)=points_by_domain(n-1)+1
+             assignements(n-1,points_by_domain(n-1))=i
           ENDIF
        ENDDO
     ENDDO
@@ -409,7 +409,7 @@ CONTAINS
   END SUBROUTINE partition_with_overlappings
 
 
-  SUBROUTINE group_clusters(nbclust, iclust, cluster_map, data)
+  SUBROUTINE group_clusters(nbclust, points_by_cluster, cluster_map, data)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -420,7 +420,7 @@ CONTAINS
 
     !=== IN/OUT ===
     INTEGER, DIMENSION(:,:), POINTER :: cluster_map
-    INTEGER, DIMENSION(:), POINTER :: iclust
+    INTEGER, DIMENSION(:), POINTER :: points_by_cluster
 
     !====  OUT ====
     TYPE(type_data) :: data
@@ -449,10 +449,10 @@ CONTAINS
 #endif
     DO WHILE(.NOT.ok)
        j=j+1 
-       IF (j>iclust(i)) THEN
+       IF (j>points_by_cluster(i)) THEN
           ! Line n°1 is entirely tested
 #if aff
-          PRINT *, 'DEBUG : number of elements after grouping :', iclust(i)
+          PRINT *, 'DEBUG : number of elements after grouping :', points_by_cluster(i)
 #endif
           i=i+1
           j=1
@@ -463,7 +463,7 @@ CONTAINS
        IF (i>nbclust-1) THEN
           ! No more points to test
           ok=.TRUE.
-       ELSEIF (iclust(i)>0) THEN
+       ELSEIF (points_by_cluster(i)>0) THEN
           ! Storage of index
           data%point(cluster_map(i,j))%cluster=i
           ! Test of overlappings
@@ -471,7 +471,7 @@ CONTAINS
           i2=i+1
           j2=1
           DO WHILE(.NOT. ok2)
-             IF (j2>iclust(i2)) THEN
+             IF (j2>points_by_cluster(i2)) THEN
                 ! Line n°i2 entirely tested for the point (i,j)
                 i2=i2+1
                 j2=1
@@ -484,20 +484,20 @@ CONTAINS
                 IF (cluster_map(i,j)==cluster_map(i2,j2)) THEN
                    ! Intersection found : line n°i2 added to line n°i
                    n=0
-                   DO k=1,iclust(i2)
+                   DO k=1,points_by_cluster(i2)
                       ! Test of removal of duplications
                       ok3=.TRUE.
-                      DO j3=1,iclust(i)
+                      DO j3=1,points_by_cluster(i)
                          IF (cluster_map(i2,k)==cluster_map(i,j3)) ok3=.FALSE.
                       ENDDO
                       IF (ok3) THEN
                          n=n+1
-                         cluster_map(i,iclust(i)+n)=cluster_map(i2,k)
+                         cluster_map(i,points_by_cluster(i)+n)=cluster_map(i2,k)
                          cluster_map(i2,k)=0                         
                       ENDIF
                    ENDDO
-                   iclust(i)=iclust(i)+n
-                   iclust(i2)=0
+                   points_by_cluster(i)=points_by_cluster(i)+n
+                   points_by_cluster(i2)=0
                 ELSE
                    ! Test of a new point
                    j2=j2+1
@@ -507,7 +507,7 @@ CONTAINS
        ENDIF
     ENDDO
 #if aff
-    PRINT *, 'DEBUG : number of elements after grouping : ', iclust(i)
+    PRINT *, 'DEBUG : number of elements after grouping : ', points_by_cluster(i)
 #endif
     RETURN
   END SUBROUTINE group_clusters

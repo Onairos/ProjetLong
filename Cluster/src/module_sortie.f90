@@ -29,7 +29,7 @@ CONTAINS
   END SUBROUTINE write_domains
 
 
-  SUBROUTINE write_partitionning(nbproc, data, ldat, ddat)
+  SUBROUTINE write_partitionning(nbproc, data, points_by_domain, assignements)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -37,8 +37,8 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    INTEGER,DIMENSION(:,:),POINTER :: ddat
-    INTEGER,DIMENSION(:),POINTER :: ldat
+    INTEGER,DIMENSION(:,:),POINTER :: assignements
+    INTEGER,DIMENSION(:),POINTER :: points_by_domain
     INTEGER :: nbproc
     
     !#### Variables  ####
@@ -64,19 +64,19 @@ CONTAINS
        nbdom=nbproc-1
     ENDIF
     DO i=offset,nbdom
-       PRINT *, '> Zone ', i, ' : ', ldat(i)
+       PRINT *, '> Zone ', i, ' : ', points_by_domain(i)
        ! File name
        WRITE(num,*) i
        files='decoupe.'//trim(adjustl(num))
        OPEN(FILE=files,UNIT=10)
-       WRITE(10,*) ldat(i)
-       DO j=1,ldat(i)
+       WRITE(10,*) points_by_domain(i)
+       DO j=1,points_by_domain(i)
           IF (data%coord==1) THEN
              ! Writing in coordinates
-             WRITE(10,*) data%point(ddat(i,j))%coord(:)
+             WRITE(10,*) data%point(assignements(i,j))%coord(:)
           ELSEIF ((data%image==1).OR.(data%seuil==1).OR.(data%geom==1)) THEN
              ! Writing in picture format
-             WRITE(10,*) ddat(i,j)
+             WRITE(10,*) assignements(i,j)
           ENDIF
        ENDDO
        CALL flush(10)
@@ -125,7 +125,7 @@ CONTAINS
   END SUBROUTINE write_partial_clusters
 
 
-  SUBROUTINE write_final_clusters(nbclust, iclust, cluster_map)
+  SUBROUTINE write_final_clusters(nbclust, points_by_cluster, cluster_map)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -133,7 +133,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     INTEGER,DIMENSION(:,:),POINTER :: cluster_map
-    INTEGER,DIMENSION(:),POINTER :: iclust
+    INTEGER,DIMENSION(:),POINTER :: points_by_cluster
 
     !=== IN/OUT === 
     INTEGER :: nbclust
@@ -151,14 +151,14 @@ CONTAINS
     PRINT *, '> Result writing...'
     k=0
     DO i=1,nbclust
-       IF (iclust(i)>0) THEN
+       IF (points_by_cluster(i)>0) THEN
           k=k+1
           WRITE(num,*) k
           files='cluster.final.'//trim(adjustl(num))
           OPEN(FILE=files,UNIT=20)     
-          PRINT *, '> Cluster n', k, ' : ', iclust(i), ' -> ', files
-          WRITE(20,*) iclust(i)
-          DO j=1,iclust(i)
+          PRINT *, '> Cluster n', k, ' : ', points_by_cluster(i), ' -> ', files
+          WRITE(20,*) points_by_cluster(i)
+          DO j=1,points_by_cluster(i)
              WRITE(20,*) cluster_map(i,j)
           ENDDO
           CALL flush(20)

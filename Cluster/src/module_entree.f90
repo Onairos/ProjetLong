@@ -46,7 +46,7 @@ CONTAINS
 
 
   SUBROUTINE read_file(data, epsilon, coord_min, coord_max, nbproc, partitionning, &
-       input_file, sigma, nblimit, list_nb_clusters)
+       input_file, sigma, nb_clusters_max, list_nb_clusters)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -66,7 +66,7 @@ CONTAINS
     DOUBLE PRECISION :: sigma
     INTEGER, DIMENSION(:), POINTER :: partitionning
     INTEGER, DIMENSION(:), POINTER :: list_nb_clusters
-    INTEGER :: nblimit
+    INTEGER :: nb_clusters_max
 
     !#### Variables  ####
     CHARACTER (LEN=30) :: mot
@@ -87,7 +87,7 @@ CONTAINS
     data%seuil=0
     data%interface=0
     data%recouvrement=0
-    nblimit=4
+    nb_clusters_max=4
     decoupage=0
     IF (nbproc>1) THEN
        ALLOCATE(list_nb_clusters(0:nbproc-1))
@@ -145,8 +145,8 @@ CONTAINS
           PRINT *, '> Thickness of the slice :', epsilon
        CASE('NBLIMIT')
           ok=.FALSE.
-          READ(1,*) nblimit
-          PRINT *, '> Maximal number of searched clusters : ', nblimit
+          READ(1,*) nb_clusters_max
+          PRINT *, '> Maximal number of searched clusters : ', nb_clusters_max
        CASE('NBCLUST')
           ok=.FALSE.
           READ(1,*) list_nb_clusters(:)

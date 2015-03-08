@@ -32,10 +32,10 @@ PROGRAM clusters
   DOUBLE PRECISION :: t1
   DOUBLE PRECISION :: t2
   INTEGER,DIMENSION(:,:), POINTER :: cluster_map
-  INTEGER,DIMENSION(:,:) ,POINTER :: ddat
+  INTEGER,DIMENSION(:,:) ,POINTER :: assignements
   INTEGER,DIMENSION(:), POINTER :: partitionning
-  INTEGER,DIMENSION(:), POINTER :: iclust
-  INTEGER,DIMENSION(:), POINTER :: ldat
+  INTEGER,DIMENSION(:), POINTER :: points_by_cluster
+  INTEGER,DIMENSION(:), POINTER :: points_by_domain
   INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
   INTEGER :: i
   INTEGER :: ierr ! MPI variable
@@ -43,7 +43,7 @@ PROGRAM clusters
   INTEGER :: len ! MPI variable
   INTEGER :: nbclust
   INTEGER :: nbideal
-  INTEGER :: nblimit
+  INTEGER :: nb_clusters_max
   INTEGER :: nbproc ! MPI variable
   INTEGER :: nmax
   INTEGER :: numproc ! MPI variable
@@ -100,7 +100,7 @@ PROGRAM clusters
 #endif
      OPEN(FILE=entree,UNIT=1)
      CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,input_file,&
-          sigma,nblimit,list_nb_clusters)
+          sigma,nb_clusters_max,list_nb_clusters)
      t2 = MPI_WTIME()
      PRINT *, 'Time for reading data : ', t2-t1
      CLOSE(1)
@@ -115,7 +115,7 @@ PROGRAM clusters
 #endif
     t1 = MPI_WTIME()
     CALL partition_data(data,epsilon,nbproc,coord_min,coord_max,partitionning,&
-         ldat,ddat,bounds)
+         points_by_domain,assignements,bounds)
     t2 = MPI_WTIME()
     PRINT *,'Time for partitioning data : ', t2-t1
   ENDIF
@@ -141,7 +141,7 @@ PROGRAM clusters
 
      ! Nblimit sending
      CALL MPI_BARRIER(MPI_COMM_WORLD,ierr)
-     CALL MPI_BCAST(nblimit,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+     CALL MPI_BCAST(nb_clusters_max,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
 
      ! Nbideal sending
      IF (numproc==0) THEN
@@ -163,7 +163,7 @@ PROGRAM clusters
         PRINT *
         PRINT *,'DEBUG : Transferring partitioned data...'
 #endif
-        CALL send_partitionning(nbproc,data,ldat,ddat,partitioned_data)
+        CALL send_partitionning(nbproc,data,points_by_domain,assignements,partitioned_data)
 #if aff
         PRINT *
         PRINT *,'DEBUG : Computing clusters...'
@@ -215,7 +215,7 @@ PROGRAM clusters
 #if aff
      PRINT *,'DEBUG : Process n', numproc, ' : computing clusters...'
 #endif
-     CALL apply_spectral_clustering(numproc,nblimit,nbideal,partitioned_data,sigma)
+     CALL apply_spectral_clustering(numproc,nb_clusters_max,nbideal,partitioned_data,sigma)
   ENDIF
   t2 = MPI_WTIME()
   t_parall = t2 - t1
@@ -240,14 +240,14 @@ PROGRAM clusters
         PRINT *,'DEBUG : Grouping clusters...'
 #endif
         ! Receiving of the number of clusters with duplications
-        CALL receive_number_clusters(nbproc,nbclust,ldat,partitioned_data,nclust)
+        CALL receive_number_clusters(nbproc,nbclust,points_by_domain,partitioned_data,nclust)
 #if aff
         PRINT *,'DEBUG : number of clusters with duplications found : ', nbclust
 #endif
         ! Receiving of clusters info
         ALLOCATE(cluster_map(nbclust,data%nb))
-        CALL receive_clusters(nbproc,nbclust,ldat,ddat,partitioned_data,&
-             cluster_map,nclust,iclust)
+        CALL receive_clusters(nbproc,nbclust,points_by_domain,assignements,partitioned_data,&
+             cluster_map,nclust,points_by_cluster)
      ELSE
         ! Sends the number of clusters
         CALL send_number_clusters(numproc,partitioned_data)
@@ -258,27 +258,27 @@ PROGRAM clusters
      ! End of post-process
      IF (numproc==0) THEN
         ! Groups the clusters and removes duplicates from the set of found clusters
-        CALL group_clusters(nbclust,iclust,cluster_map,data)
+        CALL group_clusters(nbclust,points_by_cluster,cluster_map,data)
      ENDIF
 
   ELSE
      ! Case of 1 proc alone
      nbclust=partitioned_data%nbclusters
-     ALLOCATE(iclust(nbclust))
-     iclust(:)=0
+     ALLOCATE(points_by_cluster(nbclust))
+     points_by_cluster(:)=0
      nmax=0
      DO i=1,partitioned_data%nb
         j=partitioned_data%point(i)%cluster
-        iclust(j)=iclust(j)+1
-        nmax=max(nmax,iclust(j))
+        points_by_cluster(j)=points_by_cluster(j)+1
+        nmax=max(nmax,points_by_cluster(j))
      ENDDO
      ALLOCATE(cluster_map(nbclust,nmax))
      cluster_map(:,:)=0
-     iclust(:)=0
+     points_by_cluster(:)=0
      DO i=1,partitioned_data%nb
         j=partitioned_data%point(i)%cluster
-        iclust(j)=iclust(j)+1
-        cluster_map(j,iclust(j))=i
+        points_by_cluster(j)=points_by_cluster(j)+1
+        cluster_map(j,points_by_cluster(j))=i
      ENDDO
   ENDIF
 
@@ -293,7 +293,7 @@ PROGRAM clusters
   ! Outputs
   IF (numproc==0) THEN
      ! Writing of the cluster.final files
-     CALL write_final_clusters(nbclust,iclust,cluster_map)
+     CALL write_final_clusters(nbclust,points_by_cluster,cluster_map)
 
      ! Information writing
      CALL write_metadata(input_file,data,nbproc,nbclust)
