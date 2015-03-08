@@ -5,7 +5,7 @@ CONTAINS
 
 
   SUBROUTINE spectral_embedding(nbcluster, n, Z, A, ratio,clusters, &
-       clusters_centers, cluster_population, clusters_energies, nbinfo, numproc, &
+       clusters_centers, points_by_clusters, clusters_energies, nbinfo, numproc, &
        ratiomoy, ratiorij, ratiorii)
     IMPLICIT NONE
     !###########################################
@@ -27,7 +27,7 @@ CONTAINS
     DOUBLE PRECISION :: ratiorii
     DOUBLE PRECISION :: ratiorij
     INTEGER, DIMENSION(:), POINTER :: clusters ! appartenance des clusters
-    INTEGER, DIMENSION(:), POINTER :: cluster_population ! nbre de points par cluster
+    INTEGER, DIMENSION(:), POINTER :: points_by_clusters ! nbre de points par cluster
     INTEGER :: nbinfo
     
     !#### Variables  ####
@@ -55,7 +55,7 @@ CONTAINS
     !###########################################  
     ALLOCATE(clusters(n))
     ALLOCATE(clusters_centers(nbcluster,nbcluster))
-    ALLOCATE(cluster_population(nbcluster))
+    ALLOCATE(points_by_clusters(nbcluster))
     ALLOCATE(clusters_energies(nbcluster))
     ALLOCATE(Z1(n,nbcluster))
     ALLOCATE(Z2(nbcluster,n))
@@ -80,14 +80,14 @@ CONTAINS
     it_max=n*n
 
     CALL apply_kmeans( nbcluster, n, nbcluster, it_max, it_num,Z2,&
-         clusters, clusters_centers, cluster_population, clusters_energies, &
+         clusters, clusters_centers, points_by_clusters, clusters_energies, &
          numproc)
 
     !*****************************
     ! Mesure de qualite
     nbmax=0
     DO i=1,nbcluster
-       nbmax=max(nbmax,cluster_population(i))
+       nbmax=max(nbmax,points_by_clusters(i))
     ENDDO
     ALLOCATE(clustercorresp(nbcluster,nbmax))
     clustercorresp(:,:)=0
@@ -108,9 +108,9 @@ CONTAINS
     Frob(:,:)=0.0 
     DO i=1,nbcluster
        DO j=1,nbcluster
-          DO ki=1,cluster_population(i)
+          DO ki=1,points_by_clusters(i)
              ni=clustercorresp(i,ki)
-             DO kj=1,cluster_population(j)
+             DO kj=1,points_by_clusters(j)
                 nj=clustercorresp(j,kj)
                 Frob(i,j)=Frob(i,j)+A(ni,nj)**2
              ENDDO
@@ -124,7 +124,7 @@ CONTAINS
     ratiorij=0.0
     nbinfo=nbcluster
     DO i=1,nbcluster
-       IF ((cluster_population(i)/=0).AND.(Frob(i,i)/=0)) THEN
+       IF ((points_by_clusters(i)/=0).AND.(Frob(i,i)/=0)) THEN
           DO j=1,nbcluster
              IF (i/=j) THEN
                 ratio=ratio+Frob(i,j)/Frob(i,i)
@@ -151,7 +151,7 @@ CONTAINS
 
 
   SUBROUTINE apply_kmeans(dimension, nb_points, nb_clusters, it_max, it_num, points, &
-       clusters, clusters_centers, cluster_population, clusters_energies, numproc)
+       clusters, clusters_centers, points_by_clusters, clusters_energies, numproc)
 
     !*****************************************************************************80
     !
@@ -205,7 +205,7 @@ CONTAINS
     DOUBLE PRECISION :: clusters_energies (nb_clusters) ! the cluster energies
     INTEGER :: it_num ! the number of iterations taken
     INTEGER :: clusters (nb_points) ! indicates which cluster each point belongs to
-    INTEGER :: cluster_population (nb_clusters) ! the number of points in each cluster
+    INTEGER :: points_by_clusters (nb_clusters) ! the number of points in each cluster
 
     !== USELESS ===
     INTEGER :: numproc ! TODO : etudier si garder ou pas
@@ -318,14 +318,14 @@ PRINT *, 'recherche des centres'
        swap=0
        DO i=1,nb_clusters
           stockenergy(i)=clusters_energies(i)
-          stockpopulation(i)=cluster_population(i)
+          stockpopulation(i)=points_by_clusters(i)
           DO j=1,dimension
              stockcenter(j,i)=clusters_centers(j,i)
           ENDDO
        ENDDO
 
        ! Computing of the distances
-       cluster_population(1:nb_clusters) = 1
+       points_by_clusters(1:nb_clusters) = 1
        listnorm(:,:)=0.0
        DO i=1,nb_points
           DO j=1,nb_clusters
@@ -336,7 +336,7 @@ PRINT *, 'recherche des centres'
        ENDDO
 
        ! Allocation related to the minimum of the distances
-       cluster_population(:)=0
+       points_by_clusters(:)=0
        DO i=1,nb_points
           DO j=1,nb_clusters
              IF (listnorm(i,j)<listnorm(i,clusters(i))) THEN
@@ -346,7 +346,7 @@ PRINT *, 'recherche des centres'
           ENDDO
           clusters_energies(clusters(i))=clusters_energies(clusters(i))&
                +listnorm(i,clusters(i))
-          cluster_population(clusters(i))=cluster_population(clusters(i))+1
+          points_by_clusters(clusters(i))=points_by_clusters(clusters(i))+1
        ENDDO
 
        ! Update of centers
@@ -358,7 +358,7 @@ PRINT *, 'recherche des centres'
           ENDDO
        ENDDO
        DO i=1,nb_clusters
-          clusters_centers(:,i)=clusters_centers(:,i)/cluster_population(i)
+          clusters_centers(:,i)=clusters_centers(:,i)/points_by_clusters(i)
        ENDDO
 
 

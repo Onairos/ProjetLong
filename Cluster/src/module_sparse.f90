@@ -17,7 +17,7 @@ CONTAINS
     INTEGER :: n, k, nbcluster
     DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax, clusters_energies, &
          ratiomin, ratiomoy, ratiorii, ratiorij
-    INTEGER, DIMENSION(:), POINTER ::clusters, cluster_population, nbinfo
+    INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters, nbinfo
     INTEGER :: nblimit, nbideal
     DOUBLE PRECISION :: norme, ratio, ratio1, ratio2, seuilrij
     CHARACTER (LEN=30) :: num, files
@@ -169,20 +169,20 @@ CONTAINS
           clusters(:)=0.0
           ALLOCATE(clusters_centers(nbcluster,nbcluster))
           clusters_centers(:,:)=0.0
-          ALLOCATE(cluster_population(nbcluster))
-          cluster_population(:)=0.0
+          ALLOCATE(points_by_clusters(nbcluster))
+          points_by_clusters(:)=0.0
           ALLOCATE(clusters_energies(nbcluster))
           clusters_energies(:)=0.0
 
           CALL sp_spectral_embedding(nbcluster, n, Z, nnz2, AS, IAS, JAS, &
-               ratiomax(nbcluster),clusters,clusters_centers,cluster_population, &
+               ratiomax(nbcluster),clusters,clusters_centers,points_by_clusters, &
                clusters_energies,nbinfo(nbcluster),numproc,ratiomoy(nbcluster), &
                ratiorij(nbcluster),ratiorii(nbcluster))
 
           DEALLOCATE(clusters)
           DEALLOCATE(clusters_centers)
           DEALLOCATE(clusters_energies)
-          DEALLOCATE(cluster_population)
+          DEALLOCATE(points_by_clusters)
        ENDDO
 
 
@@ -252,7 +252,7 @@ PRINT *, 'ratio de frobenius'
     IF (partitioned_data%nbclusters>1) THEN
 
        CALL sp_spectral_embedding(partitioned_data%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
-            clusters_centers,cluster_population,clusters_energies,&
+            clusters_centers,points_by_clusters,clusters_energies,&
             nbinfo(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),&
             ratiorii(1))
 
@@ -261,7 +261,7 @@ PRINT *, 'ratio de frobenius'
        ENDDO
 
        DEALLOCATE(clusters)
-       DEALLOCATE(cluster_population)
+       DEALLOCATE(points_by_clusters)
        DEALLOCATE(ratiomax)
        DEALLOCATE(clusters_energies)
        DEALLOCATE(ratiomin)
@@ -293,7 +293,7 @@ PRINT *, 'ratio de frobenius'
   END SUBROUTINE sp_calculclusters
 
     SUBROUTINE sp_spectral_embedding(nbcluster, n, Z, nnz, AS, IAS, JAS, ratio, clusters, &
-       clusters_centers, cluster_population, clusters_energies, nbinfo, numproc, &
+       clusters_centers, points_by_clusters, clusters_energies, nbinfo, numproc, &
        ratiomoy, ratiorij, ratiorii)
 
     !*****************************************
@@ -306,7 +306,7 @@ PRINT *, 'ratio de frobenius'
     ! les clusters
     ! clusters : appartenance des clusters
     ! clusters_centers : centre des nbclusters clusters
-    ! cluster_population : nbre de points par cluster
+    ! points_by_clusters : nbre de points par cluster
     ! clusters_energies : somme des energies par cluster
     !
 
@@ -315,7 +315,7 @@ PRINT *, 'ratio de frobenius'
     INTEGER ::nbcluster, n, nbinfo, numproc
     DOUBLE PRECISION ::ratio, test, ratiomin, ratiorii, ratiorij, ratiomoy
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies, Z3
-    INTEGER, DIMENSION(:), POINTER ::clusters, cluster_population
+    INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters
     !INTEGER,DIMENSION(:),POINTER::ordaffperclus
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1, Z2
@@ -332,7 +332,7 @@ PRINT *, 'ratio de frobenius'
 
     ALLOCATE(clusters(n))
     ALLOCATE(clusters_centers(nbcluster,nbcluster))
-    ALLOCATE(cluster_population(nbcluster))
+    ALLOCATE(points_by_clusters(nbcluster))
     ALLOCATE(clusters_energies(nbcluster))
     ALLOCATE(Z1(n,nbcluster))
     ALLOCATE(Z2(nbcluster,n))
@@ -360,7 +360,7 @@ PRINT *, 'ratio de frobenius'
     it_max=n*n !1000.0
 
     CALL apply_kmeans( nbcluster, n, nbcluster, it_max, it_num, Z2,&
-         clusters, clusters_centers, cluster_population, clusters_energies, &
+         clusters, clusters_centers, points_by_clusters, clusters_energies, &
          numproc)
 
     !*****************************
@@ -369,9 +369,9 @@ PRINT *, 'ratio de frobenius'
 
     nbmax=0
     DO i=1,nbcluster
-       nbmax=max(nbmax,cluster_population(i))
+       nbmax=max(nbmax,points_by_clusters(i))
     ENDDO
-    PRINT *, cluster_population
+    PRINT *, points_by_clusters
     ALLOCATE(clustercorresp(nbcluster,nbmax))
     clustercorresp(:,:)=0
     DO i=1,n
@@ -408,7 +408,7 @@ PRINT *, 'ratio de frobenius'
     ratiomoy = 0.0
     nbinfo=nbcluster
     DO i=1,nbcluster
-       IF ((cluster_population(i)/=0).AND.(Frob(i,i)/=0)) THEN
+       IF ((points_by_clusters(i)/=0).AND.(Frob(i,i)/=0)) THEN
           DO j=1,nbcluster
              IF (i/=j) THEN
                 ratio=ratio+Frob(i,j)/Frob(i,i)

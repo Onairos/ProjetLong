@@ -169,7 +169,7 @@ CONTAINS
     DOUBLE PRECISION :: val
     DOUBLE PRECISION :: value
     INTEGER, DIMENSION(:), POINTER :: cluster
-    INTEGER, DIMENSION(:), POINTER :: cluster_population
+    INTEGER, DIMENSION(:), POINTER :: points_by_clusters
     INTEGER, DIMENSION(:), POINTER :: nbinfo
     INTEGER :: i
     INTEGER :: j
@@ -293,13 +293,13 @@ CONTAINS
           cluster(:)=0
           ALLOCATE(clusters_centers(nbcluster,nbcluster))
           clusters_centers(:,:)=0.0
-          ALLOCATE(cluster_population(nbcluster))
-          cluster_population(:)=0
+          ALLOCATE(points_by_clusters(nbcluster))
+          points_by_clusters(:)=0
           ALLOCATE(clusters_energies(nbcluster))
           clusters_energies(:)=0.0
 
           CALL spectral_embedding(nbcluster,n,Z,A,&
-               ratiomax(nbcluster),cluster,clusters_centers,cluster_population,&
+               ratiomax(nbcluster),cluster,clusters_centers,points_by_clusters,&
                clusters_energies,nbinfo(nbcluster),numproc,ratiomoy(nbcluster), &
                ratiorij(nbcluster),ratiorii(nbcluster))
 
@@ -307,7 +307,7 @@ CONTAINS
           DEALLOCATE(cluster)
           DEALLOCATE(clusters_centers)
           DEALLOCATE(clusters_energies)
-          DEALLOCATE(cluster_population)
+          DEALLOCATE(points_by_clusters)
        ENDDO
 
 #if aff
@@ -372,13 +372,13 @@ PRINT *, 'ratio de frobenius'
     ! Final clustering computing
     IF (partitioned_data%nbclusters>1) THEN
        CALL spectral_embedding(partitioned_data%nbclusters,n,Z,A,ratio,cluster,&
-            clusters_centers,cluster_population,clusters_energies,&
+            clusters_centers,points_by_clusters,clusters_energies,&
             nbinfo(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),ratiorii(1))
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%cluster=cluster(i)
        ENDDO
        DEALLOCATE(cluster)
-       DEALLOCATE(cluster_population)
+       DEALLOCATE(points_by_clusters)
        DEALLOCATE(ratiomax)
        DEALLOCATE(clusters_energies)
        DEALLOCATE(ratiomin)
