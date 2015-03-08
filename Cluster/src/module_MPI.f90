@@ -293,7 +293,7 @@ CONTAINS
 
 
   SUBROUTINE receive_clusters(nbproc, nbclust, ldat, ddat, partitioned_data, cluster_map, &
-       nclust, iclust)
+       nclust, points_by_cluster)
     IMPLICIT NONE
     ! librairie MPI
     INCLUDE 'mpif.h'
@@ -311,7 +311,7 @@ CONTAINS
 
     !====  OUT ====
     INTEGER, DIMENSION(:,:), POINTER :: cluster_map
-    INTEGER, DIMENSION(:), POINTER :: iclust
+    INTEGER, DIMENSION(:), POINTER :: points_by_cluster
     
     !#### Variables  ####
     INTEGER, DIMENSION(:), POINTER :: lclust
@@ -328,14 +328,14 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################    
     i0=0
-    ALLOCATE(iclust(nbclust))
-    iclust(:)=0
+    ALLOCATE(points_by_cluster(nbclust))
+    points_by_cluster(:)=0
     IF (partitioned_data%nb>0) THEN
        ! Storage of local clusters in the global array
        DO i=1,partitioned_data%nb
           j=partitioned_data%point(i)%cluster
-          iclust(j)=iclust(j)+1
-          cluster_map(j,iclust(j))=ddat(0,i)
+          points_by_cluster(j)=points_by_cluster(j)+1
+          cluster_map(j,points_by_cluster(j))=ddat(0,i)
        ENDDO
        i0=i0+partitioned_data%nbclusters
     ENDIF
@@ -352,8 +352,8 @@ CONTAINS
           ! Storage of local clusters in the global array
           DO j=1,ldat(p)
              k=lclust(j)+i0
-             iclust(k)=iclust(k)+1
-             cluster_map(k,iclust(k))=ddat(p,j)
+             points_by_cluster(k)=points_by_cluster(k)+1
+             cluster_map(k,points_by_cluster(k))=ddat(p,j)
           ENDDO
           i0=i0+nclust(p)%nb
        ENDIF

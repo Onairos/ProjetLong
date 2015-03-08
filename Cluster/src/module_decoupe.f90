@@ -409,7 +409,7 @@ CONTAINS
   END SUBROUTINE partition_with_overlappings
 
 
-  SUBROUTINE group_clusters(nbclust, iclust, cluster_map, data)
+  SUBROUTINE group_clusters(nbclust, points_by_cluster, cluster_map, data)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -420,7 +420,7 @@ CONTAINS
 
     !=== IN/OUT ===
     INTEGER, DIMENSION(:,:), POINTER :: cluster_map
-    INTEGER, DIMENSION(:), POINTER :: iclust
+    INTEGER, DIMENSION(:), POINTER :: points_by_cluster
 
     !====  OUT ====
     TYPE(type_data) :: data
@@ -449,10 +449,10 @@ CONTAINS
 #endif
     DO WHILE(.NOT.ok)
        j=j+1 
-       IF (j>iclust(i)) THEN
+       IF (j>points_by_cluster(i)) THEN
           ! Line n°1 is entirely tested
 #if aff
-          PRINT *,'      > nb d elements apres regroupement :',iclust(i)
+          PRINT *,'      > nb d elements apres regroupement :',points_by_cluster(i)
 #endif
           i=i+1
           j=1
@@ -463,7 +463,7 @@ CONTAINS
        IF (i>nbclust-1) THEN
           ! No more points to test
           ok=.TRUE.
-       ELSEIF (iclust(i)>0) THEN
+       ELSEIF (points_by_cluster(i)>0) THEN
           ! Storage of index
           data%point(cluster_map(i,j))%cluster=i
           ! Test of overlappings
@@ -471,7 +471,7 @@ CONTAINS
           i2=i+1
           j2=1
           DO WHILE(.NOT. ok2)
-             IF (j2>iclust(i2)) THEN
+             IF (j2>points_by_cluster(i2)) THEN
                 ! Line n°i2 entirely tested for the point (i,j)
                 i2=i2+1
                 j2=1
@@ -484,20 +484,20 @@ CONTAINS
                 IF (cluster_map(i,j)==cluster_map(i2,j2)) THEN
                    ! Intersection found : line n°i2 added to line n°i
                    n=0
-                   DO k=1,iclust(i2)
+                   DO k=1,points_by_cluster(i2)
                       ! Test of removal of duplications
                       ok3=.TRUE.
-                      DO j3=1,iclust(i)
+                      DO j3=1,points_by_cluster(i)
                          IF (cluster_map(i2,k)==cluster_map(i,j3)) ok3=.FALSE.
                       ENDDO
                       IF (ok3) THEN
                          n=n+1
-                         cluster_map(i,iclust(i)+n)=cluster_map(i2,k)
+                         cluster_map(i,points_by_cluster(i)+n)=cluster_map(i2,k)
                          cluster_map(i2,k)=0                         
                       ENDIF
                    ENDDO
-                   iclust(i)=iclust(i)+n
-                   iclust(i2)=0
+                   points_by_cluster(i)=points_by_cluster(i)+n
+                   points_by_cluster(i2)=0
                 ELSE
                    ! Test of a new point
                    j2=j2+1
@@ -507,7 +507,7 @@ CONTAINS
        ENDIF
     ENDDO
 #if aff
-    PRINT *,'      > nb d elements apres regroupement :',iclust(i)
+    PRINT *,'      > nb d elements apres regroupement :',points_by_cluster(i)
 #endif
     RETURN
   END SUBROUTINE group_clusters

@@ -125,7 +125,7 @@ CONTAINS
   END SUBROUTINE write_partial_clusters
 
 
-  SUBROUTINE write_final_clusters(nbclust, iclust, cluster_map)
+  SUBROUTINE write_final_clusters(nbclust, points_by_cluster, cluster_map)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -133,7 +133,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     INTEGER,DIMENSION(:,:),POINTER :: cluster_map
-    INTEGER,DIMENSION(:),POINTER :: iclust
+    INTEGER,DIMENSION(:),POINTER :: points_by_cluster
 
     !=== IN/OUT === 
     INTEGER :: nbclust
@@ -151,14 +151,14 @@ CONTAINS
     PRINT *,'  > Ecriture du resultat...'
     k=0
     DO i=1,nbclust
-       IF (iclust(i)>0) THEN
+       IF (points_by_cluster(i)>0) THEN
           k=k+1
           WRITE(num,*) k
           files='cluster.final.'//trim(adjustl(num))
           OPEN(FILE=files,UNIT=20)     
-          PRINT *,'    > cluster ',k,' :',iclust(i),' -> ',files
-          WRITE(20,*) iclust(i)
-          DO j=1,iclust(i)
+          PRINT *,'    > cluster ',k,' :',points_by_cluster(i),' -> ',files
+          WRITE(20,*) points_by_cluster(i)
+          DO j=1,points_by_cluster(i)
              WRITE(20,*) cluster_map(i,j)
           ENDDO
           CALL flush(20)

@@ -34,7 +34,7 @@ PROGRAM clusters
   INTEGER,DIMENSION(:,:), POINTER :: cluster_map
   INTEGER,DIMENSION(:,:) ,POINTER :: assignements
   INTEGER,DIMENSION(:), POINTER :: partitionning
-  INTEGER,DIMENSION(:), POINTER :: iclust
+  INTEGER,DIMENSION(:), POINTER :: points_by_cluster
   INTEGER,DIMENSION(:), POINTER :: ldat
   INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
   INTEGER :: i
@@ -253,7 +253,7 @@ PROGRAM clusters
         ! Receiving of clusters info
         ALLOCATE(cluster_map(nbclust,data%nb))
         CALL receive_clusters(nbproc,nbclust,ldat,assignements,partitioned_data,&
-             cluster_map,nclust,iclust)
+             cluster_map,nclust,points_by_cluster)
      ELSE
         ! Sends the number of clusters
         CALL send_number_clusters(numproc,partitioned_data)
@@ -264,27 +264,27 @@ PROGRAM clusters
      ! End of post-process
      IF (numproc==0) THEN
         ! Groups the clusters and removes duplicates from the set of found clusters
-        CALL group_clusters(nbclust,iclust,cluster_map,data)
+        CALL group_clusters(nbclust,points_by_cluster,cluster_map,data)
      ENDIF
 
   ELSE
      ! Case of 1 proc alone
      nbclust=partitioned_data%nbclusters
-     ALLOCATE(iclust(nbclust))
-     iclust(:)=0
+     ALLOCATE(points_by_cluster(nbclust))
+     points_by_cluster(:)=0
      nmax=0
      DO i=1,partitioned_data%nb
         j=partitioned_data%point(i)%cluster
-        iclust(j)=iclust(j)+1
-        nmax=max(nmax,iclust(j))
+        points_by_cluster(j)=points_by_cluster(j)+1
+        nmax=max(nmax,points_by_cluster(j))
      ENDDO
      ALLOCATE(cluster_map(nbclust,nmax))
      cluster_map(:,:)=0
-     iclust(:)=0
+     points_by_cluster(:)=0
      DO i=1,partitioned_data%nb
         j=partitioned_data%point(i)%cluster
-        iclust(j)=iclust(j)+1
-        cluster_map(j,iclust(j))=i
+        points_by_cluster(j)=points_by_cluster(j)+1
+        cluster_map(j,points_by_cluster(j))=i
      ENDDO
   ENDIF
 
@@ -299,7 +299,7 @@ PROGRAM clusters
   ! Outputs
   IF (numproc==0) THEN
      ! Writing of the cluster.final files
-     CALL write_final_clusters(nbclust,iclust,cluster_map)
+     CALL write_final_clusters(nbclust,points_by_cluster,cluster_map)
 
      ! Information writing
      CALL write_metadata(input_file,data,nbproc,nbclust)
