@@ -225,7 +225,7 @@ SUBROUTINE apply_kernel_k_means(numproc,nblimit,nbideal,dataw,ker_param)
     INTEGER :: nbideal
     INTEGER :: nblimit
     INTEGER :: numproc
-    TYPE(type_clustering_param) :: ker_param
+    TYPE(type_kernel) :: ker_param
 
     !=== IN/OUT ===
     TYPE(type_data) :: dataw

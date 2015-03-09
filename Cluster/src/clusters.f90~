@@ -216,7 +216,6 @@ PROGRAM clusters
 #if aff
      PRINT *,'DEBUG : Process n', numproc, ' : computing clusters...'
 #endif
-    
      CALL apply_spectral_clustering(numproc,nb_clusters_max,nbideal,partitioned_data,sigma)
   ENDIF
   t2 = MPI_WTIME()

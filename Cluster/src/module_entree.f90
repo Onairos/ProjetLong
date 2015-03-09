@@ -67,7 +67,7 @@ CONTAINS
 
 
   SUBROUTINE read_file(data, epsilon, coord_min, coord_max, nbproc, partitionning, &
-       input_file, sigma, nb_clusters_max, list_nb_clusters,ker_param)
+       input_file, sigma, nb_clusters_max, list_nb_clusters,clust_param)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -78,7 +78,7 @@ CONTAINS
 
     !=== IN/OUT ===
     TYPE(type_data) :: data
-    TYPE(type_kernel) :: ker_param
+    TYPE(type_clustering_param) :: clust_param
 
     !====  OUT ====
     CHARACTER (LEN=30) :: input_file
@@ -182,26 +182,25 @@ CONTAINS
           PRINT *, '> Test for number of clusters=', list_nb_clusters
        CASE('KERNEL')
           ok=.FALSE.
-          READ(1,*) ker_param%kernelfunindex
-          PRINT *, '> Kernel fun index =', ker_param%kernelfunindex
+          READ(1,*) clust_param%kernelfunindex
+          PRINT *, '> Kernel fun index =', clust_param%kernelfunindex
        CASE('CLUSTMETHID')
           ok=.FALSE.
-          READ(1,*) clustering_meth_id
-          PRINT *, '> clustering method id =', clustering_meth_id
-	  look_up_push(ker_table,'kernelfunindex')
+          READ(1,*) clust_param%clustering_meth_id
+          PRINT *, '> clustering method id =', clust_param%clustering_meth_id
        CASE('GAMMA')
           ok=.FALSE.
-          READ(1,*) ker_param%gam
-          PRINT *, '> 	gamma =', ker_param%gam
+          READ(1,*) clust_param%gam
+          PRINT *, '> 	gamma =', clust_param%gam
        CASE('DELTA')
           ok=.FALSE.
-          READ(1,*) ker_param%delta
-          PRINT *, '> 	delta =', ker_param%delta
+          READ(1,*) clust_param%delta
+          PRINT *, '> 	delta =', clust_param%delta
        CASE('SIGMA')
           ok=.FALSE.
           READ(1,*) sigma
           PRINT *, '> Imposed value of sigma : ', sigma
-          ker_param%sigma=sigma
+          clust_param%sigma=sigma
           IF (data%image==1) THEN
              IF (sigma<1.0) THEN
                 PRINT *, 'Too small thickness for image mode !!!!'

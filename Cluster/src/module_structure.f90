@@ -22,6 +22,8 @@ MODULE module_structure
      INTEGER, DIMENSION(:), POINTER :: imgmap   ! Pixel partitionnings of picture
      INTEGER :: imgdim ! Dimension of images
      INTEGER :: imgt ! Number of "times"
+
+
   END TYPE type_data
 
 
@@ -38,7 +40,9 @@ MODULE module_structure
      INTEGER :: nb
   END TYPE type_clusters
   !### Kernel parameter
-  TYPE type_kernel
+  TYPE type_clustering_param
+     ! Clustering method id
+      INTEGER :: clustering_method_id
       INTEGER :: kernelfunindex
       DOUBLE PRECISION :: sigma
       DOUBLE PRECISION :: gam

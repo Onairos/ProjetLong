@@ -182,7 +182,7 @@ SUBROUTINE apply_kernel_k_means(numproc,nblimit,nbideal,dataw,ker_param)
        STOP  
     
 
-    ELSEIF (kernelfunindex==1 .AND. ker_param%sigma<0.0) THEN
+    ELSEIF (ker_param%kernelfunindex==1 .AND. ker_param%sigma<0.0) THEN
        WRITE ( *, '(a)' ) ' '
        WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
        WRITE ( *, '(a)' ) '  SIGMA NOT INITIALIZED IN GAUSSIAN KERNEL'
