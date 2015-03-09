@@ -22,6 +22,9 @@ MODULE module_structure
      INTEGER, DIMENSION(:), POINTER :: imgmap   ! Pixel partitionnings of picture
      INTEGER :: imgdim ! Dimension of images
      INTEGER :: imgt ! Number of "times"
+     
+     !mean shift
+     INTEGER :: bandwidth !bandwidth for mean shift
   END TYPE type_data
 
 

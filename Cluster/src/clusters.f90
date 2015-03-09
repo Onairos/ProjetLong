@@ -99,8 +99,8 @@ PROGRAM clusters
      PRINT *,'DEBUG : Reading data : ',entree
 #endif
      OPEN(FILE=entree,UNIT=1)
-     CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,input_file,&
-          sigma,nb_clusters_max,list_nb_clusters)
+     CALL read_file(data, epsilon, coord_min, coord_max, nbproc, partitionning, &
+       input_file, sigma, nb_clusters_max, list_nb_clusters,ker_param)
      t2 = MPI_WTIME()
      PRINT *, 'Time for reading data : ', t2-t1
      CLOSE(1)
@@ -215,7 +215,16 @@ PROGRAM clusters
 #if aff
      PRINT *,'DEBUG : Process n', numproc, ' : computing clusters...'
 #endif
-     CALL apply_spectral_clustering(numproc,nb_clusters_max,nbideal,partitioned_data,sigma)
+
+	SELECT CASE (clustering_param%method_id)
+	CASE (1)
+		CALL apply_spectral_clustering(numproc,nb_clusters_max,nbideal,partitioned_data,sigma)
+	CASE (2)
+		CALL apply_mean_shift(numproc,nblimit,nbideal,dataw,clustering_param%bandWidth)
+	CASE (3)
+		CALL apply_kernel_k_means(numproc,nblimit,nbideal,dataw,ker_param)
+    END SELECT
+    
   ENDIF
   t2 = MPI_WTIME()
   t_parall = t2 - t1

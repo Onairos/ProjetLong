@@ -54,6 +54,10 @@ CONTAINS
     PRINT *,'  (optional)'
     PRINT *,'  ker_table'
     PRINT *
+    PRINT *, 'BANDWIDTH'
+    PRINT *,'  (optional)'
+    PRINT *,'  bandwidth_for_mean_shift'
+    PRINT *
     PRINT *,'DECOUPAGE'
     PRINT *,'INTERFACE (partitioning with interface) '
     PRINT *,'RECOUVREMENT (partitioning with overlapping)'
@@ -208,6 +212,10 @@ CONTAINS
                 STOP
              ENDIF
           ENDIF
+       CASE('BANDWIDTH')
+          ok=.FALSE.
+          READ(1,*) data%bandwidth
+          PRINT *, '> 	delta =', data%bandwidth
        CASE('DECOUPAGE')
           decoupage=1
           ok=.FALSE.
