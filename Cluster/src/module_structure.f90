@@ -48,6 +48,6 @@ MODULE module_structure
       DOUBLE PRECISION :: delta
      !mean shift
      INTEGER :: bandwidth !bandwidth for mean shift
-  END TYPE type_kernel
+  END TYPE type_clustering_param
 
 END MODULE module_structure

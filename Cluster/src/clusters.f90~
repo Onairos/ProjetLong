@@ -223,9 +223,9 @@ PROGRAM clusters
 	CASE (1)
 		CALL apply_spectral_clustering(numproc,nb_clusters_max,nbideal,partitioned_data,sigma,clust_param)
 	CASE (2)
-		CALL apply_mean_shift(numproc,nblimit,nbideal,dataw,clustering_param%bandWidth)
+		CALL apply_mean_shift(numproc,nb_clusters_max,nbideal,partitioned_data,clustering_param%bandwidth)
 	CASE (3)
-		CALL apply_kernel_k_means(numproc,nblimit,nbideal,dataw,clust_param)
+		CALL apply_kernel_k_means(numproc,nb_clusters_max,nbideal,partitioned_data,clust_param)
     END SELECT
 
   ENDIF

@@ -215,7 +215,7 @@ FUNCTION poly_kernel( dataw, gam, delta )
 SUBROUTINE apply_kernel_k_means(numproc,nblimit,nbideal,dataw,clust_param)
     IMPLICIT NONE
 
-  ! INCLUDE 'mpif.h'
+   INCLUDE 'mpif.h'
     !###########################################
     ! DECLARATIONS
     !###########################################
@@ -483,7 +483,7 @@ PRINT *, 'recherche des centres'
     INTEGER :: nbideal
     INTEGER :: nb_clusters_max
     INTEGER :: numproc
-    TYPE(type_kernel) :: clust_param
+    TYPE(type_clustering_param) :: clust_param
 
     !=== IN/OUT ===
     TYPE(type_data) :: partitioned_data
@@ -752,7 +752,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
 SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
 
-   !INCLUDE 'mpif.h'
+   INCLUDE 'mpif.h'
     !IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -793,6 +793,7 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
     INTEGER :: j
     INTEGER :: num
     DOUBLE PRECISION :: sqDist
+    INTEGER :: cN
     
     
     

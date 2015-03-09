@@ -22,14 +22,7 @@ MODULE module_structure
      INTEGER, DIMENSION(:), POINTER :: imgmap   ! Pixel partitionnings of picture
      INTEGER :: imgdim ! Dimension of images
      INTEGER :: imgt ! Number of "times"
-<<<<<<< HEAD
 
-
-=======
-     
-     !mean shift
-     INTEGER :: bandwidth !bandwidth for mean shift
->>>>>>> 6af4023e4e14934346be1fbb3d91b1924deefe88
   END TYPE type_data
 
 
@@ -53,6 +46,8 @@ MODULE module_structure
       DOUBLE PRECISION :: sigma
       DOUBLE PRECISION :: gam
       DOUBLE PRECISION :: delta
+     !mean shift
+     INTEGER :: bandwidth !bandwidth for mean shift
   END TYPE type_kernel
 
 END MODULE module_structure

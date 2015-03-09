@@ -1,6 +1,5 @@
 MODULE module_entree
  USE module_structure
- USE module_look_up_table
 CONTAINS
 
   SUBROUTINE help
@@ -118,7 +117,7 @@ CONTAINS
     data%seuil=0
     data%interface=0
     data%recouvrement=0
-    ker_table=look_up_init(4)
+
 
     nb_clusters_max=4
     decoupage=0
@@ -190,8 +189,8 @@ CONTAINS
           PRINT *, '> Kernel fun index =', clust_param%kernelfunindex
        CASE('CLUSTMETHID')
           ok=.FALSE.
-          READ(1,*) clust_param%clustering_meth_id
-          PRINT *, '> clustering method id =', clust_param%clustering_meth_id
+          READ(1,*) clust_param%clustering_method_id
+          PRINT *, '> clustering method id =', clust_param%clustering_method_id
        CASE('GAMMA')
           ok=.FALSE.
           READ(1,*) clust_param%gam
@@ -213,8 +212,8 @@ CONTAINS
           ENDIF
        CASE('BANDWIDTH')
           ok=.FALSE.
-          READ(1,*) data%bandwidth
-          PRINT *, '> 	delta =', data%bandwidth
+          READ(1,*) clust_param%bandwidth
+          PRINT *, '> 	delta =', clust_param%bandwidth
        CASE('DECOUPAGE')
           decoupage=1
           ok=.FALSE.

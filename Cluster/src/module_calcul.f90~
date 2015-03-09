@@ -225,7 +225,7 @@ SUBROUTINE apply_kernel_k_means(numproc,nblimit,nbideal,dataw,clust_param)
     INTEGER :: nbideal
     INTEGER :: nblimit
     INTEGER :: numproc
-    TYPE(type_clustering_param) :: ker_param
+    TYPE(type_clustering_param) :: clust_param
 
     !=== IN/OUT ===
     TYPE(type_data) :: dataw
@@ -302,14 +302,14 @@ SUBROUTINE apply_kernel_k_means(numproc,nblimit,nbideal,dataw,clust_param)
     ENDIF
 
  
-    IF (ker_param%kernelfunindex==0 .AND. (ker_param%gam <0.0 .OR. ker_param%delta<0.0) )  THEN
+    IF (clust_param%kernelfunindex==0 .AND. (clust_param%gam <0.0 .OR. clust_param%delta<0.0) )  THEN
        WRITE ( *, '(a)' ) ' '
        WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
        WRITE ( *, '(a)' ) '  GAMMA AND DELTA NOT INITIALIZED IN POLYNOMIAL KERNEL'
        STOP  
     
 
-    ELSEIF (ker_param%kernelfunindex==1 .AND. ker_param%sigma<0.0) THEN
+    ELSEIF (clust_param%kernelfunindex==1 .AND. clust_param%sigma<0.0) THEN
        WRITE ( *, '(a)' ) ' '
        WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
        WRITE ( *, '(a)' ) '  SIGMA NOT INITIALIZED IN GAUSSIAN KERNEL'
@@ -317,10 +317,10 @@ SUBROUTINE apply_kernel_k_means(numproc,nblimit,nbideal,dataw,clust_param)
     ENDIF
 
 
-    IF (ker_param%kernelfunindex==0) THEN
-        Ker=poly_kernel( dataw, ker_param%gam, ker_param%delta)
-    ELSEIF (ker_param%kernelfunindex==1) THEN
-        Ker=gaussian_kernel(dataw, ker_param%sigma)
+    IF (clust_param%kernelfunindex==0) THEN
+        Ker=poly_kernel( dataw, clust_param%gam, clust_param%delta)
+    ELSEIF (clust_param%kernelfunindex==1) THEN
+        Ker=gaussian_kernel(dataw, clust_param%sigma)
     ENDIF
 
 
@@ -471,7 +471,7 @@ PRINT *, 'recherche des centres'
 
 
 
-  SUBROUTINE apply_spectral_clustering(numproc, nb_clusters_max, nbideal, partitioned_data, sigma,ker_param)
+  SUBROUTINE apply_spectral_clustering(numproc, nb_clusters_max, nbideal, partitioned_data, sigma,clust_param)
     IMPLICIT NONE
     INCLUDE 'mpif.h'
     !###########################################
@@ -483,7 +483,7 @@ PRINT *, 'recherche des centres'
     INTEGER :: nbideal
     INTEGER :: nb_clusters_max
     INTEGER :: numproc
-    TYPE(type_kernel) :: ker_param
+    TYPE(type_clustering_param) :: clust_param
 
     !=== IN/OUT ===
     TYPE(type_data) :: partitioned_data
@@ -793,6 +793,7 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
     INTEGER :: j
     INTEGER :: num
     DOUBLE PRECISION :: sqDist
+    INTEGER :: cN
     
     
     
