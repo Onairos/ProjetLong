@@ -67,7 +67,7 @@ CONTAINS
 
 
   SUBROUTINE read_file(data, epsilon, coord_min, coord_max, nbproc, partitionning, &
-       input_file, sigma, nb_clusters_max, list_nb_clusters,ker_param)
+       input_file, sigma, nb_clusters_max, list_nb_clusters)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -197,6 +197,8 @@ CONTAINS
           ok=.FALSE.
           READ(1,*) ker_param%delta
           PRINT *, '> 	delta =', ker_param%delta
+
+
        CASE('SIGMA')
           ok=.FALSE.
           READ(1,*) sigma

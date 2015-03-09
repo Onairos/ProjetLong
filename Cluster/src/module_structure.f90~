@@ -39,7 +39,7 @@ MODULE module_structure
   END TYPE type_clusters
   !### Kernel parameter
   TYPE type_kernel
-      INTEGER :: kernelfunindex
+      INTEGER :: kernelfunid
       DOUBLE PRECISION :: sigma
       DOUBLE PRECISION :: gam
       DOUBLE PRECISION :: delta
