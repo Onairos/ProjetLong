@@ -184,7 +184,7 @@ CONTAINS
        files='decoupe.'//trim(adjustl(num))
        OPEN(FILE=files,UNIT=10)
        READ(10,*) nb
-       PRINT *,'  > ',i,' :',nb
+       PRINT *, '> ', i, ' : ', nb
        DO j=1,nb
           IF (params%coord==1) THEN
              ! Partitionning by coordinates
@@ -202,7 +202,7 @@ CONTAINS
     DEALLOCATE(coords)
     WRITE(1,*) '};'
     CLOSE(1)
-    PRINT *,'-> decoupe.visu'
+    PRINT *, '-> decoupe.visu'
     RETURN
   END SUBROUTINE affectation_gmsh
 
@@ -244,7 +244,7 @@ CONTAINS
        OPEN(FILE=files,UNIT=1)
        WRITE(1,*) 'View "Clusters for part '//num(1:lenn)//'" {'
        READ(10,*) nb,k
-       PRINT *,'  > ',i,' :',nb,' -> ',files
+       PRINT *, '> ', i, ' : ', nb, ' -> ', files
        ALLOCATE(coords(1,k))
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
           ! Reading the matchings
@@ -307,14 +307,14 @@ CONTAINS
     IF (params%coord==1) THEN
        ! Reading with coordinates format
        READ(1,*) j,k
-       PRINT *,'lecture du fichier de maillage...',j,k
+       PRINT *, 'Reading mesh file...', j, k
        ALLOCATE(coords(j,k))
        nb0=0
        DO i=1,j
           READ(1,*,END=100) coords(i,:)
           nb0=nb0+1
        ENDDO
-100    PRINT *,'nb de points ',nb0
+100    PRINT *, 'Number of points : ', nb0
        j=nb0
        CLOSE(1)
     ENDIF
@@ -333,7 +333,7 @@ CONTAINS
        DO j=1,nb
           READ(10,*) k
           IF (params%coord==1) THEN
-             ! classic coordinates
+             ! Classic coordinates
              CALL ecritpoint_gmsh(1,nb0,coords,i,k)
           ELSE
              ! Pictures reassembly

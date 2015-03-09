@@ -97,15 +97,15 @@ CONTAINS
     PRINT *,'-> visu/decoupe.indices'
     OPEN(FILE='visu/decoupe.geo',UNIT=10)
     OPEN(FILE='visu/decoupe.indices',UNIT=11)
-    WRITE(10,*) '** sortie de visuclusters **'
-    WRITE(10,*) '** decoupage des sous-clusters **'
+    WRITE(10,*) '** Ouput of  visuclusters **'
+    WRITE(10,*) '** Partitioning of subclusters **'
     WRITE(10,'(a)') 'node id assign'
     WRITE(10,'(a)') 'element id assign'
-    WRITE(11,*) '** indices des process **'
+    WRITE(11,*) '** Indexes of processes **'
     WRITE(10,'(a)') 'part'
     WRITE(10,*) 1
-    WRITE(10,*) '** decoupages **'
-    WRITE(10,'(a)') 'coordinates'
+    WRITE(10,*) '** Partitionings **'
+    WRITE(10,'(a)') 'Coordinates'
     IF (((params%coord==1).AND.(params%dim==2)) &
          .OR.((params%image==1).AND.(params%imgdim==2)) &
          .OR.((params%seuil==1).AND.(params%imgdim==2)) &
@@ -295,11 +295,11 @@ CONTAINS
           PRINT *,'-> visu/affectation-interface.indices'
           OPEN(FILE='visu/affectation-interface.geo',UNIT=10)
           OPEN(FILE='visu/affectation-interface.indices',UNIT=11)
-          WRITE(10,*) '** sortie de visuclusters **'
-          WRITE(10,*) '** points sur l interface **'
+          WRITE(10,*) '** Output of visuclusters **'
+          WRITE(10,*) '** Points on the interface **'
           WRITE(10,'(a)') 'node id assign'
           WRITE(10,'(a)') 'element id assign'
-          WRITE(11,*) '** indices des process **'
+          WRITE(11,*) '** Indexes of processes **'
        ELSEIF (((i==1).AND.(params%interface==1)).OR. &
             ((i==0).AND.(params%interface==0))) THEN
           ! General file for others subdomains
@@ -307,11 +307,11 @@ CONTAINS
           PRINT *,'-> visu/affectation.indices'
           OPEN(FILE='visu/affectation.geo',UNIT=10)
           OPEN(FILE='visu/affectation.indices',UNIT=11)
-          WRITE(10,*) '** sortie de visuclusters **'
-          WRITE(10,*) '** decoupage des sous-clusters **'
+          WRITE(10,*) '** Output of visuclusters **'
+          WRITE(10,*) '** Partitioning of subclusters **'
           WRITE(10,'(a)') 'node id assign'
           WRITE(10,'(a)') 'element id assign'
-          WRITE(11,*) '** indices des process **'
+          WRITE(11,*) '** Indexes of processes **'
        ENDIF
        ! File name
        WRITE(num,*) i
@@ -434,11 +434,11 @@ CONTAINS
        PRINT *,'-> visu/'//trim(files)//'.indices'
        OPEN(FILE='visu/'//trim(files)//'.geo',UNIT=10)
        OPEN(FILE='visu/'//trim(files)//'.indices',UNIT=11)
-       WRITE(10,*) '** sortie de visuclusters **'
-       WRITE(10,*) '** decoupage du sous-clusters '//trim(num)//' **'
+       WRITE(10,*) '** Output of visuclusters **'
+       WRITE(10,*) '** Partitioning subcluster '//trim(num)//' **'
        WRITE(10,'(a)') 'node id assign'
        WRITE(10,'(a)') 'element id assign'
-       WRITE(11,*) '** indices des elements clusterises **'
+       WRITE(11,*) '** Indexes of clusterized elements **'
        ! Reading
        READ(20,*) nb_points,k
        PRINT *,'  > ',i,' :',nb_points,' -> ',files
@@ -542,14 +542,14 @@ CONTAINS
     IF (params%coord==1) THEN
        OPEN(FILE=params%mesh,UNIT=1)
        READ(1,*) j,k
-       PRINT *,'lecture du fichier de maillage...',j,k
+       PRINT *, 'Reading mesh file...', j, k
        ALLOCATE(coords(j,k))
        nb_points_temp=0
        DO i=1,j
           READ(1,*,END=100) coords(i,:)
           nb_points_temp=nb_points_temp+1
        ENDDO
-100    PRINT *,'nb de points ',nb_points_temp
+100    PRINT *, 'Number of points ', nb_points_temp
        j=nb_points_temp
        CLOSE(1)
     ENDIF
@@ -560,8 +560,8 @@ CONTAINS
     PRINT *,'-> visu/cluster.final.indices'
     OPEN(FILE='visu/cluster.final.geo',UNIT=10)
     OPEN(FILE='visu/cluster.final.indices',UNIT=11)
-    WRITE(10,*) '** sortie de visuclusters **'
-    WRITE(10,*) '** decoupage cluster final **'
+    WRITE(10,*) '** Output of visuclusters **'
+    WRITE(10,*) '** Partitioning final cluster **'
     WRITE(10,'(a)') 'node id assign'
     WRITE(10,'(a)') 'element id assign'
     WRITE(11,*) '** clusters **'
@@ -585,7 +585,7 @@ CONTAINS
        CLOSE(20)
     ENDDO
     IF (params%coord==1) THEN
-       ! classical coordinates
+       ! Classical coordinates
        CALL ecritpoint_paraview(10,11,params%nbp,params%dim,coords,ind,1)
     ELSE
        ! Pictures reassembly
@@ -634,7 +634,7 @@ CONTAINS
     !###########################################
     WRITE(unit_geo,'(a)') 'part'
     WRITE(unit_geo,*) ind(k)
-    WRITE(unit_geo,*) '** decoupages **'
+    WRITE(unit_geo,*) '** Partitionings **'
     WRITE(unit_geo,'(a)') 'coordinates'
     WRITE(unit_geo,*) nb_points
     WRITE(unit_ind,'(a)') 'part'
@@ -747,7 +747,7 @@ CONTAINS
     ! Writing
     WRITE(unit_geo,'(a)') 'part'
     WRITE(unit_geo,*) ind(1)
-    WRITE(unit_geo,*) '** decoupages **'
+    WRITE(unit_geo,*) '** Partitionings **'
     WRITE(unit_geo,'(a)') 'coordinates'
     WRITE(unit_geo,*) nb_pixels
     WRITE(unit_ind,'(a)') 'part'
