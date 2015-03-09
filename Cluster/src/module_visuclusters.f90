@@ -26,51 +26,51 @@ CONTAINS
     params%geom=0
     params%seuil=0
     PRINT *
-    PRINT *,'lecture des infos...'
+    PRINT *, 'Reading info...'
     READ (3,*)
     READ(3,*) params%mesh
-    PRINT *,'  > nom du fichier de maillage : ',params%mesh
+    PRINT *, '> Mesh file name : ', params%mesh
     READ (3,*)
     READ(3,*) params%nbp
-    PRINT *,'  > nb de points :',params%nbp
+    PRINT *, '> Number of points : ', params%nbp
     READ (3,*)
     READ (3,*) params%dim
-    PRINT *,'  > dimension : ',params%dim
+    PRINT *, '> Dimension : ', params%dim
     READ (3,*)
     READ(3,*) params%nbproc
-    PRINT *,'  > nb de proc :',params%nbproc
+    PRINT *, '> Number of process : ', params%nbproc
     READ (3,*)
     READ(3,*) params%interface
-    PRINT *,'  > decoupage par interface ?',params%interface
+    PRINT *, '> Partitioning by interfacing ? : ', params%interface
     READ (3,*)
     READ(3,*) params%recouvrement
-    PRINT *,'  > decoupage par recouvrement ?',params%recouvrement
+    PRINT *, '> Partitioning by overlapping ? : ', params%recouvrement
     READ (3,*)
     READ(3,*) params%nbclusters  
-    PRINT *,'  > nb de clusters obtenus :',params%nbclusters
+    PRINT *, '> Number of clusters got : ', params%nbclusters
     READ (3,*)
     READ(3,*) params%coord
-    PRINT *,'  > format coord ?',params%coord
+    PRINT *, '> Coordinates format ? : ', params%coord
     READ (3,*)
     READ(3,*) params%image
-    PRINT *,'  > format image ?',params%image
+    PRINT *, '> Image format ? : ', params%image
     READ (3,*)
     READ(3,*) params%geom
-    PRINT *,'  > format geom ?',params%geom
+    PRINT *, '> Geometric format ? : ', params%geom
     READ (3,*)
     READ(3,*) params%seuil
-    PRINT *,'  > format seuil ?',params%seuil
+    PRINT *, '> Threshold format ? : ', params%seuil
     IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
        READ (3,*)
        READ(3,*) params%imgdim
-       PRINT *,'  > dimension image :',params%imgdim
+       PRINT *, '> Image dimension : ', params%imgdim
        ALLOCATE(params%imgmap(params%imgdim))
        READ (3,*)
        READ(3,*) params%imgmap(:)
-       PRINT *,'  > decoupage image :',params%imgmap
+       PRINT *, '> Image partitioning : ', params%imgmap
        READ (3,*)
        READ(3,*) params%imgt
-       PRINT *,'  > nb de temps :',params%imgt
+       PRINT *, '> Number of time : ', params%imgt
        ! Points referencing
        ALLOCATE(params%refimg(params%nbp,params%imgdim))
        params%refimg(:,:)=0
@@ -95,7 +95,7 @@ CONTAINS
           ALLOCATE(params%pas(params%imgdim))
           READ (3,*)
           READ (3,*) params%pas(:)
-          PRINT *,'    > pas de maillage :',params%pas(:)
+          PRINT *, '> Mesh step : ', params%pas(:)
        ENDIF
     ENDIF
     RETURN
@@ -116,7 +116,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################    
     PRINT *
-    PRINT *,'ecriture de la geometrie du decoupage...'
+    PRINT *, 'Writing partitioning geometry...'
     SELECT CASE(format_output)
     CASE('gmsh')
        CALL write_partionning_gmsh(params)
@@ -143,7 +143,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################    
     PRINT *
-    PRINT *,'ecriture des affectations du decoupage...'
+    PRINT *, 'Writing partitioning allocations...'
     SELECT CASE(format_output)
     CASE('gmsh')
        CALL affectation_gmsh(params)
@@ -170,7 +170,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################    
     PRINT *
-    PRINT *,'lecture des clusters avant regroupement...'
+    PRINT *, 'Reading clusters before grouping...'
     SELECT CASE(format_output)
     CASE('gmsh')
        CALL write_partial_clusters_gmsh(params)
@@ -197,7 +197,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################  
     PRINT *
-    PRINT *,'lecture des clusters apres regroupement...'
+    PRINT *, 'Reading clusters after grouping...'
     SELECT CASE(format_output)
     CASE('gmsh')
        CALL write_final_clusters_gmsh(params)
@@ -223,8 +223,8 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################  
     PRINT *
-    PRINT *,'-------------------------------------'
-    PRINT *,'liste de commandes de visualisation :'
+    PRINT *, '-------------------------------------'
+    PRINT *, 'Command list of visualisation : '
     PRINT *
     SELECT CASE(format_output)
     CASE('gmsh')
