@@ -1,6 +1,0 @@
-load data;
-
-sigma = 5;
-nbclusters = 3;
-
-[clusters, evalues, evectors] = spcl(, nbclusters, sigma, 'kmean', [2 2]);
