@@ -6,7 +6,7 @@ CONTAINS
 
   SUBROUTINE send_partitionning(nbproc, data, points_by_domain, ddat, partitioned_data)
     IMPLICIT NONE    
-    ! librairie MPI
+    ! MPI library
     INCLUDE 'mpif.h'
     !###########################################
     ! DECLARATIONS
@@ -96,7 +96,7 @@ CONTAINS
 
   SUBROUTINE receive_partitionning(numproc, partitioned_data)
     IMPLICIT NONE
-    ! librairie MPI
+    ! MPI library
     INCLUDE 'mpif.h'
     !###########################################
     ! DECLARATIONS
@@ -165,7 +165,7 @@ CONTAINS
 
   SUBROUTINE receive_number_clusters(nbproc, nbclust, points_by_domain, partitioned_data, nclust)
     IMPLICIT NONE
-    ! librairie MPI
+    ! MPI library
     INCLUDE 'mpif.h'
     !###########################################
     ! DECLARATIONS
@@ -220,7 +220,7 @@ CONTAINS
 
   SUBROUTINE send_number_clusters(numproc, partitioned_data)
     IMPLICIT NONE
-    ! librairie MPI
+    ! MPI library
     INCLUDE 'mpif.h'
     !###########################################
     ! DECLARATIONS
@@ -259,7 +259,7 @@ CONTAINS
 
   SUBROUTINE send_clusters(numproc, partitioned_data)
     IMPLICIT NONE
-    ! librairie MPI
+    ! MPI library
     INCLUDE 'mpif.h'
     !###########################################
     ! DECLARATIONS
@@ -295,7 +295,7 @@ CONTAINS
   SUBROUTINE receive_clusters(nbproc, nbclust, points_by_domain, ddat, partitioned_data, cluster_map, &
        nclust, points_by_cluster)
     IMPLICIT NONE
-    ! librairie MPI
+    ! MPI library
     INCLUDE 'mpif.h'
     !###########################################
     ! DECLARATIONS

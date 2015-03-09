@@ -4,8 +4,6 @@ MODULE module_sparse
   USE module_embed
 CONTAINS
 
-  !*****************************************
-  !calcul des clusters
   SUBROUTINE sp_calculclusters(numproc, nb_clusters_max, nbideal, partitioned_data, sigma)
 
     IMPLICIT INTEGER(i, j, q)
@@ -22,7 +20,7 @@ CONTAINS
     DOUBLE PRECISION :: norme, ratio, ratio1, ratio2, seuilrij
     CHARACTER (LEN=30) :: num, files
 
-! sparsification debut
+    ! Beginning of sparsification
     DOUBLE PRECISION :: t1, t2, t_cons_a, t_cons_vp
     INTEGER :: nnz, nnz2, nb
     DOUBLE PRECISION :: facteur
@@ -33,25 +31,24 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:), POINTER :: D
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
     DOUBLE PRECISION, DIMENSION(:), POINTER :: W
-! sparsification fin
+    ! End of sparsification
 
-    !creation de la matrice
+    ! Matrix creation
 #if aff
     PRINT *, 'DEBUG : process n', numproc, ' : value of sigma : ', sigma
 #endif
     n=partitioned_data%nb
 
-! sparsification debut
+    ! Beginning of sparsification
     nnz = 0
-    ! valeur de treshold arbitraire -> parametre du sp ou calcul interne
-    !                                  (voir avec S.)
+    ! Arbitrary treshold value 
     ! TODO : mettre la valeur du facteur dans le fichier param
     facteur = 3.0
     treshold = facteur*sigma
 
     t1 = MPI_WTIME()
-    DO i=1,n-1  ! borne ?
-       DO j=i+1,n ! borne ?
+    DO i=1,n-1  ! bound ?
+       DO j=i+1,n ! bound ?
 
           norme=0.0
 
@@ -84,8 +81,8 @@ CONTAINS
              norme=norme+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
           ENDDO
           value=exp(-norme/sigma)
-          ! on garde si value <= treshold
-          ! (si on veut tout garder, commenter ligne IF, ENDIF)
+          ! kepp if value <= treshold
+          ! (if we want to keep it all, do comment line IF, ENDIF)
           IF(sqrt(norme) <= treshold) THEN
             AS(l) = value
             IAS(l) = i
@@ -113,7 +110,7 @@ CONTAINS
 
   DEALLOCATE(D)
 
-    ! nb et nb_clusters_max meme valeur ?
+    ! nb and nb_clusters_max same value ?
     nb = 2*nb_clusters_max
 
     t1 = MPI_WTIME()
@@ -124,7 +121,7 @@ CONTAINS
     ENDDO
     
 
-    ! reordonne les vp... QUESTION: necessaire avec arpack ?
+    ! Reorder eigen values... QUESTION: essential with arpack ?
     DO i=1,nb-1
        DO j=i+1,nb
           IF (W(i)<W(j)) THEN
@@ -143,12 +140,11 @@ CONTAINS
        PRINT *, 'Reordered eigen values Arpack : ', i, W(i)
     ENDDO
 
-    !Test spectral embedding avec different nbcluster   
-    !***********************
+    ! Test spectral embedding with different nbcluster   
     ! Spectral embedding
 
     IF ((nbideal==0).AND.(n>2)) THEN
-       !** recherche du meilleur decoupage
+       ! Searching the best partitioning
        ALLOCATE(ratiomax(nb_clusters_max))
        ratiomax(:)=0
        ALLOCATE(ratiomin(nb_clusters_max))
@@ -189,8 +185,7 @@ CONTAINS
 #if aff
 PRINT *, 'DEBUG : Frobenius ratio'
 #endif
-       !*******************************
-       ! Ratio de norme de frobenius
+       ! Ratio of Frobenius norm
        ratio=ratiomax(nb_clusters_max)
        partitioned_data%nbclusters=nb_clusters_max
        ratio1=0.0
@@ -211,14 +206,14 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ENDDO
 
     ELSEIF ((nbideal==1).AND.(n>nbideal)) THEN
-       !** test avec un cluster impose
+       ! Test with an imposed cluster
        ALLOCATE(nb_info(nbideal))
        nb_info(:) = 0
        ALLOCATE(ratiomin(1))
        ratiomin(:) = 0.0
        partitioned_data%nbclusters = nbideal
     ELSE
-       !** cas d'un domaine avec moins de points que nbideal ou 1 seul point
+       ! Case of a domain with less points than nbideal or only one point
        ALLOCATE(nb_info(n))
        nb_info(:)=0
        ALLOCATE(ratiomin(1))
@@ -235,7 +230,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ALLOCATE(ratiorij(n))
        ratiorij(:)=0
     ENDIF
-    ! cas avec nbcluster==1
+    ! Case with nbcluster==1
     IF (partitioned_data%nbclusters==2) THEN
        PRINT *, 'Ratio difference : ', ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 
@@ -248,7 +243,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     PRINT *, 'DEBUG : process n', numproc,' : final clusters got : ', partitioned_data%nbclusters
 #endif
 
-    !** calcul du clustering final
+    ! Computing final clustering
     IF (partitioned_data%nbclusters>1) THEN
 
        CALL sp_spectral_embedding(partitioned_data%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
@@ -296,27 +291,12 @@ PRINT *, 'DEBUG : Frobenius ratio'
        clusters_centers, points_by_clusters, clusters_energies, nb_info, numproc, &
        ratiomoy, ratiorij, ratiorii)
 
-    !*****************************************
-    ! spectral embedding
-    !
-    ! nbcluster = nbre de cluster
-    ! Z : matrice des vecteurs propres
-    ! M : nbre de vp trouvees
-    ! ratio : max des ration de frob sur matrice aff reordonnancee suivant
-    ! les clusters
-    ! clusters : appartenance des clusters
-    ! clusters_centers : centre des nbclusters clusters
-    ! points_by_clusters : nbre de points par cluster
-    ! clusters_energies : somme des energies par cluster
-    !
-
     IMPLICIT NONE
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z, clusters_centers
     INTEGER ::nbcluster, n, nb_info, numproc
     DOUBLE PRECISION ::ratio, test, ratiomin, ratiorii, ratiorij, ratiomoy
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies, Z3
     INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters
-    !INTEGER,DIMENSION(:),POINTER::ordaffperclus
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1, Z2
     INTEGER :: it_max, it_num, i, j, k
@@ -363,9 +343,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
          clusters, clusters_centers, points_by_clusters, clusters_energies, &
          numproc)
 
-    !*****************************
-    ! Mesure de qualite
-    !PRINT *,'Indexation'
+    ! Quality measure
 
     nbmax=0
     DO i=1,nbcluster
@@ -389,7 +367,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     ENDDO
 
 
-! sparsification debut
+    ! Beginning of sparsification
     ALLOCATE(Frob(nbcluster,nbcluster))
     Frob(:,:)=0.0
     DO i=1, nnz
@@ -397,10 +375,10 @@ PRINT *, 'DEBUG : Frobenius ratio'
       num2 = clusters(JAS(i))
       Frob(num1, num2) = Frob(num1, num2) + AS(i)**2
     ENDDO
-! sparsification fin
+    ! End of sparsification
 
 
-! sparsification debut
+    ! Beginning of sparsification
     ratio=0.0
     ratiomin=1.D+16
     ratiorii=0.0
@@ -429,7 +407,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     PRINT *, "============= ratio ================", ratiomoy, ratiorij
 
     DEALLOCATE(Frob)
-! sparsification fin
+    ! End of sparsification
 
 #if aff
     PRINT *, 'Process n', numproc,' : nb_info=', nb_info, ' nbcluster=', nbcluster
@@ -529,13 +507,13 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !
       INCLUDE 'debug.h'
 
-! lien entre les tailles
+! link between lengths
       maxn = dim
       ldv = maxn
       maxnev = nb_clusters_max
       maxncv = 2*maxnev + 1
 
-! allocation memoire
+! memory allocation
       ALLOCATE(SELECT(maxn))
       ALLOCATE(ax(maxn), resid(maxn), workd(3*maxn), &
                workev(3*maxncv), workl(3*maxncv*maxncv+6*maxncv))
