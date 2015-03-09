@@ -665,7 +665,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
           IF ((numproc==0).AND.(nbproc>1)) THEN 
              seuilrij=1e-1
           ELSE
-             seuilrij=1e-4
+             seuilrij=1e-4 !TODO : garder que celui-ci
           ENDIF
           IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
              partitioned_data%nbclusters=i
@@ -763,7 +763,7 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
     INTEGER :: nbideal
     INTEGER :: nblimit
     INTEGER :: numproc
-    DOUBLE PRECISION :: bandWidth !bandwidth parameter
+    INTEGER :: bandWidth !bandwidth parameter
 
     !=== IN/OUT ===
     TYPE(type_data) :: dataw

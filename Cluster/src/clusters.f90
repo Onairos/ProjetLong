@@ -219,13 +219,13 @@ PROGRAM clusters
      PRINT *,'DEBUG : Process n', numproc, ' : computing clusters...'
 #endif
 
-	SELECT CASE (clust_param%clustering_method_id)
-	CASE (1)
-		CALL apply_spectral_clustering(numproc,nb_clusters_max,nbideal,partitioned_data,sigma,clust_param)
-	CASE (2)
-		CALL apply_mean_shift(numproc,nb_clusters_max,nbideal,partitioned_data,clust_param%bandwidth)
-	CASE (3)
-		CALL apply_kernel_k_means(numproc,nb_clusters_max,nbideal,partitioned_data,clust_param)
+    SELECT CASE (clust_param%clustering_method_id)
+    CASE (1)
+      CALL apply_spectral_clustering(numproc,nb_clusters_max,nbideal,partitioned_data,sigma,clust_param)
+    CASE (2)
+      CALL mean_shift(numproc,nb_clusters_max,nbideal,partitioned_data,clust_param%bandwidth)
+    CASE (3)
+      CALL apply_kernel_k_means(numproc,nb_clusters_max,nbideal,partitioned_data,clust_param)
     END SELECT
 
   ENDIF

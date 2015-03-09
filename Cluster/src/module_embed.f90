@@ -208,7 +208,7 @@ CONTAINS
     INTEGER :: points_by_clusters (nb_clusters) ! the number of points in each cluster
 
     !== USELESS ===
-    INTEGER :: numproc ! TODO : etudier si garder ou pas
+    INTEGER :: numproc ! TODO : etudier si garder ou pas : le garder finalement
     
     !#### Variables  ####
     DOUBLE PRECISION :: listnorm (nb_points, nb_clusters)
