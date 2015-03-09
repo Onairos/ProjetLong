@@ -23,7 +23,6 @@ MODULE module_structure
      INTEGER :: imgdim ! Dimension of images
      INTEGER :: imgt ! Number of "times"
 
-
   END TYPE type_data
 
 
@@ -47,6 +46,8 @@ MODULE module_structure
       DOUBLE PRECISION :: sigma
       DOUBLE PRECISION :: gam
       DOUBLE PRECISION :: delta
+     !mean shift
+     INTEGER :: bandwidth !bandwidth for mean shift
   END TYPE type_kernel
 
 END MODULE module_structure
