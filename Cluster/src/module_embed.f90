@@ -35,9 +35,9 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z2
     DOUBLE PRECISION, DIMENSION(:), POINTER :: Z3
-    DOUBLE PRECISION :: ratiomin
+    DOUBLE PRECISION :: ratio_min
     DOUBLE PRECISION :: test
-    INTEGER, DIMENSION(:,:), POINTER :: clustercorresp
+    INTEGER, DIMENSION(:,:), POINTER :: corresp_cluster
     INTEGER :: i
     INTEGER :: nb_iter_max
     INTEGER :: nb_iter
@@ -45,7 +45,7 @@ CONTAINS
     INTEGER :: k
     INTEGER :: ki
     INTEGER :: kj
-    INTEGER :: nbmax
+    INTEGER :: nb_max
     INTEGER :: ni
     INTEGER :: nj
     LOGICAL :: ok
@@ -83,43 +83,42 @@ CONTAINS
          clusters, clusters_centers, points_by_clusters, clusters_energies, &
          proc_id)
 
-    !*****************************
-    ! Mesure de qualite
-    nbmax=0
+    ! Quality measure
+    nb_max=0
     DO i=1,nb_clusters
-       nbmax=max(nbmax,points_by_clusters(i))
+       nb_max=max(nb_max,points_by_clusters(i))
     ENDDO
-    ALLOCATE(clustercorresp(nb_clusters,nbmax))
-    clustercorresp(:,:)=0
+    ALLOCATE(corresp_cluster(nb_clusters,nb_max))
+    corresp_cluster(:,:)=0
     DO i=1,n
        j=clusters(i)
        ok=.FALSE.
        k=1
        DO WHILE(.NOT. ok)
-          IF (clustercorresp(j,k)==0) THEN
+          IF (corresp_cluster(j,k)==0) THEN
              ok=.TRUE.
           ELSE
              k=k+1
           ENDIF
        ENDDO
-       clustercorresp(j,k)=i
+       corresp_cluster(j,k)=i
     ENDDO
     ALLOCATE(Frob(nb_clusters,nb_clusters))
     Frob(:,:)=0.0 
     DO i=1,nb_clusters
        DO j=1,nb_clusters
           DO ki=1,points_by_clusters(i)
-             ni=clustercorresp(i,ki)
+             ni=corresp_cluster(i,ki)
              DO kj=1,points_by_clusters(j)
-                nj=clustercorresp(j,kj)
+                nj=corresp_cluster(j,kj)
                 Frob(i,j)=Frob(i,j)+A(ni,nj)**2
              ENDDO
           ENDDO
        ENDDO
     ENDDO
-    DEALLOCATE(clustercorresp)
+    DEALLOCATE(corresp_cluster)
     ratio=0.0
-    ratiomin=1.D+16
+    ratio_min=1.D+16
     ratio_rii=0.0
     ratio_rij=0.0
     nb_info=nb_clusters
@@ -131,7 +130,7 @@ CONTAINS
                 ratio_moy=ratio_moy+Frob(i,j)/Frob(i,i)
                 ratio_rij=ratio_rij+Frob(i,j)
                 ratio_rii=ratio_rii+Frob(i,i)
-                ratiomin=min(ratiomin,Frob(i,j)/Frob(i,i))
+                ratio_min=min(ratio_min,Frob(i,j)/Frob(i,i))
              ENDIF
           ENDDO
        ELSE
@@ -208,15 +207,14 @@ CONTAINS
     INTEGER :: points_by_clusters (nb_clusters) ! the number of points in each cluster
 
     !#### Variables  ####
-    DOUBLE PRECISION :: listnorm (nb_points, nb_clusters)
-    DOUBLE PRECISION :: stockcenter (dim, nb_clusters)
-    DOUBLE PRECISION :: stockenergy (nb_clusters)
-    DOUBLE PRECISION :: norme
-    DOUBLE PRECISION :: seuil
-    DOUBLE PRECISION :: val
-    DOUBLE PRECISION :: valmax
+    DOUBLE PRECISION :: list_norm (nb_points, nb_clusters)
+    DOUBLE PRECISION :: stock_center (dim, nb_clusters)
+    DOUBLE PRECISION :: stock_energy (nb_clusters)
+    DOUBLE PRECISION :: threshold
+    DOUBLE PRECISION :: value
+    DOUBLE PRECISION :: max_value
     INTEGER :: cluster_id (nb_clusters)
-    INTEGER :: stockpopulation (nb_clusters)
+    INTEGER :: stock_population (nb_clusters)
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -264,14 +262,14 @@ CONTAINS
     cluster_id(:)=0
     cluster_id(1)=1
     p=2
-    seuil=0.4
+    threshold=0.4
 #if aff
 PRINT *, 'DEBUG : searching centers'
 #endif
     DO i = 2, nb_clusters
        ok=.FALSE.
        DO WHILE(.NOT. ok)
-          valmax=2.0*seuil
+          max_value=2.0*threshold
           ! Test if the point is already used as center
           ok2=.FALSE.
           DO j=1,i-1
@@ -280,22 +278,21 @@ PRINT *, 'DEBUG : searching centers'
           ! If the point is not a center, test against the threshold
           IF (.NOT. ok2) THEN
              DO j=1,i-1
-                val=0.0
-                norme=0.0
+                value=0.0
                 DO k=1,dim
-                   val=max(val,abs(clusters_centers(k,j)-points(k,p)))
+                   value=max(value,abs(clusters_centers(k,j)-points(k,p)))
                 ENDDO
-                valmax=min(val,valmax)
+                max_value=min(value,max_value)
              ENDDO
-             IF (valmax>=seuil) ok=.TRUE.
+             IF (max_value>=threshold) ok=.TRUE.
           ENDIF
          p=p+1
 
          ! Lower the threshold if not enough centers found
          IF ((p>nb_points).AND.(.NOT. ok)) THEN 
-            seuil=0.9*seuil
+            threshold=0.9*threshold
 #if aff
-            PRINT *, 'DEBUG : Lower threshold : ', seuil
+            PRINT *, 'DEBUG : Lower threshold : ', threshold
 #endif
             p=1
           ENDIF
@@ -314,20 +311,20 @@ PRINT *, 'DEBUG : searching centers'
        nb_iter = nb_iter + 1
        swap=0
        DO i=1,nb_clusters
-          stockenergy(i)=clusters_energies(i)
-          stockpopulation(i)=points_by_clusters(i)
+          stock_energy(i)=clusters_energies(i)
+          stock_population(i)=points_by_clusters(i)
           DO j=1,dim
-             stockcenter(j,i)=clusters_centers(j,i)
+             stock_center(j,i)=clusters_centers(j,i)
           ENDDO
        ENDDO
 
        ! Computing of the distances
        points_by_clusters(1:nb_clusters) = 1
-       listnorm(:,:)=0.0
+       list_norm(:,:)=0.0
        DO i=1,nb_points
           DO j=1,nb_clusters
              DO k=1,dim
-                listnorm(i,j)=listnorm(i,j)+(points(k,i)-clusters_centers(k,j))**2
+                list_norm(i,j)=list_norm(i,j)+(points(k,i)-clusters_centers(k,j))**2
              ENDDO
           ENDDO
        ENDDO
@@ -336,13 +333,13 @@ PRINT *, 'DEBUG : searching centers'
        points_by_clusters(:)=0
        DO i=1,nb_points
           DO j=1,nb_clusters
-             IF (listnorm(i,j)<listnorm(i,clusters(i))) THEN
+             IF (list_norm(i,j)<list_norm(i,clusters(i))) THEN
                 clusters(i)=j
                 swap=swap+1
              ENDIF
           ENDDO
           clusters_energies(clusters(i))=clusters_energies(clusters(i))&
-               +listnorm(i,clusters(i))
+               +list_norm(i,clusters(i))
           points_by_clusters(clusters(i))=points_by_clusters(clusters(i))+1
        ENDDO
 

@@ -95,14 +95,12 @@ CONTAINS
     
 
     !#### Variables  ####
-    CHARACTER (LEN=30) :: mot
-    INTEGER :: decoupage
+    CHARACTER (LEN=30) :: word
+    LOGICAL :: partitioning_bool
     INTEGER :: i
     INTEGER :: ierr
     INTEGER :: tot
     LOGICAL :: ok
-    INTEGER :: kernelfunindex
-    INTEGER :: clustering_meth_id
     DOUBLE PRECISION :: gam
     DOUBLE PRECISION :: delta
 
@@ -120,7 +118,7 @@ CONTAINS
 
 
     nb_clusters_max=4
-    decoupage=0
+    partitioning_bool=.FALSE.
     IF (nb_proc>1) THEN
        ALLOCATE(list_nb_clusters(0:nb_proc-1))
     ELSE
@@ -131,9 +129,9 @@ CONTAINS
     ok=.FALSE.
     DO WHILE (.NOT. ok)
        ok=.TRUE.
-       READ(1,*) mot
-       PRINT *, mot
-       SELECT CASE(mot)
+       READ(1,*) word
+       PRINT *, word
+       SELECT CASE(word)
        CASE('DATA')
           ok=.FALSE.
           READ(1,*) input_file
@@ -215,10 +213,10 @@ CONTAINS
           READ(1,*) clust_param%bandwidth
           PRINT *, '> 	delta =', clust_param%bandwidth
        CASE('DECOUPAGE')
-          decoupage=1
+          partitioning_bool=.TRUE.
           ok=.FALSE.
-          READ (1,*) mot
-          SELECT CASE(mot)
+          READ (1,*) word
+          SELECT CASE(word)
           CASE('INTERFACE')
              data%interface=1
              PRINT *, '> Partitioning by interface activated.'
@@ -278,11 +276,11 @@ CONTAINS
           ok=.TRUE.
        CASE DEFAULT
           ok=.FALSE.
-          PRINT *, 'Unknown keyword : ', mot
+          PRINT *, 'Unknown keyword : ', word
        END SELECT
     ENDDO
     ! Partitioning parameter
-    IF ((nb_proc>1).AND.(decoupage==0)) THEN
+    IF ((nb_proc>1).AND.(.NOT.partitioning_bool)) THEN
        PRINT *
        PRINT *, 'The keyword <<DECOUPAGE>> has not been found !'
        CALL help 
@@ -290,7 +288,7 @@ CONTAINS
     ! 1 proc
     IF (nb_proc==1) THEN
        ! Initialization to 1 by default of all the partitioning parameters
-       IF (decoupage==1) DEALLOCATE(partitioning)
+       IF (partitioning_bool) DEALLOCATE(partitioning)
        IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
           ALLOCATE(partitioning(data%dim) )
        ELSEIF (data%image==1) THEN
@@ -454,7 +452,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !#### Variables  ####
-    DOUBLE PRECISION :: pasmax
+    DOUBLE PRECISION :: max_step
     INTEGER :: i
     INTEGER :: j
     INTEGER :: nb
@@ -502,15 +500,15 @@ CONTAINS
     data%nb=nb
     CLOSE(2)
     PRINT *, '> Min/max coordinates : '
-    pasmax=1.e-13
+    max_step=1.e-13
     DO j=data%imgdim+1,data%imgdim+data%imgt
-       pasmax=max(pasmax,coord_max(j)-coord_min(j))
+       max_step=max(max_step,coord_max(j)-coord_min(j))
        PRINT *, '> ', j, ' : ', coord_min(j), coord_max(j)
     ENDDO
-    PRINT *,'> Maximal step : ', pasmax
+    PRINT *,'> Maximal step : ', max_step
     ! Searching steps by picture dimension
     DO j=1,data%imgdim
-       data%pas(j)=pasmax/data%imgmap(j)
+       data%pas(j)=max_step/data%imgmap(j)
        PRINT *, '> Step : ', j, data%pas(j)
        coord_min(j)=0.9*data%pas(j)
        coord_max(j)=(data%imgmap(j)+1)*data%pas(j)
@@ -600,7 +598,7 @@ CONTAINS
     TYPE(type_data) :: data
 
     !#### Variables  ####
-    INTEGER, DIMENSION(:), POINTER :: plan
+    INTEGER, DIMENSION(:), POINTER :: plane
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -611,31 +609,31 @@ CONTAINS
     !###########################################
     ! Creation of array points/image_coordinates
     ALLOCATE(data%refimg(data%nb,data%imgdim))
-    ALLOCATE(plan(data%imgdim))
-    plan(:)=1
+    ALLOCATE(plane(data%imgdim))
+    plane(:)=1
     DO i=1,data%nb
        DO j=1,data%imgdim
           ! Index in the array points/pixel
-          data%refimg(i,j)=plan(j)
+          data%refimg(i,j)=plane(j)
           IF (data%geom==1) THEN
              ! Input of coordinates 1:imgdim for the geometric cluster
-             data%point(i)%coord(j)=plan(j)*data%pas(j)
+             data%point(i)%coord(j)=plane(j)*data%pas(j)
           ENDIF
        ENDDO
        ok=.FALSE.
        k=data%imgdim
        DO WHILE(.NOT. ok)
-          IF (plan(k)<data%imgmap(k)) THEN
-             plan(k)=plan(k)+1
+          IF (plane(k)<data%imgmap(k)) THEN
+             plane(k)=plane(k)+1
              ok=.TRUE.
           ELSE
-             plan(k)=1
+             plane(k)=1
              k=k-1
           ENDIF
           IF (k==0) ok=.TRUE.
        ENDDO
     ENDDO
-    DEALLOCATE(plan)
+    DEALLOCATE(plane)
     RETURN
   END SUBROUTINE assign_picture_array
 

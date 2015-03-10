@@ -78,7 +78,8 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
 
     !#### Variables  ####
-    CHARACTER (LEN=30) :: num,files
+    CHARACTER (LEN=30) :: files
+    CHARACTER (LEN=30) :: num
     DOUBLE PRECISION :: prod
     DOUBLE PRECISION :: prod1
     DOUBLE PRECISION :: prod2
