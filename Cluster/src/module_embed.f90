@@ -192,8 +192,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     INTEGER :: dim ! the number of spatial dimensions
-    INTEGER :: nb_points ! the number of points
-                !TODO : a reflechir sur l'ordre de declaration
+    INTEGER :: nb_points ! the number of points + TODO reorganisation
     DOUBLE PRECISION :: points (dim, nb_points) ! the points
     INTEGER :: nb_clusters ! the number of clusters
     INTEGER :: nb_iter_max ! the maximum number of iterations
