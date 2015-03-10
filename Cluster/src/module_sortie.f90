@@ -3,7 +3,7 @@ MODULE module_sortie
 CONTAINS
 
 
-  SUBROUTINE write_domains(data, nbproc, domains)
+  SUBROUTINE write_domains(data, nb_proc, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -12,7 +12,7 @@ CONTAINS
     !====  IN  ====
     TYPE(type_data) :: data
     DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domains  
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
     
     !#### Variables  ####
     INTEGER :: i
@@ -20,7 +20,7 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################    
-    DO i=1,nbproc-data%interface
+    DO i=1,nb_proc-data%interface
        WRITE(2,*) domains(i,:,1),'|', domains(i,:,2)
     ENDDO
     CALL flush(2)
@@ -29,7 +29,7 @@ CONTAINS
   END SUBROUTINE write_domains
 
 
-  SUBROUTINE write_partitioning(nbproc, data, points_by_domain, assignements)
+  SUBROUTINE write_partitioning(nb_proc, data, points_by_domain, assignements)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -39,7 +39,7 @@ CONTAINS
     TYPE(type_data) :: data
     INTEGER,DIMENSION(:,:),POINTER :: assignements
     INTEGER,DIMENSION(:),POINTER :: points_by_domain
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
     
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
@@ -54,14 +54,14 @@ CONTAINS
     !########################################### 
     PRINT *, '> Partitioning review :'
     offset=1
-    nbdom=nbproc
-    IF ((data%interface==1).AND.(nbproc>1)) THEN
+    nbdom=nb_proc
+    IF ((data%interface==1).AND.(nb_proc>1)) THEN
        offset=0
-       nbdom=nbproc-1
+       nbdom=nb_proc-1
     ENDIF
     IF (data%recouvrement==1) THEN
        offset=0
-       nbdom=nbproc-1
+       nbdom=nb_proc-1
     ENDIF
     DO i=offset,nbdom
        PRINT *, '> Zone ', i, ' : ', points_by_domain(i)
@@ -170,7 +170,7 @@ CONTAINS
   END SUBROUTINE write_final_clusters
 
 
-  SUBROUTINE write_metadata(mesh, data, nbproc, nbclust)
+  SUBROUTINE write_metadata(mesh, data, nb_proc, nbclust)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -180,7 +180,7 @@ CONTAINS
     TYPE(type_data) :: data
     CHARACTER (LEN=30) :: mesh
     INTEGER :: nbclust
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
     
     !###########################################      
     ! INSTRUCTIONS
@@ -192,7 +192,7 @@ CONTAINS
     WRITE(3,*) '# DIMENSION : '
     WRITE(3,*) data%dim
     WRITE(3,*) '# Number of process : '
-    WRITE(3,*) nbproc
+    WRITE(3,*) nb_proc
     WRITE(3,*) '# Partitioning by interfacing : '
     WRITE(3,*) data%interface
     WRITE(3,*) '# Partitioning by overlapping : '

@@ -69,7 +69,7 @@ CONTAINS
   END SUBROUTINE help
 
 
-  SUBROUTINE read_params(data, epsilon, coord_min, coord_max, nbproc, partitionning, &
+  SUBROUTINE read_params(data, epsilon, coord_min, coord_max, nb_proc, partitionning, &
        input_file, sigma, nb_clusters_max, list_nb_clusters,clust_param)
     IMPLICIT NONE
     !###########################################
@@ -77,7 +77,7 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
 
     !=== IN/OUT ===
     TYPE(type_data) :: data
@@ -121,8 +121,8 @@ CONTAINS
 
     nb_clusters_max=4
     decoupage=0
-    IF (nbproc>1) THEN
-       ALLOCATE(list_nb_clusters(0:nbproc-1))
+    IF (nb_proc>1) THEN
+       ALLOCATE(list_nb_clusters(0:nb_proc-1))
     ELSE
        ALLOCATE(list_nb_clusters(1))
     ENDIF
@@ -240,7 +240,7 @@ CONTAINS
           ENDIF
           READ(1,*) partitionning(:)
           PRINT *, 'partitionning', partitionning
-          IF (nbproc>1) THEN
+          IF (nb_proc>1) THEN
              tot=1
              IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
                 DO i=1,data%dim
@@ -252,7 +252,7 @@ CONTAINS
                    tot=tot*partitionning(i)
                 ENDDO
              ENDIF
-             IF (tot/=nbproc-data%interface) THEN
+             IF (tot/=nb_proc-data%interface) THEN
                 PRINT *, 'Invalidated partitioning !'
                 PRINT *, 'Number of process must be equal to ', tot+data%interface
                 CALL MPI_ABORT(ierr)
@@ -282,13 +282,13 @@ CONTAINS
        END SELECT
     ENDDO
     ! Partitionning parameter
-    IF ((nbproc>1).AND.(decoupage==0)) THEN
+    IF ((nb_proc>1).AND.(decoupage==0)) THEN
        PRINT *
        PRINT *, 'The keyword <<DECOUPAGE>> has not been found !'
        CALL help 
     ENDIF
     ! 1 proc
-    IF (nbproc==1) THEN
+    IF (nb_proc==1) THEN
        ! Initialization to 1 by default of all the partitionning parameters
        IF (decoupage==1) DEALLOCATE(partitionning)
        IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
