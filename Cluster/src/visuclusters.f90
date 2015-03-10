@@ -21,7 +21,7 @@ PROGRAM visuclusters
   PRINT *,'-----------------------------------'
 
   ! Reads infos
-  CALL read_params(params)
+  CALL read_metadata(params)
 
   ! Choice of output format
   IF (iargc()>0) THEN

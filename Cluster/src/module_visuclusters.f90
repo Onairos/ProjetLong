@@ -5,7 +5,7 @@ MODULE module_visuclusters
 CONTAINS
 
 
-  SUBROUTINE read_params(params)
+  SUBROUTINE read_metadata(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -99,7 +99,7 @@ CONTAINS
        ENDIF
     ENDIF
     RETURN
-  END SUBROUTINE read_params
+  END SUBROUTINE read_metadata
 
 
   SUBROUTINE write_partionning(format_output, params)
