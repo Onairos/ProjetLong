@@ -665,7 +665,7 @@ CONTAINS
 
 
 
-  SUBROUTINE write_points_picture_format(unit_geo, unit_ids, nb_pixels, params, ids, proc_ids)
+  SUBROUTINE write_points_picture_format(unit_geo, unit_ind, nb_pixels, params, ids, proc_ids)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
