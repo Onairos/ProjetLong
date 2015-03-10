@@ -29,7 +29,7 @@ CONTAINS
   END SUBROUTINE write_domains
 
 
-  SUBROUTINE write_partitionning(nbproc, data, points_by_domain, assignements)
+  SUBROUTINE write_partitioning(nbproc, data, points_by_domain, assignements)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -84,7 +84,7 @@ CONTAINS
     ENDDO
     CALL flush(6)
     RETURN
-  END SUBROUTINE write_partitionning
+  END SUBROUTINE write_partitioning
 
 
   SUBROUTINE write_partial_clusters(numproc, partitioned_data)

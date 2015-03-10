@@ -52,7 +52,7 @@ CONTAINS
     DEALLOCATE(domains)
 
     ! Saving partitionning
-    CALL write_partitionning(nbproc,data,points_by_domain,assignements)
+    CALL write_partitioning(nbproc,data,points_by_domain,assignements)
 
     RETURN
   END SUBROUTINE partition_data
