@@ -77,7 +77,7 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-!!======================TODO : debut de #if aff ??????
+#if aff
     ! Number of partitionings
     nb=1
     DO i=1,partitioned_data%dim
@@ -117,10 +117,8 @@ CONTAINS
     sigma0=exp(1.0/float(partitioned_data%dim)*log(sigma0))
     ! Sigma computing
     sigma0=sigma0/(2.0*exp(log(float(partitioned_data%nb))*(1.0/float(partitioned_data%dim))))
-#if aff
     PRINT *, 'DEBUG : process n', proc_id, ' : value of computed sigma for interfacing : ', sigma0
 #endif
-!!======================TODO : fin de #if aff ??????
     ! Sigma computing, global formula
     CALL get_sigma(partitioned_data,sigma)
 #if aff
