@@ -47,7 +47,7 @@ CONTAINS
        CALL partition_with_interface(nbproc,data,points_by_domain,assignements,domains,epsilon)
     ELSE
        ! Partitionning by overlapping
-       CALL partition_with_overlappings(nbproc,data,points_by_domain,assignements,domains)
+       CALL partition_with_overlapping(nbproc,data,points_by_domain,assignements,domains)
     ENDIF
     DEALLOCATE(domains)
 
@@ -355,7 +355,7 @@ CONTAINS
 
 
 
-  SUBROUTINE partition_with_overlappings(nbproc, data, points_by_domain, assignements, domains)
+  SUBROUTINE partition_with_overlapping(nbproc, data, points_by_domain, assignements, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -406,7 +406,7 @@ CONTAINS
        ENDDO
     ENDDO
     RETURN
-  END SUBROUTINE partition_with_overlappings
+  END SUBROUTINE partition_with_overlapping
 
 
   SUBROUTINE group_clusters(nbclust, points_by_cluster, cluster_map, data)
