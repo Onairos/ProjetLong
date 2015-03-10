@@ -187,12 +187,12 @@ CONTAINS
        PRINT *, '> ', i, ' : ', nb
        DO j=1,nb
           IF (params%coord==1) THEN
-             ! Partitionning by coordinates
+             ! Partitioning by coordinates
              coords(:,:)=0.
              READ(10,*) coords(1,:)
              CALL ecritpoint_gmsh(1,params%dim,coords,i,1)
           ELSE
-             ! Partitionning 1D pictures
+             ! Partitioning 1D pictures
              READ (10,*) k
              CALL write_point_picture_format(1,params,i,k)
           ENDIF

@@ -33,7 +33,7 @@ PROGRAM clusters
   DOUBLE PRECISION :: t2
   INTEGER,DIMENSION(:,:), POINTER :: cluster_map
   INTEGER,DIMENSION(:,:) ,POINTER :: assignements
-  INTEGER,DIMENSION(:), POINTER :: partitionning
+  INTEGER,DIMENSION(:), POINTER :: partitioning
   INTEGER,DIMENSION(:), POINTER :: points_by_cluster
   INTEGER,DIMENSION(:), POINTER :: points_by_domain
   INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
@@ -101,7 +101,7 @@ PROGRAM clusters
 #endif
      OPEN(FILE=entree,UNIT=1)
 
-     CALL read_params(data,epsilon,coord_min,coord_max,nbproc,partitionning,input_file,&
+     CALL read_params(data,epsilon,coord_min,coord_max,nbproc,partitioning,input_file,&
           sigma,nb_clusters_max,list_nb_clusters, clust_param)
 
      t2 = MPI_WTIME()
@@ -109,15 +109,15 @@ PROGRAM clusters
      CLOSE(1)
   ENDIF
 
-  ! Partitionning and sigma computing
+  ! Partitioning and sigma computing
   IF (numproc==0) THEN
-     ! Partitionning
+     ! Partitioning
 #if aff
      PRINT *
      PRINT *,'DEBUG : Partitioning data...'
 #endif
     t1 = MPI_WTIME()
-    CALL partition_data(data,epsilon,nbproc,coord_min,coord_max,partitionning,&
+    CALL partition_data(data,epsilon,nbproc,coord_min,coord_max,partitioning,&
          points_by_domain,assignements,bounds)
     t2 = MPI_WTIME()
     PRINT *,'Time for partitioning data : ', t2-t1
@@ -134,7 +134,7 @@ PROGRAM clusters
      ! Sigma computing if auto global mode
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF ((sigma==0.0).AND.(numproc==0)) THEN
-        CALL get_sigma_interface(numproc,data,sigma,bounds,partitionning,epsilon)
+        CALL get_sigma_interface(numproc,data,sigma,bounds,partitioning,epsilon)
      ENDIF
 
      ! Sigma sending
@@ -200,7 +200,7 @@ PROGRAM clusters
      IF (numproc==0) THEN
         PRINT *,'Process n', numproc,' computes global sigma :',sigma
         IF (data%interface==1) THEN 
-           CALL get_sigma_interface(numproc,partitioned_data,sigma,bounds,partitionning,epsilon) 
+           CALL get_sigma_interface(numproc,partitioned_data,sigma,bounds,partitioning,epsilon) 
            PRINT *,'Process n', numproc,' computes interface sigma interface :',sigma
         ENDIF
      ENDIF

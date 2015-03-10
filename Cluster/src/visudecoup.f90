@@ -27,7 +27,7 @@ PROGRAM visudecoup
   READ *,n
   PRINT *
   
-  ! Geometry of partitionning
+  ! Geometry of partitioning
   OPEN(FILE='fort.2',UNIT=2)
   OPEN(FILE='decoupe.geo',UNIT=10)
   DO i=1,n-1

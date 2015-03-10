@@ -46,7 +46,7 @@ CONTAINS
   END SUBROUTINE get_sigma
 
 
-  SUBROUTINE get_sigma_interface(proc_id, partitioned_data, sigma, bounds, partitionning, epsilon)
+  SUBROUTINE get_sigma_interface(proc_id, partitioned_data, sigma, bounds, partitioning, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -56,7 +56,7 @@ CONTAINS
     TYPE(type_data) :: partitioned_data
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
     DOUBLE PRECISION :: epsilon
-    INTEGER, DIMENSION(:), POINTER :: partitionning
+    INTEGER, DIMENSION(:), POINTER :: partitioning
     INTEGER :: proc_id
 
     !====  OUT ====
@@ -64,7 +64,7 @@ CONTAINS
 
     !#### Variables  ####
     INTEGER, DIMENSION(:,:), POINTER :: tableau
-    INTEGER, DIMENSION(:), POINTER :: partitionning_tmp
+    INTEGER, DIMENSION(:), POINTER :: partitioning_tmp
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -78,27 +78,27 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
 !!======================TODO : debut de #if aff ??????
-    ! Number of partitionnings
+    ! Number of partitionings
     nb=1
     DO i=1,partitioned_data%dim
-       nb=nb*partitionning(i)
+       nb=nb*partitioning(i)
     ENDDO
-    ! Creation of partitionning
+    ! Creation of partitioning
     ALLOCATE(tableau(nb,0:partitioned_data%dim))
-    ALLOCATE(partitionning_tmp(partitioned_data%dim))
-    partitionning_tmp(:)=1
+    ALLOCATE(partitioning_tmp(partitioned_data%dim))
+    partitioning_tmp(:)=1
     DO i=1,nb
        DO j=1,partitioned_data%dim
-          tableau(i,j)=partitionning_tmp(j)
+          tableau(i,j)=partitioning_tmp(j)
        ENDDO
-       partitionning_tmp(1)=partitionning_tmp(1)+1
+       partitioning_tmp(1)=partitioning_tmp(1)+1
        k=1
-       DO WHILE(partitionning_tmp(k)>partitionning(k))
-          partitionning_tmp(k)=1
-          IF (k<partitioned_data%dim) partitionning_tmp(k+1)=partitionning_tmp(k+1)+1
+       DO WHILE(partitioning_tmp(k)>partitioning(k))
+          partitioning_tmp(k)=1
+          IF (k<partitioned_data%dim) partitioning_tmp(k+1)=partitioning_tmp(k+1)+1
        ENDDO
     ENDDO
-    DEALLOCATE(partitionning_tmp)
+    DEALLOCATE(partitioning_tmp)
     ! Value of sigma
     sigma0=0.0
     DO i=1,nb
@@ -616,7 +616,7 @@ PRINT *, 'recherche des centres'
 
     ! Spectral embedding
     IF ((nb_clusters_opt==0).AND.(n>2)) THEN
-       ! Search of the best partitionning
+       ! Search of the best partitioning
        ALLOCATE(ratiomax(nb_clusters_max))
        ratiomax(:)=0
        ALLOCATE(ratiomin(nb_clusters_max))

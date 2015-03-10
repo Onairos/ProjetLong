@@ -69,7 +69,7 @@ CONTAINS
   END SUBROUTINE help
 
 
-  SUBROUTINE read_params(data, epsilon, coord_min, coord_max, nb_proc, partitionning, &
+  SUBROUTINE read_params(data, epsilon, coord_min, coord_max, nb_proc, partitioning, &
        input_file, sigma, nb_clusters_max, list_nb_clusters,clust_param)
     IMPLICIT NONE
     !###########################################
@@ -89,7 +89,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
     DOUBLE PRECISION :: epsilon
     DOUBLE PRECISION :: sigma
-    INTEGER, DIMENSION(:), POINTER :: partitionning
+    INTEGER, DIMENSION(:), POINTER :: partitioning
     INTEGER, DIMENSION(:), POINTER :: list_nb_clusters
     INTEGER :: nb_clusters_max
     
@@ -233,23 +233,23 @@ CONTAINS
           END SELECT
           PRINT *, 'dim : ', data%dim
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
-             ALLOCATE(partitionning(data%dim))
+             ALLOCATE(partitioning(data%dim))
           ELSEIF (data%image==1) THEN
-             ! Partitionning per pixel
-             ALLOCATE(partitionning(data%imgdim))
+             ! Partitioning per pixel
+             ALLOCATE(partitioning(data%imgdim))
           ENDIF
-          READ(1,*) partitionning(:)
-          PRINT *, 'partitionning', partitionning
+          READ(1,*) partitioning(:)
+          PRINT *, 'partitioning', partitioning
           IF (nb_proc>1) THEN
              tot=1
              IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
                 DO i=1,data%dim
-                   tot=tot*partitionning(i)
+                   tot=tot*partitioning(i)
                 ENDDO
              ELSEIF (data%image==1) THEN
-                ! Partitionning per pixel
+                ! Partitioning per pixel
                 DO i=1,data%imgdim
-                   tot=tot*partitionning(i)
+                   tot=tot*partitioning(i)
                 ENDDO
              ENDIF
              IF (tot/=nb_proc-data%interface) THEN
@@ -262,18 +262,18 @@ CONTAINS
              ! 1 proc
              IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
                 DO i=1,data%dim
-                   partitionning(i)=1
+                   partitioning(i)=1
                 ENDDO
                 tot=1
              ELSEIF (data%image==1) THEN
-                ! Partitionning per pixel
+                ! Partitioning per pixel
                 DO i=1,data%imgdim
-                   partitionning(i)=1
+                   partitioning(i)=1
                 ENDDO
                 tot=1
              ENDIF
           ENDIF
-          PRINT *, '> partitioning :',partitionning
+          PRINT *, '> partitioning :',partitioning
        CASE('END')
           ok=.TRUE.
        CASE DEFAULT
@@ -281,7 +281,7 @@ CONTAINS
           PRINT *, 'Unknown keyword : ', mot
        END SELECT
     ENDDO
-    ! Partitionning parameter
+    ! Partitioning parameter
     IF ((nb_proc>1).AND.(decoupage==0)) THEN
        PRINT *
        PRINT *, 'The keyword <<DECOUPAGE>> has not been found !'
@@ -289,14 +289,14 @@ CONTAINS
     ENDIF
     ! 1 proc
     IF (nb_proc==1) THEN
-       ! Initialization to 1 by default of all the partitionning parameters
-       IF (decoupage==1) DEALLOCATE(partitionning)
+       ! Initialization to 1 by default of all the partitioning parameters
+       IF (decoupage==1) DEALLOCATE(partitioning)
        IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
-          ALLOCATE(partitionning(data%dim) )
+          ALLOCATE(partitioning(data%dim) )
        ELSEIF (data%image==1) THEN
-          ALLOCATE(partitionning(data%imgdim))
+          ALLOCATE(partitioning(data%imgdim))
        ENDIF
-       partitionning(:)=1
+       partitioning(:)=1
        epsilon=1.0
     ENDIF   
     ! Validation of the combinations of input parameters
