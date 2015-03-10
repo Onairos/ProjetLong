@@ -351,7 +351,7 @@ CONTAINS
 
 
 
-  SUBROUTINE ecritpoint_gmsh(unit, dimension, coords, ind, k)
+  SUBROUTINE ecritpoint_gmsh(unit, dim, coords, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -359,7 +359,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER :: dimension
+    INTEGER :: dim
     INTEGER :: ind
     INTEGER :: k
     INTEGER :: unit
@@ -367,10 +367,10 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    IF (dimension==2) THEN
+    IF (dim==2) THEN
        !2D
        WRITE(unit,*) 'SP(',coords(k,1),',',coords(k,2),',',0.,'){',ind,'};' 
-    ELSEIF (dimension==3) THEN
+    ELSEIF (dim==3) THEN
        !3D
        WRITE(unit,*) 'SP(',coords(k,1),',',coords(k,2),',',coords(k,3),'){',ind,'};'
     ENDIF
