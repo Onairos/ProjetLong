@@ -330,7 +330,8 @@ SUBROUTINE apply_kernel_k_means(proc_id,nblimit,nb_clusters_opt,dataw,clust_para
     !  Assign one point to each cluster center.
     !
     cluster_center(:,1) = dataw%point(1)%coord(:) !point(:,1) %%
-    cluster_id(:)=0; cluster_id(1)=1
+    cluster_id(:)=0
+    cluster_id(1)=1
     p=2
     seuil=0.4
 !#if aff
@@ -348,7 +349,8 @@ PRINT *, 'recherche des centres'
           !si point pas centre, teste par rapport au seuil
           IF (.NOT.ok2) THEN
              DO j=1,i-1
-                val=0.0; norme=0.0
+                val=0.0
+                norme=0.0
                 DO k=1,dataw%dim
                    val=max(val,abs(cluster_center(k,j)-dataw%point(p)%coord(k))) 
 !VOIR SI CELA DOIT ÊTRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -385,8 +387,8 @@ PRINT *, 'recherche des centres'
        it_num = it_num + 1
        swap=0
        DO i=1,dataw%nbclusters
-          stockenergy(i)=cluster_energy(i);
-          stockpopulation(i)=cluster_population(i);
+          stockenergy(i)=cluster_energy(i)
+          stockpopulation(i)=cluster_population(i)
           DO j=1,dataw%dim
              stockcenter(j,i)=cluster_center(j,i)
           ENDDO
@@ -869,7 +871,7 @@ SUBROUTINE mean_shift(proc_id,nblimit,nb_clusters_opt,dataw,bandWidth)
 				IF (mergeWith > 0) THEN		!something to merge
 				
 					clustCent(:,mergeWith) = (myMean+clustCent(:,mergeWith))/2					!mean of centers
-					clusterVotes(mergeWith,:) = clusterVotes(mergeWith,:) + thisClusterVotes;	!add these votes to the merged cluster
+					clusterVotes(mergeWith,:) = clusterVotes(mergeWith,:) + thisClusterVotes !add these votes to the merged cluster
 					
 				ELSE
 				
