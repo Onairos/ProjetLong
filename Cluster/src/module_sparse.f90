@@ -14,7 +14,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
     INTEGER :: n, k, nbcluster
     DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax, clusters_energies, &
-         ratiomin, ratiomoy, ratiorii, ratiorij
+         ratiomin, ratiomoy, ratio_rii, ratio_rij
     INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters, nb_info
     INTEGER :: nb_clusters_max, nbideal
     DOUBLE PRECISION :: norme, ratio, ratio1, ratio2, seuilrij
@@ -151,10 +151,10 @@ CONTAINS
        ratiomin(:)=0
        ALLOCATE(ratiomoy(nb_clusters_max))
        ratiomoy(:)=0
-       ALLOCATE(ratiorii(nb_clusters_max))
-       ratiorii(:)=0
-       ALLOCATE(ratiorij(nb_clusters_max))
-       ratiorij(:)=0
+       ALLOCATE(ratio_rii(nb_clusters_max))
+       ratio_rii(:)=0
+       ALLOCATE(ratio_rij(nb_clusters_max))
+       ratio_rij(:)=0
 
        ALLOCATE(nb_info(nb_clusters_max))
        nb_info(:)=0
@@ -173,7 +173,7 @@ CONTAINS
           CALL sp_spectral_embedding(nbcluster, n, Z, nnz2, AS, IAS, JAS, &
                ratiomax(nbcluster),clusters,clusters_centers,points_by_clusters, &
                clusters_energies,nb_info(nbcluster),numproc,ratiomoy(nbcluster), &
-               ratiorij(nbcluster),ratiorii(nbcluster))
+               ratio_rij(nbcluster),ratio_rii(nbcluster))
 
           DEALLOCATE(clusters)
           DEALLOCATE(clusters_centers)
@@ -198,10 +198,10 @@ PRINT *, 'DEBUG : Frobenius ratio'
              seuilrij=1e-4
           ENDIF
 
-          IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
+          IF ((ratio_rii(i)>=0.95*ratio1).AND.(ratio_rij(i)-ratio2<=seuilrij)) THEN  
              partitioned_data%nbclusters=i
-             ratio1=ratiorii(i)
-             ratio2=ratiorij(i)
+             ratio1=ratio_rii(i)
+             ratio2=ratio_rij(i)
           ENDIF
        ENDDO
 
@@ -225,14 +225,14 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ratiomoy(:)=0
        ALLOCATE(ratiomin(n))
        ratiomin(:)=0
-       ALLOCATE(ratiorii(n))
-       ratiorii(:)=0
-       ALLOCATE(ratiorij(n))
-       ratiorij(:)=0
+       ALLOCATE(ratio_rii(n))
+       ratio_rii(:)=0
+       ALLOCATE(ratio_rij(n))
+       ratio_rij(:)=0
     ENDIF
     ! Case with nbcluster==1
     IF (partitioned_data%nbclusters==2) THEN
-       PRINT *, 'Ratio difference : ', ratiorij(2)/ratiorii(2)
+       PRINT *, 'Ratio difference : ', ratio_rij(2)/ratio_rii(2)
        IF (ratiomax(2)>=0.6) THEN 
           partitioned_data%nbclusters=1
        ELSE 
@@ -248,8 +248,8 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
        CALL sp_spectral_embedding(partitioned_data%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
             clusters_centers,points_by_clusters,clusters_energies,&
-            nb_info(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),&
-            ratiorii(1))
+            nb_info(partitioned_data%nbclusters),numproc,ratiomin(1),ratio_rij(1),&
+            ratio_rii(1))
 
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%clusters=clusters(i)
@@ -261,8 +261,8 @@ PRINT *, 'DEBUG : Frobenius ratio'
        DEALLOCATE(clusters_energies)
        DEALLOCATE(ratiomin)
        DEALLOCATE(ratiomoy)
-       DEALLOCATE(ratiorii)
-       DEALLOCATE(ratiorij)
+       DEALLOCATE(ratio_rii)
+       DEALLOCATE(ratio_rij)
        DEALLOCATE(clusters_centers)
 
     ELSE 
@@ -289,12 +289,12 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
     SUBROUTINE sp_spectral_embedding(nbcluster, n, Z, nnz, AS, IAS, JAS, ratio, clusters, &
        clusters_centers, points_by_clusters, clusters_energies, nb_info, numproc, &
-       ratiomoy, ratiorij, ratiorii)
+       ratiomoy, ratio_rij, ratio_rii)
 
     IMPLICIT NONE
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z, clusters_centers
     INTEGER ::nbcluster, n, nb_info, numproc
-    DOUBLE PRECISION ::ratio, test, ratiomin, ratiorii, ratiorij, ratiomoy
+    DOUBLE PRECISION ::ratio, test, ratiomin, ratio_rii, ratio_rij, ratiomoy
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies, Z3
     INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
@@ -381,8 +381,8 @@ PRINT *, 'DEBUG : Frobenius ratio'
     ! Beginning of sparsification
     ratio=0.0
     ratiomin=1.D+16
-    ratiorii=0.0
-    ratiorij=0.0
+    ratio_rii=0.0
+    ratio_rij=0.0
     ratiomoy = 0.0
     nb_info=nbcluster
     DO i=1,nbcluster
@@ -391,20 +391,20 @@ PRINT *, 'DEBUG : Frobenius ratio'
              IF (i/=j) THEN
                 ratio=ratio+Frob(i,j)/Frob(i,i)
                 ratiomoy=ratiomoy+Frob(i,j)/Frob(i,i)
-                ratiorij=ratiorij+Frob(i,j)
-                ratiorii=ratiorii+Frob(i,i)
+                ratio_rij=ratio_rij+Frob(i,j)
+                ratio_rii=ratio_rii+Frob(i,i)
                 ratiomin=min(ratiomin,Frob(i,j)/Frob(i,i))
              ENDIF
           ENDDO
        ELSE
           nb_info=nb_info-1
        ENDIF
-       ratiorij=ratiorij*2/(nbcluster*(nbcluster-1))
+       ratio_rij=ratio_rij*2/(nbcluster*(nbcluster-1))
        ratiomoy=ratiomoy*2/(nbcluster*(nbcluster-1))
-       ratiorii=ratiorii!/nbcluster
+       ratio_rii=ratio_rii!/nbcluster
     ENDDO
 
-    PRINT *, "============= ratio ================", ratiomoy, ratiorij
+    PRINT *, "============= ratio ================", ratiomoy, ratio_rij
 
     DEALLOCATE(Frob)
     ! End of sparsification
