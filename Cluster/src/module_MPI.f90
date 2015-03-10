@@ -94,7 +94,7 @@ CONTAINS
   END SUBROUTINE send_partitioning
 
 
-  SUBROUTINE receive_partitionning(numproc, partitioned_data)
+  SUBROUTINE receive_partitioning(numproc, partitioned_data)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -159,7 +159,7 @@ CONTAINS
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     partitioned_data%dim=n
     RETURN
-  END SUBROUTINE receive_partitionning
+  END SUBROUTINE receive_partitioning
 
 
 

@@ -173,7 +173,7 @@ PROGRAM clusters
 #endif
      ELSE
         ! Data receiving
-        CALL receive_partitionning(numproc,partitioned_data)
+        CALL receive_partitioning(numproc,partitioned_data)
      ENDIF
 
   ELSE
