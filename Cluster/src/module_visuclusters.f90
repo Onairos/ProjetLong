@@ -5,7 +5,7 @@ MODULE module_visuclusters
 CONTAINS
 
 
-  SUBROUTINE read_params(params)
+  SUBROUTINE read_metadata(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -99,10 +99,10 @@ CONTAINS
        ENDIF
     ENDIF
     RETURN
-  END SUBROUTINE read_params
+  END SUBROUTINE read_metadata
 
 
-  SUBROUTINE write_partionning(format_output, params)
+  SUBROUTINE write_partitioning(format_output, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -119,12 +119,12 @@ CONTAINS
     PRINT *, 'Writing partitioning geometry...'
     SELECT CASE(format_output)
     CASE('gmsh')
-       CALL write_partionning_gmsh(params)
+       CALL write_partitioning_gmsh(params)
     CASE('paraview')
        CALL write_partitioning_paraview(params)
     END SELECT
     RETURN
-  END SUBROUTINE write_partionning
+  END SUBROUTINE write_partitioning
 
 
 

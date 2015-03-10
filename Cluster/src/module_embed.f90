@@ -4,7 +4,7 @@ CONTAINS
 
 
 
-  SUBROUTINE spectral_embedding(nb_clusters, n, Z, A, ratio,clusters, &
+  SUBROUTINE apply_spectral_embedding(nb_clusters, n, Z, A, ratio,clusters, &
        clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
        ratio_moy, ratio_rij, ratio_rii)
     IMPLICIT NONE
@@ -146,7 +146,7 @@ CONTAINS
 #endif
 
     RETURN 
-  END SUBROUTINE spectral_embedding
+  END SUBROUTINE apply_spectral_embedding
 
 
 

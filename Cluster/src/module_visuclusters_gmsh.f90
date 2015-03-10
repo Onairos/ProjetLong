@@ -4,7 +4,7 @@ CONTAINS
 
 
 
-  SUBROUTINE write_partionning_gmsh(params)
+  SUBROUTINE write_partitioning_gmsh(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -140,7 +140,7 @@ CONTAINS
     CLOSE(10)
     CLOSE(2)
     RETURN
-  END SUBROUTINE write_partionning_gmsh
+  END SUBROUTINE write_partitioning_gmsh
 
 
 
@@ -194,7 +194,7 @@ CONTAINS
           ELSE
              ! Partitionning 1D pictures
              READ (10,*) k
-             CALL write_picture_to_gmsh(1,params,i,k)
+             CALL write_point_picture_format(1,params,i,k)
           ENDIF
        ENDDO
        CLOSE(10)
@@ -263,7 +263,7 @@ CONTAINS
              CALL ecritpoint_gmsh(1,params%dim,coords,k,1)
           ELSE
              READ(10,*) k,ind
-             CALL write_picture_to_gmsh(1,params,ind,corresp(k))
+             CALL write_point_picture_format(1,params,ind,corresp(k))
           ENDIF
        ENDDO
        CLOSE(10) 
@@ -337,7 +337,7 @@ CONTAINS
              CALL ecritpoint_gmsh(1,nb0,coords,i,k)
           ELSE
              ! Pictures reassembly
-             CALL write_picture_to_gmsh(1,params,i,k)
+             CALL write_point_picture_format(1,params,i,k)
           ENDIF
        ENDDO
        CLOSE(10)
@@ -379,7 +379,7 @@ CONTAINS
 
 
 
-  SUBROUTINE write_picture_to_gmsh(unit, params, ind, k)
+  SUBROUTINE write_point_picture_format(unit, params, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -447,7 +447,7 @@ CONTAINS
     ! Writing
     WRITE(unit,*) 'SP(',kx,',',ky,',',kz,'){',ind,'};'
     RETURN
-  END SUBROUTINE write_picture_to_gmsh
+  END SUBROUTINE write_point_picture_format
 
 
 

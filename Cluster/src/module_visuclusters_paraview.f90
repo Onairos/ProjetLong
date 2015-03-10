@@ -343,7 +343,7 @@ CONTAINS
              CALL ecritpoint_paraview(10,11,nb_points,params%dim,coords,ind,1)
           ELSE
              ! Partitionning 1D picture
-             CALL write_picture_to_paraview(10,11,nb_points,params,ind,indp)
+             CALL write_points_picture_format(10,11,nb_points,params,ind,indp)
           ENDIF
        ENDIF
        DEALLOCATE(coords)
@@ -473,7 +473,7 @@ CONTAINS
           CALL ecritpoint_paraview(10,11,nb_points,params%dim,coords,ind,1)
        ELSE
           ! partitionning 1D picture
-          CALL write_picture_to_paraview(10,11,nb_points,params,ind,indp)
+          CALL write_points_picture_format(10,11,nb_points,params,ind,indp)
        ENDIF
        DEALLOCATE(coords)
        DEALLOCATE(ind)
@@ -589,7 +589,7 @@ CONTAINS
        CALL ecritpoint_paraview(10,11,params%nbp,params%dim,coords,ind,1)
     ELSE
        ! Pictures reassembly
-       CALL write_picture_to_paraview(10,11,params%nbp,params,ind,indp)
+       CALL write_points_picture_format(10,11,params%nbp,params,ind,indp)
     ENDIF
     CLOSE(10)
     CLOSE(11)
@@ -664,7 +664,7 @@ CONTAINS
 
 
 
-  SUBROUTINE write_picture_to_paraview(unit_geo, unit_ind, nb_pixels, params, ind, indp)
+  SUBROUTINE write_points_picture_format(unit_geo, unit_ind, nb_pixels, params, ind, indp)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -774,7 +774,7 @@ CONTAINS
     IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
          .AND.(params%imgdim==2)) DEALLOCATE(data)
     RETURN
-  END SUBROUTINE write_picture_to_paraview
+  END SUBROUTINE write_points_picture_format
 
 
 
