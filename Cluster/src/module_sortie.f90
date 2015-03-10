@@ -125,7 +125,7 @@ CONTAINS
   END SUBROUTINE write_partial_clusters
 
 
-  SUBROUTINE write_final_clusters(nbclust, points_by_cluster, cluster_map)
+  SUBROUTINE write_final_clusters(nb_clusters, points_by_cluster, cluster_map)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -136,7 +136,7 @@ CONTAINS
     INTEGER,DIMENSION(:),POINTER :: points_by_cluster
 
     !=== IN/OUT === 
-    INTEGER :: nbclust
+    INTEGER :: nb_clusters
 
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
@@ -150,7 +150,7 @@ CONTAINS
     !########################################### 
     PRINT *, '> Result writing...'
     k=0
-    DO i=1,nbclust
+    DO i=1,nb_clusters
        IF (points_by_cluster(i)>0) THEN
           k=k+1
           WRITE(num,*) k
@@ -165,12 +165,12 @@ CONTAINS
           CLOSE(20)
        ENDIF
     ENDDO
-    nbclust=k
+    nb_clusters=k
     RETURN
   END SUBROUTINE write_final_clusters
 
 
-  SUBROUTINE write_metadata(mesh, data, nb_proc, nbclust)
+  SUBROUTINE write_metadata(mesh, data, nb_proc, nb_clusters)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -179,7 +179,7 @@ CONTAINS
     !====  IN  ====
     TYPE(type_data) :: data
     CHARACTER (LEN=30) :: mesh
-    INTEGER :: nbclust
+    INTEGER :: nb_clusters
     INTEGER :: nb_proc
     
     !###########################################      
@@ -198,7 +198,7 @@ CONTAINS
     WRITE(3,*) '# Partitioning by overlapping : '
     WRITE(3,*) data%recouvrement
     WRITE(3,*) '# Number of clusters : '
-    WRITE(3,*) nbclust
+    WRITE(3,*) nb_clusters
     WRITE(3,*) '# Coord format : '
     WRITE(3,*) data%coord
     WRITE(3,*) '# Image format : '
