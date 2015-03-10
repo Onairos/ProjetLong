@@ -1,3 +1,4 @@
+!>Contains structure types required by the different modules
 MODULE module_structure
 
   !#### Datatype for computing ####

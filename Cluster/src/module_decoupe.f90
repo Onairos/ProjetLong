@@ -1,11 +1,30 @@
+!>Contains methods enabling the partitionning and the groupping of the data
 MODULE module_decoupe
   USE module_structure
   USE module_sortie
 CONTAINS
 
 
+!>Partitions the data into subdomains for a latter processing by the slaves
+!!@details The following is performed :
+!!<ol>
+!!<li> The bounds of each domain are defined (see define_bounds()).</li>
+!!<li> The domains are defined using the bounds (see define_domains()).</li>
+!!<li> The domains are written in a dedicated file (see write_domains()).</li>
+!!<li> The data is partitioned using interface or overlapping (see partition_with_interface() and partition_with_overlapping()).</li>
+!!<li> The partitioning is written in dedicated files (see write_partitioning()).</li>
+!!</ol>
+!! @param[in] data the entire data for computing
+!! @param[in] epsilon the slice thickness
+!! @param[in] nb_proc the number of processors used
+!! @param[in] partitioning the partitionning (number of processors along each dimension)
+!! @param[in,out] coord_max the maxima along each dimension of the data (coordinates)
+!! @param[in,out] coord_min the minima along each dimension of the data (coordinates)
+!! @param[out] bounds the intervals along each dimension representing the bounds of each partition
+!! @param[out] assignments the assignement of each point in a partition
+!! @param[out] points_by_domain the number of points in each partition
   SUBROUTINE partition_data(data, epsilon, nb_proc, coord_min, coord_max, partitioning,&
-       points_by_domain, assignements, bounds)
+       points_by_domain, assignments, bounds)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -23,7 +42,7 @@ CONTAINS
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-    INTEGER, DIMENSION(:,:), POINTER :: assignements
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
@@ -44,20 +63,36 @@ CONTAINS
     ! Partitioning definition
     IF ((data%interface==1).OR.(nb_proc==1)) THEN
        ! Partitioning by interfacing
-       CALL partition_with_interface(nb_proc,data,points_by_domain,assignements,domains,epsilon)
+       CALL partition_with_interface(nb_proc,data,points_by_domain,assignments,domains,epsilon)
     ELSE
        ! Partitioning by overlapping
-       CALL partition_with_overlapping(nb_proc,data,points_by_domain,assignements,domains)
+       CALL partition_with_overlapping(nb_proc,data,points_by_domain,assignments,domains)
     ENDIF
     DEALLOCATE(domains)
 
     ! Saving partitioning
-    CALL write_partitioning(nb_proc,data,points_by_domain,assignements)
+    CALL write_partitioning(nb_proc,data,points_by_domain,assignments)
 
     RETURN
   END SUBROUTINE partition_data
 
 
+!>Defines the bounds of each subdomain
+!!@details The output <em>bounds</em> has to be interpreted as follows:
+!!<ol>
+!!<li> The first index corresponds to the dimensions </li>
+!!<li> The second index corresponds to the partitioning along the dimension </li>
+!!<li> The third index corresponds to the extrema of the bounds </li>
+!!</ol>
+!!@note The bounds are composed of two points.
+!!@note In case of overlapping, the bounds overlapped each others.
+!! @param[in] data the entire data for computing
+!! @param[in] epsilon the slice thickness
+!! @param[in] nb_proc the number of processors used
+!! @param[in] partitioning the partitionning (number of processors along each dimension)
+!! @param[in,out] coord_max the maxima along each dimension of the data (coordinates)
+!! @param[in,out] coord_min the minima along each dimension of the data (coordinates)
+!! @param[out] bounds the intervals along each dimension representing the bounds of each partition
   SUBROUTINE define_bounds(data, coord_min, coord_max, bounds, partitioning, epsilon, nb_proc)
     IMPLICIT NONE
     !###########################################
@@ -167,6 +202,19 @@ CONTAINS
   END SUBROUTINE define_bounds
 
 
+!>Defines the different subdomains
+!!@details The output <em>domains</em> has to be interpreted as follows:
+!!<ol>
+!!<li> The first index corresponds to the domain id</li>
+!!<li> The second index corresponds to the dimensions </li>
+!!<li> The third index corresponds to the extrema of the bounds </li>
+!!</ol>
+!!@sa define_bounds()
+!! @param[in] data the entire data for computing
+!! @param[in] bounds the intervals along each dimension representing the bounds of each partition
+!! @param[in] nb_proc the number of processors used
+!! @param[in] partitioning the partitionning (number of processors along each dimension)
+!! @param[out] domains the domains constructed from the bounds
   SUBROUTINE define_domains(nb_proc, data, domains, bounds, partitioning)
     IMPLICIT NONE
     !###########################################
@@ -259,7 +307,23 @@ CONTAINS
   END SUBROUTINE define_domains
 
 
-  SUBROUTINE partition_with_interface(nb_proc, data, points_by_domain, assignements, domains, epsilon)
+!>Partitions the data using interface
+!!@details The method partitions the entire data by defining
+!!which point belongs to which domain. It consists of a loop
+!!on all the point in data set. Then it "fills" the domains one
+!!after another using a nested loop. When a point does not fit the 
+!!bounds define in the input <em>domains</em>, the algorithm switch 
+!!to the next domain. Finally, an extra domain is defined (the interface) 
+!!which corresponds to the area around the bounds with a predefined 
+!!slice thickness.
+!!@see partition_with_overlapping()
+!! @param[in] data the entire data for computing
+!! @param[in] domains the domains constructed from the bounds
+!! @param[in] epsilon the slice thickness
+!! @param[in] nb_proc the number of processors used
+!! @param[out] assignments the assignement of each point in a partition
+!! @param[out] points_by_domain the number of points in each partition
+  SUBROUTINE partition_with_interface(nb_proc, data, points_by_domain, assignments, domains, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -271,7 +335,7 @@ CONTAINS
     DOUBLE PRECISION :: epsilon
     INTEGER :: nb_proc
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: assignements
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
@@ -286,8 +350,8 @@ CONTAINS
     !###########################################
     ALLOCATE(points_by_domain(0:max(1,nb_proc-1)))
     points_by_domain(:)=0
-    ALLOCATE(assignements(0:max(1,nb_proc-1),data%nb))
-    assignements(:,:)=0
+    ALLOCATE(assignments(0:max(1,nb_proc-1),data%nb))
+    assignments(:,:)=0
     DO i=1,data%nb
        ! Search of packages
        n=0
@@ -326,7 +390,7 @@ CONTAINS
           ENDIF
        ENDDO
        points_by_domain(n)=points_by_domain(n)+1
-       assignements(n,points_by_domain(n))=i
+       assignments(n,points_by_domain(n))=i
        IF (nb_proc>1) THEN
           ! Search of interface if > 1 proc
           ok=.FALSE.
@@ -345,8 +409,8 @@ CONTAINS
           ENDIF
           IF (.NOT. ok) THEN
              points_by_domain(0)=points_by_domain(0)+1
-             assignements(0,points_by_domain(0))=i
-             WRITE(7,*) assignements(0,points_by_domain(0))
+             assignments(0,points_by_domain(0))=i
+             WRITE(7,*) assignments(0,points_by_domain(0))
           ENDIF
        ENDIF
     ENDDO
@@ -356,7 +420,21 @@ CONTAINS
 
 
 
-  SUBROUTINE partition_with_overlapping(nb_proc, data, points_by_domain, assignements, domains)
+!>Partitions the data using overlapping
+!!@details The method partitions the entire data by defining
+!!which point belongs to which domain. It consists of two nested
+!!loop. The first one on the points and the second one on the
+!!domains (ie the processes). For each point, it checks if it fits
+!!the bounds defined in the input <em>domains</em> (and that for each
+!!domain) and in that case add to it.
+!!@note Some points will be present in different domains.
+!!@see partition_with_interface()
+!! @param[in] data the entire data for computing
+!! @param[in] domains the domains constructed from the bounds
+!! @param[in] nb_proc the number of processors used
+!! @param[out] assignments the assignement of each point in a partition
+!! @param[out] points_by_domain the number of points in each partition
+  SUBROUTINE partition_with_overlapping(nb_proc, data, points_by_domain, assignments, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -367,7 +445,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
     INTEGER :: nb_proc
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: assignements
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
@@ -381,8 +459,8 @@ CONTAINS
     !###########################################
     ALLOCATE(points_by_domain(0:max(1,nb_proc-1)))
     points_by_domain(:)=0
-    ALLOCATE(assignements(0:max(1,nb_proc-1),data%nb))
-    assignements(:,:)=0
+    ALLOCATE(assignments(0:max(1,nb_proc-1),data%nb))
+    assignments(:,:)=0
     DO i=1,data%nb
        ! Search of packages
        DO n=1,nb_proc
@@ -402,7 +480,7 @@ CONTAINS
           ENDIF
           IF (ok) THEN
              points_by_domain(n-1)=points_by_domain(n-1)+1
-             assignements(n-1,points_by_domain(n-1))=i
+             assignments(n-1,points_by_domain(n-1))=i
           ENDIF
        ENDDO
     ENDDO
@@ -410,6 +488,16 @@ CONTAINS
   END SUBROUTINE partition_with_overlapping
 
 
+!>Groups the clusters and removes duplicates from the set of found clusters
+!!@details The method operates on all the computed clusters
+!!and when an intersection is found between two of them (at least
+!!one point in common), they are melted.
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in,out] cluster_map the cluster indices and the number of points in each cluster
+!! @param[in,out] points_by_cluster the number of points in each cluster
+!! @param[out] data the entire data for computing
   SUBROUTINE group_clusters(nb_clusters, points_by_cluster, cluster_map, data)
     IMPLICIT NONE
     !###########################################

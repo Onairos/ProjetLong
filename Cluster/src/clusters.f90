@@ -32,7 +32,7 @@ PROGRAM clusters
   DOUBLE PRECISION :: t1
   DOUBLE PRECISION :: t2
   INTEGER,DIMENSION(:,:), POINTER :: cluster_map
-  INTEGER,DIMENSION(:,:) ,POINTER :: assignements
+  INTEGER,DIMENSION(:,:) ,POINTER :: assignments
   INTEGER,DIMENSION(:), POINTER :: partitioning
   INTEGER,DIMENSION(:), POINTER :: points_by_cluster
   INTEGER,DIMENSION(:), POINTER :: points_by_domain
@@ -118,7 +118,7 @@ PROGRAM clusters
 #endif
     t1 = MPI_WTIME()
     CALL partition_data(data,epsilon,nb_proc,coord_min,coord_max,partitioning,&
-         points_by_domain,assignements,bounds)
+         points_by_domain,assignments,bounds)
     t2 = MPI_WTIME()
     PRINT *,'Time for partitioning data : ', t2-t1
   ENDIF
@@ -134,6 +134,7 @@ PROGRAM clusters
      ! Sigma computing if auto global mode
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF ((sigma==0.0).AND.(proc_id==0)) THEN
+     PRINT *,'DEBUG : clustmethid : ', clust_param%clustering_method_id
         CALL get_sigma_interface(proc_id,data,sigma,bounds,partitioning,epsilon)
      ENDIF
 
@@ -166,7 +167,7 @@ PROGRAM clusters
         PRINT *
         PRINT *,'DEBUG : Transferring partitioned data...'
 #endif
-        CALL send_partitioning(nb_proc,data,points_by_domain,assignements,partitioned_data)
+        CALL send_partitioning(nb_proc,data,points_by_domain,assignments,partitioned_data)
 #if aff
         PRINT *
         PRINT *,'DEBUG : Computing clusters...'
@@ -219,8 +220,10 @@ PROGRAM clusters
      PRINT *,'DEBUG : Process n', proc_id, ' : computing clusters...'
 #endif
 
+     PRINT *,'COUCOU : clustmethid : ', clust_param%clustering_method_id
+
     !SELECT CASE (clust_param%clustering_method_id)
-   ! CASE (1)
+    !CASE (1)
       CALL apply_spectral_clustering(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,sigma,clust_param)
     !CASE (2)
       !CALL mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param%bandwidth)
@@ -258,7 +261,7 @@ PROGRAM clusters
 #endif
         ! Receiving of clusters info
         ALLOCATE(cluster_map(nb_clusters,data%nb))
-        CALL receive_clusters(nb_proc,nb_clusters,points_by_domain,assignements,partitioned_data,&
+        CALL receive_clusters(nb_proc,nb_clusters,points_by_domain,assignments,partitioned_data,&
              cluster_map,array_clusters,points_by_cluster)
      ELSE
         ! Sends the number of clusters

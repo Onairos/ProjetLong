@@ -1,8 +1,14 @@
+!>Contains methods from Lapack library dealing with eigen values computing
  MODULE module_solve
 CONTAINS
 
 
 
+!>
+!! @param A the affinity matrix
+!! @param VR 
+!! @param WR 
+!! @param N 
   SUBROUTINE solve_dgeevx(N, A, VR, WR)
     IMPLICIT NONE
     EXTERNAL DGEEVX
@@ -76,6 +82,11 @@ CONTAINS
 
 
 
+!>
+!! @param[in] A the affinity matrix
+!! @param[in] N 
+!! @param[out] VR 
+!! @param[out] WR 
   SUBROUTINE solve_dgeev(N, A, VR, WR)
     IMPLICIT NONE
     EXTERNAL DGEEV
@@ -134,6 +145,11 @@ CONTAINS
 
 
 
+!>
+!! @param A the affinity matrix
+!! @param W 
+!! @param LWORK 
+!! @param N 
   SUBROUTINE solve_dsyev(N, A, W, LWORK)
     IMPLICIT NONE
     EXTERNAL DSYEV
@@ -170,6 +186,15 @@ CONTAINS
 
 
 
+!>
+!! @param A the affinity matrix
+!! @param Z the matrix of eigen vectors
+!! @param W 
+!! @param k 
+!! @param LIWORK 
+!! @param LWORK 
+!! @param M 
+!! @param N 
   SUBROUTINE solve_dsyevr(k, N, A, Z, LWORK, LIWORK, W, M)
     IMPLICIT NONE
     EXTERNAL DSYEVR
@@ -234,6 +259,15 @@ CONTAINS
 
 
 
+!>
+!! @param A the affinity matrix
+!! @param Z the matrix of eigen vectors
+!! @param W 
+!! @param k 
+!! @param LIWORK 
+!! @param LWORK 
+!! @param M 
+!! @param N 
   SUBROUTINE solve_dsyevx(k, N, A, Z, LWORK, LIWORK, W, M)
     IMPLICIT NONE
     EXTERNAL DSYEVX

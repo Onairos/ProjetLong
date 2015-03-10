@@ -1,9 +1,16 @@
+!>Contains methods enabling writing results in file specifically formatted for Paraview
 MODULE module_visuclusters_paraview
   USE module_visuclusters_structure
 CONTAINS
 
 
 
+!>Writes the geometry partitioning for Paraview visualization
+!!@details This methods extracts the domain definitions
+!!from the <em>fort.2</em> file and writes to <em>visu/decoupe.*</em>
+!!files.
+!!@see module_calcul::write_partitioning()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
   SUBROUTINE write_partitioning_paraview(params)
     IMPLICIT NONE
     !###########################################
@@ -256,6 +263,15 @@ CONTAINS
 
 
 
+!>Initializes the file of the partitioning for Paraview visualization
+!!@details This method extracts details on partitioning from the
+!!<em>decoupe.x</em> files and writes them in <em>visu/affectation.*</em>
+!!files. Extra files are written in a case of interface partitioning.
+!!<em>visu/affectation-interface.*</em> files are the assignment for
+!!the interface.
+!!@note <em>x</em> is the identifier (number) of a process.
+!!@see module_calcul::write_partitioning(), partition_with_interface()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
   SUBROUTINE write_assignment_paraview(params)
     IMPLICIT NONE
     !###########################################
@@ -388,6 +404,13 @@ CONTAINS
 
 
 
+!>Writes the clusters before grouping for Paraview visualization
+!!@details This methods extracts details on computed clusters
+!!on each domain from <em>cluster.partiel.x</em> files and writes
+!!them in corresponding <em>visu/cluster.partiel.x.*</em> files.
+!!@note <em>x</em> is the identifier (number) of a process.
+!!@see module_calcul::write_partial_clusters()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
   SUBROUTINE write_partial_clusters_paraview(params)
     IMPLICIT NONE
     !###########################################
@@ -515,6 +538,13 @@ CONTAINS
 
 
 
+!>Writes the clusters after grouping for Paraview visualization
+!!@details This methods extracts details on computed clusters
+!!from <em>cluster.final.x</em> files and writes them in 
+!!<em>cluster.final.visu</em> file.
+!!@note <em>x</em> is the identifier (number) of a cluster.
+!!@see module_calcul::write_final_clusters()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
   SUBROUTINE write_final_clusters_paraview(params)
     IMPLICIT NONE
     !###########################################
@@ -614,6 +644,7 @@ CONTAINS
 
 
 
+!>Writes point coordinates from coordinates format for Paraview visualization
   SUBROUTINE write_points_coord_format(unit_geo, unit_ind, nb_points, dim, coords, ids, k)
     IMPLICIT NONE
     !###########################################
@@ -665,6 +696,23 @@ CONTAINS
 
 
 
+!>Writes point coordinates from picture format for Paraview visualization
+!!@details The following is written in the geometric file for each point :
+!!<ul>
+!!<li><b> For 2D case</b>: <em> x y </em></li>
+!!<li><b> For 3D case</b>: <em> x y z</em></li>
+!!</ul>
+!!And the following is written in the process partitioning file for each point :</br>
+!!<em> ind </em>
+!!@note x,y and z are the coordinates and ind is the identifier of the process.
+!!@note This method writes headers at first in the files.
+
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
+!! @param[in] nb_pixels the number of points
+!! @param[in] unit_geo the written geometric file unit
+!! @param[in] unit_ind the written processus identifiers file unit
+!! @param[in] ids the process identifier for each point
+!! @param[in] proc_ids the pixel identifiers
   SUBROUTINE write_points_picture_format(unit_geo, unit_ind, nb_pixels, params, ids, proc_ids)
     IMPLICIT NONE
     !###########################################
@@ -779,6 +827,7 @@ CONTAINS
 
 
 
+!>Lists the commands related to Paraview visualization
   SUBROUTINE list_commands_paraview
     !###########################################
     ! INSTRUCTIONS

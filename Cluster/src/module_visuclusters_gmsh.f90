@@ -1,9 +1,16 @@
+!>Contains methods enabling writing results in file specifically formatted for GMSH
 MODULE module_visuclusters_gmsh
   USE module_visuclusters_structure
 CONTAINS
 
 
 
+!>Writes the geometry partitioning for Gmsh visualization
+!!@details This methods extracts the domain definitions
+!!from the <em>fort.2</em> file and writes to <em>decoupe.geo</em> file,
+!!a source code file. We refer you to a <a href="linkURL"> Gmsh tutorial</a>.
+!!@see module_calcul::write_partitioning()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
   SUBROUTINE write_partitioning_gmsh(params)
     IMPLICIT NONE
     !###########################################
@@ -144,6 +151,13 @@ CONTAINS
 
 
 
+!>Initializes the file of the partitioning for Gmsh visualization
+!!@details This method extracts details on partitioning from the
+!!<em>decoupe.x</em> files and writes them in <em>decoupe.visu</em>
+!!file.
+!!@note <em>x</em> is the identifier (number) of a process.
+!!@see write_partitioning()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
   SUBROUTINE write_assignment_gmsh(params)
     IMPLICIT NONE
     !###########################################
@@ -208,6 +222,13 @@ CONTAINS
 
 
 
+!>Writes the clusters before grouping for Gmsh visualization
+!!@details This methods extracts details on computed clusters
+!!on each domain from <em>cluster.partiel.x</em> files and writes
+!!them in corresponding <em>cluster.partiel.x.visu</em> files.
+!!@note <em>x</em> is the identifier (number) of a process.
+!!@see module_calcul::write_partial_clusters()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
   SUBROUTINE write_partial_clusters_gmsh(params)
     IMPLICIT NONE
     !###########################################
@@ -279,6 +300,13 @@ CONTAINS
 
 
 
+!>Writes the clusters after grouping for Gmsh visualization
+!!@details This methods extracts details on computed clusters
+!!from <em>cluster.final.x</em> files and writes them in 
+!!<em>cluster.final.visu</em> file.
+!!@note <em>x</em> is the identifier (number) of a cluster.
+!!@see module_calcul::write_final_clusters()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
   SUBROUTINE write_final_clusters_gmsh(params)
     IMPLICIT NONE
     !###########################################
@@ -351,6 +379,7 @@ CONTAINS
 
 
 
+!>Writes point coordinates from coordinates format for Gmsh visualization
   SUBROUTINE write_point_coord_format(unit, dim, coords, id, k)
     IMPLICIT NONE
     !###########################################
@@ -379,6 +408,18 @@ CONTAINS
 
 
 
+!>Writes point coordinates from picture format for Gmsh visualization
+!!@details The following is written in the file :</br>
+!!<ol>
+!!<li><b> For 2D case</b>: <em> SP(x,y){id} </em></li>
+!!<li><b> For 3D case</b>: <em> SP(x,y,z){id} </em></li>
+!!</ol>
+!!@note x,y and z are the coordinates and id is the identifier of the process
+
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
+!! @param[in] id the process identifier
+!! @param[in] k 
+!! @param[in] unit the written file identifier
   SUBROUTINE write_point_picture_format(unit, params, id, k)
     IMPLICIT NONE
     !###########################################
@@ -451,6 +492,7 @@ CONTAINS
 
 
 
+!>Lists the commands related to Gmsh visualization
   SUBROUTINE list_commands_gmsh
     !###########################################
     ! INSTRUCTIONS

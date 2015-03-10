@@ -1,9 +1,17 @@
+!>
 MODULE module_sparse
   USE module_structure
   USE module_solve
   USE module_embed
 CONTAINS
 
+!>Computes the clusters using spectral clustering algorithm using sparsity
+!!@see apply_spectral_clustering()
+!! @param[in] sigma the affinity parameter
+!! @param[in] nb_clusters_max the maximum number of clusters
+!! @param[in] nb_clusters_opt the optimal number of clusters
+!! @param[in] proc_id the processus identifier
+!! @param[in,out] partitioned_data the partitioned data for computing
   SUBROUTINE apply_spectral_clustering_sparse(proc_id, nb_clusters_max, nb_clusters_opt, partitioned_data, sigma)
     IMPLICIT INTEGER(i, j, q)
     INCLUDE 'mpif.h'
@@ -316,6 +324,27 @@ PRINT *, 'DEBUG : Frobenius ratio'
     RETURN
   END SUBROUTINE apply_spectral_clustering_sparse
 
+!>Computes the ideal number of clusters using sparsity
+!!@see apply_spectral_embedding()
+!! @param[in] Z the matrix of eigen vectors
+!! @param[in] AS the affinity sparse matrix
+!! @param[in] n 
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nnz the number of non-zero coefficients
+!! @param[in] proc_id the processus identifier
+!! @param[in] IAS the row indices of the affinity matrix coefficients
+!! @param[in] JAS the column indices of the affinity matrix coefficients
+!! @param[out] clusters_centers the cluster centers
+!! @param[out] clusters_energies the cluster energies
+!! @param[out] ratio the sum of the ratios between Frobenius norm of the off-diagonal and the diagonal blocks of the normalized affinity matrix
+!! @param[out] ratio_moy 
+!! @param[out] ratio_rii the sum of the denominator of each ratio
+!! @param[out] ratio_rij the sum of the numerators of each ratio
+!! @param[out] nb_info the reduced number of clusters (?)
+!! @param[out] clusters indicates which cluster each point belongs to
+!! @param[out] points_by_clusters the number of points in each cluster
     SUBROUTINE apply_spectral_embedding_sparse(nb_clusters, n, Z, nnz, AS, IAS, JAS, ratio, clusters, &
        clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
        ratio_moy, ratio_rij, ratio_rii)
@@ -477,6 +506,15 @@ PRINT *, 'DEBUG : Frobenius ratio'
     RETURN 
     END SUBROUTINE apply_spectral_embedding_sparse
 
+<<<<<<< HEAD
+!>Computes the matrix vector product using sparsity
+!! @param[in] A the sparse matrix
+!! @param[in] X the input vector
+!! @param[in] n 
+!! @param[in] nnz the number of non-zero coefficients
+!! @param[in] IA the row indices of the matrix coefficients
+!! @param[in] JA the column indices of the matrix coefficients
+!! @param[out] Y the resulting vector
     SUBROUTINE compute_matvec_prod(A, IA, JA, X, Y, n, nnz)
     IMPLICIT NONE
     !###########################################
@@ -509,6 +547,17 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
 
 
+!>
+!! @param[in] A the affinity sparse matrix
+!! @param[in] dim the number of spatial dimensions
+!! @param[in] dim the number of spatial dimensions
+!! @param[in] dim 
+!! @param[in] nb_clusters_max the maximum number of clusters
+!! @param[in] nnz the number of non-zero coefficients
+!! @param[in] IA the row indices of the affinity matrix coefficients
+!! @param[in] JA the column indices of the affinity matrix coefficients
+!! @param[out] Z the matrix of eigen vectors
+!! @param[out] W 
   SUBROUTINE solve_arpack(A, IA, JA, dim, nnz, nb_clusters_max, W, Z)
 
 !     %-------------------------------------------------%
