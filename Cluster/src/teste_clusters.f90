@@ -9,7 +9,7 @@ PROGRAM teste_clusters
   TYPE(type_test), DIMENSION(:), POINTER :: test
   CHARACTER (LEN=30) :: files
   INTEGER :: i
-  INTEGER :: nbtests
+  INTEGER :: nb_tests
   
   !###########################################
   ! INSTRUCTIONS
@@ -37,8 +37,8 @@ PROGRAM teste_clusters
   CALL create_data
 
   ! Tests declaration
-  nbtests=12
-  ALLOCATE(test(nbtests))
+  nb_tests=12
+  ALLOCATE(test(nb_tests))
 
   ! Testing: coord_mono
   test(1)%dir='test_coord_mono'
@@ -202,11 +202,11 @@ PROGRAM teste_clusters
 
   ! Launching
   files=''
-  DO i=1,nbtests
+  DO i=1,nb_tests
      PRINT *
      PRINT *,'TEST : '//test(i)%dir
      IF (files/='t') THEN
-        PRINT *,'  > lancer le test ? [o,n,t]'
+        PRINT *,'  > launch test ? [o,n,t]'
         READ *,files
      ENDIF
      IF (files/='n') THEN

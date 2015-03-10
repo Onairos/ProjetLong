@@ -7,10 +7,10 @@ PROGRAM visudecoup
   CHARACTER (LEN=30) :: files
   CHARACTER (LEN=30) :: num
   DOUBLE PRECISION :: coord(2)
-  DOUBLE PRECISION :: xmax
-  DOUBLE PRECISION :: xmin
-  DOUBLE PRECISION :: ymax
-  DOUBLE PRECISION :: ymin
+  DOUBLE PRECISION :: x_max
+  DOUBLE PRECISION :: x_min
+  DOUBLE PRECISION :: y_max
+  DOUBLE PRECISION :: y_min
   INTEGER :: i
   INTEGER :: j
   INTEGER :: n
@@ -31,11 +31,11 @@ PROGRAM visudecoup
   OPEN(FILE='fort.2',UNIT=2)
   OPEN(FILE='decoupe.geo',UNIT=10)
   DO i=1,n-1
-     READ(2,*) xmin,ymin,num,xmax,ymax
-     WRITE(10,*) 'Point(',4*(i-1)+1,')={',xmin,',',ymin,',0.};'
-     WRITE(10,*) 'Point(',4*(i-1)+2,')={',xmax,',',ymin,',0.};'
-     WRITE(10,*) 'Point(',4*(i-1)+3,')={',xmax,',',ymax,',0.};'
-     WRITE(10,*) 'Point(',4*(i-1)+4,')={',xmin,',',ymax,',0.};'
+     READ(2,*) x_min,y_min,num,x_max,y_max
+     WRITE(10,*) 'Point(',4*(i-1)+1,')={',x_min,',',y_min,',0.};'
+     WRITE(10,*) 'Point(',4*(i-1)+2,')={',x_max,',',y_min,',0.};'
+     WRITE(10,*) 'Point(',4*(i-1)+3,')={',x_max,',',y_max,',0.};'
+     WRITE(10,*) 'Point(',4*(i-1)+4,')={',x_min,',',y_max,',0.};'
      WRITE(10,*) 'Line(',4*(i-1)+1,')={',4*(i-1)+1,',',4*(i-1)+2,'};'
      WRITE(10,*) 'Line(',4*(i-1)+2,')={',4*(i-1)+2,',',4*(i-1)+3,'};'
      WRITE(10,*) 'Line(',4*(i-1)+3,')={',4*(i-1)+3,',',4*(i-1)+4,'};'

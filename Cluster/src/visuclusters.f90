@@ -10,14 +10,14 @@ PROGRAM visuclusters
   TYPE(type_params) :: params
   CHARACTER (LEN=30) :: format_output
   REAL :: elapsed(2) ! For receiving user and system time
-  REAL :: temps
+  REAL :: time
 
   !###########################################
   ! INSTRUCTIONS
   !###########################################
   PRINT *
   PRINT *,'-----------------------------------'
-  PRINT *,'visualisation des clusters en 2D/3D'
+  PRINT *,'--  2D/3D Clusters Visualisation --'
   PRINT *,'-----------------------------------'
 
   ! Reads infos
@@ -26,13 +26,13 @@ PROGRAM visuclusters
   ! Choice of output format
   IF (iargc()>0) THEN
      CALL getarg(1,format_output)
-     PRINT *,' > format de sortie ? [gmsh,paraview]'
+     PRINT *,' > output format ? [gmsh,paraview]'
      PRINT *,format_output
      GOTO 11
   ENDIF
 
 10  PRINT *
-  PRINT *,' > format de sortie ? [gmsh,paraview]'
+  PRINT *,' > output format ? [gmsh,paraview]'
   READ *,format_output
   format_output=trim(adjustl(format_output))
 
@@ -64,11 +64,11 @@ PROGRAM visuclusters
   CASE('paraview')
      OPEN(FILE='visuclusters.paraview',UNIT=100)
   END SELECT
-  WRITE(100,*) '# temps total :'
-  WRITE(100,*) temps
-  WRITE(100,*) '# temps user :'
+  WRITE(100,*) '# total time :'
+  WRITE(100,*) time
+  WRITE(100,*) '# user time :'
   WRITE(100,*) elapsed(1)
-  WRITE(100,*) '# temps systeme :'
+  WRITE(100,*) '# system time :'
   WRITE(100,*) elapsed(2)
   CLOSE(100)
 

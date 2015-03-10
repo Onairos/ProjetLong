@@ -15,12 +15,12 @@ CONTAINS
     
     !#### Variables  ####
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: xmax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: xmin
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ymax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ymin
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: zmax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: zmin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: x_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: x_min
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: y_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: y_min
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: z_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: z_min
     DOUBLE PRECISION :: x0
     DOUBLE PRECISION :: x1
     DOUBLE PRECISION :: y0
@@ -34,12 +34,12 @@ CONTAINS
     !###########################################    
     ! Reading
     OPEN(FILE='fort.2',UNIT=2)
-    ALLOCATE(xmin(params%nbproc))
-    ALLOCATE(xmax(params%nbproc))
-    ALLOCATE(ymin(params%nbproc))
-    ALLOCATE(ymax(params%nbproc))
-    ALLOCATE(zmin(params%nbproc))
-    ALLOCATE(zmax(params%nbproc))
+    ALLOCATE(x_min(params%nbproc))
+    ALLOCATE(x_max(params%nbproc))
+    ALLOCATE(y_min(params%nbproc))
+    ALLOCATE(y_max(params%nbproc))
+    ALLOCATE(z_min(params%nbproc))
+    ALLOCATE(z_max(params%nbproc))
     DO i=1,params%nbproc-params%interface
        IF (((params%coord==1).AND.(params%dim==2)) &
           .OR.((params%image==1).AND.(params%imgdim==2)) &
@@ -48,25 +48,25 @@ CONTAINS
           !2D
           IF (params%coord==1) THEN
              READ(2,*) x0,y0,num,x1,y1
-             xmin(i)=x0
-             ymin(i)=y0
-             xmax(i)=x1
-             ymax(i)=y1
+             x_min(i)=x0
+             y_min(i)=y0
+             x_max(i)=x1
+             y_max(i)=y1
           ELSEIF (params%seuil==1) THEN
              READ(2,*) x0,num,x1
-             xmin(i)=1
-             ymin(i)=-1
-             xmax(i)=params%imgmap(2)
-             ymax(i)=-params%imgmap(1)
-             zmin(i)=x0
-             zmax(i)=x1
+             x_min(i)=1
+             y_min(i)=-1
+             x_max(i)=params%imgmap(2)
+             y_max(i)=-params%imgmap(1)
+             z_min(i)=x0
+             z_max(i)=x1
           ELSEIF ((params%image==1).OR.(params%geom==1)) THEN
              READ(2,*) x0,y0,num,x1,y1
-             xmin(i)=y0
-             ymin(i)=-x0
-             xmax(i)=y1
-             ymax(i)=-x1
-             zmin(i)=x0
+             x_min(i)=y0
+             y_min(i)=-x0
+             x_max(i)=y1
+             y_max(i)=-x1
+             z_min(i)=x0
           ENDIF
        ELSEIF (((params%coord==1).AND.(params%dim==3)) &
           .OR.((params%image==1).AND.(params%imgdim==3)) &
@@ -74,20 +74,20 @@ CONTAINS
           !3D
           IF (params%coord==1) THEN
              READ(2,*) x0,y0,z0,num,x1,y1,z1
-             xmin(i)=x0
-             ymin(i)=y0
-             zmin(i)=z0
-             xmax(i)=x1
-             ymax(i)=y1
-             zmax(i)=z1
+             x_min(i)=x0
+             y_min(i)=y0
+             z_min(i)=z0
+             x_max(i)=x1
+             y_max(i)=y1
+             z_max(i)=z1
           ELSEIF ((params%image==1).OR.(params%geom==1)) THEN
              READ(2,*) x0,y0,z0,num,x1,y1,z1
-             xmin(i)=y0
-             ymin(i)=-x0
-             zmin(i)=z0
-             xmax(i)=y1
-             ymax(i)=-x1
-             zmax(i)=z1
+             x_min(i)=y0
+             y_min(i)=-x0
+             z_min(i)=z0
+             x_max(i)=y1
+             y_max(i)=-x1
+             z_max(i)=z1
           ENDIF
        ENDIF
     ENDDO
@@ -114,16 +114,16 @@ CONTAINS
        IF ((params%coord==1).OR.(params%geom==1).OR.(params%image==1)) THEN
           WRITE(10,*) 4*(params%nbproc-params%interface)
           DO i=1,params%nbproc-params%interface
-             WRITE(10,*) xmin(i)
-             WRITE(10,*) xmax(i)
-             WRITE(10,*) xmax(i)
-             WRITE(10,*) xmin(i)
+             WRITE(10,*) x_min(i)
+             WRITE(10,*) x_max(i)
+             WRITE(10,*) x_max(i)
+             WRITE(10,*) x_min(i)
           ENDDO
           DO i=1,params%nbproc-params%interface
-             WRITE(10,*) ymin(i)
-             WRITE(10,*) ymin(i)
-             WRITE(10,*) ymax(i)
-             WRITE(10,*) ymax(i)
+             WRITE(10,*) y_min(i)
+             WRITE(10,*) y_min(i)
+             WRITE(10,*) y_max(i)
+             WRITE(10,*) y_max(i)
           ENDDO
           DO i=1,params%nbproc-params%interface
              WRITE(10,*) 0.
@@ -143,34 +143,34 @@ CONTAINS
        ELSEIF (params%seuil==1) THEN
           WRITE(10,*) 8*(params%nbproc-params%interface)
           DO i=1,params%nbproc-params%interface
-             WRITE(10,*) xmin(i)
-             WRITE(10,*) xmax(i)
-             WRITE(10,*) xmax(i)
-             WRITE(10,*) xmin(i)
-             WRITE(10,*) xmin(i)
-             WRITE(10,*) xmax(i)
-             WRITE(10,*) xmax(i)
-             WRITE(10,*) xmin(i)
+             WRITE(10,*) x_min(i)
+             WRITE(10,*) x_max(i)
+             WRITE(10,*) x_max(i)
+             WRITE(10,*) x_min(i)
+             WRITE(10,*) x_min(i)
+             WRITE(10,*) x_max(i)
+             WRITE(10,*) x_max(i)
+             WRITE(10,*) x_min(i)
           ENDDO
           DO i=1,params%nbproc-params%interface
-             WRITE(10,*) ymin(i)
-             WRITE(10,*) ymin(i)
-             WRITE(10,*) ymax(i)
-             WRITE(10,*) ymax(i)
-             WRITE(10,*) ymin(i)
-             WRITE(10,*) ymin(i)
-             WRITE(10,*) ymax(i)
-             WRITE(10,*) ymax(i)
+             WRITE(10,*) y_min(i)
+             WRITE(10,*) y_min(i)
+             WRITE(10,*) y_max(i)
+             WRITE(10,*) y_max(i)
+             WRITE(10,*) y_min(i)
+             WRITE(10,*) y_min(i)
+             WRITE(10,*) y_max(i)
+             WRITE(10,*) y_max(i)
           ENDDO
           DO i=1,params%nbproc-params%interface
-             WRITE(10,*) zmin(i)
-             WRITE(10,*) zmin(i)
-             WRITE(10,*) zmin(i)
-             WRITE(10,*) zmin(i)
-             WRITE(10,*) zmax(i)
-             WRITE(10,*) zmax(i)
-             WRITE(10,*) zmax(i)
-             WRITE(10,*) zmax(i)
+             WRITE(10,*) z_min(i)
+             WRITE(10,*) z_min(i)
+             WRITE(10,*) z_min(i)
+             WRITE(10,*) z_min(i)
+             WRITE(10,*) z_max(i)
+             WRITE(10,*) z_max(i)
+             WRITE(10,*) z_max(i)
+             WRITE(10,*) z_max(i)
           ENDDO
           WRITE(10,'(a)') 'hexa8'
           WRITE(10,*) params%nbproc-params%interface
@@ -190,34 +190,34 @@ CONTAINS
        IF ((params%coord==1).OR.(params%geom==1).OR.(params%image==1)) THEN
           WRITE(10,*) 8*(params%nbproc-params%interface)
           DO i=1,params%nbproc-params%interface
-             WRITE(10,*) xmin(i)
-             WRITE(10,*) xmax(i)
-             WRITE(10,*) xmax(i)
-             WRITE(10,*) xmin(i)
-             WRITE(10,*) xmin(i)
-             WRITE(10,*) xmax(i)
-             WRITE(10,*) xmax(i)
-             WRITE(10,*) xmin(i)
+             WRITE(10,*) x_min(i)
+             WRITE(10,*) x_max(i)
+             WRITE(10,*) x_max(i)
+             WRITE(10,*) x_min(i)
+             WRITE(10,*) x_min(i)
+             WRITE(10,*) x_max(i)
+             WRITE(10,*) x_max(i)
+             WRITE(10,*) x_min(i)
           ENDDO
           DO i=1,params%nbproc-params%interface
-             WRITE(10,*) ymin(i)
-             WRITE(10,*) ymin(i)
-             WRITE(10,*) ymax(i)
-             WRITE(10,*) ymax(i)
-             WRITE(10,*) ymin(i)
-             WRITE(10,*) ymin(i)
-             WRITE(10,*) ymax(i)
-             WRITE(10,*) ymax(i)
+             WRITE(10,*) y_min(i)
+             WRITE(10,*) y_min(i)
+             WRITE(10,*) y_max(i)
+             WRITE(10,*) y_max(i)
+             WRITE(10,*) y_min(i)
+             WRITE(10,*) y_min(i)
+             WRITE(10,*) y_max(i)
+             WRITE(10,*) y_max(i)
           ENDDO
           DO i=1,params%nbproc-params%interface
-             WRITE(10,*) zmin(i)
-             WRITE(10,*) zmin(i)
-             WRITE(10,*) zmin(i)
-             WRITE(10,*) zmin(i)
-             WRITE(10,*) zmax(i)
-             WRITE(10,*) zmax(i)
-             WRITE(10,*) zmax(i)
-             WRITE(10,*) zmax(i)
+             WRITE(10,*) z_min(i)
+             WRITE(10,*) z_min(i)
+             WRITE(10,*) z_min(i)
+             WRITE(10,*) z_min(i)
+             WRITE(10,*) z_max(i)
+             WRITE(10,*) z_max(i)
+             WRITE(10,*) z_max(i)
+             WRITE(10,*) z_max(i)
           ENDDO
           WRITE(10,'(a)') 'hexa8'
           WRITE(10,*) params%nbproc-params%interface
@@ -233,12 +233,12 @@ CONTAINS
     ENDIF
     CLOSE(10)
     CLOSE(11)
-    DEALLOCATE(xmin)
-    DEALLOCATE(xmax)
-    DEALLOCATE(ymin)
-    DEALLOCATE(ymax)
-    DEALLOCATE(zmin)
-    DEALLOCATE(zmax)
+    DEALLOCATE(x_min)
+    DEALLOCATE(x_max)
+    DEALLOCATE(y_min)
+    DEALLOCATE(y_max)
+    DEALLOCATE(z_min)
+    DEALLOCATE(z_max)
     ! Master file
     PRINT *,'-> decoupe.CASE'
     OPEN(FILE='decoupe.CASE',UNIT=12)
@@ -269,13 +269,13 @@ CONTAINS
     CHARACTER (LEN=30) :: num
     CHARACTER (LEN=30) :: files
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: ind
-    INTEGER, DIMENSION(:), POINTER :: indp
+    INTEGER, DIMENSION(:), POINTER :: ind ! TODO: renommer
+    INTEGER, DIMENSION(:), POINTER :: indp ! TODO: renommer
     INTEGER :: i
     INTEGER :: j
     INTEGER :: nb_points
     INTEGER :: offset
-    INTEGER :: totnum
+    INTEGER :: nb_slaves
     
     !###########################################      
     ! INSTRUCTIONS
@@ -283,12 +283,12 @@ CONTAINS
     ! Reading of files
     IF (params%nbproc==1) THEN
        offset=1
-       totnum=1
+       nb_slaves=1
     ELSE
        offset=0
-       totnum=params%nbproc-1
+       nb_slaves=params%nbproc-1
     ENDIF
-    DO i=offset,totnum
+    DO i=offset,nb_slaves
        IF ((i==0).AND.(params%interface==1).AND.(params%nbproc>1)) THEN
           ! File aside for interfacing 
           PRINT *,'-> visu/affectation-interface.geo'
@@ -401,35 +401,35 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    CHARACTER (LEN=30) :: star
-    INTEGER, DIMENSION(:), POINTER :: corresp
-    INTEGER, DIMENSION(:), POINTER :: ind
-    INTEGER, DIMENSION(:), POINTER :: indp
+    CHARACTER (LEN=30) :: extension
+    INTEGER, DIMENSION(:), POINTER :: matchings
+    INTEGER, DIMENSION(:), POINTER :: ind ! TODO: renommer
+    INTEGER, DIMENSION(:), POINTER :: indp ! TODO: renommer
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: lenn
+    INTEGER :: length
     INTEGER :: nb_points
-    INTEGER :: nbstar
+    INTEGER :: nb_zeros
     
     !###########################################      
     ! INSTRUCTIONS
     !###########################################  
     ! Number of generic characters to be used
-    nbstar=floor(log(real(params%nbproc-1))/log(real(10)))+1
-    DO i=1,nbstar
-       star(i:i)='0'
+    nb_zeros=floor(log(real(params%nbproc-1))/log(real(10)))+1
+    DO i=1,nb_zeros
+       extension(i:i)='0'
     ENDDO
     DO i=0,params%nbproc-1
        ! File name
        WRITE(num,*) i
        num=adjustl(num)
-       lenn=len(trim(num))
+       length=len(trim(num))
        files='cluster.partiel.'//trim(num)
        OPEN(FILE=files,UNIT=20)
        ! Output
        ! General file for others subdomains
-       files='cluster.partiel.'//star(1:nbstar-lenn)//num(1:lenn)
+       files='cluster.partiel.'//extension(1:nb_zeros-length)//num(1:length)
        PRINT *,'-> visu/'//trim(files)//'.geo'
        PRINT *,'-> visu/'//trim(files)//'.indices'
        OPEN(FILE='visu/'//trim(files)//'.geo',UNIT=10)
@@ -452,9 +452,9 @@ CONTAINS
           files='decoupe.'//trim(num)
           OPEN(FILE=files,UNIT=21)
           READ(21,*)
-          ALLOCATE(corresp(nb_points))
+          ALLOCATE(matchings(nb_points))
           DO j=1,nb_points
-             READ(21,*) corresp(j)
+             READ(21,*) matchings(j)
           ENDDO
           CLOSE(21)
        ENDIF
@@ -463,7 +463,7 @@ CONTAINS
              READ(20,*) coords(j,:),ind(j)
           ELSE
              READ(20,*) indp(j),ind(j)
-             indp(j)=corresp(indp(j))
+             indp(j)=matchings(indp(j))
           ENDIF
        ENDDO
        CLOSE(20) 
@@ -481,23 +481,23 @@ CONTAINS
        CLOSE(10)
        CLOSE(11)
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
-          DEALLOCATE(corresp)
+          DEALLOCATE(matchings)
        ENDIF
     ENDDO
     PRINT *,'-> cluster.partiel.CASE'
-    DO i=1,nbstar
-       star(i:i)='*'
+    DO i=1,nb_zeros
+       extension(i:i)='*'
     ENDDO
     OPEN(FILE='cluster.partiel.CASE',UNIT=12)
     WRITE(12,'(a)') 'FORMAT'
     WRITE(12,'(a)') 'type: ensight gold'
     WRITE(12,*) 
     WRITE(12,'(a)') 'GEOMETRY'
-    WRITE(12,'(a)') 'model: 1 visu/cluster.partiel.'//star(1:nbstar)//'.geo'
+    WRITE(12,'(a)') 'model: 1 visu/cluster.partiel.'//extension(1:nb_zeros)//'.geo'
     WRITE(12,*) 
     WRITE(12,'(a)') 'VARIABLE'
     WRITE(12,'(a)') 'scalar per node: 1 cluster visu/cluster.partiel.'//&
-         star(1:nbstar)//'.indices'
+         extension(1:nb_zeros)//'.indices'
     WRITE(12,*) 
     WRITE(12,'(a)') 'TIME'
     WRITE(12,'(a)') 'time set:         1'
@@ -528,8 +528,8 @@ CONTAINS
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: ind
-    INTEGER, DIMENSION(:), POINTER :: indp
+    INTEGER, DIMENSION(:), POINTER :: ind ! TODO: renommer
+    INTEGER, DIMENSION(:), POINTER :: indp ! TODO: renommer
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k

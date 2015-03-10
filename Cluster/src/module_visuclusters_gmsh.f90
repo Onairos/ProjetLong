@@ -17,12 +17,12 @@ CONTAINS
     CHARACTER (LEN=30) :: num
     DOUBLE PRECISION :: x0
     DOUBLE PRECISION :: x1
-    DOUBLE PRECISION :: xmax
-    DOUBLE PRECISION :: xmin
+    DOUBLE PRECISION :: x_max
+    DOUBLE PRECISION :: x_min
     DOUBLE PRECISION :: y0
     DOUBLE PRECISION :: y1
-    DOUBLE PRECISION :: ymax
-    DOUBLE PRECISION :: ymin
+    DOUBLE PRECISION :: y_max
+    DOUBLE PRECISION :: y_min
     DOUBLE PRECISION :: z0
     DOUBLE PRECISION :: z1
     DOUBLE PRECISION :: zmax
@@ -43,35 +43,35 @@ CONTAINS
           !2D
           IF (params%coord==1) THEN
              READ(2,*) x0,y0,num,x1,y1
-             xmin=x0
-             ymin=y0
-             xmax=x1
-             ymax=y1
+             x_min=x0
+             y_min=y0
+             x_max=x1
+             y_max=y1
           ELSEIF (params%seuil==1) THEN
              READ(2,*) x0,num,x1
-             xmin=1
-             ymin=-1
-             xmax=params%imgmap(2)
-             ymax=-params%imgmap(1)
+             x_min=1
+             y_min=-1
+             x_max=params%imgmap(2)
+             y_max=-params%imgmap(1)
              zmin=x0
              zmax=x1
           ELSEIF ((params%image==1).OR.(params%geom==1)) THEN
              READ(2,*) x0,y0,num,x1,y1
-             xmin=y0
-             ymin=-x0
-             xmax=y1
-             ymax=-x1
+             x_min=y0
+             y_min=-x0
+             x_max=y1
+             y_max=-x1
              zmin=x0
           ENDIF
           IF (params%seuil==1) THEN
-             WRITE(10,*) 'Point(',8*(i-1)+1,')={',xmin,',',ymin,',',zmin,'};'
-             WRITE(10,*) 'Point(',8*(i-1)+2,')={',xmax,',',ymin,',',zmin,'};'
-             WRITE(10,*) 'Point(',8*(i-1)+3,')={',xmax,',',ymax,',',zmin,'};'
-             WRITE(10,*) 'Point(',8*(i-1)+4,')={',xmin,',',ymax,',',zmin,'};'
-             WRITE(10,*) 'Point(',8*(i-1)+5,')={',xmin,',',ymin,',',zmax,'};'
-             WRITE(10,*) 'Point(',8*(i-1)+6,')={',xmax,',',ymin,',',zmax,'};'
-             WRITE(10,*) 'Point(',8*(i-1)+7,')={',xmax,',',ymax,',',zmax,'};'
-             WRITE(10,*) 'Point(',8*(i-1)+8,')={',xmin,',',ymax,',',zmax,'};'
+             WRITE(10,*) 'Point(',8*(i-1)+1,')={',x_min,',',y_min,',',zmin,'};'
+             WRITE(10,*) 'Point(',8*(i-1)+2,')={',x_max,',',y_min,',',zmin,'};'
+             WRITE(10,*) 'Point(',8*(i-1)+3,')={',x_max,',',y_max,',',zmin,'};'
+             WRITE(10,*) 'Point(',8*(i-1)+4,')={',x_min,',',y_max,',',zmin,'};'
+             WRITE(10,*) 'Point(',8*(i-1)+5,')={',x_min,',',y_min,',',zmax,'};'
+             WRITE(10,*) 'Point(',8*(i-1)+6,')={',x_max,',',y_min,',',zmax,'};'
+             WRITE(10,*) 'Point(',8*(i-1)+7,')={',x_max,',',y_max,',',zmax,'};'
+             WRITE(10,*) 'Point(',8*(i-1)+8,')={',x_min,',',y_max,',',zmax,'};'
              WRITE(10,*) 'Line(',12*(i-1)+1,')={',8*(i-1)+1,',',8*(i-1)+2,'};'
              WRITE(10,*) 'Line(',12*(i-1)+2,')={',8*(i-1)+2,',',8*(i-1)+3,'};'
              WRITE(10,*) 'Line(',12*(i-1)+3,')={',8*(i-1)+3,',',8*(i-1)+4,'};'
@@ -85,10 +85,10 @@ CONTAINS
              WRITE(10,*) 'Line(',12*(i-1)+11,')={',8*(i-1)+3,',',8*(i-1)+7,'};'
              WRITE(10,*) 'Line(',12*(i-1)+12,')={',8*(i-1)+4,',',8*(i-1)+8,'};'
           ELSE
-             WRITE(10,*) 'Point(',4*(i-1)+1,')={',xmin,',',ymin,',0.};'
-             WRITE(10,*) 'Point(',4*(i-1)+2,')={',xmax,',',ymin,',0.};'
-             WRITE(10,*) 'Point(',4*(i-1)+3,')={',xmax,',',ymax,',0.};'
-             WRITE(10,*) 'Point(',4*(i-1)+4,')={',xmin,',',ymax,',0.};'
+             WRITE(10,*) 'Point(',4*(i-1)+1,')={',x_min,',',y_min,',0.};'
+             WRITE(10,*) 'Point(',4*(i-1)+2,')={',x_max,',',y_min,',0.};'
+             WRITE(10,*) 'Point(',4*(i-1)+3,')={',x_max,',',y_max,',0.};'
+             WRITE(10,*) 'Point(',4*(i-1)+4,')={',x_min,',',y_max,',0.};'
              WRITE(10,*) 'Line(',4*(i-1)+1,')={',4*(i-1)+1,',',4*(i-1)+2,'};'
              WRITE(10,*) 'Line(',4*(i-1)+2,')={',4*(i-1)+2,',',4*(i-1)+3,'};'
              WRITE(10,*) 'Line(',4*(i-1)+3,')={',4*(i-1)+3,',',4*(i-1)+4,'};'
@@ -100,29 +100,29 @@ CONTAINS
           !3D
           IF (params%coord==1) THEN
              READ(2,*) x0,y0,z0,num,x1,y1,z1
-             xmin=x0
-             ymin=y0
+             x_min=x0
+             y_min=y0
              zmin=z0
-             xmax=x1
-             ymax=y1
+             x_max=x1
+             y_max=y1
              zmax=z1
           ELSEIF ((params%image==1).OR.(params%geom==1)) THEN
              READ(2,*) x0,y0,z0,num,x1,y1,z1
-             xmin=y0
-             ymin=-x0
+             x_min=y0
+             y_min=-x0
              zmin=z0
-             xmax=y1
-             ymax=-x1
+             x_max=y1
+             y_max=-x1
              zmax=z1
           ENDIF
-          WRITE(10,*) 'Point(',8*(i-1)+1,')={',xmin,',',ymin,',',zmin,'};'
-          WRITE(10,*) 'Point(',8*(i-1)+2,')={',xmax,',',ymin,',',zmin,'};'
-          WRITE(10,*) 'Point(',8*(i-1)+3,')={',xmax,',',ymax,',',zmin,'};'
-          WRITE(10,*) 'Point(',8*(i-1)+4,')={',xmin,',',ymax,',',zmin,'};'
-          WRITE(10,*) 'Point(',8*(i-1)+5,')={',xmin,',',ymin,',',zmax,'};'
-          WRITE(10,*) 'Point(',8*(i-1)+6,')={',xmax,',',ymin,',',zmax,'};'
-          WRITE(10,*) 'Point(',8*(i-1)+7,')={',xmax,',',ymax,',',zmax,'};'
-          WRITE(10,*) 'Point(',8*(i-1)+8,')={',xmin,',',ymax,',',zmax,'};'
+          WRITE(10,*) 'Point(',8*(i-1)+1,')={',x_min,',',y_min,',',zmin,'};'
+          WRITE(10,*) 'Point(',8*(i-1)+2,')={',x_max,',',y_min,',',zmin,'};'
+          WRITE(10,*) 'Point(',8*(i-1)+3,')={',x_max,',',y_max,',',zmin,'};'
+          WRITE(10,*) 'Point(',8*(i-1)+4,')={',x_min,',',y_max,',',zmin,'};'
+          WRITE(10,*) 'Point(',8*(i-1)+5,')={',x_min,',',y_min,',',zmax,'};'
+          WRITE(10,*) 'Point(',8*(i-1)+6,')={',x_max,',',y_min,',',zmax,'};'
+          WRITE(10,*) 'Point(',8*(i-1)+7,')={',x_max,',',y_max,',',zmax,'};'
+          WRITE(10,*) 'Point(',8*(i-1)+8,')={',x_min,',',y_max,',',zmax,'};'
           WRITE(10,*) 'Line(',12*(i-1)+1,')={',8*(i-1)+1,',',8*(i-1)+2,'};'
           WRITE(10,*) 'Line(',12*(i-1)+2,')={',8*(i-1)+2,',',8*(i-1)+3,'};'
           WRITE(10,*) 'Line(',12*(i-1)+3,')={',8*(i-1)+3,',',8*(i-1)+4,'};'
@@ -162,7 +162,7 @@ CONTAINS
     INTEGER :: k
     INTEGER :: nb
     INTEGER :: offset
-    INTEGER :: totnum
+    INTEGER :: nb_slaves
 
     !###########################################
     ! INSTRUCTIONS
@@ -172,13 +172,13 @@ CONTAINS
     !Reading files
     IF (params%nbproc==1) THEN
        offset=1
-       totnum=1
+       nb_slaves=1
     ELSE
        offset=0
-       totnum=params%nbproc-1
+       nb_slaves=params%nbproc-1
     ENDIF
     ALLOCATE(coords(1,params%dim))
-    DO i=offset,totnum
+    DO i=offset,nb_slaves
        ! File name
        WRITE(num,*) i
        files='decoupe.'//trim(adjustl(num))
@@ -221,12 +221,12 @@ CONTAINS
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: corresp
+    INTEGER, DIMENSION(:), POINTER :: matchings
     INTEGER :: i
-    INTEGER :: ind
+    INTEGER :: ind ! TODO: renommer
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: lenn
+    INTEGER :: length
     INTEGER :: nb
 
     !###########################################
@@ -236,13 +236,13 @@ CONTAINS
        ! File name
        WRITE(num,*) i
        num=adjustl(num)
-       lenn=len(trim(num))
+       length=len(trim(num))
        files='cluster.partiel.'//trim(num)
        OPEN(FILE=files,UNIT=10)
        ! Output
-       files='cluster.partiel.'//num(1:lenn)//'.visu'
+       files='cluster.partiel.'//num(1:length)//'.visu'
        OPEN(FILE=files,UNIT=1)
-       WRITE(1,*) 'View "Clusters for part '//num(1:lenn)//'" {'
+       WRITE(1,*) 'View "Clusters for part '//num(1:length)//'" {'
        READ(10,*) nb,k
        PRINT *, '> ', i, ' : ', nb, ' -> ', files
        ALLOCATE(coords(1,k))
@@ -251,9 +251,9 @@ CONTAINS
           files='decoupe.'//trim(num)
           OPEN(FILE=files,UNIT=11)
           READ(11,*)
-          ALLOCATE(corresp(nb))
+          ALLOCATE(matchings(nb))
           DO j=1,nb
-             READ(11,*) corresp(j)
+             READ(11,*) matchings(j)
           ENDDO
           CLOSE(11)
        ENDIF
@@ -263,7 +263,7 @@ CONTAINS
              CALL ecritpoint_gmsh(1,params%dim,coords,k,1)
           ELSE
              READ(10,*) k,ind
-             CALL write_point_picture_format(1,params,ind,corresp(k))
+             CALL write_point_picture_format(1,params,ind,matchings(k))
           ENDIF
        ENDDO
        CLOSE(10) 
@@ -271,7 +271,7 @@ CONTAINS
        CLOSE(1)
        DEALLOCATE(coords)
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
-          DEALLOCATE(corresp)
+          DEALLOCATE(matchings)
        ENDIF
     ENDDO
     RETURN

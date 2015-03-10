@@ -46,7 +46,7 @@ CONTAINS
     CHARACTER (LEN=30) :: num
     INTEGER :: i
     INTEGER :: j
-    INTEGER :: nbdom
+    INTEGER :: nb_domains
     INTEGER :: offset
     
     !###########################################      
@@ -54,16 +54,16 @@ CONTAINS
     !########################################### 
     PRINT *, '> Partitioning review :'
     offset=1
-    nbdom=nb_proc
+    nb_domains=nb_proc
     IF ((data%interface==1).AND.(nb_proc>1)) THEN
        offset=0
-       nbdom=nb_proc-1
+       nb_domains=nb_proc-1
     ENDIF
     IF (data%recouvrement==1) THEN
        offset=0
-       nbdom=nb_proc-1
+       nb_domains=nb_proc-1
     ENDIF
-    DO i=offset,nbdom
+    DO i=offset,nb_domains
        PRINT *, '> Zone ', i, ' : ', points_by_domain(i)
        ! File name
        WRITE(num,*) i
