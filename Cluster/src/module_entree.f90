@@ -169,7 +169,7 @@ CONTAINS
           IF ((data%image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Creation of array pixels/coordinates
              PRINT *, '> Decoding image format...'
-             CALL tableau_image(data)
+             CALL assign_picture_array(data)
           ENDIF
        CASE('EPAISSEUR')
           ok=.FALSE.
@@ -590,7 +590,7 @@ CONTAINS
 
 
 
-  SUBROUTINE tableau_image(data)
+  SUBROUTINE assign_picture_array(data)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -637,7 +637,7 @@ CONTAINS
     ENDDO
     DEALLOCATE(plan)
     RETURN
-  END SUBROUTINE tableau_image
+  END SUBROUTINE assign_picture_array
 
 
 END MODULE module_entree
