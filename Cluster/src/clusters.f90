@@ -219,14 +219,14 @@ PROGRAM clusters
      PRINT *,'DEBUG : Process n', proc_id, ' : computing clusters...'
 #endif
 
-    SELECT CASE (clust_param%clustering_method_id)
-    CASE (1)
+    !SELECT CASE (clust_param%clustering_method_id)
+   ! CASE (1)
       CALL apply_spectral_clustering(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,sigma,clust_param)
-    CASE (2)
-      CALL mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param%bandwidth)
-    CASE (3)
-      CALL apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
-    END SELECT
+    !CASE (2)
+      !CALL mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param%bandwidth)
+    !CASE (3)
+      !CALL apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
+    !END SELECT
 
   ENDIF
   t2 = MPI_WTIME()
