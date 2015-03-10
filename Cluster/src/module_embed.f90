@@ -150,7 +150,7 @@ CONTAINS
 
 
 
-  SUBROUTINE apply_kmeans(dimension, nb_points, nb_clusters, nb_iter_max, nb_iter, points, &
+  SUBROUTINE apply_kmeans(dim, nb_points, nb_clusters, nb_iter_max, nb_iter, points, &
        clusters, clusters_centers, points_by_clusters, clusters_energies, proc_id)
 
     !*****************************************************************************80
@@ -191,15 +191,15 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
+    INTEGER :: dim ! the number of spatial dimensions
     INTEGER :: nb_points ! the number of points
                 !TODO : a reflechir sur l'ordre de declaration
-    DOUBLE PRECISION :: points (dimension, nb_points) ! the points
+    DOUBLE PRECISION :: points (dim, nb_points) ! the points
     INTEGER :: nb_clusters ! the number of clusters
-    INTEGER :: dimension ! the number of spatial dimensions
     INTEGER :: nb_iter_max ! the maximum number of iterations
 
     !=== IN/OUT ===
-    DOUBLE PRECISION :: clusters_centers (dimension, nb_clusters) ! the cluster centers
+    DOUBLE PRECISION :: clusters_centers (dim, nb_clusters) ! the cluster centers
 
     !====  OUT ====
     DOUBLE PRECISION :: clusters_energies (nb_clusters) ! the cluster energies
@@ -212,7 +212,7 @@ CONTAINS
     
     !#### Variables  ####
     DOUBLE PRECISION :: listnorm (nb_points, nb_clusters)
-    DOUBLE PRECISION :: stockcenter (dimension, nb_clusters)
+    DOUBLE PRECISION :: stockcenter (dim, nb_clusters)
     DOUBLE PRECISION :: stockenergy (nb_clusters)
     DOUBLE PRECISION :: norme
     DOUBLE PRECISION :: seuil
@@ -242,7 +242,7 @@ CONTAINS
        STOP
     ENDIF
 
-    IF ( dimension < 1 ) THEN
+    IF ( dim < 1 ) THEN
        WRITE ( *, '(a)' ) ' '
        WRITE ( *, '(a)' ) 'KMEANS_01 - Fatal error!'
        WRITE ( *, '(a)' ) '  DIMENSION < 1.0'
@@ -285,7 +285,7 @@ PRINT *, 'DEBUG : searching centers'
              DO j=1,i-1
                 val=0.0
                 norme=0.0
-                DO k=1,dimension
+                DO k=1,dim
                    val=max(val,abs(clusters_centers(k,j)-points(k,p)))
                 ENDDO
                 valmax=min(val,valmax)
@@ -319,7 +319,7 @@ PRINT *, 'DEBUG : searching centers'
        DO i=1,nb_clusters
           stockenergy(i)=clusters_energies(i)
           stockpopulation(i)=points_by_clusters(i)
-          DO j=1,dimension
+          DO j=1,dim
              stockcenter(j,i)=clusters_centers(j,i)
           ENDDO
        ENDDO
@@ -329,7 +329,7 @@ PRINT *, 'DEBUG : searching centers'
        listnorm(:,:)=0.0
        DO i=1,nb_points
           DO j=1,nb_clusters
-             DO k=1,dimension
+             DO k=1,dim
                 listnorm(i,j)=listnorm(i,j)+(points(k,i)-clusters_centers(k,j))**2
              ENDDO
           ENDDO
@@ -353,7 +353,7 @@ PRINT *, 'DEBUG : searching centers'
        clusters_centers(:,:)=0.0
        DO j=1,nb_points
           i=clusters(j) 
-          DO k=1,dimension
+          DO k=1,dim
              clusters_centers(k,i)=clusters_centers(k,i)+points(k,j)
           ENDDO
        ENDDO
