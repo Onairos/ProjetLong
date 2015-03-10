@@ -163,7 +163,7 @@ CONTAINS
 
 
 
-  SUBROUTINE receive_number_clusters(nb_proc, nbclust, points_by_domain, partitioned_data, array_clust)
+  SUBROUTINE receive_number_clusters(nb_proc, nb_clusters, points_by_domain, partitioned_data, array_clust)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -178,7 +178,7 @@ CONTAINS
 
     !====  OUT ====
     TYPE(type_clusters), DIMENSION(:), POINTER :: array_clust
-    INTEGER :: nbclust
+    INTEGER :: nb_clusters
     
     !#### Variables  ####    
     INTEGER status(MPI_STATUS_SIZE)
@@ -191,9 +191,9 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     IF (partitioned_data%nb>0) THEN
-       nbclust=partitioned_data%nbclusters
+       nb_clusters=partitioned_data%nbclusters
     ELSE
-       nbclust=0
+       nb_clusters=0
     ENDIF
     ! Numebr of clusters
     ALLOCATE(array_clust(nb_proc))
@@ -202,7 +202,7 @@ CONTAINS
        IF (points_by_domain(i)>0) THEN
           tag=i*11
           CALL MPI_RECV(nb,1,MPI_INTEGER,i,tag,MPI_COMM_WORLD,status,ierr)
-          nbclust=nbclust+nb
+          nb_clusters=nb_clusters+nb
           array_clust(i)%nb=nb
        ENDIF
     ENDDO
@@ -292,7 +292,7 @@ CONTAINS
 
 
 
-  SUBROUTINE receive_clusters(nb_proc, nbclust, points_by_domain, ddat, partitioned_data, cluster_map, &
+  SUBROUTINE receive_clusters(nb_proc, nb_clusters, points_by_domain, ddat, partitioned_data, cluster_map, &
        array_clust, points_by_cluster)
     IMPLICIT NONE
     ! MPI library
@@ -307,7 +307,7 @@ CONTAINS
     INTEGER, DIMENSION(:,:), POINTER :: ddat
     INTEGER, DIMENSION(:), POINTER :: points_by_domain 
     INTEGER :: nb_proc
-    INTEGER :: nbclust
+    INTEGER :: nb_clusters
 
     !====  OUT ====
     INTEGER, DIMENSION(:,:), POINTER :: cluster_map
@@ -328,7 +328,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################    
     i0=0
-    ALLOCATE(points_by_cluster(nbclust))
+    ALLOCATE(points_by_cluster(nb_clusters))
     points_by_cluster(:)=0
     IF (partitioned_data%nb>0) THEN
        ! Storage of local clusters in the global array

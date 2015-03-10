@@ -409,14 +409,14 @@ CONTAINS
   END SUBROUTINE partition_with_overlapping
 
 
-  SUBROUTINE group_clusters(nbclust, points_by_cluster, cluster_map, data)
+  SUBROUTINE group_clusters(nb_clusters, points_by_cluster, cluster_map, data)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    INTEGER :: nbclust
+    INTEGER :: nb_clusters
 
     !=== IN/OUT ===
     INTEGER, DIMENSION(:,:), POINTER :: cluster_map
@@ -460,7 +460,7 @@ CONTAINS
           PRINT *, 'DEBUG : grouping cluster n', i
 #endif
        ENDIF
-       IF (i>nbclust-1) THEN
+       IF (i>nb_clusters-1) THEN
           ! No more points to test
           ok=.TRUE.
        ELSEIF (points_by_cluster(i)>0) THEN
@@ -476,7 +476,7 @@ CONTAINS
                 i2=i2+1
                 j2=1
              ENDIF
-             IF (i2>nbclust) THEN
+             IF (i2>nb_clusters) THEN
                ! End of test for the point (i,j)
                 ok2=.TRUE.
              ELSE
