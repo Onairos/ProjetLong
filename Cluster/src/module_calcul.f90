@@ -233,7 +233,6 @@ SUBROUTINE apply_kernel_k_means(proc_id,nblimit,nb_clusters_opt,dataw,clust_para
     ! DECLARATIONS
     !###########################################      
     !#### Variables  ####
-
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Ker
     INTEGER :: it_max ! the maximum number of iterations
     DOUBLE PRECISION :: cluster_center (dataw%dim, dataw%nbclusters) ! the cluster centers
@@ -255,14 +254,13 @@ SUBROUTINE apply_kernel_k_means(proc_id,nblimit,nb_clusters_opt,dataw,clust_para
     INTEGER :: k
     INTEGER :: l
 
-   ! LOGICAL :: found
     DOUBLE PRECISION :: num1
     DOUBLE PRECISION :: den1
     DOUBLE PRECISION :: num2
     DOUBLE PRECISION :: den2
 
-    INTEGER :: ok ! TODO: booleen ?
-    INTEGER :: ok2 ! TODO: booleen ?
+    LOGICAL :: ok 
+    LOGICAL :: ok2
     INTEGER :: swap
     INTEGER :: p
     
@@ -339,16 +337,16 @@ SUBROUTINE apply_kernel_k_means(proc_id,nblimit,nb_clusters_opt,dataw,clust_para
 PRINT *, 'recherche des centres'
 !#endif
     DO i = 2, dataw%nbclusters
-       ok=0
-       DO WHILE(ok==0)
+       ok=.FALSE.
+       DO WHILE(.NOT.ok)
           valmax=2.0*seuil
           !recherche si le point est deja utilise dans comme centre
-          ok2=0
+          ok2=.FALSE.
           DO j=1,i-1
-             IF (dataw%point(j)%cluster==p) ok2=1
+             IF (dataw%point(j)%cluster==p) ok2=.TRUE.
           ENDDO
           !si point pas centre, teste par rapport au seuil
-          IF (ok2==0) THEN
+          IF (.NOT.ok2) THEN
              DO j=1,i-1
                 val=0.0; norme=0.0
                 DO k=1,dataw%dim
@@ -357,12 +355,12 @@ PRINT *, 'recherche des centres'
                 ENDDO
                 valmax=min(val,valmax)
              ENDDO
-             IF (valmax>=seuil) ok=1
+             IF (valmax>=seuil) ok=.TRUE.
           ENDIF
          p=p+1
 
          !abaisse le seuil si pas assez de centre sont trouves
-         IF ((p>dataw%nb).AND.(ok==0)) THEN 
+         IF ((p>dataw%nb).AND.(.NOT.ok)) THEN 
             seuil=0.9*seuil
 !#if aff
             PRINT *,'abaisse seuil :',seuil
