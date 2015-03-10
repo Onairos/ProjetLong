@@ -641,7 +641,7 @@ PRINT *, 'recherche des centres'
           ALLOCATE(clusters_energies(nbcluster))
           clusters_energies(:)=0.0
 
-          CALL spectral_embedding(nbcluster,n,Z,A,&
+          CALL apply_spectral_embedding(nbcluster,n,Z,A,&
                ratiomax(nbcluster),cluster,clusters_centers,points_by_clusters,&
                clusters_energies,nb_info(nbcluster),numproc,ratiomoy(nbcluster), &
                ratiorij(nbcluster),ratiorii(nbcluster))
@@ -714,7 +714,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
     ! Final clustering computing
     IF (partitioned_data%nbclusters>1) THEN
-       CALL spectral_embedding(partitioned_data%nbclusters,n,Z,A,ratio,cluster,&
+       CALL apply_spectral_embedding(partitioned_data%nbclusters,n,Z,A,ratio,cluster,&
             clusters_centers,points_by_clusters,clusters_energies,&
             nb_info(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),ratiorii(1))
        DO i=1,partitioned_data%nb
