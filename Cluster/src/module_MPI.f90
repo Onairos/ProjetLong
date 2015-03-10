@@ -11,12 +11,12 @@ CONTAINS
 !!of the dedicated domain. Then, it creates
 !!@note It has to be called by the master process
 !!@see receive_partitioning(), partition_with_interface(), partition_with_overlapping()
-!! @param[in] assignements the assignement of each point in a partition
+!! @param[in] assignments the assignement of each point in a partition
 !! @param[in] nb_proc the number of processors used
 !! @param[in] points_by_domain the number of points in each partition
 !! @param[in,out] data the entire data for computing
 !! @param[out] partitioned_data the partitioned data for computing
-  SUBROUTINE send_partitioning(nb_proc, data, points_by_domain, ddat, partitioned_data)
+  SUBROUTINE send_partitioning(nb_proc, data, points_by_domain, assignments, partitioned_data)
     IMPLICIT NONE    
     ! MPI library
     INCLUDE 'mpif.h'
@@ -25,7 +25,7 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    INTEGER, DIMENSION(:,:), POINTER :: ddat
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
     INTEGER :: nb_proc
 
@@ -58,7 +58,7 @@ CONTAINS
           ALLOCATE(coord(m,n))
           coord=0.0
           DO j=1,m
-             coord(j,1:n)=data%point(ddat(i,j))%coord(1:n)
+             coord(j,1:n)=data%point(assignments(i,j))%coord(1:n)
           ENDDO
           ! Sending arrays
           id_mpi=i*10
@@ -76,7 +76,7 @@ CONTAINS
        ALLOCATE(partitioned_data%point(m))
        DO i=1,m
           ALLOCATE(partitioned_data%point(i)%coord(n))
-          partitioned_data%point(i)%coord(:)=data%point(ddat(0,i))%coord(:)
+          partitioned_data%point(i)%coord(:)=data%point(assignments(0,i))%coord(:)
           partitioned_data%point(i)%cluster=0
        ENDDO
     ENDIF
@@ -347,7 +347,7 @@ CONTAINS
 !!@see send_clusters()
 !! @param[in] array_clust the number of clusters and elements per cluster computed by each processor
 !! @param[in] partitioned_data the partitioned data for computing
-!! @param[in] assignements the assignement of each point in a partition
+!! @param[in] assignments the assignement of each point in a partition
 !! @param[in] nb_clusters the number of clusters
 !! @param[in] nb_clusters the number of clusters
 !! @param[in] nb_clusters the number of clusters
@@ -355,7 +355,7 @@ CONTAINS
 !! @param[in] points_by_domain the number of points in each partition
 !! @param[out] cluster_map the cluster indices and the number of points in each cluster
 !! @param[out] points_by_cluster the number of points in each cluster
-  SUBROUTINE receive_clusters(nb_proc, nb_clusters, points_by_domain, ddat, partitioned_data, cluster_map, &
+  SUBROUTINE receive_clusters(nb_proc, nb_clusters, points_by_domain, assignments, partitioned_data, cluster_map, &
        array_clust, points_by_cluster)
     IMPLICIT NONE
     ! MPI library
@@ -367,7 +367,7 @@ CONTAINS
     !====  IN  ====
     TYPE(type_clusters), DIMENSION(:), POINTER :: array_clust
     TYPE(type_data) ::partitioned_data
-    INTEGER, DIMENSION(:,:), POINTER :: ddat
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain 
     INTEGER :: nb_proc
     INTEGER :: nb_clusters
@@ -398,7 +398,7 @@ CONTAINS
        DO i=1,partitioned_data%nb
           j=partitioned_data%point(i)%cluster
           points_by_cluster(j)=points_by_cluster(j)+1
-          cluster_map(j,points_by_cluster(j))=ddat(0,i)
+          cluster_map(j,points_by_cluster(j))=assignments(0,i)
        ENDDO
        i0=i0+partitioned_data%nbclusters
     ENDIF
@@ -416,7 +416,7 @@ CONTAINS
           DO j=1,points_by_domain(p)
              k=list_clusters(j)+i0
              points_by_cluster(k)=points_by_cluster(k)+1
-             cluster_map(k,points_by_cluster(k))=ddat(p,j)
+             cluster_map(k,points_by_cluster(k))=assignments(p,j)
           ENDDO
           i0=i0+array_clust(p)%nb
        ENDIF

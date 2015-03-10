@@ -46,10 +46,10 @@ CONTAINS
 !!picture format) separated by blank spaces.
 !!@note The written files are <em>decoupe.x</em> with x the ids of the processes.
 !! @param[in] data the entire data for computing
-!! @param[in] assignements the assignement of each point in a partition
+!! @param[in] assignments the assignement of each point in a partition
 !! @param[in] nb_proc the number of processors used
 !! @param[in] points_by_domain the number of points in each partition
-  SUBROUTINE write_partitioning(nb_proc, data, points_by_domain, assignements)
+  SUBROUTINE write_partitioning(nb_proc, data, points_by_domain, assignments)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -57,7 +57,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    INTEGER,DIMENSION(:,:),POINTER :: assignements
+    INTEGER,DIMENSION(:,:),POINTER :: assignments
     INTEGER,DIMENSION(:),POINTER :: points_by_domain
     INTEGER :: nb_proc
     
@@ -93,10 +93,10 @@ CONTAINS
        DO j=1,points_by_domain(i)
           IF (data%coord==1) THEN
              ! Writing in coordinates
-             WRITE(10,*) data%point(assignements(i,j))%coord(:)
+             WRITE(10,*) data%point(assignments(i,j))%coord(:)
           ELSEIF ((data%image==1).OR.(data%seuil==1).OR.(data%geom==1)) THEN
              ! Writing in picture format
-             WRITE(10,*) assignements(i,j)
+             WRITE(10,*) assignments(i,j)
           ENDIF
        ENDDO
        CALL flush(10)
@@ -239,7 +239,7 @@ CONTAINS
 !! @param[in] nb_clusters the number of clusters
 !! @param[in] nb_clusters the number of clusters
 !! @param[in] nb_proc the number of processors used
-  SUBROUTINE write_metadata(mesh, data, nb_proc, nb_clusters)
+  SUBROUTINE write_metadata(input_file, data, nb_proc, nb_clusters)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -247,7 +247,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    CHARACTER (LEN=30) :: mesh
+    CHARACTER (LEN=30) :: input_file
     INTEGER :: nb_clusters
     INTEGER :: nb_proc
     
@@ -255,7 +255,7 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     WRITE(3,*) '# Mesh file : '
-    WRITE(3,*) mesh
+    WRITE(3,*) input_file
     WRITE(3,*) '# Number of points : '
     WRITE(3,*) data%nb
     WRITE(3,*) '# DIMENSION : '
