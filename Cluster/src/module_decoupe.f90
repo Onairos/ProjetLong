@@ -4,7 +4,7 @@ MODULE module_decoupe
 CONTAINS
 
 
-  SUBROUTINE partition_data(data, epsilon, nbproc, coord_min, coord_max, partitionning,&
+  SUBROUTINE partition_data(data, epsilon, nb_proc, coord_min, coord_max, partitionning,&
        points_by_domain, assignements, bounds)
     IMPLICIT NONE
     !###########################################
@@ -15,7 +15,7 @@ CONTAINS
     TYPE(type_data) :: data
     DOUBLE PRECISION :: epsilon
     INTEGER, DIMENSION(:), POINTER :: partitionning
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
 
     !=== IN/OUT ===
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
@@ -33,32 +33,32 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     ! Bounds definition
-    CALL define_bounds(data,coord_min,coord_max,bounds,partitionning,epsilon,nbproc)
+    CALL define_bounds(data,coord_min,coord_max,bounds,partitionning,epsilon,nb_proc)
 
     ! Subdomains definition
-    CALL define_domains(nbproc,data,domains,bounds,partitionning)
+    CALL define_domains(nb_proc,data,domains,bounds,partitionning)
 
     ! Writing of partionned subdomains
-    CALL write_domains(data,nbproc,domains)
+    CALL write_domains(data,nb_proc,domains)
 
     ! Partitionning definition
-    IF ((data%interface==1).OR.(nbproc==1)) THEN
+    IF ((data%interface==1).OR.(nb_proc==1)) THEN
        ! Partitionning by interfacing
-       CALL partition_with_interface(nbproc,data,points_by_domain,assignements,domains,epsilon)
+       CALL partition_with_interface(nb_proc,data,points_by_domain,assignements,domains,epsilon)
     ELSE
        ! Partitionning by overlapping
-       CALL partition_with_overlapping(nbproc,data,points_by_domain,assignements,domains)
+       CALL partition_with_overlapping(nb_proc,data,points_by_domain,assignements,domains)
     ENDIF
     DEALLOCATE(domains)
 
     ! Saving partitionning
-    CALL write_partitioning(nbproc,data,points_by_domain,assignements)
+    CALL write_partitioning(nb_proc,data,points_by_domain,assignements)
 
     RETURN
   END SUBROUTINE partition_data
 
 
-  SUBROUTINE define_bounds(data, coord_min, coord_max, bounds, partitionning, epsilon, nbproc)
+  SUBROUTINE define_bounds(data, coord_min, coord_max, bounds, partitionning, epsilon, nb_proc)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -68,7 +68,7 @@ CONTAINS
     TYPE(type_data) :: data
     DOUBLE PRECISION :: epsilon
     INTEGER,DIMENSION(:), POINTER :: partitionning
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
 
     !=== IN/OUT ===
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
@@ -114,7 +114,7 @@ CONTAINS
 
  IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        ! Processing : coordinates, coordinates picture or thresholded picture
-       ALLOCATE(bounds(data%dim,max(nbproc-data%interface,1),2))
+       ALLOCATE(bounds(data%dim,max(nb_proc-data%interface,1),2))
        bounds(:,:,:)=0.0
        DO i=1,data%dim
           coord_min(i)=coord_min(i)-epsilon*1.1
@@ -135,7 +135,7 @@ CONTAINS
        ENDDO
     ELSEIF (data%image==1) THEN
        ! Processing for partionning pixels of picture
-       ALLOCATE(bounds(data%imgdim,max(nbproc-1,1),2))
+       ALLOCATE(bounds(data%imgdim,max(nb_proc-1,1),2))
        bounds(:,:,:)=0.0
        IF ((data%imgdim/=2).AND.(data%imgdim/=3)) THEN
 #if aff
@@ -166,7 +166,7 @@ CONTAINS
   END SUBROUTINE define_bounds
 
 
-  SUBROUTINE define_domains(nbproc, data, domains, bounds, partitionning)
+  SUBROUTINE define_domains(nb_proc, data, domains, bounds, partitionning)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -176,7 +176,7 @@ CONTAINS
     TYPE(type_data) :: data
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
     INTEGER, DIMENSION(:), POINTER :: partitionning
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
@@ -193,13 +193,13 @@ CONTAINS
     !###########################################
     IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        ! Processing : coordinates, coordinates picture or thresholded picture
-       ALLOCATE(domains(max(1,nbproc-data%interface),data%dim,2))
+       ALLOCATE(domains(max(1,nb_proc-data%interface),data%dim,2))
        domains(:,:,:)=0.0
        ALLOCATE(list(data%dim))
        list(:)=1
-       IF (nbproc>1) THEN
+       IF (nb_proc>1) THEN
           ! >1 proc
-          DO n=1,nbproc-data%interface
+          DO n=1,nb_proc-data%interface
              DO k=1,data%dim
                 domains(n,k,:)=bounds(k,list(k),:)
              ENDDO
@@ -224,13 +224,13 @@ CONTAINS
        DEALLOCATE(list)
     ELSEIF (data%image==1) THEN
        ! Processing for partitionning in pixels of picture
-       ALLOCATE(domains(max(1,nbproc-data%interface),data%imgdim,2))
+       ALLOCATE(domains(max(1,nb_proc-data%interface),data%imgdim,2))
        domains(:,:,:)=0.0
        ALLOCATE(list(data%imgdim))
        list(:)=1
-       IF (nbproc>1) THEN
+       IF (nb_proc>1) THEN
           ! >1 proc
-          DO n=1,nbproc-data%interface
+          DO n=1,nb_proc-data%interface
              DO k=1,data%imgdim
                 domains(n,k,:)=bounds(k,list(k),:)
              ENDDO
@@ -258,7 +258,7 @@ CONTAINS
   END SUBROUTINE define_domains
 
 
-  SUBROUTINE partition_with_interface(nbproc, data, points_by_domain, assignements, domains, epsilon)
+  SUBROUTINE partition_with_interface(nb_proc, data, points_by_domain, assignements, domains, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -268,7 +268,7 @@ CONTAINS
     TYPE(type_data) :: data
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
     DOUBLE PRECISION :: epsilon
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
     !====  OUT ====
     INTEGER, DIMENSION(:,:), POINTER :: assignements
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
@@ -283,9 +283,9 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    ALLOCATE(points_by_domain(0:max(1,nbproc-1)))
+    ALLOCATE(points_by_domain(0:max(1,nb_proc-1)))
     points_by_domain(:)=0
-    ALLOCATE(assignements(0:max(1,nbproc-1),data%nb))
+    ALLOCATE(assignements(0:max(1,nb_proc-1),data%nb))
     assignements(:,:)=0
     DO i=1,data%nb
        ! Search of packages
@@ -307,9 +307,9 @@ CONTAINS
                      (data%refimg(i,j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
           ENDIF
-          IF ((n>nbproc-1).AND.(nbproc>1)) THEN
+          IF ((n>nb_proc-1).AND.(nb_proc>1)) THEN
 #if aff
-             PRINT *, 'DEBUG : there is a bug in the partitioning ! n=', n, '. Number of process : ', nbproc-1
+             PRINT *, 'DEBUG : there is a bug in the partitioning ! n=', n, '. Number of process : ', nb_proc-1
 #endif
              IF (data%geom==0) THEN
 #if aff
@@ -326,7 +326,7 @@ CONTAINS
        ENDDO
        points_by_domain(n)=points_by_domain(n)+1
        assignements(n,points_by_domain(n))=i
-       IF (nbproc>1) THEN
+       IF (nb_proc>1) THEN
           ! Search of interface if > 1 proc
           ok=.FALSE.
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
@@ -355,7 +355,7 @@ CONTAINS
 
 
 
-  SUBROUTINE partition_with_overlapping(nbproc, data, points_by_domain, assignements, domains)
+  SUBROUTINE partition_with_overlapping(nb_proc, data, points_by_domain, assignements, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -364,7 +364,7 @@ CONTAINS
     !====  IN  ====
     TYPE(type_data) :: data
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
     !====  OUT ====
     INTEGER, DIMENSION(:,:), POINTER :: assignements
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
@@ -378,13 +378,13 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    ALLOCATE(points_by_domain(0:max(1,nbproc-1)))
+    ALLOCATE(points_by_domain(0:max(1,nb_proc-1)))
     points_by_domain(:)=0
-    ALLOCATE(assignements(0:max(1,nbproc-1),data%nb))
+    ALLOCATE(assignements(0:max(1,nb_proc-1),data%nb))
     assignements(:,:)=0
     DO i=1,data%nb
        ! Search of packages
-       DO n=1,nbproc
+       DO n=1,nb_proc
           ok=.TRUE.
           IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture

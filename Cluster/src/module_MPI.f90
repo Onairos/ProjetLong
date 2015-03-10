@@ -4,7 +4,7 @@ CONTAINS
 
 
 
-  SUBROUTINE send_partitioning(nbproc, data, points_by_domain, ddat, partitioned_data)
+  SUBROUTINE send_partitioning(nb_proc, data, points_by_domain, ddat, partitioned_data)
     IMPLICIT NONE    
     ! MPI library
     INCLUDE 'mpif.h'
@@ -15,7 +15,7 @@ CONTAINS
     !====  IN  ====
     INTEGER, DIMENSION(:,:), POINTER :: ddat
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
 
     !=== IN/OUT ===
     TYPE(type_data) :: data
@@ -35,7 +35,7 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################  
-    DO i=1,nbproc-1
+    DO i=1,nb_proc-1
        m=points_by_domain(i)
        n=data%dim
        tag=i
@@ -163,7 +163,7 @@ CONTAINS
 
 
 
-  SUBROUTINE receive_number_clusters(nbproc, nbclust, points_by_domain, partitioned_data, nclust)
+  SUBROUTINE receive_number_clusters(nb_proc, nbclust, points_by_domain, partitioned_data, array_clust)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -174,10 +174,10 @@ CONTAINS
     !====  IN  ==== 
     TYPE(type_data) ::partitioned_data
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
 
     !====  OUT ====
-    TYPE(type_clusters), DIMENSION(:), POINTER :: nclust
+    TYPE(type_clusters), DIMENSION(:), POINTER :: array_clust
     INTEGER :: nbclust
     
     !#### Variables  ####    
@@ -196,22 +196,22 @@ CONTAINS
        nbclust=0
     ENDIF
     ! Numebr of clusters
-    ALLOCATE(nclust(nbproc))
-    nclust(:)%nb=0
-    DO i=1,nbproc-1
+    ALLOCATE(array_clust(nb_proc))
+    array_clust(:)%nb=0
+    DO i=1,nb_proc-1
        IF (points_by_domain(i)>0) THEN
           tag=i*11
           CALL MPI_RECV(nb,1,MPI_INTEGER,i,tag,MPI_COMM_WORLD,status,ierr)
           nbclust=nbclust+nb
-          nclust(i)%nb=nb
+          array_clust(i)%nb=nb
        ENDIF
     ENDDO
     ! Number of points by cluster
-    DO i=1,nbproc-1
+    DO i=1,nb_proc-1
        IF (points_by_domain(i)>0) THEN
           tag=i*11+1
-          ALLOCATE(nclust(i)%nbelt(nclust(i)%nb))
-          CALL MPI_RECV(nclust(i)%nbelt,nclust(i)%nb,MPI_INTEGER,i,tag,MPI_COMM_WORLD,status,ierr)
+          ALLOCATE(array_clust(i)%nbelt(array_clust(i)%nb))
+          CALL MPI_RECV(array_clust(i)%nbelt,array_clust(i)%nb,MPI_INTEGER,i,tag,MPI_COMM_WORLD,status,ierr)
        ENDIF
     ENDDO
     RETURN
@@ -292,8 +292,8 @@ CONTAINS
 
 
 
-  SUBROUTINE receive_clusters(nbproc, nbclust, points_by_domain, ddat, partitioned_data, cluster_map, &
-       nclust, points_by_cluster)
+  SUBROUTINE receive_clusters(nb_proc, nbclust, points_by_domain, ddat, partitioned_data, cluster_map, &
+       array_clust, points_by_cluster)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -302,11 +302,11 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    TYPE(type_clusters), DIMENSION(:), POINTER :: nclust
+    TYPE(type_clusters), DIMENSION(:), POINTER :: array_clust
     TYPE(type_data) ::partitioned_data
     INTEGER, DIMENSION(:,:), POINTER :: ddat
     INTEGER, DIMENSION(:), POINTER :: points_by_domain 
-    INTEGER :: nbproc
+    INTEGER :: nb_proc
     INTEGER :: nbclust
 
     !====  OUT ====
@@ -341,7 +341,7 @@ CONTAINS
     ENDIF
     maxldat = maxval(points_by_domain)
     ALLOCATE(lclust(maxldat))
-    DO i=1,nbproc-1
+    DO i=1,nb_proc-1
        IF (points_by_domain(i)>0) THEN
           ! Receiving local allocations of subdomain points
           CALL MPI_RECV(lclust,maxldat,MPI_INTEGER,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,status,ierr)
@@ -355,7 +355,7 @@ CONTAINS
              points_by_cluster(k)=points_by_cluster(k)+1
              cluster_map(k,points_by_cluster(k))=ddat(p,j)
           ENDDO
-          i0=i0+nclust(p)%nb
+          i0=i0+array_clust(p)%nb
        ENDIF
     ENDDO
     DEALLOCATE(lclust)
