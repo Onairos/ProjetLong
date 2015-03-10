@@ -44,7 +44,7 @@ CONTAINS
     ! Partitionning definition
     IF ((data%interface==1).OR.(nbproc==1)) THEN
        ! Partitionning by interfacing
-       CALL partition_with_interfaces(nbproc,data,points_by_domain,assignements,domains,epsilon)
+       CALL partition_with_interface(nbproc,data,points_by_domain,assignements,domains,epsilon)
     ELSE
        ! Partitionning by overlapping
        CALL partition_with_overlappings(nbproc,data,points_by_domain,assignements,domains)
@@ -258,7 +258,7 @@ CONTAINS
   END SUBROUTINE define_domains
 
 
-  SUBROUTINE partition_with_interfaces(nbproc, data, points_by_domain, assignements, domains, epsilon)
+  SUBROUTINE partition_with_interface(nbproc, data, points_by_domain, assignements, domains, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -351,7 +351,7 @@ CONTAINS
     ENDDO
     WRITE(7,*) points_by_domain(0)
     RETURN
-  END SUBROUTINE partition_with_interfaces
+  END SUBROUTINE partition_with_interface
 
 
 
