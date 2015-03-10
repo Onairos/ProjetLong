@@ -119,7 +119,7 @@ CONTAINS
     PRINT *, 'Writing partitioning geometry...'
     SELECT CASE(format_output)
     CASE('gmsh')
-       CALL write_partionning_gmsh(params)
+       CALL write_partitioning_gmsh(params)
     CASE('paraview')
        CALL write_partitioning_paraview(params)
     END SELECT

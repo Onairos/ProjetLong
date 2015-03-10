@@ -4,7 +4,7 @@ CONTAINS
 
 
 
-  SUBROUTINE write_partionning_gmsh(params)
+  SUBROUTINE write_partitioning_gmsh(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -140,7 +140,7 @@ CONTAINS
     CLOSE(10)
     CLOSE(2)
     RETURN
-  END SUBROUTINE write_partionning_gmsh
+  END SUBROUTINE write_partitioning_gmsh
 
 
 
