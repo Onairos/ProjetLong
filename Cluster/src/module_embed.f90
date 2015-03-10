@@ -196,6 +196,7 @@ CONTAINS
     DOUBLE PRECISION :: points (dim, nb_points) ! the points
     INTEGER :: nb_clusters ! the number of clusters
     INTEGER :: nb_iter_max ! the maximum number of iterations
+    INTEGER :: proc_id ! UNUSED
 
     !=== IN/OUT ===
     DOUBLE PRECISION :: clusters_centers (dim, nb_clusters) ! the cluster centers
@@ -206,9 +207,6 @@ CONTAINS
     INTEGER :: clusters (nb_points) ! indicates which cluster each point belongs to
     INTEGER :: points_by_clusters (nb_clusters) ! the number of points in each cluster
 
-    !== USELESS ===
-    INTEGER :: proc_id ! TODO : etudier si garder ou pas : le garder finalement
-    
     !#### Variables  ####
     DOUBLE PRECISION :: listnorm (nb_points, nb_clusters)
     DOUBLE PRECISION :: stockcenter (dim, nb_clusters)
