@@ -14,19 +14,19 @@ PROGRAM clusters
   ! DECLARATIONS
   !###########################################
   !#### Variables  ####
-  TYPE(type_clusters), DIMENSION(:), POINTER :: nclust
+  TYPE(type_clusters), DIMENSION(:), POINTER :: array_clusters
   TYPE(type_data) :: data
   TYPE(type_data) :: partitioned_data
-  CHARACTER (LEN=80) :: procname ! MPI variable
-  CHARACTER (LEN=30) :: entree
+  CHARACTER (LEN=80) :: proc_name ! MPI variable
+  CHARACTER (LEN=30) :: input
   CHARACTER (LEN=30) :: input_file
   DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
-  DOUBLE PRECISION :: endtime
+  DOUBLE PRECISION :: end_time
   DOUBLE PRECISION :: epsilon
   DOUBLE PRECISION :: sigma
-  DOUBLE PRECISION :: starttime
+  DOUBLE PRECISION :: start_time
   DOUBLE PRECISION :: t_parall
   DOUBLE PRECISION :: t_parallg
   DOUBLE PRECISION :: t1
@@ -41,16 +41,16 @@ PROGRAM clusters
   INTEGER :: i
   INTEGER :: ierr ! MPI variable
   INTEGER :: j
-  INTEGER :: len ! MPI variable
-  INTEGER :: nbclust
-  INTEGER :: nbideal
+  INTEGER :: length ! MPI variable
+  INTEGER :: nb_clusters
+  INTEGER :: nb_clusters_opt
   INTEGER :: nb_clusters_max
-  INTEGER :: nbproc ! MPI variable
-  INTEGER :: nmax
-  INTEGER :: numproc ! MPI variable
+  INTEGER :: nb_proc ! MPI variable
+  INTEGER :: n_max
+  INTEGER :: proc_id ! MPI variable
   INTEGER :: status(MPI_STATUS_SIZE) ! MPI variable
   INTEGER :: tag ! MPI variable
-  LOGICAL :: existe
+  LOGICAL :: exist_bool
 
   !###########################################
   ! INSTRUCTIONS
@@ -58,25 +58,25 @@ PROGRAM clusters
   ! Timers init
   t1 = 0.0
   t2 = 0.0
-  starttime = 0.0
-  endtime = 0.0
+  start_time = 0.0
+  end_time = 0.0
   ! MPI init
   CALL MPI_INIT(ierr)
-  CALL MPI_COMM_RANK(MPI_COMM_WORLD,numproc,ierr)
-  CALL MPI_COMM_SIZE(MPI_COMM_WORLD,nbproc,ierr)
-  CALL MPI_GET_PROCESSOR_NAME(procname,len,ierr)
-  PRINT *, 'Process rank : ', numproc, '. Process name : ', procname
+  CALL MPI_COMM_RANK(MPI_COMM_WORLD,proc_id,ierr)
+  CALL MPI_COMM_SIZE(MPI_COMM_WORLD,nb_proc,ierr)
+  CALL MPI_GET_PROCESSOR_NAME(proc_name,length,ierr)
+  PRINT *, 'Process rank : ', proc_id, '. Process name : ', proc_name
 
-  IF(numproc==0) THEN
-    starttime = MPI_WTIME()
+  IF(proc_id==0) THEN
+    start_time = MPI_WTIME()
   ENDIF
 #if aff
-  PRINT *,'DEBUG : Launching process ',numproc,' of ',nbproc
+  PRINT *,'DEBUG : Launching process ',proc_id,' of ',nb_proc
 #endif
   PRINT *,'----------------------------------------'
 
   ! Data reading
-  IF (numproc==0) THEN
+  IF (proc_id==0) THEN
      t1 = MPI_WTIME()
 #if aff
      PRINT *
@@ -87,9 +87,9 @@ PROGRAM clusters
 #endif
      IF (iargc()>0) THEN
         ! Gets the input file name
-        CALL getarg(1,entree)
-        INQUIRE(FILE=entree,EXIST=existe)
-        IF (.NOT.existe) CALL help
+        CALL getarg(1,input)
+        INQUIRE(FILE=input,EXIST=exist_bool)
+        IF (.NOT.exist_bool) CALL help
      ELSE
        ! If no input file, default=fort.1
         CALL help
@@ -97,11 +97,11 @@ PROGRAM clusters
      ! File reading
 #if aff
      PRINT *
-     PRINT *,'DEBUG : Reading data : ',entree
+     PRINT *,'DEBUG : Reading data : ',input
 #endif
-     OPEN(FILE=entree,UNIT=1)
+     OPEN(FILE=input,UNIT=1)
 
-     CALL read_params(data,epsilon,coord_min,coord_max,nbproc,partitioning,input_file,&
+     CALL read_params(data,epsilon,coord_min,coord_max,nb_proc,partitioning,input_file,&
           sigma,nb_clusters_max,list_nb_clusters, clust_param)
 
      t2 = MPI_WTIME()
@@ -110,31 +110,31 @@ PROGRAM clusters
   ENDIF
 
   ! Partitioning and sigma computing
-  IF (numproc==0) THEN
+  IF (proc_id==0) THEN
      ! Partitioning
 #if aff
      PRINT *
      PRINT *,'DEBUG : Partitioning data...'
 #endif
     t1 = MPI_WTIME()
-    CALL partition_data(data,epsilon,nbproc,coord_min,coord_max,partitioning,&
+    CALL partition_data(data,epsilon,nb_proc,coord_min,coord_max,partitioning,&
          points_by_domain,assignements,bounds)
     t2 = MPI_WTIME()
     PRINT *,'Time for partitioning data : ', t2-t1
   ENDIF
      
-  IF(numproc==0) THEN
+  IF(proc_id==0) THEN
     t1 = MPI_WTIME()
   ENDIF
 
   ! Exchanges
-  IF (nbproc>1) THEN
+  IF (nb_proc>1) THEN
      ! Case of several proc 
 
      ! Sigma computing if auto global mode
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
-     IF ((sigma==0.0).AND.(numproc==0)) THEN
-        CALL get_sigma_interface(numproc,data,sigma,bounds,partitioning,epsilon)
+     IF ((sigma==0.0).AND.(proc_id==0)) THEN
+        CALL get_sigma_interface(proc_id,data,sigma,bounds,partitioning,epsilon)
      ENDIF
 
      ! Sigma sending
@@ -147,33 +147,33 @@ PROGRAM clusters
      CALL MPI_BCAST(nb_clusters_max,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
 
      ! Nbideal sending
-     IF (numproc==0) THEN
-        DO i=1,nbproc-1
+     IF (proc_id==0) THEN
+        DO i=1,nb_proc-1
            tag=i
            CALL MPI_SEND(list_nb_clusters(i),1,MPI_INTEGER,i,tag,MPI_COMM_WORLD,ierr)
         ENDDO
-        nbideal=list_nb_clusters(0)
+        nb_clusters_opt=list_nb_clusters(0)
      ELSE
-        tag=numproc
-        CALL MPI_RECV(nbideal,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
+        tag=proc_id
+        CALL MPI_RECV(nb_clusters_opt,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
      ENDIF
      CALL MPI_BARRIER(MPI_COMM_WORLD,ierr)
 
      ! Data transferring
-     IF (numproc==0) THEN
+     IF (proc_id==0) THEN
         ! Data sending
 #if aff
         PRINT *
         PRINT *,'DEBUG : Transferring partitioned data...'
 #endif
-        CALL send_partitioning(nbproc,data,points_by_domain,assignements,partitioned_data)
+        CALL send_partitioning(nb_proc,data,points_by_domain,assignements,partitioned_data)
 #if aff
         PRINT *
         PRINT *,'DEBUG : Computing clusters...'
 #endif
      ELSE
         ! Data receiving
-        CALL receive_partitioning(numproc,partitioned_data)
+        CALL receive_partitioning(proc_id,partitioned_data)
      ENDIF
 
   ELSE
@@ -187,7 +187,7 @@ PROGRAM clusters
         partitioned_data%point(i)%coord=data%point(i)%coord
         partitioned_data%point(i)%cluster=0
      ENDDO
-     nbideal=list_nb_clusters(1)
+     nb_clusters_opt=list_nb_clusters(1)
   ENDIF
 
   ! Sigma computing if auto individual mode
@@ -195,18 +195,18 @@ PROGRAM clusters
 #if aff
      PRINT *
 #endif
-     IF (numproc==0) CALL get_sigma(data,sigma)
+     IF (proc_id==0) CALL get_sigma(data,sigma)
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
-     IF (numproc==0) THEN
-        PRINT *,'Process n', numproc,' computes global sigma :',sigma
+     IF (proc_id==0) THEN
+        PRINT *,'Process n', proc_id,' computes global sigma :',sigma
         IF (data%interface==1) THEN 
-           CALL get_sigma_interface(numproc,partitioned_data,sigma,bounds,partitioning,epsilon) 
-           PRINT *,'Process n', numproc,' computes interface sigma interface :',sigma
+           CALL get_sigma_interface(proc_id,partitioned_data,sigma,bounds,partitioning,epsilon) 
+           PRINT *,'Process n', proc_id,' computes interface sigma interface :',sigma
         ENDIF
      ENDIF
   ENDIF
 
-  IF(numproc==0) THEN
+  IF(proc_id==0) THEN
     t2 = MPI_WTIME()
     PRINT *,'Time for sending data and computing sigma : ', t2-t1
   ENDIF
@@ -216,75 +216,75 @@ PROGRAM clusters
   t1 = MPI_WTIME()
   IF (partitioned_data%nb>0) THEN
 #if aff
-     PRINT *,'DEBUG : Process n', numproc, ' : computing clusters...'
+     PRINT *,'DEBUG : Process n', proc_id, ' : computing clusters...'
 #endif
 
     SELECT CASE (clust_param%clustering_method_id)
     CASE (1)
-      CALL apply_spectral_clustering(numproc,nb_clusters_max,nbideal,partitioned_data,sigma,clust_param)
+      CALL apply_spectral_clustering(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,sigma,clust_param)
     CASE (2)
-      CALL mean_shift(numproc,nb_clusters_max,nbideal,partitioned_data,clust_param%bandwidth)
+      CALL mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param%bandwidth)
     CASE (3)
-      CALL apply_kernel_k_means(numproc,nb_clusters_max,nbideal,partitioned_data,clust_param)
+      CALL apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
     END SELECT
 
   ENDIF
   t2 = MPI_WTIME()
   t_parall = t2 - t1
-  PRINT *, 'Process n', numproc, ' : computing parallel cluster : ', t_parall
+  PRINT *, 'Process n', proc_id, ' : computing parallel cluster : ', t_parall
 
   CALL MPI_REDUCE(t_parall, t_parallg, 1, MPI_DOUBLE_PRECISION, MPI_MAX, 0, MPI_COMM_WORLD, ierr)
-  IF(numproc==0) PRINT *, 'Time for computing global parallel cluster :', t_parallg
+  IF(proc_id==0) PRINT *, 'Time for computing global parallel cluster :', t_parallg
 
-  IF(numproc==0) THEN
+  IF(proc_id==0) THEN
     t1 = MPI_WTIME()
   ENDIF
 
   ! Saves the partial clusters
-  CALL write_partial_clusters(numproc,partitioned_data)
+  CALL write_partial_clusters(proc_id,partitioned_data)
 
   ! Exchanges part
-  IF (nbproc>1) THEN
+  IF (nb_proc>1) THEN
      ! Clusters grouping
-     IF (numproc==0) THEN
+     IF (proc_id==0) THEN
 #if aff
         PRINT *
         PRINT *,'DEBUG : Grouping clusters...'
 #endif
         ! Receiving of the number of clusters with duplications
-        CALL receive_number_clusters(nbproc,nbclust,points_by_domain,partitioned_data,nclust)
+        CALL receive_number_clusters(nb_proc,nb_clusters,points_by_domain,partitioned_data,array_clusters)
 #if aff
-        PRINT *,'DEBUG : number of clusters with duplications found : ', nbclust
+        PRINT *,'DEBUG : number of clusters with duplications found : ', nb_clusters
 #endif
         ! Receiving of clusters info
-        ALLOCATE(cluster_map(nbclust,data%nb))
-        CALL receive_clusters(nbproc,nbclust,points_by_domain,assignements,partitioned_data,&
-             cluster_map,nclust,points_by_cluster)
+        ALLOCATE(cluster_map(nb_clusters,data%nb))
+        CALL receive_clusters(nb_proc,nb_clusters,points_by_domain,assignements,partitioned_data,&
+             cluster_map,array_clusters,points_by_cluster)
      ELSE
         ! Sends the number of clusters
-        CALL send_number_clusters(numproc,partitioned_data)
+        CALL send_number_clusters(proc_id,partitioned_data)
         ! Sends the clusters
-        CALL send_clusters(numproc,partitioned_data)
+        CALL send_clusters(proc_id,partitioned_data)
      ENDIF
 
      ! End of post-process
-     IF (numproc==0) THEN
+     IF (proc_id==0) THEN
         ! Groups the clusters and removes duplicates from the set of found clusters
-        CALL group_clusters(nbclust,points_by_cluster,cluster_map,data)
+        CALL group_clusters(nb_clusters,points_by_cluster,cluster_map,data)
      ENDIF
 
   ELSE
      ! Case of 1 proc alone
-     nbclust=partitioned_data%nbclusters
-     ALLOCATE(points_by_cluster(nbclust))
+     nb_clusters=partitioned_data%nbclusters
+     ALLOCATE(points_by_cluster(nb_clusters))
      points_by_cluster(:)=0
-     nmax=0
+     n_max=0
      DO i=1,partitioned_data%nb
         j=partitioned_data%point(i)%cluster
         points_by_cluster(j)=points_by_cluster(j)+1
-        nmax=max(nmax,points_by_cluster(j))
+        n_max=max(n_max,points_by_cluster(j))
      ENDDO
-     ALLOCATE(cluster_map(nbclust,nmax))
+     ALLOCATE(cluster_map(nb_clusters,n_max))
      cluster_map(:,:)=0
      points_by_cluster(:)=0
      DO i=1,partitioned_data%nb
@@ -294,32 +294,32 @@ PROGRAM clusters
      ENDDO
   ENDIF
 
-  IF(numproc==0) THEN
+  IF(proc_id==0) THEN
     t2 = MPI_WTIME()
     PRINT *,'Time for grouping clusters : ', t2-t1
   ENDIF
 
-  IF(numproc==0) THEN
+  IF(proc_id==0) THEN
     t1 = MPI_WTIME()
   ENDIF
   ! Outputs
-  IF (numproc==0) THEN
+  IF (proc_id==0) THEN
      ! Writing of the cluster.final files
-     CALL write_final_clusters(nbclust,points_by_cluster,cluster_map)
+     CALL write_final_clusters(nb_clusters,points_by_cluster,cluster_map)
 
      ! Information writing
-     CALL write_metadata(input_file,data,nbproc,nbclust)
+     CALL write_metadata(input_file,data,nb_proc,nb_clusters)
   ENDIF
-  IF(numproc==0) THEN
+  IF(proc_id==0) THEN
     t2 = MPI_WTIME()
     PRINT *,'Time for writing clusters : ', t2-t1
   ENDIF
   
   ! Ending of MPI
-  IF (numproc==0) THEN
-    endtime = MPI_WTIME()
+  IF (proc_id==0) THEN
+    end_time = MPI_WTIME()
     PRINT *,'End of computing'
-    PRINT *,'Overall time : ', endtime-starttime
+    PRINT *,'Overall time : ', end_time-start_time
   ENDIF
   
   CALL MPI_FINALIZE(ierr)
