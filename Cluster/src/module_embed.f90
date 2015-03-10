@@ -6,7 +6,7 @@ CONTAINS
 
   SUBROUTINE spectral_embedding(nbcluster, n, Z, A, ratio,clusters, &
        clusters_centers, points_by_clusters, clusters_energies, nb_info, numproc, &
-       ratiomoy, ratio_rij, ratio_rii)
+       ratio_moy, ratio_rij, ratio_rii)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -23,7 +23,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers ! centre des nbclusters clusters
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies ! somme des energies par cluster
     DOUBLE PRECISION :: ratio ! max des ration de frob sur matrice aff reordonnancee suivant
-    DOUBLE PRECISION :: ratiomoy
+    DOUBLE PRECISION :: ratio_moy
     DOUBLE PRECISION :: ratio_rii
     DOUBLE PRECISION :: ratio_rij
     INTEGER, DIMENSION(:), POINTER :: clusters ! appartenance des clusters
@@ -128,7 +128,7 @@ CONTAINS
           DO j=1,nbcluster
              IF (i/=j) THEN
                 ratio=ratio+Frob(i,j)/Frob(i,i)
-                ratiomoy=ratiomoy+Frob(i,j)/Frob(i,i)
+                ratio_moy=ratio_moy+Frob(i,j)/Frob(i,i)
                 ratio_rij=ratio_rij+Frob(i,j)
                 ratio_rii=ratio_rii+Frob(i,i)
                 ratiomin=min(ratiomin,Frob(i,j)/Frob(i,i))
