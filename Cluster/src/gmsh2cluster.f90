@@ -4,14 +4,14 @@ PROGRAM gmsh2cluster
   ! DECLARATIONS
   !###########################################
   !#### Variables  ####
-  CHARACTER(30) :: nom
+  CHARACTER(30) :: file_name
   DOUBLE PRECISION :: x
   DOUBLE PRECISION :: y
   DOUBLE PRECISION :: z
   INTEGER :: dim
   INTEGER :: i
   INTEGER :: j
-  INTEGER :: nbnoe
+  INTEGER :: nb_nodes
 
   !###########################################
   ! INSTRUCTIONS
@@ -20,21 +20,21 @@ PROGRAM gmsh2cluster
   PRINT *, 'Conversion from gmsh to input cluster'
   PRINT *
   PRINT *, 'Name of gmsh file?'
-  READ *, nom
-  OPEN(FILE=nom,UNIT=1)
+  READ *, file_name
+  OPEN(FILE=file_name,UNIT=1)
   PRINT *, 'Name of output file?'
-  READ *, nom
-  OPEN(FILE=nom,UNIT=2)
+  READ *, file_name
+  OPEN(FILE=file_name,UNIT=2)
   PRINT *, 'DIMENSION ?'
   READ *, dim
   READ (1,*)
   READ (1,*)  
   READ (1,*)
   READ (1,*)  
-  READ (1,*)  nbnoe
-  PRINT *, 'Number of node :', nbnoe
-  WRITE(2,*) nbnoe, dim
-  DO i=1,nbnoe
+  READ (1,*)  nb_nodes
+  PRINT *, 'Number of nodes :', nb_nodes
+  WRITE(2,*) nb_nodes, dim
+  DO i=1,nb_nodes
      READ (1,*) j,x,y,z
      IF (dim==2) THEN
         WRITE(2,*) x,y

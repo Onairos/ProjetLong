@@ -328,21 +328,21 @@ CONTAINS
        IF (nb_points>0) THEN
           DO j=1,nb_points
              IF (params%coord==1) THEN
-                ! Partitionning by coordinates
+                ! Partitioning by coordinates
                 READ(20,*) coords(j,:)
                 ind(j)=i
              ELSE
-                ! Partitionning 1D picture
+                ! Partitioning 1D picture
                 READ (20,*) indp(j)
                 ind(j)=i
              ENDIF
           ENDDO
           ! Writing
           IF (params%coord==1) THEN
-             ! Partitionning by coordinates
+             ! Partitioning by coordinates
              CALL ecritpoint_paraview(10,11,nb_points,params%dim,coords,ind,1)
           ELSE
-             ! Partitionning 1D picture
+             ! Partitioning 1D picture
              CALL write_points_picture_format(10,11,nb_points,params,ind,indp)
           ENDIF
        ENDIF
@@ -469,10 +469,10 @@ CONTAINS
        CLOSE(20) 
        ! Writing
        IF (params%coord==1) THEN
-          ! partitionning by coordinates
+          ! Partitioning by coordinates
           CALL ecritpoint_paraview(10,11,nb_points,params%dim,coords,ind,1)
        ELSE
-          ! partitionning 1D picture
+          ! Partitioning 1D picture
           CALL write_points_picture_format(10,11,nb_points,params,ind,indp)
        ENDIF
        DEALLOCATE(coords)

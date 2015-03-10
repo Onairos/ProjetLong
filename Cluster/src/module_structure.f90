@@ -13,13 +13,13 @@ MODULE module_structure
      INTEGER :: image ! If image mode activated
      INTEGER :: geom ! Image in mode geom ?
      INTEGER :: seuil ! Image in threshold mode ?
-     INTEGER :: interface ! Partitionning + interfacing ?
-     INTEGER :: recouvrement ! Partitionning + overlapping ?
+     INTEGER :: interface ! Partitioning + interfacing ?
+     INTEGER :: recouvrement ! Partitioning + overlapping ?
 
      ! Image processing parameters
      DOUBLE PRECISION, DIMENSION(:), POINTER :: pas ! Step for geom mode
      INTEGER, DIMENSION(:,:), POINTER :: refimg ! Point reference in pixel coordinates
-     INTEGER, DIMENSION(:), POINTER :: imgmap   ! Pixel partitionnings of picture
+     INTEGER, DIMENSION(:), POINTER :: imgmap   ! Pixel partitionings of picture
      INTEGER :: imgdim ! Dimension of images
      INTEGER :: imgt ! Number of "times"
 

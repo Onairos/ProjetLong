@@ -15,7 +15,8 @@ CONTAINS
     INTEGER n,i,j,k
 
     n=dataw%nb
-    ALLOCATE(K(n,n));K(:,:)=0.0
+    ALLOCATE(K(n,n))
+    K(:,:)=0.0
 
     DO i=1,n-1
       DO j=1,n-1
@@ -43,7 +44,8 @@ CONTAINS
     INTEGER n,i,j,k
 
     n=dataw%nb
-    ALLOCATE(K(n,n));K(:,:)=0.0
+    ALLOCATE(K(n,n))
+    K(:,:)=0.0
 
     DO i=1,n-1
       DO j=i+1,n
@@ -145,10 +147,10 @@ apply_kmeans( nbcluster, n, nbcluster, it_max, it_num,Z2,&
     LOGICAL :: ok2
     
 
-    ALLOCATE(cluster(n));
-    ALLOCATE(cluster_center(nbcluster,nbcluster));
-    ALLOCATE(cluster_population(nbcluster));
-    ALLOCATE(cluster_energy(nbcluster));
+    ALLOCATE(cluster(n))
+    ALLOCATE(cluster_center(nbcluster,nbcluster))
+    ALLOCATE(cluster_population(nbcluster))
+    ALLOCATE(cluster_energy(nbcluster))
 
 
     !###########################################      
@@ -187,7 +189,8 @@ apply_kmeans( nbcluster, n, nbcluster, it_max, it_num,Z2,&
     !  Assign one point to each cluster center.
     !
     cluster_center(:,1) = point(:,1)
-    cluster_id(:)=0; cluster_id(1)=1
+    cluster_id(:)=0
+    cluster_id(1)=1
     p=2
     seuil=0.4
 #if aff
@@ -205,7 +208,8 @@ PRINT *, 'recherche des centres'
           !si point pas centre, teste par rapport au seuil
           IF (.NOT. ok2) THEN
              DO j=1,i-1
-                val=0.0; norme=0.0
+                val=0.0
+                norme=0.0
                 DO k=1,dim_num
                    val=max(val,abs(cluster_center(k,j)-point(k,p)))
                 ENDDO
@@ -241,8 +245,8 @@ PRINT *, 'recherche des centres'
        it_num = it_num + 1
        swap=0
        DO i=1,cluster_num
-          stockenergy(i)=cluster_energy(i);
-          stockpopulation(i)=cluster_population(i);
+          stockenergy(i)=cluster_energy(i)
+          stockpopulation(i)=cluster_population(i)
           DO j=1,dim_num
              stockcenter(j,i)=cluster_center(j,i)
           ENDDO
