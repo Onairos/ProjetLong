@@ -4,7 +4,7 @@ CONTAINS
 
 
 
-  SUBROUTINE send_partitionning(nbproc, data, points_by_domain, ddat, partitioned_data)
+  SUBROUTINE send_partitioning(nbproc, data, points_by_domain, ddat, partitioned_data)
     IMPLICIT NONE    
     ! MPI library
     INCLUDE 'mpif.h'
@@ -91,7 +91,7 @@ CONTAINS
     partitioned_data%dim=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     RETURN
-  END SUBROUTINE send_partitionning
+  END SUBROUTINE send_partitioning
 
 
   SUBROUTINE receive_partitionning(numproc, partitioned_data)

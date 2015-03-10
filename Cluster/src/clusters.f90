@@ -166,7 +166,7 @@ PROGRAM clusters
         PRINT *
         PRINT *,'DEBUG : Transferring partitioned data...'
 #endif
-        CALL send_partitionning(nbproc,data,points_by_domain,assignements,partitioned_data)
+        CALL send_partitioning(nbproc,data,points_by_domain,assignements,partitioned_data)
 #if aff
         PRINT *
         PRINT *,'DEBUG : Computing clusters...'
