@@ -94,7 +94,7 @@ CONTAINS
   END SUBROUTINE send_partitioning
 
 
-  SUBROUTINE receive_partitioning(numproc, partitioned_data)
+  SUBROUTINE receive_partitioning(proc_id, partitioned_data)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -103,7 +103,7 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    INTEGER :: numproc
+    INTEGER :: proc_id
 
     !====  OUT ====
     TYPE(type_data) :: partitioned_data
@@ -121,7 +121,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################   
     ! Receiving dimensions
-    tag=numproc
+    tag=proc_id
     CALL MPI_RECV(m,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
     CALL MPI_RECV(n,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,status,ierr)
     partitioned_data%nb=m
@@ -131,7 +131,7 @@ CONTAINS
        ALLOCATE(coord(m,n))
        coord=0.0
        ! Receiving arrays
-       tag=numproc*10
+       tag=proc_id*10
        CALL MPI_RECV(coord,m*n,MPI_DOUBLE_PRECISION,0,tag,&
             MPI_COMM_WORLD,status,ierr)
        ! Creation of TYPE partitioned_data of subdomain
@@ -218,7 +218,7 @@ CONTAINS
   END SUBROUTINE receive_number_clusters
 
 
-  SUBROUTINE send_number_clusters(numproc, partitioned_data)
+  SUBROUTINE send_number_clusters(proc_id, partitioned_data)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -228,7 +228,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) ::partitioned_data
-    INTEGER :: numproc
+    INTEGER :: proc_id
 
     !#### Variables  ####
     INTEGER, DIMENSION(:), POINTER :: list
@@ -241,7 +241,7 @@ CONTAINS
     !###########################################
     IF (partitioned_data%nb>0) THEN
        ! Number of clusters
-       tag=numproc*11
+       tag=proc_id*11
        CALL MPI_SEND(partitioned_data%nbclusters,1,MPI_INTEGER,0,tag,MPI_COMM_WORLD,ierr)
        ! Number of points by cluster
        ALLOCATE(list(partitioned_data%nbclusters))
@@ -257,7 +257,7 @@ CONTAINS
 
 
 
-  SUBROUTINE send_clusters(numproc, partitioned_data)
+  SUBROUTINE send_clusters(proc_id, partitioned_data)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -267,7 +267,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: partitioned_data
-    INTEGER :: numproc
+    INTEGER :: proc_id
     
     !#### Variables  ####  
     INTEGER, DIMENSION(:), POINTER :: lclust
@@ -283,7 +283,7 @@ CONTAINS
        DO i=1,partitioned_data%nb
           lclust(i)=partitioned_data%point(i)%cluster
        ENDDO
-       tag=numproc*12
+       tag=proc_id*12
        CALL MPI_SEND(lclust,partitioned_data%nb,MPI_INTEGER,0,tag,MPI_COMM_WORLD,ierr)
        DEALLOCATE(lclust)
     ENDIF

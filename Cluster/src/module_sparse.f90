@@ -4,12 +4,12 @@ MODULE module_sparse
   USE module_embed
 CONTAINS
 
-  SUBROUTINE sp_calculclusters(numproc, nb_clusters_max, nbideal, partitioned_data, sigma)
+  SUBROUTINE sp_calculclusters(proc_id, nb_clusters_max, nbideal, partitioned_data, sigma)
 
     IMPLICIT INTEGER(i, j, q)
     INCLUDE 'mpif.h'
     TYPE(type_data) :: partitioned_data
-    INTEGER :: numproc, nbproc
+    INTEGER :: proc_id, nbproc
     DOUBLE PRECISION :: sigma
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
     INTEGER :: n, k, nbcluster
@@ -35,7 +35,7 @@ CONTAINS
 
     ! Matrix creation
 #if aff
-    PRINT *, 'DEBUG : process n', numproc, ' : value of sigma : ', sigma
+    PRINT *, 'DEBUG : process n', proc_id, ' : value of sigma : ', sigma
 #endif
     n=partitioned_data%nb
 
@@ -65,7 +65,7 @@ CONTAINS
 
     t2 = MPI_WTIME()
     t_cons_a = t2 - t1
-    PRINT *, 'Process n', numproc, ' : t_cons A : ', t_cons_a
+    PRINT *, 'Process n', proc_id, ' : t_cons A : ', t_cons_a
 
     t1 = MPI_WTIME()
     nnz2 = nnz*2
@@ -172,7 +172,7 @@ CONTAINS
 
           CALL sp_spectral_embedding(nbcluster, n, Z, nnz2, AS, IAS, JAS, &
                ratiomax(nbcluster),clusters,clusters_centers,points_by_clusters, &
-               clusters_energies,nb_info(nbcluster),numproc,ratio_moy(nbcluster), &
+               clusters_energies,nb_info(nbcluster),proc_id,ratio_moy(nbcluster), &
                ratio_rij(nbcluster),ratio_rii(nbcluster))
 
           DEALLOCATE(clusters)
@@ -192,7 +192,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ratio2=1e+10
 
        DO i=2,nb_clusters_max
-          IF ((numproc==0).AND.(nbproc>1)) THEN 
+          IF ((proc_id==0).AND.(nbproc>1)) THEN 
              seuilrij=1e-1
           ELSE
              seuilrij=1e-4
@@ -240,7 +240,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ENDIF
     ENDIF
 #if aff
-    PRINT *, 'DEBUG : process n', numproc,' : final clusters got : ', partitioned_data%nbclusters
+    PRINT *, 'DEBUG : process n', proc_id,' : final clusters got : ', partitioned_data%nbclusters
 #endif
 
     ! Computing final clustering
@@ -248,7 +248,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
        CALL sp_spectral_embedding(partitioned_data%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
             clusters_centers,points_by_clusters,clusters_energies,&
-            nb_info(partitioned_data%nbclusters),numproc,ratiomin(1),ratio_rij(1),&
+            nb_info(partitioned_data%nbclusters),proc_id,ratiomin(1),ratio_rij(1),&
             ratio_rii(1))
 
        DO i=1,partitioned_data%nb
@@ -267,13 +267,13 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
     ELSE 
 #if aff
-       PRINT *, 'DEBUG : process n', numproc, ' : OK'
+       PRINT *, 'DEBUG : process n', proc_id, ' : OK'
 #endif
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%clusters=1
        ENDDO
 #if aff
-       PRINT *, 'DEBUG : process n', numproc, ' : cluster'
+       PRINT *, 'DEBUG : process n', proc_id, ' : cluster'
 #endif
     ENDIF
 
@@ -288,12 +288,12 @@ PRINT *, 'DEBUG : Frobenius ratio'
   END SUBROUTINE sp_calculclusters
 
     SUBROUTINE sp_spectral_embedding(nbcluster, n, Z, nnz, AS, IAS, JAS, ratio, clusters, &
-       clusters_centers, points_by_clusters, clusters_energies, nb_info, numproc, &
+       clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
        ratio_moy, ratio_rij, ratio_rii)
 
     IMPLICIT NONE
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z, clusters_centers
-    INTEGER ::nbcluster, n, nb_info, numproc
+    INTEGER ::nbcluster, n, nb_info, proc_id
     DOUBLE PRECISION ::ratio, test, ratiomin, ratio_rii, ratio_rij, ratio_moy
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies, Z3
     INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters
@@ -335,13 +335,13 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ENDDO
     ENDDO
 
-    PRINT *, 'Process n', numproc,' : kmeans method'
+    PRINT *, 'Process n', proc_id,' : kmeans method'
 
     it_max=n*n !1000.0
 
     CALL apply_kmeans( nbcluster, n, nbcluster, it_max, it_num, Z2,&
          clusters, clusters_centers, points_by_clusters, clusters_energies, &
-         numproc)
+         proc_id)
 
     ! Quality measure
 
@@ -410,7 +410,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     ! End of sparsification
 
 #if aff
-    PRINT *, 'Process n', numproc,' : nb_info=', nb_info, ' nbcluster=', nbcluster
+    PRINT *, 'Process n', proc_id,' : nb_info=', nb_info, ' nbcluster=', nbcluster
 #endif
 
     RETURN 

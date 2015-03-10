@@ -5,7 +5,7 @@ CONTAINS
 
 
   SUBROUTINE spectral_embedding(nbcluster, n, Z, A, ratio,clusters, &
-       clusters_centers, points_by_clusters, clusters_energies, nb_info, numproc, &
+       clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
        ratio_moy, ratio_rij, ratio_rii)
     IMPLICIT NONE
     !###########################################
@@ -17,7 +17,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z ! matrice des vecteurs propres
     INTEGER :: n
     INTEGER :: nbcluster ! nbre de clusters
-    INTEGER :: numproc
+    INTEGER :: proc_id
     
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers ! centre des nbclusters clusters
@@ -81,7 +81,7 @@ CONTAINS
 
     CALL apply_kmeans( nbcluster, n, nbcluster, nb_iter_max, nb_iter,Z2,&
          clusters, clusters_centers, points_by_clusters, clusters_energies, &
-         numproc)
+         proc_id)
 
     !*****************************
     ! Mesure de qualite
@@ -142,7 +142,7 @@ CONTAINS
     DEALLOCATE(Frob)
 
 #if aff
-    PRINT *, 'DEBUG : process n', numproc,' : nb_info=', nb_info, ' nbcluster=', nbcluster
+    PRINT *, 'DEBUG : process n', proc_id,' : nb_info=', nb_info, ' nbcluster=', nbcluster
 #endif
 
     RETURN 
@@ -151,7 +151,7 @@ CONTAINS
 
 
   SUBROUTINE apply_kmeans(dimension, nb_points, nb_clusters, nb_iter_max, nb_iter, points, &
-       clusters, clusters_centers, points_by_clusters, clusters_energies, numproc)
+       clusters, clusters_centers, points_by_clusters, clusters_energies, proc_id)
 
     !*****************************************************************************80
     !
@@ -208,7 +208,7 @@ CONTAINS
     INTEGER :: points_by_clusters (nb_clusters) ! the number of points in each cluster
 
     !== USELESS ===
-    INTEGER :: numproc ! TODO : etudier si garder ou pas : le garder finalement
+    INTEGER :: proc_id ! TODO : etudier si garder ou pas : le garder finalement
     
     !#### Variables  ####
     DOUBLE PRECISION :: listnorm (nb_points, nb_clusters)

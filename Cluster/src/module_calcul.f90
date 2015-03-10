@@ -46,7 +46,7 @@ CONTAINS
   END SUBROUTINE get_sigma
 
 
-  SUBROUTINE get_sigma_interface(numproc, partitioned_data, sigma, bounds, partitionning, epsilon)
+  SUBROUTINE get_sigma_interface(proc_id, partitioned_data, sigma, bounds, partitionning, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -57,7 +57,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
     DOUBLE PRECISION :: epsilon
     INTEGER, DIMENSION(:), POINTER :: partitionning
-    INTEGER :: numproc
+    INTEGER :: proc_id
 
     !====  OUT ====
     DOUBLE PRECISION :: sigma
@@ -118,13 +118,13 @@ CONTAINS
     ! Sigma computing
     sigma0=sigma0/(2.0*exp(log(float(partitioned_data%nb))*(1.0/float(partitioned_data%dim))))
 #if aff
-    PRINT *, 'DEBUG : process n', numproc, ' : value of computed sigma for interfacing : ', sigma0
+    PRINT *, 'DEBUG : process n', proc_id, ' : value of computed sigma for interfacing : ', sigma0
 #endif
 !!======================TODO : fin de #if aff ??????
     ! Sigma computing, global formula
     CALL get_sigma(partitioned_data,sigma)
 #if aff
-    PRINT *, 'DEBUG : process n', numproc,' : value of sigma for interfacing', sigma
+    PRINT *, 'DEBUG : process n', proc_id,' : value of sigma for interfacing', sigma
 #endif
     RETURN
   END SUBROUTINE get_sigma_interface
@@ -212,7 +212,7 @@ FUNCTION poly_kernel( dataw, gam, delta )
 
 
 
-SUBROUTINE apply_kernel_k_means(numproc,nblimit,nbideal,dataw,clust_param)
+SUBROUTINE apply_kernel_k_means(proc_id,nblimit,nbideal,dataw,clust_param)
     IMPLICIT NONE
 
    INCLUDE 'mpif.h'
@@ -224,7 +224,7 @@ SUBROUTINE apply_kernel_k_means(numproc,nblimit,nbideal,dataw,clust_param)
   
     INTEGER :: nbideal
     INTEGER :: nblimit
-    INTEGER :: numproc
+    INTEGER :: proc_id
     TYPE(type_clustering_param) :: clust_param
 
     !=== IN/OUT ===
@@ -471,7 +471,7 @@ PRINT *, 'recherche des centres'
 
 
 
-  SUBROUTINE apply_spectral_clustering(numproc, nb_clusters_max, nbideal, partitioned_data, sigma,clust_param)
+  SUBROUTINE apply_spectral_clustering(proc_id, nb_clusters_max, nbideal, partitioned_data, sigma,clust_param)
     IMPLICIT NONE
     INCLUDE 'mpif.h'
     !###########################################
@@ -482,7 +482,7 @@ PRINT *, 'recherche des centres'
     DOUBLE PRECISION :: sigma
     INTEGER :: nbideal
     INTEGER :: nb_clusters_max
-    INTEGER :: numproc
+    INTEGER :: proc_id
     TYPE(type_clustering_param) :: clust_param
 
     !=== IN/OUT ===
@@ -528,7 +528,7 @@ PRINT *, 'recherche des centres'
     ! INSTRUCTIONS
     !###########################################
     ! Matrix creation
-    PRINT *, 'Process n', numproc, ' : value of sigma : ', sigma
+    PRINT *, 'Process n', proc_id, ' : value of sigma : ', sigma
     n=partitioned_data%nb
     ! Forall i, A(i,i) = 0
     ALLOCATE(A(n,n))
@@ -571,7 +571,7 @@ PRINT *, 'recherche des centres'
     solver = 0
 
     IF(solver == 0) THEN
-      PRINT *, 'Process n', numproc, ' : Lapack solver'
+      PRINT *, 'Process n', proc_id, ' : Lapack solver'
 
       nbvp = n
 
@@ -586,7 +586,7 @@ PRINT *, 'recherche des centres'
       t1 = MPI_WTIME()
       CALL solve_dgeev(n,A2,Z,W)
     ELSE
-      PRINT *, 'Process n', numproc, ' : Arpack solver'
+      PRINT *, 'Process n', proc_id, ' : Arpack solver'
 
       nb = 2*nb_clusters_max
       nbvp = nb
@@ -597,7 +597,7 @@ PRINT *, 'recherche des centres'
     t2 = MPI_WTIME()
 
     t_cons_vp = t2 - t1
-    PRINT *, 'Process n', numproc, ' : Time for eigen values construction : ', t_cons_vp
+    PRINT *, 'Process n', proc_id, ' : Time for eigen values construction : ', t_cons_vp
 
     DO i=1,nbvp-1
        DO j=i+1,nbvp
@@ -643,7 +643,7 @@ PRINT *, 'recherche des centres'
 
           CALL spectral_embedding(nbcluster,n,Z,A,&
                ratiomax(nbcluster),cluster,clusters_centers,points_by_clusters,&
-               clusters_energies,nb_info(nbcluster),numproc,ratiomoy(nbcluster), &
+               clusters_energies,nb_info(nbcluster),proc_id,ratiomoy(nbcluster), &
                ratiorij(nbcluster),ratiorii(nbcluster))
 
 
@@ -662,7 +662,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ratio1=0.0
        ratio2=1e+10
        DO i=2,nb_clusters_max
-          IF ((numproc==0).AND.(nbproc>1)) THEN 
+          IF ((proc_id==0).AND.(nbproc>1)) THEN 
              seuilrij=1e-1
           ELSE
              seuilrij=1e-4 !TODO : garder que celui-ci
@@ -709,14 +709,14 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ENDIF
     ENDIF
 #if aff
-    PRINT *, 'DEBUG : Process n', numproc,' : final cluster got : ', partitioned_data%nbclusters
+    PRINT *, 'DEBUG : Process n', proc_id,' : final cluster got : ', partitioned_data%nbclusters
 #endif
 
     ! Final clustering computing
     IF (partitioned_data%nbclusters>1) THEN
        CALL spectral_embedding(partitioned_data%nbclusters,n,Z,A,ratio,cluster,&
             clusters_centers,points_by_clusters,clusters_energies,&
-            nb_info(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),ratiorii(1))
+            nb_info(partitioned_data%nbclusters),proc_id,ratiomin(1),ratiorij(1),ratiorii(1))
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%cluster=cluster(i)
        ENDDO
@@ -735,13 +735,13 @@ PRINT *, 'DEBUG : Frobenius ratio'
        DEALLOCATE(W)
     ELSE 
 #if aff
-       PRINT *, 'Process n', numproc, ' : OK'
+       PRINT *, 'Process n', proc_id, ' : OK'
 #endif
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%cluster=1
        ENDDO
 #if aff
-       PRINT *, 'Process n', numproc,' : Cluster'
+       PRINT *, 'Process n', proc_id,' : Cluster'
 #endif
     ENDIF
 
@@ -750,7 +750,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
 
 
-SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
+SUBROUTINE mean_shift(proc_id,nblimit,nbideal,dataw,bandWidth)
 
    INCLUDE 'mpif.h'
     !IMPLICIT NONE
@@ -762,7 +762,7 @@ SUBROUTINE mean_shift(numproc,nblimit,nbideal,dataw,bandWidth)
   
     INTEGER :: nbideal
     INTEGER :: nblimit
-    INTEGER :: numproc
+    INTEGER :: proc_id
     INTEGER :: bandWidth !bandwidth parameter
 
     !=== IN/OUT ===
