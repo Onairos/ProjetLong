@@ -212,7 +212,7 @@ FUNCTION poly_kernel( dataw, gam, delta )
 
 
 
-SUBROUTINE apply_kernel_k_means(proc_id,nblimit,nbideal,dataw,clust_param)
+SUBROUTINE apply_kernel_k_means(proc_id,nblimit,nb_clusters_opt,dataw,clust_param)
     IMPLICIT NONE
 
    INCLUDE 'mpif.h'
@@ -222,7 +222,7 @@ SUBROUTINE apply_kernel_k_means(proc_id,nblimit,nbideal,dataw,clust_param)
     !#### Parameters ####
     !====  IN  ====
   
-    INTEGER :: nbideal
+    INTEGER :: nb_clusters_opt
     INTEGER :: nblimit
     INTEGER :: proc_id
     TYPE(type_clustering_param) :: clust_param
@@ -471,7 +471,7 @@ PRINT *, 'recherche des centres'
 
 
 
-  SUBROUTINE apply_spectral_clustering(proc_id, nb_clusters_max, nbideal, partitioned_data, sigma,clust_param)
+  SUBROUTINE apply_spectral_clustering(proc_id, nb_clusters_max, nb_clusters_opt, partitioned_data, sigma,clust_param)
     IMPLICIT NONE
     INCLUDE 'mpif.h'
     !###########################################
@@ -480,7 +480,7 @@ PRINT *, 'recherche des centres'
     !#### Parameters ####
     !====  IN  ====
     DOUBLE PRECISION :: sigma
-    INTEGER :: nbideal
+    INTEGER :: nb_clusters_opt
     INTEGER :: nb_clusters_max
     INTEGER :: proc_id
     TYPE(type_clustering_param) :: clust_param
@@ -519,7 +519,7 @@ PRINT *, 'recherche des centres'
     INTEGER :: k
     INTEGER :: n
     INTEGER :: nb
-    INTEGER :: nbcluster
+    INTEGER :: nb_clusters
     INTEGER :: nbproc !TODO : mettre en parametre et WTF faut-il faire car on lit une variable vide
     INTEGER :: nbvp
     INTEGER :: solver ! solveur au valeur propre => parametre de controle
@@ -615,7 +615,7 @@ PRINT *, 'recherche des centres'
     ENDDO
 
     ! Spectral embedding
-    IF ((nbideal==0).AND.(n>2)) THEN
+    IF ((nb_clusters_opt==0).AND.(n>2)) THEN
        ! Search of the best partitionning
        ALLOCATE(ratiomax(nb_clusters_max))
        ratiomax(:)=0
@@ -630,21 +630,21 @@ PRINT *, 'recherche des centres'
 
        ALLOCATE(nb_info(nb_clusters_max))
        nb_info(:)=0
-       DO nbcluster=2,min(n,nb_clusters_max)
+       DO nb_clusters=2,min(n,nb_clusters_max)
 
           ALLOCATE(cluster(n))
           cluster(:)=0
-          ALLOCATE(clusters_centers(nbcluster,nbcluster))
+          ALLOCATE(clusters_centers(nb_clusters,nb_clusters))
           clusters_centers(:,:)=0.0
-          ALLOCATE(points_by_clusters(nbcluster))
+          ALLOCATE(points_by_clusters(nb_clusters))
           points_by_clusters(:)=0
-          ALLOCATE(clusters_energies(nbcluster))
+          ALLOCATE(clusters_energies(nb_clusters))
           clusters_energies(:)=0.0
 
-          CALL spectral_embedding(nbcluster,n,Z,A,&
-               ratiomax(nbcluster),cluster,clusters_centers,points_by_clusters,&
-               clusters_energies,nb_info(nbcluster),proc_id,ratiomoy(nbcluster), &
-               ratiorij(nbcluster),ratiorii(nbcluster))
+          CALL spectral_embedding(nb_clusters,n,Z,A,&
+               ratiomax(nb_clusters),cluster,clusters_centers,points_by_clusters,&
+               clusters_energies,nb_info(nb_clusters),proc_id,ratiomoy(nb_clusters), &
+               ratiorij(nb_clusters),ratiorii(nb_clusters))
 
 
           DEALLOCATE(cluster)
@@ -674,15 +674,15 @@ PRINT *, 'DEBUG : Frobenius ratio'
           ENDIF
        ENDDO
 
-    ELSEIF ((nbideal==1).AND.(n>nbideal)) THEN
+    ELSEIF ((nb_clusters_opt==1).AND.(n>nb_clusters_opt)) THEN
        ! Test with an imposed cluster
-       ALLOCATE(nb_info(nbideal))
+       ALLOCATE(nb_info(nb_clusters_opt))
        nb_info(:)=0
        ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
-       partitioned_data%nbclusters=nbideal
+       partitioned_data%nbclusters=nb_clusters_opt
     ELSE
-       ! Case of a domain with less points than nbideal or only one point
+       ! Case of a domain with less points than nb_clusters_opt or only one point
        ALLOCATE(nb_info(n))
        nb_info(:)=0
        ALLOCATE(ratiomin(1))
@@ -699,7 +699,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ALLOCATE(ratiorij(n))
        ratiorij(:)=0
     ENDIF
-    ! Case of nbcluster==1
+    ! Case of nb_clusters==1
     IF (partitioned_data%nbclusters==2) THEN
        PRINT *, 'Ratio difference : ', ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 
@@ -750,7 +750,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
 
 
-SUBROUTINE mean_shift(proc_id,nblimit,nbideal,dataw,bandWidth)
+SUBROUTINE mean_shift(proc_id,nblimit,nb_clusters_opt,dataw,bandWidth)
 
    INCLUDE 'mpif.h'
     !IMPLICIT NONE
@@ -760,7 +760,7 @@ SUBROUTINE mean_shift(proc_id,nblimit,nbideal,dataw,bandWidth)
     !#### Parameters ####
     !====  IN  ====
   
-    INTEGER :: nbideal
+    INTEGER :: nb_clusters_opt
     INTEGER :: nblimit
     INTEGER :: proc_id
     INTEGER :: bandWidth !bandwidth parameter
