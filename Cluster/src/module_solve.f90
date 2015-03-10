@@ -1,18 +1,54 @@
+!>Contains methods from Lapack library dealing with eigen values computing
  MODULE module_solve
 CONTAINS
 
 
 
+!>
+!! @param A the affinity matrix
+!! @param VR 
+!! @param WR 
+!! @param N 
   SUBROUTINE solve_dgeevx(N, A, VR, WR)
     IMPLICIT NONE
     EXTERNAL DGEEVX
-    INTEGER :: N, LWORK, INFO, LDA, LDVL, LDVR, ILO, IHI
-    INTEGER, DIMENSION(:), POINTER :: IWORK
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A, VL, VR
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: WORK, WR, WI, SCALE, RCONDE, RCONDV
-    DOUBLE PRECISION :: ABNRM
-    CHARACTER :: JOBVL, JOBVR, BALANC, SENSE
 
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
+    INTEGER :: N
+
+    !====  OUT ====
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VR
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: WR
+
+    !#### Variables  ####
+    CHARACTER :: BALANC
+    CHARACTER :: JOBVL
+    CHARACTER :: JOBVR
+    CHARACTER :: SENSE
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VL
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: RCONDE
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: RCONDV
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: SCALE
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: WI
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: WORK
+    DOUBLE PRECISION :: ABNRM
+    INTEGER, DIMENSION(:), POINTER :: IWORK
+    INTEGER :: IHI
+    INTEGER :: ILO
+    INTEGER :: INFO
+    INTEGER :: LDA
+    INTEGER :: LDVL
+    INTEGER :: LDVR
+    INTEGER :: LWORK
+
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################      
     LDA = N
     LDVL=N
     LDVR=N
@@ -46,14 +82,41 @@ CONTAINS
 
 
 
+!>
+!! @param[in] A the affinity matrix
+!! @param[in] N 
+!! @param[out] VR 
+!! @param[out] WR 
   SUBROUTINE solve_dgeev(N, A, VR, WR)
     IMPLICIT NONE
     EXTERNAL DGEEV
-    INTEGER :: N, LWORK, INFO, LDA, LDVL, LDVR
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A, VL, VR
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: WORK, WR, WI
-    CHARACTER :: JOBVL, JOBVR
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
+    INTEGER :: N
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
 
+    !====  OUT ====
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VR
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: WR
+
+    !#### Variables  ####
+    CHARACTER :: JOBVL
+    CHARACTER :: JOBVR
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VL
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: WI
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: WORK
+    INTEGER :: INFO
+    INTEGER :: LDA
+    INTEGER :: LDVL
+    INTEGER :: LDVR
+    INTEGER :: LWORK
+
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
     LDA = N
     LDVL=N
     LDVR=N
@@ -82,13 +145,36 @@ CONTAINS
 
 
 
+!>
+!! @param A the affinity matrix
+!! @param W 
+!! @param LWORK 
+!! @param N 
   SUBROUTINE solve_dsyev(N, A, W, LWORK)
     IMPLICIT NONE
     EXTERNAL DSYEV
-    INTEGER :: N, LWORK, INFO, LDA
-    DOUBLE PRECISION :: A(N,N), WORK(LWORK), W(N)
-    CHARACTER :: JOBZ, UPLO
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
+    DOUBLE PRECISION :: A(N,N)
+    INTEGER :: N
 
+    !====  OUT ====
+    DOUBLE PRECISION :: W(N)
+    INTEGER :: LWORK
+
+    !#### Variables  ####
+    CHARACTER :: JOBZ
+    CHARACTER :: UPLO
+    DOUBLE PRECISION :: WORK(LWORK)
+    INTEGER :: INFO
+    INTEGER :: LDA
+
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
     JOBZ = 'V'
     INFO=0
     UPLO = 'U'
@@ -100,16 +186,53 @@ CONTAINS
 
 
 
+!>
+!! @param A the affinity matrix
+!! @param Z the matrix of eigen vectors
+!! @param W 
+!! @param k 
+!! @param LIWORK 
+!! @param LWORK 
+!! @param M 
+!! @param N 
   SUBROUTINE solve_dsyevr(k, N, A, Z, LWORK, LIWORK, W, M)
     IMPLICIT NONE
     EXTERNAL DSYEVR
-    INTEGER :: N, LWORK, LIWORK
-    DOUBLE PRECISION :: A(N,N), W(N), Z(N,N)
-    INTEGER :: LDA, IL, IU, M, INFO, LDZ, ISUPPZ(2*N), IWORK(LIWORK)
-    DOUBLE PRECISION :: ABSTOL, VL, VU, WORK(LWORK)
-    CHARACTER :: JOBZ, RANGE, UPLO
-    INTEGER :: i, j, k
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
+    DOUBLE PRECISION :: A(N,N)
+    DOUBLE PRECISION :: Z(N,N)
+    DOUBLE PRECISION :: W(N)
+    INTEGER :: k
+    INTEGER :: M
+    INTEGER :: N
+    INTEGER :: LIWORK
+    INTEGER :: LWORK
 
+    !#### Variables  ####
+    CHARACTER :: JOBZ
+    CHARACTER :: RANGE
+    CHARACTER :: UPLO
+    DOUBLE PRECISION :: WORK(LWORK)
+    DOUBLE PRECISION :: ABSTOL
+    DOUBLE PRECISION :: VL
+    DOUBLE PRECISION :: VU
+    INTEGER :: ISUPPZ(2*N)
+    INTEGER :: IWORK(LIWORK)
+    INTEGER :: INFO
+    INTEGER :: i
+    INTEGER :: IL
+    INTEGER :: IU
+    INTEGER :: j
+    INTEGER :: LDA
+    INTEGER :: LDZ
+
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
     JOBZ = 'V'
     INFO=0
     RANGE = 'A'
@@ -136,16 +259,53 @@ CONTAINS
 
 
 
+!>
+!! @param A the affinity matrix
+!! @param Z the matrix of eigen vectors
+!! @param W 
+!! @param k 
+!! @param LIWORK 
+!! @param LWORK 
+!! @param M 
+!! @param N 
   SUBROUTINE solve_dsyevx(k, N, A, Z, LWORK, LIWORK, W, M)
     IMPLICIT NONE
     EXTERNAL DSYEVX
-    INTEGER :: N, LWORK, LIWORK, IFAIL
-    DOUBLE PRECISION :: A(N,N), W(N), Z(N,N)
-    INTEGER :: LDA, IL, IU, M, INFO, LDZ, IWORK(LIWORK)
-    DOUBLE PRECISION :: ABSTOL, VL, VU, WORK(LWORK)
-    CHARACTER :: JOBZ, RANGE, UPLO
-    INTEGER :: i, j, k
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !=== IN/OUT ===
+    DOUBLE PRECISION :: A(N,N)
+    DOUBLE PRECISION :: Z(N,N)
+    DOUBLE PRECISION :: W(N)
+    INTEGER :: LIWORK
+    INTEGER :: LWORK
+    INTEGER :: k
+    INTEGER :: M
+    INTEGER :: N
 
+    !#### Variables  ####
+    CHARACTER :: JOBZ
+    CHARACTER :: UPLO
+    CHARACTER :: RANGE
+    DOUBLE PRECISION :: WORK(LWORK)
+    DOUBLE PRECISION :: ABSTOL
+    DOUBLE PRECISION :: VL
+    DOUBLE PRECISION :: VU
+    INTEGER :: i
+    INTEGER :: IFAIL
+    INTEGER :: IL
+    INTEGER :: INFO
+    INTEGER :: IU
+    INTEGER :: IWORK(LIWORK)
+    INTEGER :: j
+    INTEGER :: LDA
+    INTEGER :: LDZ
+
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
     JOBZ = 'V'
     INFO=0
     RANGE = 'A'

@@ -1,3 +1,4 @@
+!>Contains the spectral clustering method and methods that computes affinity parameters for kernels and overlapping
 MODULE module_calcul
   USE module_structure
   USE module_solve
@@ -5,6 +6,25 @@ MODULE module_calcul
 CONTAINS
 
 
+!>Computes the affinity parameter @f$sigma@f$
+!!@details The Gaussian affinity matrix is widely used and depends on a free parameter
+!!@f$\sigma@f$. It is known that this parameter affects the results in spectral clustering
+!!and spectral embedding. With an assumption that the @f$p@f$ dimensionnal data set S composed
+!!of @f$n@f$ points is isotropic enough, this data set is included in a @f$p@f$ dimensional 
+!!box bounded by @f$D_{max}@f$ the largest distance between pairs of points in @f$S@f$ : 
+!!@f{equation}{D_{max} = \max_{1\leq i,j\leq n} \Vert x_i - x_j \Vert @f}
+!!So a reference distance noted @f$\sigma@f$ could be defined. This distance represents the
+!!case of an uniform distribution in the sense that all pair of points are seprated by the
+!!same distance @f$\sigma@f$ in the box of edge size @f$D_{max}@f$ :
+!!@f{equation}{\sigma = \frac{D_{max}}{n^{1/p}} @f}
+!!<br>
+!!This function is used to compute this parameter on one domain. The algorithm is simple :
+!!<ol> 
+!!<li> <b> Find the maximum distance using two nested loops over the points in the domain </b> </li>
+!!<li> <b> Divide it by the @f$p^{th}@f$ root of @f$n@f$ </b> </li>
+!!</ol>
+!! @param[in] partitioned_data the partitioned data for computing
+!! @param[out] sigma the affinity parameter
   SUBROUTINE get_sigma(partitioned_data, sigma)
     IMPLICIT NONE
     !###########################################
@@ -44,6 +64,18 @@ CONTAINS
   END SUBROUTINE get_sigma
 
 
+!>Computes the affinity parameter @f$sigma@f$ for the interface
+!!@details This method is useful when the partitioning is
+!!made by interface. Because, the domain defining the interface
+!!has a volume whose topology changes drastically, a specific
+!!computation of @f$\sigma@f$ has to be made.
+!!@deprecated Use get_sigma() instead
+!! @param[in] partitioned_data the partitioned data for computing
+!! @param[in] bounds the intervals along each dimension representing the bounds of each partition
+!! @param[in] epsilon the slice thickness
+!! @param[in] proc_id the processus identifier
+!! @param[in] partitioning the partitionning (number of processors along each dimension)
+!! @param[out] sigma the affinity parameter
   SUBROUTINE get_sigma_interface(proc_id, partitioned_data, sigma, bounds, partitioning, epsilon)
     IMPLICIT NONE
     !###########################################
@@ -203,7 +235,7 @@ FUNCTION poly_kernel( partitioned_data, gam, delta )
   END
 
 
-!Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||Â²))
+!Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||²))
 
 
 
@@ -350,7 +382,7 @@ PRINT *, 'recherche des centres'
                 norm=0.0
                 DO k=1,partitioned_data%dim
                    val=max(val,abs(cluster_center(k,j)-partitioned_data%point(p)%coord(k))) 
-!VOIR SI CELA DOIT ÃTRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!VOIR SI CELA DOIT �?TRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 ENDDO
                 valmax=min(val,valmax)
              ENDDO

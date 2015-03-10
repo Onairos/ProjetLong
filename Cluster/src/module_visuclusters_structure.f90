@@ -1,3 +1,4 @@
+!>Contains useful data structures
 MODULE module_visuclusters_structure
 
   TYPE type_params

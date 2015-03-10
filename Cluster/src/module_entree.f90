@@ -1,7 +1,9 @@
+!>Contains methods enabling data and parameter file reading
 MODULE module_entree
  USE module_structure
 CONTAINS
 
+!>Displays help on used formats and keywords for <em>param.in</em> file
   SUBROUTINE help
     IMPLICIT NONE
     !###########################################
@@ -69,6 +71,17 @@ CONTAINS
   END SUBROUTINE help
 
 
+!>Reads a file in which there is the whole information on the data
+!! @param[in] nb_proc the number of processors used
+!! @param[in,out] data the entire data for computing
+!! @param[out] input_file the name of the text file where input data is written
+!! @param[out] coord_max the maxima along each dimension of the data (coordinates)
+!! @param[out] coord_min the minima along each dimension of the data (coordinates)
+!! @param[out] epsilon the slice thickness
+!! @param[out] sigma the affinity parameter
+!! @param[out] nb_clusters_max the maximum number of clusters
+!! @param[out] list_nb_clusters the imposed numbers of clusters list for testing purpose (useless)
+!! @param[out] partitioning the partitionning (number of processors along each dimension)
   SUBROUTINE read_params(data, epsilon, coord_min, coord_max, nb_proc, partitioning, &
        input_file, sigma, nb_clusters_max, list_nb_clusters,clust_param)
     IMPLICIT NONE
@@ -314,6 +327,7 @@ CONTAINS
   END SUBROUTINE read_params
 
 
+!>Reads data written in coordinates format
   SUBROUTINE read_coordinates_data(input_file, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
@@ -374,6 +388,25 @@ CONTAINS
   END SUBROUTINE read_coordinates_data
 
 
+!>Reads data written in picture format
+!!@details This type of file starts with two <em>integers</em>
+!!separated by a blank space: the first one corresponds to the 
+!!dimension of the image and the second one the number of attributes
+!!(typically, the attributes could be the color channel intensities).
+!!The following line is composed of two <em>integers</em> separated by 
+!!a blank space: the first one corresponds to the number of pixels in
+!!a column and the second one to the number of pixels in a row. 
+!!Then, next lines are composed of <em>double</em> numbers separated 
+!!by blank spaces. Each of these lines corresponds to the value of
+!!the attributes for each pixel. The coordinates of the pixels are 
+!!implicit as they are ordered by rows.
+!!@note The attributes are stored in the field type_data::coord and so ONLY the color will be taken into account.
+!!@note The outputs <em>coordmax</em> and <em>coordmin</em> are computed according to the position of the pixels.
+!!@see assign_picture_array(), read_coordinates_data(), read_threshold_data(), read_geometric_data
+!! @param[in] input_file the name of the text file where input data is written
+!! @param[in,out] data the entire data for computing
+!! @param[out] coord_max the maxima along each dimension of the data (coordinates)
+!! @param[out] coord_min the minima along each dimension of the data (coordinates)
   SUBROUTINE read_picture_data(input_file, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
@@ -435,6 +468,25 @@ CONTAINS
   END SUBROUTINE read_picture_data
   
 
+!>Reads data written in geometric format
+!!@details This type of file starts with two <em>integers</em>
+!!separated by a blank space: the first one corresponds to the 
+!!dimension of the image and the second one the number of attributes
+!!(typically, the attributes could be the color channel intensities).
+!!The following line is composed of two <em>integers</em> separated by 
+!!a blank space: the first one corresponds to the number of pixels in
+!!a column and the second one to the number of pixels in a row. 
+!!Then, next lines are composed of <em>double</em> numbers separated 
+!!by blank spaces. Each of these lines corresponds to the value of
+!!the attributes for each pixel. The coordinates of the pixels are 
+!!implicit as they are ordered by rows.
+!!@note The attributes and the coordinates are stored in the field type_data::coord and so the position AND the color will be taken into account.
+!!@note The partitioning is made according to the coordinates
+!!@see assign_picture_array(), read_coordinates_data(), read_threshold_data(), read_picture_data
+!! @param[in] input_file the name of the text file where input data is written
+!! @param[in,out] data the entire data for computing
+!! @param[out] coord_max the maxima along each dimension of the data (coordinates)
+!! @param[out] coord_min the minima along each dimension of the data (coordinates)
   SUBROUTINE read_geometric_data(input_file, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
@@ -518,6 +570,25 @@ CONTAINS
 
 
 
+!>Reads data written in threshold format
+!!@details This type of file starts with two <em>integers</em>
+!!separated by a blank space: the first one corresponds to the 
+!!dimension of the image and the second one the number of attributes
+!!(typically, the attributes could be the color channel intensities).
+!!The following line is composed of two <em>integers</em> separated by 
+!!a blank space: the first one corresponds to the number of pixels in
+!!a column and the second one to the number of pixels in a row. 
+!!Then, next lines are composed of <em>double</em> numbers separated 
+!!by blank spaces. Each of these lines corresponds to the value of
+!!the attributes for each pixel. The coordinates of the pixels are 
+!!implicit as they are ordered by rows.
+!!@note The attributes are stored in the field type_data::coord and so ONLY the color will be taken into account
+!!@note The outputs <em>coordmax</em> and <em>coordmin</em> are computed according to the color of the pixels.
+!!@see assign_picture_array(), read_picture_data(), read_coordinates_data(), read_geometric_data
+!! @param[in] input_file the name of the text file where input data is written
+!! @param[in,out] data the entire data for computing
+!! @param[out] coord_max the maxima along each dimension of the data (coordinates)
+!! @param[out] coord_min the minima along each dimension of the data (coordinates)
   SUBROUTINE read_threshold_data(input_file, data, coord_min, coord_max)
     IMPLICIT NONE
     !###########################################
@@ -588,6 +659,12 @@ CONTAINS
 
 
 
+!>Puts the index number of the pixels into an array
+!!@details Each point of the data set is mapped
+!!to an array corresponding to an image. Thus, instead
+!!of one index for accessing one point, two will be used
+!!(row and column).
+!! @param[in,out] data the entire data for computing
   SUBROUTINE assign_picture_array(data)
     IMPLICIT NONE
     !###########################################

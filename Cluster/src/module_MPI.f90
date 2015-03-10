@@ -1,9 +1,21 @@
+!>Contains methods related to parallelism
 MODULE module_MPI
   USE module_structure
 CONTAINS
 
 
 
+!>Sends the partitionning
+!!@details This method sends to each slave process the
+!!number of points, the dimension and all the points 
+!!of the dedicated domain. Then, it creates
+!!@note It has to be called by the master process
+!!@see receive_partitioning(), partition_with_interface(), partition_with_overlapping()
+!! @param[in] assignements the assignement of each point in a partition
+!! @param[in] nb_proc the number of processors used
+!! @param[in] points_by_domain the number of points in each partition
+!! @param[in,out] data the entire data for computing
+!! @param[out] partitioned_data the partitioned data for computing
   SUBROUTINE send_partitioning(nb_proc, data, points_by_domain, ddat, partitioned_data)
     IMPLICIT NONE    
     ! MPI library
@@ -94,6 +106,14 @@ CONTAINS
   END SUBROUTINE send_partitioning
 
 
+!>Receives the partitionning
+!!@details This method receives from the master process 
+!!the number of points, the dimension and all the points 
+!!of the dedicated domain.
+!!@note It has to be called by a slave process
+!!@see send_partitioning(), partition_with_interface(), partition_with_overlapping()
+!! @param[in] proc_id the processus identifier
+!! @param[out] partitioned_data the partitioned data for computing
   SUBROUTINE receive_partitioning(proc_id, partitioned_data)
     IMPLICIT NONE
     ! MPI library
@@ -163,6 +183,19 @@ CONTAINS
 
 
 
+!>Receives the number of clusters
+!!@details This method receives from the slave processes
+!!the number of clusters in each domain and the number of
+!!elements in each cluster.
+!!@note It has to be called by the master process.
+!!@see send_number_clusters()
+!! @param[in] partitioned_data the partitioned data for computing
+!! @param[in] nb_proc the number of processors used
+!! @param[in] points_by_domain the number of points in each partition
+!! @param[out] array_clust the number of clusters and elements per cluster computed by each processor
+!! @param[out] nb_clusters the number of clusters
+!! @param[out] nb_clusters the number of clusters
+!! @param[out] nb_clusters the number of clusters
   SUBROUTINE receive_number_clusters(nb_proc, nb_clusters, points_by_domain, partitioned_data, array_clust)
     IMPLICIT NONE
     ! MPI library
@@ -218,6 +251,14 @@ CONTAINS
   END SUBROUTINE receive_number_clusters
 
 
+!>Sends the number of clusters
+!!@details This method sends to the master process the
+!!number of clusters and the number of elements in each 
+!!cluster.
+!!@note It has to be called by a slave process.
+!!@see receive_number_clusters()
+!! @param[in] partitioned_data the partitioned data for computing
+!! @param[in] proc_id the processus identifier
   SUBROUTINE send_number_clusters(proc_id, partitioned_data)
     IMPLICIT NONE
     ! MPI library
@@ -257,6 +298,13 @@ CONTAINS
 
 
 
+!>Sends the clusters
+!!@details This method sends the computed clusters to the
+!!master process.
+!!@note It has to be called by a slave process.
+!!@see receive_clusters()
+!! @param[in] partitioned_data the partitioned data for computing
+!! @param[in] proc_id the processus identifier
   SUBROUTINE send_clusters(proc_id, partitioned_data)
     IMPLICIT NONE
     ! MPI library
@@ -292,6 +340,21 @@ CONTAINS
 
 
 
+!>Receives the clusters
+!!@details This method receives the computed clusters in 
+!!each domain from the slave processes.
+!!@note It has to be called by the master process.
+!!@see send_clusters()
+!! @param[in] array_clust the number of clusters and elements per cluster computed by each processor
+!! @param[in] partitioned_data the partitioned data for computing
+!! @param[in] assignements the assignement of each point in a partition
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_proc the number of processors used
+!! @param[in] points_by_domain the number of points in each partition
+!! @param[out] cluster_map the cluster indices and the number of points in each cluster
+!! @param[out] points_by_cluster the number of points in each cluster
   SUBROUTINE receive_clusters(nb_proc, nb_clusters, points_by_domain, ddat, partitioned_data, cluster_map, &
        array_clust, points_by_cluster)
     IMPLICIT NONE

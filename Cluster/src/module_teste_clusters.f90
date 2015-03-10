@@ -1,3 +1,4 @@
+!>
 MODULE module_teste_clusters
 
   TYPE type_test
@@ -17,6 +18,8 @@ CONTAINS
 
 
 
+!>Creates an executable called <em>go</em> for runcluster
+!! @param[in] test 
   SUBROUTINE create_executable(test)
     IMPLICIT NONE
     !###########################################
@@ -55,6 +58,8 @@ CONTAINS
 
 
 
+!>Creates a test file
+!! @param[in] test 
   SUBROUTINE create_test(test)
     IMPLICIT NONE
     !###########################################
@@ -92,6 +97,8 @@ CONTAINS
   END SUBROUTINE create_test
 
 
+!>Executes the script <em>go</em> and displays information on the console screen
+!! @param[in] test 
   SUBROUTINE execute_test(test)
     IMPLICIT NONE
     !###########################################
@@ -125,6 +132,7 @@ CONTAINS
 
 
 
+!>Generates an example of a raw geometric data file for testing purpose
   SUBROUTINE create_data
     !###########################################
     ! INSTRUCTIONS
