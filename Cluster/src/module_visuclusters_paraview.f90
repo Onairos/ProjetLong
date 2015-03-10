@@ -269,8 +269,8 @@ CONTAINS
     CHARACTER (LEN=30) :: num
     CHARACTER (LEN=30) :: files
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: ind ! TODO: renommer
-    INTEGER, DIMENSION(:), POINTER :: indp ! TODO: renommer
+    INTEGER, DIMENSION(:), POINTER :: ids
+    INTEGER, DIMENSION(:), POINTER :: proc_ids
     INTEGER :: i
     INTEGER :: j
     INTEGER :: nb_points
@@ -321,33 +321,33 @@ CONTAINS
        PRINT *,'  > ',i,' :',nb_points
         ALLOCATE(coords(nb_points,params%dim))
        coords(:,:)=0.
-       ALLOCATE(ind(nb_points))
-       ind(:)=0
-       ALLOCATE(indp(nb_points))
-       indp(:)=0
+       ALLOCATE(ids(nb_points))
+       ids(:)=0
+       ALLOCATE(proc_ids(nb_points))
+       proc_ids(:)=0
        IF (nb_points>0) THEN
           DO j=1,nb_points
              IF (params%coord==1) THEN
                 ! Partitioning by coordinates
                 READ(20,*) coords(j,:)
-                ind(j)=i
+                ids(j)=i
              ELSE
                 ! Partitioning 1D picture
-                READ (20,*) indp(j)
-                ind(j)=i
+                READ (20,*) proc_ids(j)
+                ids(j)=i
              ENDIF
           ENDDO
           ! Writing
           IF (params%coord==1) THEN
              ! Partitioning by coordinates
-             CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ind,1)
+             CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ids,1)
           ELSE
              ! Partitioning 1D picture
-             CALL write_points_picture_format(10,11,nb_points,params,ind,indp)
+             CALL write_points_picture_format(10,11,nb_points,params,ids,proc_ids)
           ENDIF
        ENDIF
        DEALLOCATE(coords)
-       DEALLOCATE(ind)
+       DEALLOCATE(ids)
        CLOSE(20)
        IF ((i==0).AND.(params%interface==1)) THEN
           ! Closes interfacing files
@@ -403,8 +403,8 @@ CONTAINS
     CHARACTER (LEN=30) :: num
     CHARACTER (LEN=30) :: extension
     INTEGER, DIMENSION(:), POINTER :: matchings
-    INTEGER, DIMENSION(:), POINTER :: ind ! TODO: renommer
-    INTEGER, DIMENSION(:), POINTER :: indp ! TODO: renommer
+    INTEGER, DIMENSION(:), POINTER :: ids
+    INTEGER, DIMENSION(:), POINTER :: proc_ids
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -443,10 +443,10 @@ CONTAINS
        READ(20,*) nb_points,k
        PRINT *,'  > ',i,' :',nb_points,' -> ',files
        ALLOCATE(coords(nb_points,k))
-       ALLOCATE(ind(max(1,nb_points)))
-       ind(:)=0
-       ALLOCATE(indp(max(1,nb_points)))
-       indp(:)=0
+       ALLOCATE(ids(max(1,nb_points)))
+       ids(:)=0
+       ALLOCATE(proc_ids(max(1,nb_points)))
+       proc_ids(:)=0
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
           ! Reading the matchings
           files='decoupe.'//trim(num)
@@ -460,24 +460,24 @@ CONTAINS
        ENDIF
        DO j=1,nb_points
           IF (params%coord==1) THEN
-             READ(20,*) coords(j,:),ind(j)
+             READ(20,*) coords(j,:),ids(j)
           ELSE
-             READ(20,*) indp(j),ind(j)
-             indp(j)=matchings(indp(j))
+             READ(20,*) proc_ids(j),ids(j)
+             proc_ids(j)=matchings(proc_ids(j))
           ENDIF
        ENDDO
        CLOSE(20) 
        ! Writing
        IF (params%coord==1) THEN
           ! Partitioning by coordinates
-          CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ind,1)
+          CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ids,1)
        ELSE
           ! Partitioning 1D picture
-          CALL write_points_picture_format(10,11,nb_points,params,ind,indp)
+          CALL write_points_picture_format(10,11,nb_points,params,ids,proc_ids)
        ENDIF
        DEALLOCATE(coords)
-       DEALLOCATE(ind)
-       DEALLOCATE(indp)
+       DEALLOCATE(ids)
+       DEALLOCATE(proc_ids)
        CLOSE(10)
        CLOSE(11)
        IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
@@ -528,8 +528,8 @@ CONTAINS
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: ind ! TODO: renommer
-    INTEGER, DIMENSION(:), POINTER :: indp ! TODO: renommer
+    INTEGER, DIMENSION(:), POINTER :: ids
+    INTEGER, DIMENSION(:), POINTER :: proc_ids
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -565,10 +565,10 @@ CONTAINS
     WRITE(10,'(a)') 'node id assign'
     WRITE(10,'(a)') 'element id assign'
     WRITE(11,*) '** clusters **'
-    ALLOCATE(ind(max(1,params%nbp)))
-    ind(:)=0
-    ALLOCATE(indp(max(1,params%nbp)))
-    indp(:)=0
+    ALLOCATE(ids(max(1,params%nbp)))
+    ids(:)=0
+    ALLOCATE(proc_ids(max(1,params%nbp)))
+    proc_ids(:)=0
     ! Reading files
     DO i=1,params%nbclusters
        ! File name
@@ -579,22 +579,22 @@ CONTAINS
        PRINT *,'  > ',i,' :',nb_points
        DO j=1,nb_points
           READ(20,*) k
-          ind(k)=i
-          indp(k)=k
+          ids(k)=i
+          proc_ids(k)=k
        ENDDO
        CLOSE(20)
     ENDDO
     IF (params%coord==1) THEN
        ! Classical coordinates
-       CALL write_points_coord_format(10,11,params%nbp,params%dim,coords,ind,1)
+       CALL write_points_coord_format(10,11,params%nbp,params%dim,coords,ids,1)
     ELSE
        ! Pictures reassembly
-       CALL write_points_picture_format(10,11,params%nbp,params,ind,indp)
+       CALL write_points_picture_format(10,11,params%nbp,params,ids,proc_ids)
     ENDIF
     CLOSE(10)
     CLOSE(11)
-    DEALLOCATE(ind)
-    DEALLOCATE(indp)
+    DEALLOCATE(ids)
+    DEALLOCATE(proc_ids)
     IF (params%coord==1) DEALLOCATE(coords)
     ! Master file
     PRINT *,'-> cluster.final.CASE'
@@ -613,7 +613,8 @@ CONTAINS
 
 
 
-  SUBROUTINE write_points_coord_format(unit_geo, unit_ind, nb_points, dim, coords, ind, k)
+
+  SUBROUTINE write_points_coord_format(unit_geo, unit_ind, nb_points, dim, coords, ids, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -621,7 +622,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: ind
+    INTEGER, DIMENSION(:), POINTER :: ids
     INTEGER :: unit_geo
     INTEGER :: unit_ind
     INTEGER :: k
@@ -633,16 +634,16 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     WRITE(unit_geo,'(a)') 'part'
-    WRITE(unit_geo,*) ind(k)
+    WRITE(unit_geo,*) ids(k)
     WRITE(unit_geo,*) '** Partitionings **'
     WRITE(unit_geo,'(a)') 'coordinates'
     WRITE(unit_geo,*) nb_points
     WRITE(unit_ind,'(a)') 'part'
-    WRITE(unit_ind,*) ind(k)
+    WRITE(unit_ind,*) ids(k)
     WRITE(unit_ind,'(a)') 'point'
     DO i=1,nb_points
        WRITE(unit_geo,*) coords(i,1)
-       WRITE(unit_ind,*) ind(i)
+       WRITE(unit_ind,*) ids(i)
     ENDDO
     DO i=1,nb_points
        WRITE(unit_geo,*) coords(i,2)
@@ -664,7 +665,7 @@ CONTAINS
 
 
 
-  SUBROUTINE write_points_picture_format(unit_geo, unit_ind, nb_pixels, params, ind, indp)
+  SUBROUTINE write_points_picture_format(unit_geo, unit_ids, nb_pixels, params, ids, proc_ids)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -672,8 +673,8 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER, DIMENSION(:), POINTER :: ind
-    INTEGER, DIMENSION(:), POINTER :: indp
+    INTEGER, DIMENSION(:), POINTER :: ids
+    INTEGER, DIMENSION(:), POINTER :: proc_ids
     INTEGER :: nb_pixels
     INTEGER :: unit_geo
     INTEGER :: unit_ind
@@ -712,7 +713,7 @@ CONTAINS
     ENDIF
     ! Search the points
     DO i=1,nb_pixels
-       k=indp(i)
+       k=proc_ids(i)
        ix=params%refimg(k,1)
        iy=params%refimg(k,2)
        IF (params%imgdim==2) THEN
@@ -746,16 +747,16 @@ CONTAINS
     ENDDO
     ! Writing
     WRITE(unit_geo,'(a)') 'part'
-    WRITE(unit_geo,*) ind(1)
+    WRITE(unit_geo,*) ids(1)
     WRITE(unit_geo,*) '** Partitionings **'
     WRITE(unit_geo,'(a)') 'coordinates'
     WRITE(unit_geo,*) nb_pixels
     WRITE(unit_ind,'(a)') 'part'
-    WRITE(unit_ind,*) ind(1)
+    WRITE(unit_ind,*) ids(1)
     WRITE(unit_ind,'(a)') 'point'
     DO i=1,nb_pixels
        WRITE(unit_geo,*) kx(i)
-       WRITE(unit_ind,*) ind(i)
+       WRITE(unit_ind,*) ids(i)
     ENDDO
     DO i=1,nb_pixels
        WRITE(unit_geo,*) ky(i)
