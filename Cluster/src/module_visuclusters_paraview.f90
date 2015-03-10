@@ -4,7 +4,7 @@ CONTAINS
 
 
 
-  SUBROUTINE write_partionning_paraview(params)
+  SUBROUTINE write_partitioning_paraview(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -252,7 +252,7 @@ CONTAINS
     WRITE(12,'(a)') 'scalar per element:   process   visu/decoupe.indices'
     CLOSE(12)
     RETURN
-  END SUBROUTINE write_partionning_paraview
+  END SUBROUTINE write_partitioning_paraview
 
 
 

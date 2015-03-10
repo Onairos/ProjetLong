@@ -121,7 +121,7 @@ CONTAINS
     CASE('gmsh')
        CALL write_partionning_gmsh(params)
     CASE('paraview')
-       CALL write_partionning_paraview(params)
+       CALL write_partitioning_paraview(params)
     END SELECT
     RETURN
   END SUBROUTINE write_partionning
