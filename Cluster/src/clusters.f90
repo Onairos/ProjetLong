@@ -101,7 +101,7 @@ PROGRAM clusters
 #endif
      OPEN(FILE=entree,UNIT=1)
 
-     CALL read_file(data,epsilon,coord_min,coord_max,nbproc,partitionning,input_file,&
+     CALL read_params(data,epsilon,coord_min,coord_max,nbproc,partitionning,input_file,&
           sigma,nb_clusters_max,list_nb_clusters, clust_param)
 
      t2 = MPI_WTIME()

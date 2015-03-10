@@ -69,7 +69,7 @@ CONTAINS
   END SUBROUTINE help
 
 
-  SUBROUTINE read_file(data, epsilon, coord_min, coord_max, nbproc, partitionning, &
+  SUBROUTINE read_params(data, epsilon, coord_min, coord_max, nbproc, partitionning, &
        input_file, sigma, nb_clusters_max, list_nb_clusters,clust_param)
     IMPLICIT NONE
     !###########################################
@@ -313,7 +313,7 @@ CONTAINS
        CALL help
     ENDIF
     RETURN
-  END SUBROUTINE read_file
+  END SUBROUTINE read_params
 
 
   SUBROUTINE read_coordinates_data(input_file, data, coord_min, coord_max)
