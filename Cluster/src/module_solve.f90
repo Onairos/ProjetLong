@@ -45,6 +45,7 @@ CONTAINS
 
 
 
+
   SUBROUTINE solve_dgeev(N, A, VR, WR)
     IMPLICIT NONE
     EXTERNAL DGEEV
@@ -80,6 +81,7 @@ CONTAINS
   END SUBROUTINE solve_dgeev
 
 
+
   SUBROUTINE solve_dsyev(N, A, W, LWORK)
     IMPLICIT NONE
     EXTERNAL DSYEV
@@ -95,6 +97,7 @@ CONTAINS
     IF (INFO/=0) PRINT *, 'Error in DSYERVR ? INFO=',INFO
     RETURN
   END SUBROUTINE solve_dsyev
+
 
 
   SUBROUTINE solve_dsyevr(k, N, A, Z, LWORK, LIWORK, W, M)
@@ -132,6 +135,7 @@ CONTAINS
   END SUBROUTINE solve_dsyevr
 
 
+
   SUBROUTINE solve_dsyevx(k, N, A, Z, LWORK, LIWORK, W, M)
     IMPLICIT NONE
     EXTERNAL DSYEVX
@@ -166,5 +170,6 @@ CONTAINS
     LIWORK = IWORK(1)
     IF (INFO/=0) PRINT *, 'Error in DSYERVR ? INFO=',INFO
   END SUBROUTINE solve_dsyevx
+
 
 END MODULE module_solve

@@ -46,7 +46,7 @@ PROGRAM visuclusters
   CALL write_partitioning(format_output,params)
 
   ! Output file
-  CALL affectation(format_output,params)
+  CALL write_assignment(format_output,params)
 
   ! Outout file of clusters before regrouping
   IF (params%nbproc>1) CALL write_partial_clusters(format_output,params)

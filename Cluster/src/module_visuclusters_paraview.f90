@@ -256,7 +256,7 @@ CONTAINS
 
 
 
-  SUBROUTINE affectation_paraview(params)
+  SUBROUTINE write_assignment_paraview(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -340,7 +340,7 @@ CONTAINS
           ! Writing
           IF (params%coord==1) THEN
              ! Partitioning by coordinates
-             CALL ecritpoint_paraview(10,11,nb_points,params%dim,coords,ind,1)
+             CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ind,1)
           ELSE
              ! Partitioning 1D picture
              CALL write_points_picture_format(10,11,nb_points,params,ind,indp)
@@ -384,7 +384,7 @@ CONTAINS
     WRITE(12,'(a)') 'scalar per node:   process   visu/affectation.indices'
     CLOSE(12)
     RETURN
-  END SUBROUTINE affectation_paraview
+  END SUBROUTINE write_assignment_paraview
 
 
 
@@ -470,7 +470,7 @@ CONTAINS
        ! Writing
        IF (params%coord==1) THEN
           ! Partitioning by coordinates
-          CALL ecritpoint_paraview(10,11,nb_points,params%dim,coords,ind,1)
+          CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ind,1)
        ELSE
           ! Partitioning 1D picture
           CALL write_points_picture_format(10,11,nb_points,params,ind,indp)
@@ -586,7 +586,7 @@ CONTAINS
     ENDDO
     IF (params%coord==1) THEN
        ! Classical coordinates
-       CALL ecritpoint_paraview(10,11,params%nbp,params%dim,coords,ind,1)
+       CALL write_points_coord_format(10,11,params%nbp,params%dim,coords,ind,1)
     ELSE
        ! Pictures reassembly
        CALL write_points_picture_format(10,11,params%nbp,params,ind,indp)
@@ -613,7 +613,7 @@ CONTAINS
 
 
 
-  SUBROUTINE ecritpoint_paraview(unit_geo, unit_ind, nb_points, dim, coords, ind, k)
+  SUBROUTINE write_points_coord_format(unit_geo, unit_ind, nb_points, dim, coords, ind, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -660,7 +660,7 @@ CONTAINS
        WRITE(unit_geo,*) i
     ENDDO
     RETURN
-  END SUBROUTINE ecritpoint_paraview
+  END SUBROUTINE write_points_coord_format
 
 
 

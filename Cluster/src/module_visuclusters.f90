@@ -129,7 +129,7 @@ CONTAINS
 
 
 
-  SUBROUTINE affectation(format_output, params)
+  SUBROUTINE write_assignment(format_output, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -146,12 +146,12 @@ CONTAINS
     PRINT *, 'Writing partitioning allocations...'
     SELECT CASE(format_output)
     CASE('gmsh')
-       CALL affectation_gmsh(params)
+       CALL write_assignment_gmsh(params)
     CASE('paraview')
-       CALL affectation_paraview(params)
+       CALL write_assignment_paraview(params)
     END SELECT
     RETURN
-  END SUBROUTINE affectation
+  END SUBROUTINE write_assignment
 
 
 
