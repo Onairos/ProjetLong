@@ -13,34 +13,63 @@ CONTAINS
 !! @param[in] proc_id the processus identifier
 !! @param[in,out] partitioned_data the partitioned data for computing
   SUBROUTINE apply_spectral_clustering_sparse(proc_id, nb_clusters_max, nb_clusters_opt, partitioned_data, sigma)
-
     IMPLICIT INTEGER(i, j, q)
     INCLUDE 'mpif.h'
-    TYPE(type_data) :: partitioned_data
-    INTEGER :: proc_id, nbproc
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
     DOUBLE PRECISION :: sigma
+    INTEGER :: nb_clusters_max
+    INTEGER :: nb_clusters_opt
+    INTEGER :: proc_id
+
+    !=== IN/OUT ===
+    TYPE(type_data) :: partitioned_data
+
+    !#### Variables  ####
+    CHARACTER (LEN=30) :: files
+    CHARACTER (LEN=30) :: num
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
-    INTEGER :: n, k, nb_clusters
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax, clusters_energies, &
-         ratiomin, ratio_moy, ratio_rii, ratio_rij
-    INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters, nb_info
-    INTEGER :: nb_clusters_max, nb_clusters_opt
-    DOUBLE PRECISION :: norme, ratio, ratio1, ratio2, seuilrij
-    CHARACTER (LEN=30) :: num, files
-
-    ! Beginning of sparsification
-    DOUBLE PRECISION :: t1, t2, t_cons_a, t_cons_vp
-    INTEGER :: nnz, nnz2, nb
-    DOUBLE PRECISION :: facteur
-    INTEGER :: l
-    DOUBLE PRECISION :: treshold
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: AS
-    INTEGER, DIMENSION(:), POINTER :: IAS, JAS
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: D
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: AS
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: D
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_moy
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_rii
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_rij
     DOUBLE PRECISION, DIMENSION(:), POINTER :: W
-    ! End of sparsification
+    DOUBLE PRECISION :: factor
+    DOUBLE PRECISION :: threshold_rij
+    DOUBLE PRECISION :: norm
+    DOUBLE PRECISION :: ratio
+    DOUBLE PRECISION :: ratio1
+    DOUBLE PRECISION :: ratio2
+    DOUBLE PRECISION :: treshold
+    DOUBLE PRECISION :: t1
+    DOUBLE PRECISION :: t2
+    DOUBLE PRECISION :: t_cons_a
+    DOUBLE PRECISION :: t_cons_vp
+    INTEGER, DIMENSION(:), POINTER :: clusters
+    INTEGER, DIMENSION(:), POINTER :: IAS
+    INTEGER, DIMENSION(:), POINTER :: JAS
+    INTEGER, DIMENSION(:), POINTER :: nb_info
+    INTEGER, DIMENSION(:), POINTER :: points_by_clusters
+    INTEGER :: k
+    INTEGER :: l
+    INTEGER :: n
+    INTEGER :: nb
+    INTEGER :: nnz
+    INTEGER :: nnz2
+    INTEGER :: nbproc
+    INTEGER :: nb_clusters
 
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
     ! Matrix creation
 #if aff
     PRINT *, 'DEBUG : process n', proc_id, ' : value of sigma : ', sigma
@@ -51,20 +80,20 @@ CONTAINS
     nnz = 0
     ! Arbitrary treshold value 
     ! TODO : mettre la valeur du facteur dans le fichier param
-    facteur = 3.0
-    treshold = facteur*sigma
+    factor = 3.0
+    treshold = factor*sigma
 
     t1 = MPI_WTIME()
     DO i=1,n-1  ! bound ?
        DO j=i+1,n ! bound ?
 
-          norme=0.0
+          norm=0.0
 
           DO k=1,partitioned_data%dim
-             norme=norme+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
+             norm=norm+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
           ENDDO
 
-          IF(sqrt(norme) <= treshold) THEN
+          IF(sqrt(norm) <= treshold) THEN
             nnz = nnz + 1
           ENDIF
 
@@ -84,14 +113,14 @@ CONTAINS
     l = 1
     DO i=1,n-1
        DO j=i+1,n
-          norme=0.0
+          norm=0.0
           DO k=1,partitioned_data%dim
-             norme=norme+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
+             norm=norm+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
           ENDDO
-          value=exp(-norme/sigma)
+          value=exp(-norm/sigma)
           ! kepp if value <= treshold
           ! (if we want to keep it all, do comment line IF, ENDIF)
-          IF(sqrt(norme) <= treshold) THEN
+          IF(sqrt(norm) <= treshold) THEN
             AS(l) = value
             IAS(l) = i
             JAS(l) = j
@@ -104,7 +133,7 @@ CONTAINS
           ENDIF
        ENDDO
     ENDDO
-    WRITE(*,*) '========== facteur, n*n nnz2 = ', facteur, n*n, nnz2
+    WRITE(*,*) '========== factor, n*n nnz2 = ', factor, n*n, nnz2
 
   ALLOCATE(D(n))
   D(:)=0.0
@@ -201,12 +230,12 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
        DO i=2,nb_clusters_max
           IF ((proc_id==0).AND.(nbproc>1)) THEN 
-             seuilrij=1e-1
+             threshold_rij=1e-1
           ELSE
-             seuilrij=1e-4
+             threshold_rij=1e-4
           ENDIF
 
-          IF ((ratio_rii(i)>=0.95*ratio1).AND.(ratio_rij(i)-ratio2<=seuilrij)) THEN  
+          IF ((ratio_rii(i)>=0.95*ratio1).AND.(ratio_rij(i)-ratio2<=threshold_rij)) THEN  
              partitioned_data%nbclusters=i
              ratio1=ratio_rii(i)
              ratio2=ratio_rij(i)
@@ -319,25 +348,57 @@ PRINT *, 'DEBUG : Frobenius ratio'
     SUBROUTINE apply_spectral_embedding_sparse(nb_clusters, n, Z, nnz, AS, IAS, JAS, ratio, clusters, &
        clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
        ratio_moy, ratio_rij, ratio_rii)
-
     IMPLICIT NONE
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z, clusters_centers
-    INTEGER ::nb_clusters, n, nb_info, proc_id
-    DOUBLE PRECISION ::ratio, test, ratiomin, ratio_rii, ratio_rij, ratio_moy
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies, Z3
-    INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1, Z2
-    INTEGER :: it_max, it_num, i, j, k
-    INTEGER, DIMENSION(:,:), POINTER :: clustercorresp
-    INTEGER :: ki, kj, ni, nj, ok, nbmax
-
+    !###########################################
+    ! DECLARATIONS
+    !###########################################
+    !#### Parameters ####
+    !====  IN  ====
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
     DOUBLE PRECISION, DIMENSION(:), POINTER:: AS
-    INTEGER, DIMENSION(:), POINTER :: IAS, JAS
+    INTEGER, DIMENSION(:), POINTER :: IAS
+    INTEGER, DIMENSION(:), POINTER :: JAS
+    INTEGER :: n
+    INTEGER :: nb_clusters      
     INTEGER :: nnz
+    INTEGER :: proc_id
 
+    !====  OUT ====
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
+    DOUBLE PRECISION :: ratio
+    DOUBLE PRECISION :: ratio_moy
+    DOUBLE PRECISION :: ratio_rii
+    DOUBLE PRECISION :: ratio_rij
+    INTEGER, DIMENSION(:), POINTER :: clusters
+    INTEGER, DIMENSION(:), POINTER :: points_by_clusters
+    INTEGER :: nb_info
+
+    !#### Variables  ####
+    DOUBLE PRECISION :: test
+    DOUBLE PRECISION :: ratiomin
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z2
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: Z3
+    INTEGER, DIMENSION(:,:), POINTER :: matchings
+    INTEGER :: it_max
+    INTEGER :: it_num
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: ki
+    INTEGER :: kj
     INTEGER :: l
-    INTEGER :: num1, num2
+    INTEGER :: ni
+    INTEGER :: nj
+    INTEGER :: ok
+    INTEGER :: nb_max
+    INTEGER :: num1
+    INTEGER :: num2
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
 
     ALLOCATE(clusters(n))
     ALLOCATE(clusters_centers(nb_clusters,nb_clusters))
@@ -374,25 +435,25 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
     ! Quality measure
 
-    nbmax=0
+    nb_max=0
     DO i=1,nb_clusters
-       nbmax=max(nbmax,points_by_clusters(i))
+       nb_max=max(nb_max,points_by_clusters(i))
     ENDDO
     PRINT *, 'points_by_clusters : ', points_by_clusters
-    ALLOCATE(clustercorresp(nb_clusters,nbmax))
-    clustercorresp(:,:)=0
+    ALLOCATE(matchings(nb_clusters,nb_max))
+    matchings(:,:)=0
     DO i=1,n
        j=clusters(i)
        ok=0
        k=1
        DO WHILE(ok==0)
-          IF (clustercorresp(j,k)==0) THEN
+          IF (matchings(j,k)==0) THEN
              ok=1
           ELSE
              k=k+1
           ENDIF
        ENDDO
-       clustercorresp(j,k)=i
+       matchings(j,k)=i
     ENDDO
 
 
@@ -443,8 +504,9 @@ PRINT *, 'DEBUG : Frobenius ratio'
 #endif
 
     RETURN 
-  END SUBROUTINE apply_spectral_embedding_sparse
+    END SUBROUTINE apply_spectral_embedding_sparse
 
+<<<<<<< HEAD
 !>Computes the matrix vector product using sparsity
 !! @param[in] A the sparse matrix
 !! @param[in] X the input vector
@@ -453,26 +515,37 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !! @param[in] IA the row indices of the matrix coefficients
 !! @param[in] JA the column indices of the matrix coefficients
 !! @param[out] Y the resulting vector
-  SUBROUTINE compute_matvec_prod(A, IA, JA, X, Y, n, nnz)
-  IMPLICIT NONE
+    SUBROUTINE compute_matvec_prod(A, IA, JA, X, Y, n, nnz)
+    IMPLICIT NONE
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
+    DOUBLE PRECISION, INTENT(IN), DIMENSION(nnz) :: A
+    DOUBLE PRECISION, INTENT(IN), DIMENSION(n) :: X
+    INTEGER, INTENT(IN), DIMENSION(nnz) :: IA
+    INTEGER, INTENT(IN), DIMENSION(nnz) :: JA
+    INTEGER, INTENT(IN) :: n
+    INTEGER, INTENT(IN) :: nnz
 
-  DOUBLE PRECISION, INTENT(IN), DIMENSION(nnz) :: A
-  INTEGER, INTENT(IN), DIMENSION(nnz) :: IA, JA
-  DOUBLE PRECISION, INTENT(IN), DIMENSION(n) :: X
-  DOUBLE PRECISION, INTENT(OUT), DIMENSION(n) :: Y
-  INTEGER, INTENT(IN) :: n, nnz
+    !====  OUT ====
+    DOUBLE PRECISION, INTENT(OUT), DIMENSION(n) :: Y
 
-  INTEGER :: l
+    !#### Variables  ####
+    INTEGER :: l
 
-  Y(:) = dfloat(0)
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
+    Y(:) = dfloat(0)
+    DO l = 1, nnz
+        Y(IA(l)) = Y(IA(l)) + A(l)*X(JA(l))
+    ENDDO
+    RETURN
+    END SUBROUTINE compute_matvec_prod
 
-  DO l = 1, nnz
-    Y(IA(l)) = Y(IA(l)) + A(l)*X(JA(l))
-  ENDDO
 
-  RETURN
-
-  END SUBROUTINE compute_matvec_prod
 
 !>
 !! @param[in] A the affinity sparse matrix
@@ -487,62 +560,6 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !! @param[out] W 
   SUBROUTINE solve_arpack(A, IA, JA, dim, nnz, nb_clusters_max, W, Z)
 
-  DOUBLE PRECISION, INTENT(IN), DIMENSION(:) :: A
-  INTEGER, INTENT(IN), DIMENSION(:) :: IA, JA
-  INTEGER, INTENT(IN) :: dim, nnz, nb_clusters_max
-
-  DOUBLE PRECISION, INTENT(OUT), POINTER :: W(:)
-  DOUBLE PRECISION, INTENT(OUT), POINTER :: Z(:,:)
-  
-  INTEGER :: maxn, maxnev, maxncv, ldv, i, nbite
-!
-!     %--------------%
-!     | Local Arrays |
-!     %--------------%
-!
-  INTEGER           iparam(11), ipntr(14)
-  LOGICAL, DIMENSION(:), ALLOCATABLE :: SELECT
-
-!     d valeurs propres
-!     v vecteurs propres
-
-  DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: ax, resid, workd, workev, workl
-  DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: d, v
-!
-!     %---------------%
-!     | Local Scalars |
-!     %---------------%
-!
-  CHARACTER         bmat*1, which*2
-  INTEGER           ido, n, nx, nev, ncv, lworkl, info, ierr, &
-                    j, ishfts, maxitr, mode1, nconv
-  DOUBLE PRECISION  tol, sigmar, sigmai
-  LOGICAL           first, rvec
-!
-!     %------------%
-!     | Parameters |
-!     %------------%
-!
-  DOUBLE PRECISION  zero
-  PARAMETER         (zero = 0.0D+0)
-!
-!     %-----------------------------%
-!     | BLAS & LAPACK routines used |
-!     %-----------------------------%
-!
-      DOUBLE PRECISION  dlapy2, dnrm2
-      EXTERNAL          dlapy2, dnrm2, daxpy 
-!
-!     %--------------------%
-!     | Intrinsic FUNCTION |
-!     %--------------------%
-!
-      INTRINSIC         abs
-!
-!     %-----------------------%
-!     | Executable Statements |
-!     %-----------------------%
-!
 !     %-------------------------------------------------%
 !     | The following INCLUDE statement and assignments |
 !     | initiate trace output from the internal         |
@@ -552,8 +569,73 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !     | time spent in the various stages of computation |
 !     | given by setting mnaupd = 1.                    |
 !     %-------------------------------------------------%
-!
-      INCLUDE 'debug.h'
+
+    INCLUDE 'debug.h'
+    INTRINSIC abs
+    EXTERNAL dlapy2
+    EXTERNAL dnrm2
+    EXTERNAL daxpy 
+
+    !###########################################
+    ! DECLARATIONS
+    !###########################################      
+    !#### Parameters ####
+    !====  IN  ====
+    DOUBLE PRECISION, INTENT(IN), DIMENSION(:) :: A
+    INTEGER, INTENT(IN), DIMENSION(:) :: IA
+    INTEGER, INTENT(IN), DIMENSION(:) :: JA
+    INTEGER, INTENT(IN) :: dim
+    INTEGER, INTENT(IN) :: nb_clusters_max
+    INTEGER, INTENT(IN) :: nnz
+
+    !====  OUT ====
+    DOUBLE PRECISION, INTENT(OUT), POINTER :: Z(:,:)
+    DOUBLE PRECISION, INTENT(OUT), POINTER :: W(:)
+
+    !#### Variables  ####
+    CHARACTER :: bmat*1
+    CHARACTER :: which*2
+    DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: d
+    DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: v
+    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: ax
+    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: resid
+    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: workd
+    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: workev
+    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: workl
+    DOUBLE PRECISION :: dlapy2
+    DOUBLE PRECISION :: dnrm2
+    DOUBLE PRECISION :: sigmai
+    DOUBLE PRECISION :: sigmar
+    DOUBLE PRECISION :: zero
+    INTEGER :: iparam(11)
+    INTEGER :: ipntr(14)
+    INTEGER :: i
+    INTEGER :: ido
+    INTEGER :: ierr
+    INTEGER :: info
+    INTEGER :: ishfts
+    INTEGER :: j
+    INTEGER :: ldv
+    INTEGER :: lworkl
+    INTEGER :: maxitr
+    INTEGER :: maxn
+    INTEGER :: maxncv
+    INTEGER :: maxnev
+    INTEGER :: mode1
+    INTEGER :: n
+    INTEGER :: nbite
+    INTEGER :: nev
+    INTEGER :: nconv
+    INTEGER :: ncv
+    INTEGER :: nx
+    LOGICAL, DIMENSION(:), ALLOCATABLE :: array_select
+    LOGICAL :: first
+    LOGICAL :: rvec
+
+    !###########################################      
+    ! INSTRUCTIONS
+    !###########################################  
+    PARAMETER (zero = 0.0D+0)
 
 ! link between lengths
       maxn = dim
@@ -769,7 +851,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !
          rvec = .TRUE.
 !
-         CALL dneupd ( rvec, 'A', SELECT, d, d(1,2), v, ldv, &
+         CALL dneupd ( rvec, 'A', array_select, d, d(1,2), v, ldv, &
               sigmar, sigmai, workev, bmat, n, which, nev, tol, & 
               resid, ncv, v, ldv, iparam, ipntr, workd, workl, &
               lworkl, ierr )
@@ -915,7 +997,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
         Z(:,i) = v(:,i)
       ENDDO
 
-      DEALLOCATE(SELECT)
+      DEALLOCATE(array_select)
       DEALLOCATE(ax, resid, workd, workev, workl)
       DEALLOCATE(d, v)
 

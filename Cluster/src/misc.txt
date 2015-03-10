@@ -1,3 +1,37 @@
+visu.txt : 
+
+visuClustersStructure
+=> crée une structure de fichier pour l'ensemble des paramèter géo : dimension, point recouvrements etc
+
+
+
+visuDecoup
+=> visualisation du decoupage parallele en 2D' 
+
+
+
+visuClusters
+=>'visualisation des clusters en 2D/3D'
+ !lecture des infos
+!choix du format de sortie
+!creation de la sub-directory visu/ pour stocker les fichiers paraview
+!geometrie du decoupage
+!fichier de sortie
+!fichier de sortie des clusters avant et après regroupement
+!liste des commandes
+=> Affiche le temps user et systeme
+
+=========================================================================
+subroutine_avec_MPI.txt : 
+
+program cluster
+
+lit avec un MPI_ABORT qu'il y a moyen d'éviter en remontant une info à
+l'appelant
+
+=========================================================================
+carte.txt :
+
 clusters.f90
 
 !initialisations MPI classiques
@@ -267,3 +301,9 @@ subroutine tableau_image(data)
   données
   données/résultats
   résultats
+
+
+=============================================
+améliorations :
+
+0.0 -> double precision zero

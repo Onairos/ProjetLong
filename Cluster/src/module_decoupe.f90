@@ -21,10 +21,10 @@ CONTAINS
 !! @param[in,out] coord_max the maxima along each dimension of the data (coordinates)
 !! @param[in,out] coord_min the minima along each dimension of the data (coordinates)
 !! @param[out] bounds the intervals along each dimension representing the bounds of each partition
-!! @param[out] assignements the assignement of each point in a partition
+!! @param[out] assignments the assignement of each point in a partition
 !! @param[out] points_by_domain the number of points in each partition
   SUBROUTINE partition_data(data, epsilon, nb_proc, coord_min, coord_max, partitioning,&
-       points_by_domain, assignements, bounds)
+       points_by_domain, assignments, bounds)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -42,7 +42,7 @@ CONTAINS
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-    INTEGER, DIMENSION(:,:), POINTER :: assignements
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
@@ -63,15 +63,15 @@ CONTAINS
     ! Partitioning definition
     IF ((data%interface==1).OR.(nb_proc==1)) THEN
        ! Partitioning by interfacing
-       CALL partition_with_interface(nb_proc,data,points_by_domain,assignements,domains,epsilon)
+       CALL partition_with_interface(nb_proc,data,points_by_domain,assignments,domains,epsilon)
     ELSE
        ! Partitioning by overlapping
-       CALL partition_with_overlapping(nb_proc,data,points_by_domain,assignements,domains)
+       CALL partition_with_overlapping(nb_proc,data,points_by_domain,assignments,domains)
     ENDIF
     DEALLOCATE(domains)
 
     ! Saving partitioning
-    CALL write_partitioning(nb_proc,data,points_by_domain,assignements)
+    CALL write_partitioning(nb_proc,data,points_by_domain,assignments)
 
     RETURN
   END SUBROUTINE partition_data
@@ -321,9 +321,9 @@ CONTAINS
 !! @param[in] domains the domains constructed from the bounds
 !! @param[in] epsilon the slice thickness
 !! @param[in] nb_proc the number of processors used
-!! @param[out] assignements the assignement of each point in a partition
+!! @param[out] assignments the assignement of each point in a partition
 !! @param[out] points_by_domain the number of points in each partition
-  SUBROUTINE partition_with_interface(nb_proc, data, points_by_domain, assignements, domains, epsilon)
+  SUBROUTINE partition_with_interface(nb_proc, data, points_by_domain, assignments, domains, epsilon)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -335,7 +335,7 @@ CONTAINS
     DOUBLE PRECISION :: epsilon
     INTEGER :: nb_proc
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: assignements
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
@@ -350,8 +350,8 @@ CONTAINS
     !###########################################
     ALLOCATE(points_by_domain(0:max(1,nb_proc-1)))
     points_by_domain(:)=0
-    ALLOCATE(assignements(0:max(1,nb_proc-1),data%nb))
-    assignements(:,:)=0
+    ALLOCATE(assignments(0:max(1,nb_proc-1),data%nb))
+    assignments(:,:)=0
     DO i=1,data%nb
        ! Search of packages
        n=0
@@ -390,7 +390,7 @@ CONTAINS
           ENDIF
        ENDDO
        points_by_domain(n)=points_by_domain(n)+1
-       assignements(n,points_by_domain(n))=i
+       assignments(n,points_by_domain(n))=i
        IF (nb_proc>1) THEN
           ! Search of interface if > 1 proc
           ok=.FALSE.
@@ -409,8 +409,8 @@ CONTAINS
           ENDIF
           IF (.NOT. ok) THEN
              points_by_domain(0)=points_by_domain(0)+1
-             assignements(0,points_by_domain(0))=i
-             WRITE(7,*) assignements(0,points_by_domain(0))
+             assignments(0,points_by_domain(0))=i
+             WRITE(7,*) assignments(0,points_by_domain(0))
           ENDIF
        ENDIF
     ENDDO
@@ -432,9 +432,9 @@ CONTAINS
 !! @param[in] data the entire data for computing
 !! @param[in] domains the domains constructed from the bounds
 !! @param[in] nb_proc the number of processors used
-!! @param[out] assignements the assignement of each point in a partition
+!! @param[out] assignments the assignement of each point in a partition
 !! @param[out] points_by_domain the number of points in each partition
-  SUBROUTINE partition_with_overlapping(nb_proc, data, points_by_domain, assignements, domains)
+  SUBROUTINE partition_with_overlapping(nb_proc, data, points_by_domain, assignments, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -445,7 +445,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
     INTEGER :: nb_proc
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: assignements
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !#### Variables  ####
@@ -459,8 +459,8 @@ CONTAINS
     !###########################################
     ALLOCATE(points_by_domain(0:max(1,nb_proc-1)))
     points_by_domain(:)=0
-    ALLOCATE(assignements(0:max(1,nb_proc-1),data%nb))
-    assignements(:,:)=0
+    ALLOCATE(assignments(0:max(1,nb_proc-1),data%nb))
+    assignments(:,:)=0
     DO i=1,data%nb
        ! Search of packages
        DO n=1,nb_proc
@@ -480,7 +480,7 @@ CONTAINS
           ENDIF
           IF (ok) THEN
              points_by_domain(n-1)=points_by_domain(n-1)+1
-             assignements(n-1,points_by_domain(n-1))=i
+             assignments(n-1,points_by_domain(n-1))=i
           ENDIF
        ENDDO
     ENDDO
