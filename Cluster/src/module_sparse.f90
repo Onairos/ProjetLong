@@ -42,9 +42,9 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_rii
     DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_rij
     DOUBLE PRECISION, DIMENSION(:), POINTER :: W
-    DOUBLE PRECISION :: facteur
-    DOUBLE PRECISION :: seuilrij
-    DOUBLE PRECISION :: norme
+    DOUBLE PRECISION :: factor
+    DOUBLE PRECISION :: threshold_rij
+    DOUBLE PRECISION :: norm
     DOUBLE PRECISION :: ratio
     DOUBLE PRECISION :: ratio1
     DOUBLE PRECISION :: ratio2
@@ -80,20 +80,20 @@ CONTAINS
     nnz = 0
     ! Arbitrary treshold value 
     ! TODO : mettre la valeur du facteur dans le fichier param
-    facteur = 3.0
-    treshold = facteur*sigma
+    factor = 3.0
+    treshold = factor*sigma
 
     t1 = MPI_WTIME()
     DO i=1,n-1  ! bound ?
        DO j=i+1,n ! bound ?
 
-          norme=0.0
+          norm=0.0
 
           DO k=1,partitioned_data%dim
-             norme=norme+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
+             norm=norm+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
           ENDDO
 
-          IF(sqrt(norme) <= treshold) THEN
+          IF(sqrt(norm) <= treshold) THEN
             nnz = nnz + 1
           ENDIF
 
@@ -113,14 +113,14 @@ CONTAINS
     l = 1
     DO i=1,n-1
        DO j=i+1,n
-          norme=0.0
+          norm=0.0
           DO k=1,partitioned_data%dim
-             norme=norme+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
+             norm=norm+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
           ENDDO
-          value=exp(-norme/sigma)
+          value=exp(-norm/sigma)
           ! kepp if value <= treshold
           ! (if we want to keep it all, do comment line IF, ENDIF)
-          IF(sqrt(norme) <= treshold) THEN
+          IF(sqrt(norm) <= treshold) THEN
             AS(l) = value
             IAS(l) = i
             JAS(l) = j
@@ -133,7 +133,7 @@ CONTAINS
           ENDIF
        ENDDO
     ENDDO
-    WRITE(*,*) '========== facteur, n*n nnz2 = ', facteur, n*n, nnz2
+    WRITE(*,*) '========== factor, n*n nnz2 = ', factor, n*n, nnz2
 
   ALLOCATE(D(n))
   D(:)=0.0
@@ -230,12 +230,12 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
        DO i=2,nb_clusters_max
           IF ((proc_id==0).AND.(nbproc>1)) THEN 
-             seuilrij=1e-1
+             threshold_rij=1e-1
           ELSE
-             seuilrij=1e-4
+             threshold_rij=1e-4
           ENDIF
 
-          IF ((ratio_rii(i)>=0.95*ratio1).AND.(ratio_rij(i)-ratio2<=seuilrij)) THEN  
+          IF ((ratio_rii(i)>=0.95*ratio1).AND.(ratio_rij(i)-ratio2<=threshold_rij)) THEN  
              partitioned_data%nbclusters=i
              ratio1=ratio_rii(i)
              ratio2=ratio_rij(i)
@@ -381,7 +381,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z2
     DOUBLE PRECISION, DIMENSION(:), POINTER :: Z3
-    INTEGER, DIMENSION(:,:), POINTER :: clustercorresp
+    INTEGER, DIMENSION(:,:), POINTER :: matchings
     INTEGER :: it_max
     INTEGER :: it_num
     INTEGER :: i
@@ -393,7 +393,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     INTEGER :: ni
     INTEGER :: nj
     INTEGER :: ok
-    INTEGER :: nbmax
+    INTEGER :: nb_max
     INTEGER :: num1
     INTEGER :: num2
     !###########################################      
@@ -435,25 +435,25 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
     ! Quality measure
 
-    nbmax=0
+    nb_max=0
     DO i=1,nb_clusters
-       nbmax=max(nbmax,points_by_clusters(i))
+       nb_max=max(nb_max,points_by_clusters(i))
     ENDDO
     PRINT *, 'points_by_clusters : ', points_by_clusters
-    ALLOCATE(clustercorresp(nb_clusters,nbmax))
-    clustercorresp(:,:)=0
+    ALLOCATE(matchings(nb_clusters,nb_max))
+    matchings(:,:)=0
     DO i=1,n
        j=clusters(i)
        ok=0
        k=1
        DO WHILE(ok==0)
-          IF (clustercorresp(j,k)==0) THEN
+          IF (matchings(j,k)==0) THEN
              ok=1
           ELSE
              k=k+1
           ENDIF
        ENDDO
-       clustercorresp(j,k)=i
+       matchings(j,k)=i
     ENDDO
 
 
@@ -628,7 +628,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     INTEGER :: nconv
     INTEGER :: ncv
     INTEGER :: nx
-    LOGICAL, DIMENSION(:), ALLOCATABLE :: SELECT
+    LOGICAL, DIMENSION(:), ALLOCATABLE :: array_select
     LOGICAL :: first
     LOGICAL :: rvec
 
@@ -851,7 +851,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !
          rvec = .TRUE.
 !
-         CALL dneupd ( rvec, 'A', SELECT, d, d(1,2), v, ldv, &
+         CALL dneupd ( rvec, 'A', array_select, d, d(1,2), v, ldv, &
               sigmar, sigmai, workev, bmat, n, which, nev, tol, & 
               resid, ncv, v, ldv, iparam, ipntr, workd, workl, &
               lworkl, ierr )
@@ -997,7 +997,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
         Z(:,i) = v(:,i)
       ENDDO
 
-      DEALLOCATE(SELECT)
+      DEALLOCATE(array_select)
       DEALLOCATE(ax, resid, workd, workev, workl)
       DEALLOCATE(d, v)
 
