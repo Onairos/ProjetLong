@@ -1,8 +1,8 @@
 DATA
 COORD
-simple.txt
+fichier.txt
 NBLIMIT
-8
+5
 EPAISSEUR
 1.7
 DECOUPAGE
