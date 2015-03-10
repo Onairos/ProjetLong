@@ -102,7 +102,7 @@ CONTAINS
   END SUBROUTINE read_metadata
 
 
-  SUBROUTINE write_partionning(format_output, params)
+  SUBROUTINE write_partitioning(format_output, params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -124,7 +124,7 @@ CONTAINS
        CALL write_partitioning_paraview(params)
     END SELECT
     RETURN
-  END SUBROUTINE write_partionning
+  END SUBROUTINE write_partitioning
 
 
 

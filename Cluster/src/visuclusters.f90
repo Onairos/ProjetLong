@@ -43,7 +43,7 @@ PROGRAM visuclusters
   IF (format_output=='paraview') CALL system('mkdir visu')
 
   ! Geometry of partitionning
-  CALL write_partionning(format_output,params)
+  CALL write_partitioning(format_output,params)
 
   ! Output file
   CALL affectation(format_output,params)
