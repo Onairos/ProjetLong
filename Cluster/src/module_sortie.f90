@@ -87,7 +87,7 @@ CONTAINS
   END SUBROUTINE write_partitioning
 
 
-  SUBROUTINE write_partial_clusters(numproc, partitioned_data)
+  SUBROUTINE write_partial_clusters(proc_id, partitioned_data)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -95,7 +95,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====  
     TYPE(type_data) :: partitioned_data
-    INTEGER :: numproc
+    INTEGER :: proc_id
     
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
@@ -106,10 +106,10 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     ! File name
-    WRITE(num,*),numproc
+    WRITE(num,*),proc_id
     num=adjustl(num)
     files='cluster.partiel.'//trim(num)
-    PRINT *, 'Process n', numproc, ' : clusters writing : ', files
+    PRINT *, 'Process n', proc_id, ' : clusters writing : ', files
     OPEN(FILE=files,UNIT=10)
     WRITE(10,*) partitioned_data%nb,partitioned_data%dim
     DO i=1,partitioned_data%nb

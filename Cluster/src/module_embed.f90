@@ -5,8 +5,8 @@ CONTAINS
 
 
   SUBROUTINE apply_spectral_embedding(nbcluster, n, Z, A, ratio,clusters, &
-       clusters_centers, points_by_clusters, clusters_energies, nb_info, numproc, &
-       ratiomoy, ratiorij, ratiorii)
+       clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
+       ratio_moy, ratio_rij, ratio_rii)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -17,15 +17,15 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z ! matrice des vecteurs propres
     INTEGER :: n
     INTEGER :: nbcluster ! nbre de clusters
-    INTEGER :: numproc
+    INTEGER :: proc_id
     
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers ! centre des nbclusters clusters
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies ! somme des energies par cluster
     DOUBLE PRECISION :: ratio ! max des ration de frob sur matrice aff reordonnancee suivant
-    DOUBLE PRECISION :: ratiomoy
-    DOUBLE PRECISION :: ratiorii
-    DOUBLE PRECISION :: ratiorij
+    DOUBLE PRECISION :: ratio_moy
+    DOUBLE PRECISION :: ratio_rii
+    DOUBLE PRECISION :: ratio_rij
     INTEGER, DIMENSION(:), POINTER :: clusters ! appartenance des clusters
     INTEGER, DIMENSION(:), POINTER :: points_by_clusters ! nbre de points par cluster
     INTEGER :: nb_info
@@ -81,7 +81,7 @@ CONTAINS
 
     CALL apply_kmeans( nbcluster, n, nbcluster, nb_iter_max, nb_iter,Z2,&
          clusters, clusters_centers, points_by_clusters, clusters_energies, &
-         numproc)
+         proc_id)
 
     !*****************************
     ! Mesure de qualite
@@ -120,29 +120,29 @@ CONTAINS
     DEALLOCATE(clustercorresp)
     ratio=0.0
     ratiomin=1.D+16
-    ratiorii=0.0
-    ratiorij=0.0
+    ratio_rii=0.0
+    ratio_rij=0.0
     nb_info=nbcluster
     DO i=1,nbcluster
        IF ((points_by_clusters(i)/=0).AND.(Frob(i,i)/=0)) THEN
           DO j=1,nbcluster
              IF (i/=j) THEN
                 ratio=ratio+Frob(i,j)/Frob(i,i)
-                ratiomoy=ratiomoy+Frob(i,j)/Frob(i,i)
-                ratiorij=ratiorij+Frob(i,j)
-                ratiorii=ratiorii+Frob(i,i)
+                ratio_moy=ratio_moy+Frob(i,j)/Frob(i,i)
+                ratio_rij=ratio_rij+Frob(i,j)
+                ratio_rii=ratio_rii+Frob(i,i)
                 ratiomin=min(ratiomin,Frob(i,j)/Frob(i,i))
              ENDIF
           ENDDO
        ELSE
           nb_info=nb_info-1
        ENDIF
-       ratiorij=ratiorij*2/(nbcluster*(nbcluster-1))
+       ratio_rij=ratio_rij*2/(nbcluster*(nbcluster-1))
     ENDDO
     DEALLOCATE(Frob)
 
 #if aff
-    PRINT *, 'DEBUG : process n', numproc,' : nb_info=', nb_info, ' nbcluster=', nbcluster
+    PRINT *, 'DEBUG : process n', proc_id,' : nb_info=', nb_info, ' nbcluster=', nbcluster
 #endif
 
     RETURN 
@@ -151,7 +151,7 @@ CONTAINS
 
 
   SUBROUTINE apply_kmeans(dimension, nb_points, nb_clusters, nb_iter_max, nb_iter, points, &
-       clusters, clusters_centers, points_by_clusters, clusters_energies, numproc)
+       clusters, clusters_centers, points_by_clusters, clusters_energies, proc_id)
 
     !*****************************************************************************80
     !
@@ -208,7 +208,7 @@ CONTAINS
     INTEGER :: points_by_clusters (nb_clusters) ! the number of points in each cluster
 
     !== USELESS ===
-    INTEGER :: numproc ! TODO : etudier si garder ou pas : le garder finalement
+    INTEGER :: proc_id ! TODO : etudier si garder ou pas : le garder finalement
     
     !#### Variables  ####
     DOUBLE PRECISION :: listnorm (nb_points, nb_clusters)

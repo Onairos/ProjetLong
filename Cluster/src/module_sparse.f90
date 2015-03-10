@@ -4,17 +4,17 @@ MODULE module_sparse
   USE module_embed
 CONTAINS
 
-  SUBROUTINE sp_calculclusters(numproc, nb_clusters_max, nbideal, partitioned_data, sigma)
+  SUBROUTINE sp_calculclusters(proc_id, nb_clusters_max, nbideal, partitioned_data, sigma)
 
     IMPLICIT INTEGER(i, j, q)
     INCLUDE 'mpif.h'
     TYPE(type_data) :: partitioned_data
-    INTEGER :: numproc, nbproc
+    INTEGER :: proc_id, nbproc
     DOUBLE PRECISION :: sigma
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
     INTEGER :: n, k, nbcluster
     DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax, clusters_energies, &
-         ratiomin, ratiomoy, ratiorii, ratiorij
+         ratiomin, ratio_moy, ratio_rii, ratio_rij
     INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters, nb_info
     INTEGER :: nb_clusters_max, nbideal
     DOUBLE PRECISION :: norme, ratio, ratio1, ratio2, seuilrij
@@ -35,7 +35,7 @@ CONTAINS
 
     ! Matrix creation
 #if aff
-    PRINT *, 'DEBUG : process n', numproc, ' : value of sigma : ', sigma
+    PRINT *, 'DEBUG : process n', proc_id, ' : value of sigma : ', sigma
 #endif
     n=partitioned_data%nb
 
@@ -65,7 +65,7 @@ CONTAINS
 
     t2 = MPI_WTIME()
     t_cons_a = t2 - t1
-    PRINT *, 'Process n', numproc, ' : t_cons A : ', t_cons_a
+    PRINT *, 'Process n', proc_id, ' : t_cons A : ', t_cons_a
 
     t1 = MPI_WTIME()
     nnz2 = nnz*2
@@ -149,12 +149,12 @@ CONTAINS
        ratiomax(:)=0
        ALLOCATE(ratiomin(nb_clusters_max))
        ratiomin(:)=0
-       ALLOCATE(ratiomoy(nb_clusters_max))
-       ratiomoy(:)=0
-       ALLOCATE(ratiorii(nb_clusters_max))
-       ratiorii(:)=0
-       ALLOCATE(ratiorij(nb_clusters_max))
-       ratiorij(:)=0
+       ALLOCATE(ratio_moy(nb_clusters_max))
+       ratio_moy(:)=0
+       ALLOCATE(ratio_rii(nb_clusters_max))
+       ratio_rii(:)=0
+       ALLOCATE(ratio_rij(nb_clusters_max))
+       ratio_rij(:)=0
 
        ALLOCATE(nb_info(nb_clusters_max))
        nb_info(:)=0
@@ -172,8 +172,8 @@ CONTAINS
 
           CALL sp_spectral_embedding(nbcluster, n, Z, nnz2, AS, IAS, JAS, &
                ratiomax(nbcluster),clusters,clusters_centers,points_by_clusters, &
-               clusters_energies,nb_info(nbcluster),numproc,ratiomoy(nbcluster), &
-               ratiorij(nbcluster),ratiorii(nbcluster))
+               clusters_energies,nb_info(nbcluster),proc_id,ratio_moy(nbcluster), &
+               ratio_rij(nbcluster),ratio_rii(nbcluster))
 
           DEALLOCATE(clusters)
           DEALLOCATE(clusters_centers)
@@ -192,16 +192,16 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ratio2=1e+10
 
        DO i=2,nb_clusters_max
-          IF ((numproc==0).AND.(nbproc>1)) THEN 
+          IF ((proc_id==0).AND.(nbproc>1)) THEN 
              seuilrij=1e-1
           ELSE
              seuilrij=1e-4
           ENDIF
 
-          IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
+          IF ((ratio_rii(i)>=0.95*ratio1).AND.(ratio_rij(i)-ratio2<=seuilrij)) THEN  
              partitioned_data%nbclusters=i
-             ratio1=ratiorii(i)
-             ratio2=ratiorij(i)
+             ratio1=ratio_rii(i)
+             ratio2=ratio_rij(i)
           ENDIF
        ENDDO
 
@@ -221,18 +221,18 @@ PRINT *, 'DEBUG : Frobenius ratio'
        partitioned_data%nbclusters=n
        ALLOCATE(ratiomax(n))
        ratiomax(:)=0
-       ALLOCATE(ratiomoy(n))
-       ratiomoy(:)=0
+       ALLOCATE(ratio_moy(n))
+       ratio_moy(:)=0
        ALLOCATE(ratiomin(n))
        ratiomin(:)=0
-       ALLOCATE(ratiorii(n))
-       ratiorii(:)=0
-       ALLOCATE(ratiorij(n))
-       ratiorij(:)=0
+       ALLOCATE(ratio_rii(n))
+       ratio_rii(:)=0
+       ALLOCATE(ratio_rij(n))
+       ratio_rij(:)=0
     ENDIF
     ! Case with nbcluster==1
     IF (partitioned_data%nbclusters==2) THEN
-       PRINT *, 'Ratio difference : ', ratiorij(2)/ratiorii(2)
+       PRINT *, 'Ratio difference : ', ratio_rij(2)/ratio_rii(2)
        IF (ratiomax(2)>=0.6) THEN 
           partitioned_data%nbclusters=1
        ELSE 
@@ -240,7 +240,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ENDIF
     ENDIF
 #if aff
-    PRINT *, 'DEBUG : process n', numproc,' : final clusters got : ', partitioned_data%nbclusters
+    PRINT *, 'DEBUG : process n', proc_id,' : final clusters got : ', partitioned_data%nbclusters
 #endif
 
     ! Computing final clustering
@@ -248,8 +248,8 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
        CALL sp_spectral_embedding(partitioned_data%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
             clusters_centers,points_by_clusters,clusters_energies,&
-            nb_info(partitioned_data%nbclusters),numproc,ratiomin(1),ratiorij(1),&
-            ratiorii(1))
+            nb_info(partitioned_data%nbclusters),proc_id,ratiomin(1),ratio_rij(1),&
+            ratio_rii(1))
 
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%clusters=clusters(i)
@@ -260,20 +260,20 @@ PRINT *, 'DEBUG : Frobenius ratio'
        DEALLOCATE(ratiomax)
        DEALLOCATE(clusters_energies)
        DEALLOCATE(ratiomin)
-       DEALLOCATE(ratiomoy)
-       DEALLOCATE(ratiorii)
-       DEALLOCATE(ratiorij)
+       DEALLOCATE(ratio_moy)
+       DEALLOCATE(ratio_rii)
+       DEALLOCATE(ratio_rij)
        DEALLOCATE(clusters_centers)
 
     ELSE 
 #if aff
-       PRINT *, 'DEBUG : process n', numproc, ' : OK'
+       PRINT *, 'DEBUG : process n', proc_id, ' : OK'
 #endif
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%clusters=1
        ENDDO
 #if aff
-       PRINT *, 'DEBUG : process n', numproc, ' : cluster'
+       PRINT *, 'DEBUG : process n', proc_id, ' : cluster'
 #endif
     ENDIF
 
@@ -288,13 +288,13 @@ PRINT *, 'DEBUG : Frobenius ratio'
   END SUBROUTINE sp_calculclusters
 
     SUBROUTINE sp_spectral_embedding(nbcluster, n, Z, nnz, AS, IAS, JAS, ratio, clusters, &
-       clusters_centers, points_by_clusters, clusters_energies, nb_info, numproc, &
-       ratiomoy, ratiorij, ratiorii)
+       clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
+       ratio_moy, ratio_rij, ratio_rii)
 
     IMPLICIT NONE
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z, clusters_centers
-    INTEGER ::nbcluster, n, nb_info, numproc
-    DOUBLE PRECISION ::ratio, test, ratiomin, ratiorii, ratiorij, ratiomoy
+    INTEGER ::nbcluster, n, nb_info, proc_id
+    DOUBLE PRECISION ::ratio, test, ratiomin, ratio_rii, ratio_rij, ratio_moy
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies, Z3
     INTEGER, DIMENSION(:), POINTER ::clusters, points_by_clusters
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
@@ -335,13 +335,13 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ENDDO
     ENDDO
 
-    PRINT *, 'Process n', numproc,' : kmeans method'
+    PRINT *, 'Process n', proc_id,' : kmeans method'
 
     it_max=n*n !1000.0
 
     CALL apply_kmeans( nbcluster, n, nbcluster, it_max, it_num, Z2,&
          clusters, clusters_centers, points_by_clusters, clusters_energies, &
-         numproc)
+         proc_id)
 
     ! Quality measure
 
@@ -381,36 +381,36 @@ PRINT *, 'DEBUG : Frobenius ratio'
     ! Beginning of sparsification
     ratio=0.0
     ratiomin=1.D+16
-    ratiorii=0.0
-    ratiorij=0.0
-    ratiomoy = 0.0
+    ratio_rii=0.0
+    ratio_rij=0.0
+    ratio_moy = 0.0
     nb_info=nbcluster
     DO i=1,nbcluster
        IF ((points_by_clusters(i)/=0).AND.(Frob(i,i)/=0)) THEN
           DO j=1,nbcluster
              IF (i/=j) THEN
                 ratio=ratio+Frob(i,j)/Frob(i,i)
-                ratiomoy=ratiomoy+Frob(i,j)/Frob(i,i)
-                ratiorij=ratiorij+Frob(i,j)
-                ratiorii=ratiorii+Frob(i,i)
+                ratio_moy=ratio_moy+Frob(i,j)/Frob(i,i)
+                ratio_rij=ratio_rij+Frob(i,j)
+                ratio_rii=ratio_rii+Frob(i,i)
                 ratiomin=min(ratiomin,Frob(i,j)/Frob(i,i))
              ENDIF
           ENDDO
        ELSE
           nb_info=nb_info-1
        ENDIF
-       ratiorij=ratiorij*2/(nbcluster*(nbcluster-1))
-       ratiomoy=ratiomoy*2/(nbcluster*(nbcluster-1))
-       ratiorii=ratiorii!/nbcluster
+       ratio_rij=ratio_rij*2/(nbcluster*(nbcluster-1))
+       ratio_moy=ratio_moy*2/(nbcluster*(nbcluster-1))
+       ratio_rii=ratio_rii!/nbcluster
     ENDDO
 
-    PRINT *, "============= ratio ================", ratiomoy, ratiorij
+    PRINT *, "============= ratio ================", ratio_moy, ratio_rij
 
     DEALLOCATE(Frob)
     ! End of sparsification
 
 #if aff
-    PRINT *, 'Process n', numproc,' : nb_info=', nb_info, ' nbcluster=', nbcluster
+    PRINT *, 'Process n', proc_id,' : nb_info=', nb_info, ' nbcluster=', nbcluster
 #endif
 
     RETURN 
