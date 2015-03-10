@@ -1,3 +1,4 @@
+!>Contains methods enabling writing results in a selected data file format (for now : Paraview or GMSH)
 MODULE module_visuclusters
   USE module_visuclusters_structure
   USE module_visuclusters_gmsh
@@ -5,6 +6,27 @@ MODULE module_visuclusters
 CONTAINS
 
 
+!>Reads a file containing metadata on the data and the computed clusters
+!!@details This function extracts the following information from the input 
+!!<em>fort.3</em> file :
+!!<ol>
+!!<li> The data file name </li>
+!!<li> The number of the points in the entire data set </li>
+!!<li> The number of processes used </li>
+!!<li> The partitioning mode (by interface or overlapping) </li>
+!!<li> The number of clusters found </li>
+!!<li> The data file format </li>
+!!</ol>
+!!In the case of a picture format: this extra information is
+!!written :
+!!<ol>
+!!<li> The image dimension </li>
+!!<li> The image partitioning </li>
+!!<li> The number of attributes </li>
+!!<li> The number of steps (only in geometric format) </li>
+!!</ol> 
+!!@see write_metadata()
+!! @param[in,out] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
   SUBROUTINE read_metadata(params)
     IMPLICIT NONE
     !###########################################
@@ -102,6 +124,12 @@ CONTAINS
   END SUBROUTINE read_metadata
 
 
+!>Writes the geometry of the partitioning (Gmsh or Paraview) and calls the eponym function
+!!@details This methods extracts the domain definitions
+!!from the <em>fort.2</em> file.
+!!@see module_calcul::write_partitioning()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
+!! @param[in] format_output the file format for visualization
   SUBROUTINE write_partitioning(format_output, params)
     IMPLICIT NONE
     !###########################################
@@ -129,6 +157,12 @@ CONTAINS
 
 
 
+!>Initializes the file of the partitionning
+!!@details This method extracts details on partitioning from the
+!!<em>decoupe.x</em> files.
+!!@see module_calcul::write_partial_clusters()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
+!! @param[in] format_output the file format for visualization
   SUBROUTINE write_assignment(format_output, params)
     IMPLICIT NONE
     !###########################################
@@ -156,6 +190,12 @@ CONTAINS
 
 
 
+!>Writes the clusters before grouping by calling the corresponding method (Gmsh or Paraview)
+!!@details This methods extracts details on computed clusters
+!!on each domain from <em>cluster.partiel.x</em> files.
+!!@see module_calcul::write_partial_clusters()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
+!! @param[in] format_output the file format for visualization
   SUBROUTINE write_partial_clusters(format_output, params)
     IMPLICIT NONE
     !###########################################
@@ -183,6 +223,12 @@ CONTAINS
 
 
 
+!>Writes the clusters after grouping by calling the corresponding method (Gmsh or Paraview)
+!!@details This methods extracts details on computed clusters
+!!from <em>cluster.final.x</em> files.
+!!@see module_calcul::write_final_clusters()
+!! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
+!! @param[in] format_output the file format for visualization
   SUBROUTINE write_final_clusters(format_output, params)
     IMPLICIT NONE
     !###########################################
@@ -210,6 +256,8 @@ CONTAINS
 
 
 
+!>Lists the commands related to Gmsh or Paraview depending on the input parameter
+!! @param[in] format_output the file format for visualization
   SUBROUTINE list_commands(format_output)
     IMPLICIT NONE
     !###########################################

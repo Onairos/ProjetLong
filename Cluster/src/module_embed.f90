@@ -1,9 +1,40 @@
+!>Contains K-means and spectral embedding algorithms
 MODULE module_embed
   USE module_structure
 CONTAINS
 
 
 
+!>Computes the clusters using eigen vector matrix
+!!@details The first part of the method performs the following:
+!!<ol>
+!!<li> Extract the <em>nb_clusters</em> first columns of the eigen vector matrix (corresponding to the highest eigen values)</li>
+!!<li> Normalize the matrix and transposes it </li>
+!!<li> Apply K-Means on it to find the clusters </li>
+!!</ol>
+!!Then it operates a quality measurement on the found clusters.
+!!It computes the sum of the ratios that indicate if the number of
+!!clusters is optimal. The lower this sum is, the best is the number
+!!of clusters. This method also compute the number of clusters that
+!!have at least one point and that have an internal affinity greater
+!!than zero.
+!!@note We refer you to the article <em>"On a strategy for Spectral Clustering with parallel computation"</em> for a better understanding.
+!! @param[in] A the affinity matrix
+!! @param[in] Z the matrix of eigen vectors
+!! @param[in] n 
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] proc_id the processus identifier
+!! @param[out] clusters_centers the cluster centers
+!! @param[out] clusters_energies the cluster energies
+!! @param[out] ratio the sum of the ratios between Frobenius norm of the off-diagonal and the diagonal blocks of the normalized affinity matrix
+!! @param[out] ratio_moy 
+!! @param[out] ratio_rii the sum of the denominator of each ratio
+!! @param[out] ratio_rij the sum of the numerators of each ratio
+!! @param[out] nb_info the reduced number of clusters (?)
+!! @param[out] clusters indicates which cluster each point belongs to
+!! @param[out] points_by_clusters the number of points in each cluster
   SUBROUTINE apply_spectral_embedding(nb_clusters, n, Z, A, ratio,clusters, &
        clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
        ratio_moy, ratio_rij, ratio_rii)
@@ -149,6 +180,31 @@ CONTAINS
 
 
 
+!>Implements K-Means algorithm (required by spectral clustering and Kernel K-Means methods)
+!!The algorithm works as follows:
+!!<ol>
+!!<li>Choose <em>nb_clusters</em> starting points as cluster centers randomly</li>
+!!<li>For each point in the data set, find the minimum distance from a cluster center and attach it to the corresponding cluster</li>
+!!<li>Compute the density center of each cluster</li>
+!!<li>Stop if the density centers are similar to the cluster centers</li>
+!!<li>Select the density centers as new cluster centers and start from the beginning</li>
+!!</ol>
+!! @param[in] points the points
+!! @param[in] dim the number of spatial dimensions
+!! @param[in] dim the number of spatial dimensions
+!! @param[in] dim 
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_iter_max the maximum number of iterations
+!! @param[in] nb_points the number of points
+!! @param[in] nb_points the number of points
+!! @param[in,out] clusters_centers the cluster centers
+!! @param proc_id the processus identifier
+!! @param[out] clusters_energies the cluster energies
+!! @param[out] nb_iter the number of iterations taken
+!! @param[out] clusters indicates which cluster each point belongs to
+!! @param[out] points_by_clusters the number of points in each cluster
   SUBROUTINE apply_kmeans(dim, nb_points, nb_clusters, nb_iter_max, nb_iter, points, &
        clusters, clusters_centers, points_by_clusters, clusters_energies, proc_id)
 

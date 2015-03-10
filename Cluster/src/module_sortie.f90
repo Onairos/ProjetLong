@@ -1,8 +1,17 @@
+!>Contains methods enabling writing results in specific formatted files
 MODULE module_sortie
   USE module_structure
 CONTAINS
 
 
+!>Writes the file containing the domain definitions
+!!@details This methods writes the domain definitions using the
+!!following formatting: each line contains the two point coordinates
+!!of a bound separated by the character "|".
+!!@note The written file is <em>fort.2</em>.S
+!! @param[in] data the entire data for computing
+!! @param[in] domains the domains constructed from the bounds
+!! @param[in] nb_proc the number of processors used
   SUBROUTINE write_domains(data, nb_proc, domains)
     IMPLICIT NONE
     !###########################################
@@ -29,6 +38,17 @@ CONTAINS
   END SUBROUTINE write_domains
 
 
+!>Writes the files containing the partitionning
+!!@details Each file correspond to a domain. The first number
+!!is the number of points in the domain. Then the following
+!!lines are simply the coordinates of the points (in case of
+!!coordinates format) or the color of the pixels (in case of
+!!picture format) separated by blank spaces.
+!!@note The written files are <em>decoupe.x</em> with x the ids of the processes.
+!! @param[in] data the entire data for computing
+!! @param[in] assignements the assignement of each point in a partition
+!! @param[in] nb_proc the number of processors used
+!! @param[in] points_by_domain the number of points in each partition
   SUBROUTINE write_partitioning(nb_proc, data, points_by_domain, assignements)
     IMPLICIT NONE
     !###########################################
@@ -87,6 +107,19 @@ CONTAINS
   END SUBROUTINE write_partitioning
 
 
+!>Writes the file containing the clusters computed by the process
+!!@details The file starts with the number of points in the domain
+!!and the number of dimensions separated by a blank space. The
+!!following lines are :
+!!<ul>
+!!<li> <b> For coordinates format </b> : the coordinates of a point
+!!and the id of the cluster which it belongs to separated by a comma </li>
+!!<li> <b> For picture formats </b> : the id of the point and the 
+!!id of the cluster which it belongs to separated by a comma</li>
+!!</ul>
+!!@note The written file is <em>cluster.partiel.x</em> with x the id of the process
+!! @param[in] partitioned_data the partitioned data for computing
+!! @param[in] proc_id the processus identifier
   SUBROUTINE write_partial_clusters(proc_id, partitioned_data)
     IMPLICIT NONE
     !###########################################
@@ -125,6 +158,16 @@ CONTAINS
   END SUBROUTINE write_partial_clusters
 
 
+!>Writes the files containing the final clusters after grouping
+!!@details Each file correspond to a cluster. The first number
+!!is the number of points in the cluster. Then all the following
+!!numbers are the indices of the points that belongs to the cluster.
+!!@note The written files are <em>cluster.final.x</em> with x the ids of the clusters.
+!! @param[in] cluster_map the cluster indices and the number of points in each cluster
+!! @param[in] points_by_cluster the number of points in each cluster
+!! @param[in,out] nb_clusters the number of clusters
+!! @param[in,out] nb_clusters the number of clusters
+!! @param[in,out] nb_clusters the number of clusters
   SUBROUTINE write_final_clusters(nb_clusters, points_by_cluster, cluster_map)
     IMPLICIT NONE
     !###########################################
@@ -170,6 +213,32 @@ CONTAINS
   END SUBROUTINE write_final_clusters
 
 
+!>Writes a file containing various information
+!!@details The following information is written in 
+!!<em>fort.3</em> file :
+!!<ol>
+!!<li> The data file name </li>
+!!<li> The number of the points in the entire data set </li>
+!!<li> The number of processes used </li>
+!!<li> The partitioning mode (by interface or overlapping) </li>
+!!<li> The number of clusters found </li>
+!!<li> The data file format </li>
+!!</ol>
+!!In the case of a picture format: this extra information is
+!!written :
+!!<ol>
+!!<li> The image dimension </li>
+!!<li> The image partitioning </li>
+!!<li> The number of attributes </li>
+!!<li> The number of steps (only in geometric format) </li>
+!!</ol> 
+!!@see read_metadata()
+!! @param[in] data the entire data for computing
+!! @param[in] input_file the name of the text file where input data is written
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_clusters the number of clusters
+!! @param[in] nb_proc the number of processors used
   SUBROUTINE write_metadata(mesh, data, nb_proc, nb_clusters)
     IMPLICIT NONE
     !###########################################
