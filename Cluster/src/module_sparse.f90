@@ -4,7 +4,7 @@ MODULE module_sparse
   USE module_embed
 CONTAINS
 
-  SUBROUTINE sp_calculclusters(proc_id, nb_clusters_max, nb_clusters_opt, partitioned_data, sigma)
+  SUBROUTINE apply_spectral_clustering_sparse(proc_id, nb_clusters_max, nb_clusters_opt, partitioned_data, sigma)
 
     IMPLICIT INTEGER(i, j, q)
     INCLUDE 'mpif.h'
@@ -170,7 +170,7 @@ CONTAINS
           ALLOCATE(clusters_energies(nb_clusters))
           clusters_energies(:)=0.0
 
-          CALL sp_spectral_embedding(nb_clusters, n, Z, nnz2, AS, IAS, JAS, &
+          CALL apply_spectral_embedding_sparse(nb_clusters, n, Z, nnz2, AS, IAS, JAS, &
                ratiomax(nb_clusters),clusters,clusters_centers,points_by_clusters, &
                clusters_energies,nb_info(nb_clusters),proc_id,ratio_moy(nb_clusters), &
                ratio_rij(nb_clusters),ratio_rii(nb_clusters))
@@ -246,7 +246,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     ! Computing final clustering
     IF (partitioned_data%nbclusters>1) THEN
 
-       CALL sp_spectral_embedding(partitioned_data%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
+       CALL apply_spectral_embedding_sparse(partitioned_data%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
             clusters_centers,points_by_clusters,clusters_energies,&
             nb_info(partitioned_data%nbclusters),proc_id,ratiomin(1),ratio_rij(1),&
             ratio_rii(1))
@@ -285,9 +285,9 @@ PRINT *, 'DEBUG : Frobenius ratio'
     DEALLOCATE(Z)
 
     RETURN
-  END SUBROUTINE sp_calculclusters
+  END SUBROUTINE apply_spectral_clustering_sparse
 
-    SUBROUTINE sp_spectral_embedding(nb_clusters, n, Z, nnz, AS, IAS, JAS, ratio, clusters, &
+    SUBROUTINE apply_spectral_embedding_sparse(nb_clusters, n, Z, nnz, AS, IAS, JAS, ratio, clusters, &
        clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
        ratio_moy, ratio_rij, ratio_rii)
 
@@ -414,9 +414,9 @@ PRINT *, 'DEBUG : Frobenius ratio'
 #endif
 
     RETURN 
-  END SUBROUTINE sp_spectral_embedding
+  END SUBROUTINE apply_spectral_embedding_sparse
 
-  SUBROUTINE sp_matvec(A, IA, JA, X, Y, n, nnz)
+  SUBROUTINE compute_matvec_prod(A, IA, JA, X, Y, n, nnz)
   IMPLICIT NONE
 
   DOUBLE PRECISION, INTENT(IN), DIMENSION(nnz) :: A
@@ -435,7 +435,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
   RETURN
 
-  END SUBROUTINE sp_matvec
+  END SUBROUTINE compute_matvec_prod
 
   SUBROUTINE solve_arpack(A, IA, JA, dim, nnz, nb_clusters_max, W, Z)
 
@@ -671,7 +671,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !           | product to workd(ipntr(2)).               | 
 !           %-------------------------------------------%
 !
-            CALL sp_matvec(A, IA, JA, workd(ipntr(1)), workd(ipntr(2)), &
+            CALL compute_matvec_prod(A, IA, JA, workd(ipntr(1)), workd(ipntr(2)), &
                            dim, nnz)
 
             nbite = nbite + 1
@@ -777,7 +777,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !                 %--------------------%
 !
                   !CALL av(nx, v(1,j), ax)
-                  CALL sp_matvec(A, IA, JA, v(1,j), ax, dim, nnz)
+                  CALL compute_matvec_prod(A, IA, JA, v(1,j), ax, dim, nnz)
                   CALL daxpy(n, -d(j,1), v(1,j), 1, ax, 1)
                   d(j,3) = dnrm2(n, ax, 1)
                   d(j,3) = d(j,3) / abs(d(j,1))
@@ -792,12 +792,12 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !                 %------------------------%
 !
                   !CALL av(nx, v(1,j), ax)
-                  CALL sp_matvec(A, IA, JA, v(1,j), ax, dim, nnz)
+                  CALL compute_matvec_prod(A, IA, JA, v(1,j), ax, dim, nnz)
                   CALL daxpy(n, -d(j,1), v(1,j), 1, ax, 1)
                   CALL daxpy(n, d(j,2), v(1,j+1), 1, ax, 1)
                   d(j,3) = dnrm2(n, ax, 1)
                   !CALL av(nx, v(1,j+1), ax)
-                  CALL sp_matvec(A, IA, JA, v(1,j+1), ax, dim, nnz)
+                  CALL compute_matvec_prod(A, IA, JA, v(1,j+1), ax, dim, nnz)
                   CALL daxpy(n, -d(j,2), v(1,j), 1, ax, 1)
                   CALL daxpy(n, -d(j,1), v(1,j+1), 1, ax, 1)
                   d(j,3) = dlapy2( d(j,3), dnrm2(n, ax, 1) )

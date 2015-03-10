@@ -451,7 +451,7 @@ CONTAINS
     DO WHILE(.NOT.ok)
        j=j+1 
        IF (j>points_by_cluster(i)) THEN
-          ! Line n°1 is entirely tested
+          ! Line nÂ°1 is entirely tested
 #if aff
           PRINT *, 'DEBUG : number of elements after grouping :', points_by_cluster(i)
 #endif
@@ -473,7 +473,7 @@ CONTAINS
           j2=1
           DO WHILE(.NOT. ok2)
              IF (j2>points_by_cluster(i2)) THEN
-                ! Line n°i2 entirely tested for the point (i,j)
+                ! Line nÂ°i2 entirely tested for the point (i,j)
                 i2=i2+1
                 j2=1
              ENDIF
@@ -483,7 +483,7 @@ CONTAINS
              ELSE
                 ! Intersections test
                 IF (cluster_map(i,j)==cluster_map(i2,j2)) THEN
-                   ! Intersection found : line n°i2 added to line n°i
+                   ! Intersection found : line nÂ°i2 added to line nÂ°i
                    n=0
                    DO k=1,points_by_cluster(i2)
                       ! Test of removal of duplications

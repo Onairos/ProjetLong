@@ -203,7 +203,7 @@ FUNCTION poly_kernel( partitioned_data, gam, delta )
   END
 
 
-!Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||²))
+!Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||Â²))
 
 
 
@@ -350,7 +350,7 @@ PRINT *, 'recherche des centres'
                 norm=0.0
                 DO k=1,partitioned_data%dim
                    val=max(val,abs(cluster_center(k,j)-partitioned_data%point(p)%coord(k))) 
-!VOIR SI CELA DOIT ÊTRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!VOIR SI CELA DOIT ÃTRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 ENDDO
                 valmax=min(val,valmax)
              ENDDO

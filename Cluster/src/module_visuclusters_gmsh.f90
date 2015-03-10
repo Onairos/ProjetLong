@@ -144,7 +144,7 @@ CONTAINS
 
 
 
-  SUBROUTINE affectation_gmsh(params)
+  SUBROUTINE write_assignment_gmsh(params)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -190,7 +190,7 @@ CONTAINS
              ! Partitioning by coordinates
              coords(:,:)=0.
              READ(10,*) coords(1,:)
-             CALL ecritpoint_gmsh(1,params%dim,coords,i,1)
+             CALL write_point_coord_format(1,params%dim,coords,i,1)
           ELSE
              ! Partitioning 1D pictures
              READ (10,*) k
@@ -204,7 +204,7 @@ CONTAINS
     CLOSE(1)
     PRINT *, '-> decoupe.visu'
     RETURN
-  END SUBROUTINE affectation_gmsh
+  END SUBROUTINE write_assignment_gmsh
 
 
 
@@ -260,7 +260,7 @@ CONTAINS
        DO j=1,nb
           IF (params%coord==1) THEN
              READ(10,*) coords(1,:),k
-             CALL ecritpoint_gmsh(1,params%dim,coords,k,1)
+             CALL write_point_coord_format(1,params%dim,coords,k,1)
           ELSE
              READ(10,*) k,id
              CALL write_point_picture_format(1,params,id,matchings(k))
@@ -334,7 +334,7 @@ CONTAINS
           READ(10,*) k
           IF (params%coord==1) THEN
              ! Classic coordinates
-             CALL ecritpoint_gmsh(1,nb0,coords,i,k)
+             CALL write_point_coord_format(1,nb0,coords,i,k)
           ELSE
              ! Pictures reassembly
              CALL write_point_picture_format(1,params,i,k)
@@ -351,7 +351,7 @@ CONTAINS
 
 
 
-  SUBROUTINE ecritpoint_gmsh(unit, dim, coords, id, k)
+  SUBROUTINE write_point_coord_format(unit, dim, coords, id, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -375,7 +375,7 @@ CONTAINS
        WRITE(unit,*) 'SP(',coords(k,1),',',coords(k,2),',',coords(k,3),'){',id,'};'
     ENDIF
     RETURN
-  END SUBROUTINE ecritpoint_gmsh
+  END SUBROUTINE write_point_coord_format
 
 
 
