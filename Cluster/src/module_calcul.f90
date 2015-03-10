@@ -518,7 +518,6 @@ PRINT *, 'recherche des centres'
     INTEGER :: n
     INTEGER :: nb
     INTEGER :: nb_clusters
-    INTEGER :: nbproc !TODO : mettre en parametre et WTF faut-il faire car on lit une variable vide
     INTEGER :: nbvp
     INTEGER :: solver ! solveur au valeur propre => parametre de controle
 
@@ -660,11 +659,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ratio1=0.0
        ratio2=1e+10
        DO i=2,nb_clusters_max
-          IF ((proc_id==0).AND.(nbproc>1)) THEN 
-             seuilrij=1e-1
-          ELSE
-             seuilrij=1e-4 !TODO : garder que celui-ci
-          ENDIF
+          seuilrij=1e-4
           IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
              partitioned_data%nbclusters=i
              ratio1=ratiorii(i)
