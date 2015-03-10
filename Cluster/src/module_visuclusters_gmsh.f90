@@ -223,7 +223,7 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER, DIMENSION(:), POINTER :: matchings
     INTEGER :: i
-    INTEGER :: ind ! TODO: renommer
+    INTEGER :: id
     INTEGER :: j
     INTEGER :: k
     INTEGER :: length
@@ -262,8 +262,8 @@ CONTAINS
              READ(10,*) coords(1,:),k
              CALL ecritpoint_gmsh(1,params%dim,coords,k,1)
           ELSE
-             READ(10,*) k,ind
-             CALL write_point_picture_format(1,params,ind,matchings(k))
+             READ(10,*) k,id
+             CALL write_point_picture_format(1,params,id,matchings(k))
           ENDIF
        ENDDO
        CLOSE(10) 
@@ -351,7 +351,7 @@ CONTAINS
 
 
 
-  SUBROUTINE ecritpoint_gmsh(unit, dim, coords, ind, k)
+  SUBROUTINE ecritpoint_gmsh(unit, dim, coords, id, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -360,7 +360,7 @@ CONTAINS
     !====  IN  ====
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: dim
-    INTEGER :: ind
+    INTEGER :: id
     INTEGER :: k
     INTEGER :: unit
 
@@ -369,17 +369,17 @@ CONTAINS
     !###########################################
     IF (dim==2) THEN
        !2D
-       WRITE(unit,*) 'SP(',coords(k,1),',',coords(k,2),',',0.,'){',ind,'};' 
+       WRITE(unit,*) 'SP(',coords(k,1),',',coords(k,2),',',0.,'){',id,'};' 
     ELSEIF (dim==3) THEN
        !3D
-       WRITE(unit,*) 'SP(',coords(k,1),',',coords(k,2),',',coords(k,3),'){',ind,'};'
+       WRITE(unit,*) 'SP(',coords(k,1),',',coords(k,2),',',coords(k,3),'){',id,'};'
     ENDIF
     RETURN
   END SUBROUTINE ecritpoint_gmsh
 
 
 
-  SUBROUTINE write_point_picture_format(unit, params, ind, k)
+  SUBROUTINE write_point_picture_format(unit, params, id, k)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -387,7 +387,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER :: ind
+    INTEGER :: id
     INTEGER :: k
     INTEGER :: unit
 
@@ -445,7 +445,7 @@ CONTAINS
        ENDIF
     ENDIF
     ! Writing
-    WRITE(unit,*) 'SP(',kx,',',ky,',',kz,'){',ind,'};'
+    WRITE(unit,*) 'SP(',kx,',',ky,',',kz,'){',id,'};'
     RETURN
   END SUBROUTINE write_point_picture_format
 
