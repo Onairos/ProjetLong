@@ -172,7 +172,7 @@ CONTAINS
     DEALLOCATE(Frob)
 
 #if aff
-    PRINT *, 'DEBUG : process n', proc_id,' : nb_info=', nb_info, ' nb_clusters=', nb_clusters
+    PRINT *, 'DEBUG : ', proc_id,' : nb_info=', nb_info, ' nb_clusters=', nb_clusters
 #endif
 
     RETURN 

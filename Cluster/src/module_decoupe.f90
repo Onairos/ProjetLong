@@ -546,7 +546,7 @@ CONTAINS
           i=i+1
           j=1
 #if aff
-          PRINT *, 'DEBUG : grouping cluster n', i
+          PRINT *, 'DEBUG : grouping cluster ', i
 #endif
        ENDIF
        IF (i>nb_clusters-1) THEN

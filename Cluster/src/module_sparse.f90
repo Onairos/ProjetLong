@@ -72,7 +72,7 @@ CONTAINS
     !###########################################  
     ! Matrix creation
 #if aff
-    PRINT *, 'DEBUG : process n', proc_id, ' : value of sigma : ', sigma
+    PRINT *, 'DEBUG : ', proc_id, ' : value of sigma : ', sigma
 #endif
     n=partitioned_data%nb
 
@@ -102,7 +102,7 @@ CONTAINS
 
     t2 = MPI_WTIME()
     t_cons_a = t2 - t1
-    PRINT *, 'Process n', proc_id, ' : t_cons A : ', t_cons_a
+    PRINT *, proc_id, ' : t_cons A : ', t_cons_a
 
     t1 = MPI_WTIME()
     nnz2 = nnz*2
@@ -277,7 +277,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ENDIF
     ENDIF
 #if aff
-    PRINT *, 'DEBUG : process n', proc_id,' : final clusters got : ', partitioned_data%nbclusters
+    PRINT *, 'DEBUG : ', proc_id,' : final clusters got : ', partitioned_data%nbclusters
 #endif
 
     ! Computing final clustering
@@ -304,13 +304,13 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
     ELSE 
 #if aff
-       PRINT *, 'DEBUG : process n', proc_id, ' : OK'
+       PRINT *, 'DEBUG : ', proc_id, ' : OK'
 #endif
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%clusters=1
        ENDDO
 #if aff
-       PRINT *, 'DEBUG : process n', proc_id, ' : cluster'
+       PRINT *, 'DEBUG : ', proc_id, ' : cluster'
 #endif
     ENDIF
 
@@ -425,7 +425,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ENDDO
     ENDDO
 
-    PRINT *, 'Process n', proc_id,' : kmeans method'
+    PRINT *, proc_id,' : kmeans method'
 
     it_max=n*n !1000.0
 
@@ -500,7 +500,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     ! End of sparsification
 
 #if aff
-    PRINT *, 'Process n', proc_id,' : nb_info=', nb_info, ' nb_clusters=', nb_clusters
+    PRINT *, proc_id,' : nb_info=', nb_info, ' nb_clusters=', nb_clusters
 #endif
 
     RETURN 

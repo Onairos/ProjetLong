@@ -142,7 +142,7 @@ CONTAINS
     WRITE(num,*),proc_id
     num=adjustl(num)
     files='cluster.partiel.'//trim(num)
-    PRINT *, 'Process n', proc_id, ' : clusters writing : ', files
+    PRINT *, proc_id, ' : clusters writing : ', files
     OPEN(FILE=files,UNIT=10)
     WRITE(10,*) partitioned_data%nb,partitioned_data%dim
     DO i=1,partitioned_data%nb
@@ -199,7 +199,7 @@ CONTAINS
           WRITE(num,*) k
           files='cluster.final.'//trim(adjustl(num))
           OPEN(FILE=files,UNIT=20)     
-          PRINT *, '> Cluster n', k, ' : ', points_by_cluster(i), ' -> ', files
+          PRINT *, '> Cluster ', k, ' : ', points_by_cluster(i), ' -> ', files
           WRITE(20,*) points_by_cluster(i)
           DO j=1,points_by_cluster(i)
              WRITE(20,*) cluster_map(i,j)

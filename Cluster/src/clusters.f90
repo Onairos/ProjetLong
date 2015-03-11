@@ -65,7 +65,7 @@ PROGRAM clusters
   CALL MPI_COMM_RANK(MPI_COMM_WORLD,proc_id,ierr)
   CALL MPI_COMM_SIZE(MPI_COMM_WORLD,nb_proc,ierr)
   CALL MPI_GET_PROCESSOR_NAME(proc_name,length,ierr)
-  PRINT *, 'Process rank : ', proc_id, '. Process name : ', proc_name
+  PRINT *, 'Process ID : ', proc_id, '. Process name : ', proc_name
 
   IF(proc_id==0) THEN
     start_time = MPI_WTIME()
@@ -199,10 +199,10 @@ PROGRAM clusters
      IF (proc_id==0) CALL get_sigma(data,sigma)
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF (proc_id==0) THEN
-        PRINT *,'Process n', proc_id,' computes global sigma :',sigma
+        PRINT *, proc_id,' : computing global sigma :',sigma
         IF (data%interface==1) THEN 
            CALL get_sigma_interface(proc_id,partitioned_data,sigma,bounds,partitioning,epsilon) 
-           PRINT *,'Process n', proc_id,' computes interface sigma interface :',sigma
+           PRINT *, proc_id,' : computing interface sigma interface :',sigma
         ENDIF
      ENDIF
   ENDIF
@@ -217,11 +217,8 @@ PROGRAM clusters
   t1 = MPI_WTIME()
   IF (partitioned_data%nb>0) THEN
 #if aff
-     PRINT *,'DEBUG : Process n', proc_id, ' : computing clusters...'
+     PRINT *,'DEBUG : ', proc_id, ' : computing clusters...'
 #endif
-
-     PRINT *,'COUCOU : clustmethid : ', clust_param%clustering_method_id
-
     !SELECT CASE (clust_param%clustering_method_id)
     !CASE (1)
       CALL apply_spectral_clustering(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,sigma,clust_param)
@@ -234,7 +231,7 @@ PROGRAM clusters
   ENDIF
   t2 = MPI_WTIME()
   t_parall = t2 - t1
-  PRINT *, 'Process n', proc_id, ' : computing parallel cluster : ', t_parall
+  PRINT *, proc_id, ' : computing parallel cluster : ', t_parall
 
   CALL MPI_REDUCE(t_parall, t_parallg, 1, MPI_DOUBLE_PRECISION, MPI_MAX, 0, MPI_COMM_WORLD, ierr)
   IF(proc_id==0) PRINT *, 'Time for computing global parallel cluster :', t_parallg

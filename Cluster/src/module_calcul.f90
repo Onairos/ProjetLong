@@ -147,12 +147,12 @@ CONTAINS
     sigma0=exp(1.0/float(partitioned_data%dim)*log(sigma0))
     ! Sigma computing
     sigma0=sigma0/(2.0*exp(log(float(partitioned_data%nb))*(1.0/float(partitioned_data%dim))))
-    PRINT *, 'DEBUG : process n', proc_id, ' : value of computed sigma for interfacing : ', sigma0
+    PRINT *, 'DEBUG : ', proc_id, ' : value of computed sigma for interfacing : ', sigma0
 #endif
     ! Sigma computing, global formula
     CALL get_sigma(partitioned_data,sigma)
 #if aff
-    PRINT *, 'DEBUG : process n', proc_id,' : value of sigma for interfacing', sigma
+    PRINT *, 'DEBUG : ', proc_id,' : value of sigma for interfacing', sigma
 #endif
     RETURN
   END SUBROUTINE get_sigma_interface
@@ -554,7 +554,7 @@ PRINT *, 'recherche des centres'
     ! INSTRUCTIONS
     !###########################################
     ! Matrix creation
-    PRINT *, 'Process n', proc_id, ' : value of sigma : ', sigma
+    PRINT *, proc_id, ' : value of sigma : ', sigma
     n=partitioned_data%nb
     ! Forall i, A(i,i) = 0
     ALLOCATE(A(n,n))
@@ -597,7 +597,7 @@ PRINT *, 'recherche des centres'
     solver = 0
 
     IF(solver == 0) THEN
-      PRINT *, 'Process n', proc_id, ' : Lapack solver'
+      PRINT *, proc_id, ' : Lapack solver'
 
       nbvp = n
 
@@ -612,7 +612,7 @@ PRINT *, 'recherche des centres'
       t1 = MPI_WTIME()
       CALL solve_dgeev(n,A2,Z,W)
     ELSE
-      PRINT *, 'Process n', proc_id, ' : Arpack solver'
+      PRINT *, proc_id, ' : Arpack solver'
 
       nb = 2*nb_clusters_max
       nbvp = nb
@@ -623,7 +623,7 @@ PRINT *, 'recherche des centres'
     t2 = MPI_WTIME()
 
     t_cons_vp = t2 - t1
-    PRINT *, 'Process n', proc_id, ' : Time for eigen values construction : ', t_cons_vp
+    PRINT *, proc_id, ' : Time for eigen values construction : ', t_cons_vp
 
     DO i=1,nbvp-1
        DO j=i+1,nbvp
@@ -731,7 +731,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ENDIF
     ENDIF
 #if aff
-    PRINT *, 'DEBUG : Process n', proc_id,' : final cluster got : ', partitioned_data%nbclusters
+    PRINT *, 'DEBUG : ', proc_id,' : final cluster got : ', partitioned_data%nbclusters
 #endif
 
     ! Final clustering computing
@@ -757,13 +757,13 @@ PRINT *, 'DEBUG : Frobenius ratio'
        DEALLOCATE(W)
     ELSE 
 #if aff
-       PRINT *, 'Process n', proc_id, ' : OK'
+       PRINT *, proc_id, ' : OK'
 #endif
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%cluster=1
        ENDDO
 #if aff
-       PRINT *, 'Process n', proc_id,' : Cluster'
+       PRINT *, proc_id,' : Cluster'
 #endif
     ENDIF
 
