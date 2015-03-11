@@ -50,11 +50,11 @@ PROGRAM visudecoup
   DO i=0,n-1
      ! File name
      IF (i<10) THEN
-        WRITE(num,'(i1)'),i
+        WRITE(num,'(i1)') i
      ELSEIF (i<100) THEN
-        WRITE(num,'(i2)'),i
+        WRITE(num,'(i2)') i
      ELSEIF (i<1000) THEN
-        WRITE(num,'(i3)'),i
+        WRITE(num,'(i3)') i
      ENDIF
      files='decoupe.'//trim(adjustl(num))
      OPEN(FILE=files,UNIT=10)
