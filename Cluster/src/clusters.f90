@@ -14,6 +14,7 @@ PROGRAM clusters
   ! DECLARATIONS
   !###########################################
   !#### Variables  ####
+  TYPE(type_clustering_param) :: clust_param
   TYPE(type_clusters), DIMENSION(:), POINTER :: array_clusters
   TYPE(type_data) :: data
   TYPE(type_data) :: partitioned_data
@@ -37,7 +38,7 @@ PROGRAM clusters
   INTEGER,DIMENSION(:), POINTER :: points_by_domain
   INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
   INTEGER,DIMENSION(:,:), POINTER :: cluster_map
-  INTEGER,DIMENSION(:,:) ,POINTER :: assignments
+  INTEGER,DIMENSION(:,:), POINTER :: assignments
   DOUBLE PRECISION :: end_time
   DOUBLE PRECISION :: epsilon
   DOUBLE PRECISION :: sigma
@@ -49,7 +50,6 @@ PROGRAM clusters
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
   DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-  TYPE(type_clustering_param) :: clust_param
   LOGICAL :: exist_bool
 
   !###########################################
