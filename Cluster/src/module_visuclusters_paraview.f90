@@ -600,7 +600,7 @@ CONTAINS
     ALLOCATE(proc_ids(max(1,params%nbp)))
     proc_ids(:)=0
     ! Reading files
-    DO i=1,params%nbclusters
+    DO i=1,params%nb_clusters
        ! File name
        WRITE(num,*) i
        files='cluster.final.'//trim(adjustl(num))

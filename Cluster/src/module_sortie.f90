@@ -91,9 +91,9 @@ CONTAINS
        OPEN(FILE=files,UNIT=10)
        WRITE(10,*) points_by_domain(i)
        DO j=1,points_by_domain(i)
-          IF (data%coord==1) THEN
+          IF (data%coords==1) THEN
              ! Writing in coordinates
-             WRITE(10,*) data%point(assignments(i,j))%coord(:)
+             WRITE(10,*) data%point(assignments(i,j))%coords(:)
           ELSEIF ((data%image==1).OR.(data%seuil==1).OR.(data%geom==1)) THEN
              ! Writing in picture format
              WRITE(10,*) assignments(i,j)
@@ -144,10 +144,10 @@ CONTAINS
     files='cluster.partiel.'//trim(num)
     PRINT *, proc_id, ' : clusters writing : ', files
     OPEN(FILE=files,UNIT=10)
-    WRITE(10,*) partitioned_data%nb,partitioned_data%dim
-    DO i=1,partitioned_data%nb
-       IF (partitioned_data%coord==1) THEN
-          WRITE(10,*) partitioned_data%point(i)%coord(:), partitioned_data%point(i)%cluster
+    WRITE(10,*) partitioned_data%nb_points,partitioned_data%dim
+    DO i=1,partitioned_data%nb_points
+       IF (partitioned_data%coords==1) THEN
+          WRITE(10,*) partitioned_data%point(i)%coords(:), partitioned_data%point(i)%cluster
        ELSE
           WRITE(10,*) i, partitioned_data%point(i)%cluster
        ENDIF
@@ -257,7 +257,7 @@ CONTAINS
     WRITE(3,*) '# Mesh file : '
     WRITE(3,*) input_file
     WRITE(3,*) '# Number of points : '
-    WRITE(3,*) data%nb
+    WRITE(3,*) data%nb_points
     WRITE(3,*) '# DIMENSION : '
     WRITE(3,*) data%dim
     WRITE(3,*) '# Number of process : '
@@ -269,7 +269,7 @@ CONTAINS
     WRITE(3,*) '# Number of clusters : '
     WRITE(3,*) nb_clusters
     WRITE(3,*) '# Coord format : '
-    WRITE(3,*) data%coord
+    WRITE(3,*) data%coords
     WRITE(3,*) '# Image format : '
     WRITE(3,*) data%image
     WRITE(3,*) '# Geom format : '

@@ -68,8 +68,8 @@ CONTAINS
     READ(3,*) params%recouvrement
     PRINT *, '> Partitioning by overlapping ? : ', params%recouvrement
     READ (3,*)
-    READ(3,*) params%nbclusters  
-    PRINT *, '> Number of clusters got : ', params%nbclusters
+    READ(3,*) params%nb_clusters  
+    PRINT *, '> Number of clusters got : ', params%nb_clusters
     READ (3,*)
     READ(3,*) params%coord
     PRINT *, '> Coordinates format ? : ', params%coord
