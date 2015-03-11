@@ -122,7 +122,7 @@ CONTAINS
     !###########################################
     epsilon=0.0
     sigma=-1.0
-    data%coord=0
+    data%coords=0
     data%image=0
     data%geom=0
     data%seuil=0
@@ -167,7 +167,7 @@ CONTAINS
              PRINT *, '> Reading input data file : ', input_file
              CALL read_threshold_data(input_file,data,coord_min,coord_max)
           ELSEIF (input_file=='COORD') THEN
-             data%coord=1
+             data%coords=1
              READ (1,*) input_file
              PRINT *, '> Input image format + partitioning by threshold'
              PRINT *, '> Reading input data file : ', input_file
@@ -243,7 +243,7 @@ CONTAINS
              CALL help
           END SELECT
           PRINT *, 'dim : ', data%dim
-          IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ALLOCATE(partitioning(data%dim))
           ELSEIF (data%image==1) THEN
              ! Partitioning per pixel
@@ -253,7 +253,7 @@ CONTAINS
           PRINT *, 'partitioning', partitioning
           IF (nb_proc>1) THEN
              tot=1
-             IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+             IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
                 DO i=1,data%dim
                    tot=tot*partitioning(i)
                 ENDDO
@@ -271,7 +271,7 @@ CONTAINS
              ENDIF
           ELSE
              ! 1 proc
-             IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+             IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
                 DO i=1,data%dim
                    partitioning(i)=1
                 ENDDO
@@ -302,7 +302,7 @@ CONTAINS
     IF (nb_proc==1) THEN
        ! Initialization to 1 by default of all the partitioning parameters
        IF (partitioning_bool) DEALLOCATE(partitioning)
-       IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+       IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
           ALLOCATE(partitioning(data%dim) )
        ELSEIF (data%image==1) THEN
           ALLOCATE(partitioning(data%imgdim))
@@ -311,7 +311,7 @@ CONTAINS
        epsilon=1.0
     ENDIF   
     ! Validation of the combinations of input parameters
-    tot=data%geom+data%seuil+data%coord+data%image
+    tot=data%geom+data%seuil+data%coords+data%image
     IF (tot/=1) THEN
        PRINT *
        PRINT *, 'Problem with data format !'
@@ -354,31 +354,31 @@ CONTAINS
     !###########################################
     ! Reading classic data
     OPEN(FILE=input_file,UNIT=2)
-    READ(2,*) data%nb,data%dim
-    data%nbclusters=0
-    PRINT *, '> Number of points : ', data%nb
+    READ(2,*) data%nb_points,data%dim
+    data%nb_clusters=0
+    PRINT *, '> Number of points : ', data%nb_points
     PRINT *, '> Dimension : ', data%dim
-    ALLOCATE(data%point(data%nb))
+    ALLOCATE(data%point(data%nb_points))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
     nb=0
-    DO i=1,data%nb
-       ALLOCATE(data%point(i)%coord(data%dim))
-       READ(2,*,END=100) data%point(i)%coord(:)
+    DO i=1,data%nb_points
+       ALLOCATE(data%point(i)%coords(data%dim))
+       READ(2,*,END=100) data%point(i)%coords(:)
        nb=nb+1
        data%point(i)%cluster=-1
        IF (i==1) THEN
-          coord_max(:)=data%point(1)%coord(:)
-          coord_min(:)=data%point(1)%coord(:)
+          coord_max(:)=data%point(1)%coords(:)
+          coord_min(:)=data%point(1)%coords(:)
        ELSE
           DO j=1,data%dim
-             coord_min(j)=min(coord_min(j),data%point(i)%coord(j))
-             coord_max(j)=max(coord_max(j),data%point(i)%coord(j))
+             coord_min(j)=min(coord_min(j),data%point(i)%coords(j))
+             coord_max(j)=max(coord_max(j),data%point(i)%coords(j))
           ENDDO
        ENDIF
     ENDDO
 100 PRINT *, 'Number of points : ',nb
-    data%nb=nb
+    data%nb_points=nb
     CLOSE(2)
     PRINT *, '> Min/max coordinates : '
     DO j=1,data%dim
@@ -436,14 +436,14 @@ CONTAINS
     ALLOCATE(data%imgmap(data%imgdim))
     READ(2,*) data%imgmap(:)
     PRINT *, '> Spatial partitioning : ', data%imgmap
-    data%nb=1
+    data%nb_points=1
     DO i=1,data%imgdim
-       data%nb=data%nb*data%imgmap(i)
+       data%nb_points=data%nb_points*data%imgmap(i)
     ENDDO
     data%dim=data%imgt
-    data%nbclusters=0
-    PRINT *, '> Number of points to read : ', data%nb
-    ALLOCATE(data%point(data%nb))
+    data%nb_clusters=0
+    PRINT *, '> Number of points to read : ', data%nb_points
+    ALLOCATE(data%point(data%nb_points))
     ALLOCATE(coord_max(data%imgdim))
     ALLOCATE(coord_min(data%imgdim))
     coord_min(:)=0.9
@@ -451,14 +451,14 @@ CONTAINS
        coord_max(i)=data%imgmap(i)+0.1
     ENDDO
     nb=0
-    DO i=1,data%nb
-       ALLOCATE(data%point(i)%coord(data%dim))
-       READ(2,*,END=200) data%point(i)%coord(:)
+    DO i=1,data%nb_points
+       ALLOCATE(data%point(i)%coords(data%dim))
+       READ(2,*,END=200) data%point(i)%coords(:)
        nb=nb+1
        data%point(i)%cluster=-1
     ENDDO
 200 PRINT *, '> Number of points read : ', nb       
-    data%nb=nb
+    data%nb_points=nb
     CLOSE(2)
     PRINT *, '> Min/max coordinates :'
     DO j=1,data%dim
@@ -521,35 +521,35 @@ CONTAINS
     ALLOCATE(data%imgmap(data%imgdim))
     READ(2,*) data%imgmap(:)
     PRINT *, '> Spatial partitioning : ', data%imgmap
-    data%nb=1
+    data%nb_points=1
     DO i=1,data%imgdim
-       data%nb=data%nb*data%imgmap(i)
+       data%nb_points=data%nb_points*data%imgmap(i)
     ENDDO
     data%dim=data%imgdim+data%imgt
-    data%nbclusters=0
-    PRINT *,'> Number of points to read : ', data%nb
-    ALLOCATE(data%point(data%nb))
+    data%nb_clusters=0
+    PRINT *,'> Number of points to read : ', data%nb_points
+    ALLOCATE(data%point(data%nb_points))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
     nb=0
-    DO i=1,data%nb
-       ALLOCATE(data%point(i)%coord(data%dim))
-       data%point(i)%coord(:)=0.0
-       READ(2,*,END=300) data%point(i)%coord(data%imgdim+1:data%imgdim+data%imgt)
+    DO i=1,data%nb_points
+       ALLOCATE(data%point(i)%coords(data%dim))
+       data%point(i)%coords(:)=0.0
+       READ(2,*,END=300) data%point(i)%coords(data%imgdim+1:data%imgdim+data%imgt)
        nb=nb+1
        data%point(i)%cluster=-1
        IF (i==1) THEN
-          coord_max(:)=data%point(1)%coord(:)
-          coord_min(:)=data%point(1)%coord(:)
+          coord_max(:)=data%point(1)%coords(:)
+          coord_min(:)=data%point(1)%coords(:)
        ELSE
           DO j=1,data%dim
-             coord_min(j)=min(coord_min(j),data%point(i)%coord(j))
-             coord_max(j)=max(coord_max(j),data%point(i)%coord(j))
+             coord_min(j)=min(coord_min(j),data%point(i)%coords(j))
+             coord_max(j)=max(coord_max(j),data%point(i)%coords(j))
           ENDDO
        ENDIF
     ENDDO
 300 PRINT *, '> Number of points read : ', nb
-    data%nb=nb
+    data%nb_points=nb
     CLOSE(2)
     PRINT *, '> Min/max coordinates : '
     max_step=1.e-13
@@ -621,34 +621,34 @@ CONTAINS
     ALLOCATE(data%imgmap(data%imgdim))
     READ(2,*) data%imgmap(:)
     PRINT *, '> Spatial dimension : ', data%imgmap
-    data%nb=1
+    data%nb_points=1
     DO i=1,data%imgdim
-       data%nb=data%nb*data%imgmap(i)
+       data%nb_points=data%nb_points*data%imgmap(i)
     ENDDO
     data%dim=data%imgt
-    data%nbclusters=0
-    PRINT *, '> Number of points to read : ', data%nb
-    ALLOCATE(data%point(data%nb))
+    data%nb_clusters=0
+    PRINT *, '> Number of points to read : ', data%nb_points
+    ALLOCATE(data%point(data%nb_points))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
     nb=0
-    DO i=1,data%nb
-       ALLOCATE(data%point(i)%coord(data%dim))
-       READ(2,*,END=400) data%point(i)%coord(:)
+    DO i=1,data%nb_points
+       ALLOCATE(data%point(i)%coords(data%dim))
+       READ(2,*,END=400) data%point(i)%coords(:)
        nb=nb+1
        data%point(i)%cluster=-1
        IF (i==1) THEN
-          coord_max(:)=data%point(1)%coord(:)
-          coord_min(:)=data%point(1)%coord(:)
+          coord_max(:)=data%point(1)%coords(:)
+          coord_min(:)=data%point(1)%coords(:)
        ELSE
           DO j=1,data%dim
-             coord_min(j)=min(coord_min(j),data%point(i)%coord(j))
-             coord_max(j)=max(coord_max(j),data%point(i)%coord(j))
+             coord_min(j)=min(coord_min(j),data%point(i)%coords(j))
+             coord_max(j)=max(coord_max(j),data%point(i)%coords(j))
           ENDDO
        ENDIF
     ENDDO
 400 PRINT *, 'Number of points : ', nb
-    data%nb=nb
+    data%nb_points=nb
     CLOSE(2)
     PRINT *, '> Min/max coordinates : '
     DO j=1,data%dim
@@ -685,16 +685,16 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     ! Creation of array points/image_coordinates
-    ALLOCATE(data%refimg(data%nb,data%imgdim))
+    ALLOCATE(data%refimg(data%nb_points,data%imgdim))
     ALLOCATE(plane(data%imgdim))
     plane(:)=1
-    DO i=1,data%nb
+    DO i=1,data%nb_points
        DO j=1,data%imgdim
           ! Index in the array points/pixel
           data%refimg(i,j)=plane(j)
           IF (data%geom==1) THEN
              ! Input of coordinates 1:imgdim for the geometric cluster
-             data%point(i)%coord(j)=plane(j)*data%pas(j)
+             data%point(i)%coords(j)=plane(j)*data%pas(j)
           ENDIF
        ENDDO
        ok=.FALSE.

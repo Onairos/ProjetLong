@@ -74,7 +74,7 @@ CONTAINS
 #if aff
     PRINT *, 'DEBUG : ', proc_id, ' : value of sigma : ', sigma
 #endif
-    n=partitioned_data%nb
+    n=partitioned_data%nb_points
 
     ! Beginning of sparsification
     nnz = 0
@@ -90,7 +90,7 @@ CONTAINS
           norm=0.0
 
           DO k=1,partitioned_data%dim
-             norm=norm+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
+             norm=norm+(partitioned_data%point(i)%coords(k)-partitioned_data%point(j)%coords(k))**2
           ENDDO
 
           IF(sqrt(norm) <= treshold) THEN
@@ -115,7 +115,7 @@ CONTAINS
        DO j=i+1,n
           norm=0.0
           DO k=1,partitioned_data%dim
-             norm=norm+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
+             norm=norm+(partitioned_data%point(i)%coords(k)-partitioned_data%point(j)%coords(k))**2
           ENDDO
           value=exp(-norm/sigma)
           ! kepp if value <= treshold
@@ -224,7 +224,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 #endif
        ! Ratio of Frobenius norm
        ratio=ratiomax(nb_clusters_max)
-       partitioned_data%nbclusters=nb_clusters_max
+       partitioned_data%nb_clusters=nb_clusters_max
        ratio1=0.0
        ratio2=1e+10
 
@@ -236,7 +236,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
           ENDIF
 
           IF ((ratio_rii(i)>=0.95*ratio1).AND.(ratio_rij(i)-ratio2<=threshold_rij)) THEN  
-             partitioned_data%nbclusters=i
+             partitioned_data%nb_clusters=i
              ratio1=ratio_rii(i)
              ratio2=ratio_rij(i)
           ENDIF
@@ -248,14 +248,14 @@ PRINT *, 'DEBUG : Frobenius ratio'
        nb_info(:) = 0
        ALLOCATE(ratiomin(1))
        ratiomin(:) = 0.0
-       partitioned_data%nbclusters = nb_clusters_opt
+       partitioned_data%nb_clusters = nb_clusters_opt
     ELSE
        ! Case of a domain with less points than nb_clusters_opt or only one point
        ALLOCATE(nb_info(n))
        nb_info(:)=0
        ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
-       partitioned_data%nbclusters=n
+       partitioned_data%nb_clusters=n
        ALLOCATE(ratiomax(n))
        ratiomax(:)=0
        ALLOCATE(ratio_moy(n))
@@ -268,27 +268,27 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ratio_rij(:)=0
     ENDIF
     ! Case with nb_clusters==1
-    IF (partitioned_data%nbclusters==2) THEN
+    IF (partitioned_data%nb_clusters==2) THEN
        PRINT *, 'Ratio difference : ', ratio_rij(2)/ratio_rii(2)
        IF (ratiomax(2)>=0.6) THEN 
-          partitioned_data%nbclusters=1
+          partitioned_data%nb_clusters=1
        ELSE 
-          partitioned_data%nbclusters=2
+          partitioned_data%nb_clusters=2
        ENDIF
     ENDIF
 #if aff
-    PRINT *, 'DEBUG : ', proc_id,' : final clusters got : ', partitioned_data%nbclusters
+    PRINT *, 'DEBUG : ', proc_id,' : final clusters got : ', partitioned_data%nb_clusters
 #endif
 
     ! Computing final clustering
-    IF (partitioned_data%nbclusters>1) THEN
+    IF (partitioned_data%nb_clusters>1) THEN
 
-       CALL apply_spectral_embedding_sparse(partitioned_data%nbclusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
+       CALL apply_spectral_embedding_sparse(partitioned_data%nb_clusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
             clusters_centers,points_by_clusters,clusters_energies,&
-            nb_info(partitioned_data%nbclusters),proc_id,ratiomin(1),ratio_rij(1),&
+            nb_info(partitioned_data%nb_clusters),proc_id,ratiomin(1),ratio_rij(1),&
             ratio_rii(1))
 
-       DO i=1,partitioned_data%nb
+       DO i=1,partitioned_data%nb_points
           partitioned_data%point(i)%clusters=clusters(i)
        ENDDO
 
@@ -306,7 +306,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 #if aff
        PRINT *, 'DEBUG : ', proc_id, ' : OK'
 #endif
-       DO i=1,partitioned_data%nb
+       DO i=1,partitioned_data%nb_points
           partitioned_data%point(i)%clusters=1
        ENDDO
 #if aff
