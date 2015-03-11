@@ -41,33 +41,33 @@ CONTAINS
     !###########################################    
     ! Reading
     OPEN(FILE='fort.2',UNIT=2)
-    ALLOCATE(x_min(params%nbproc))
-    ALLOCATE(x_max(params%nbproc))
-    ALLOCATE(y_min(params%nbproc))
-    ALLOCATE(y_max(params%nbproc))
-    ALLOCATE(z_min(params%nbproc))
-    ALLOCATE(z_max(params%nbproc))
-    DO i=1,params%nbproc-params%interface
-       IF (((params%coord==1).AND.(params%dim==2)) &
-          .OR.((params%image==1).AND.(params%imgdim==2)) &
-          .OR.((params%seuil==1).AND.(params%imgdim==2)) &
-          .OR.((params%geom==1).AND.(params%imgdim+params%imgt==2))) THEN
+    ALLOCATE(x_min(params%nb_proc))
+    ALLOCATE(x_max(params%nb_proc))
+    ALLOCATE(y_min(params%nb_proc))
+    ALLOCATE(y_max(params%nb_proc))
+    ALLOCATE(z_min(params%nb_proc))
+    ALLOCATE(z_max(params%nb_proc))
+    DO i=1,params%nb_proc-params%is_interfacing
+       IF (((params%coords==1).AND.(params%dim==2)) &
+          .OR.((params%is_image==1).AND.(params%image_dim==2)) &
+          .OR.((params%is_threshold==1).AND.(params%image_dim==2)) &
+          .OR.((params%is_geom==1).AND.(params%image_dim+params%image_times==2))) THEN
           !2D
-          IF (params%coord==1) THEN
+          IF (params%coords==1) THEN
              READ(2,*) x0,y0,num,x1,y1
              x_min(i)=x0
              y_min(i)=y0
              x_max(i)=x1
              y_max(i)=y1
-          ELSEIF (params%seuil==1) THEN
+          ELSEIF (params%is_threshold==1) THEN
              READ(2,*) x0,num,x1
              x_min(i)=1
              y_min(i)=-1
-             x_max(i)=params%imgmap(2)
-             y_max(i)=-params%imgmap(1)
+             x_max(i)=params%partitioning(2)
+             y_max(i)=-params%partitioning(1)
              z_min(i)=x0
              z_max(i)=x1
-          ELSEIF ((params%image==1).OR.(params%geom==1)) THEN
+          ELSEIF ((params%is_image==1).OR.(params%is_geom==1)) THEN
              READ(2,*) x0,y0,num,x1,y1
              x_min(i)=y0
              y_min(i)=-x0
@@ -75,11 +75,11 @@ CONTAINS
              y_max(i)=-x1
              z_min(i)=x0
           ENDIF
-       ELSEIF (((params%coord==1).AND.(params%dim==3)) &
-          .OR.((params%image==1).AND.(params%imgdim==3)) &
-          .OR.((params%geom==1).AND.(params%imgdim+params%imgt==3))) THEN
+       ELSEIF (((params%coords==1).AND.(params%dim==3)) &
+          .OR.((params%is_image==1).AND.(params%image_dim==3)) &
+          .OR.((params%is_geom==1).AND.(params%image_dim+params%image_times==3))) THEN
           !3D
-          IF (params%coord==1) THEN
+          IF (params%coords==1) THEN
              READ(2,*) x0,y0,z0,num,x1,y1,z1
              x_min(i)=x0
              y_min(i)=y0
@@ -87,7 +87,7 @@ CONTAINS
              x_max(i)=x1
              y_max(i)=y1
              z_max(i)=z1
-          ELSEIF ((params%image==1).OR.(params%geom==1)) THEN
+          ELSEIF ((params%is_image==1).OR.(params%is_geom==1)) THEN
              READ(2,*) x0,y0,z0,num,x1,y1,z1
              x_min(i)=y0
              y_min(i)=-x0
@@ -113,43 +113,43 @@ CONTAINS
     WRITE(10,*) 1
     WRITE(10,*) '** Partitionings **'
     WRITE(10,'(a)') 'Coordinates'
-    IF (((params%coord==1).AND.(params%dim==2)) &
-         .OR.((params%image==1).AND.(params%imgdim==2)) &
-         .OR.((params%seuil==1).AND.(params%imgdim==2)) &
-         .OR.((params%geom==1).AND.(params%imgdim+params%imgt==2))) THEN
+    IF (((params%coords==1).AND.(params%dim==2)) &
+         .OR.((params%is_image==1).AND.(params%image_dim==2)) &
+         .OR.((params%is_threshold==1).AND.(params%image_dim==2)) &
+         .OR.((params%is_geom==1).AND.(params%image_dim+params%image_times==2))) THEN
        !2D
-       IF ((params%coord==1).OR.(params%geom==1).OR.(params%image==1)) THEN
-          WRITE(10,*) 4*(params%nbproc-params%interface)
-          DO i=1,params%nbproc-params%interface
+       IF ((params%coords==1).OR.(params%is_geom==1).OR.(params%is_image==1)) THEN
+          WRITE(10,*) 4*(params%nb_proc-params%is_interfacing)
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) x_min(i)
              WRITE(10,*) x_max(i)
              WRITE(10,*) x_max(i)
              WRITE(10,*) x_min(i)
           ENDDO
-          DO i=1,params%nbproc-params%interface
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) y_min(i)
              WRITE(10,*) y_min(i)
              WRITE(10,*) y_max(i)
              WRITE(10,*) y_max(i)
           ENDDO
-          DO i=1,params%nbproc-params%interface
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) 0.
              WRITE(10,*) 0.
              WRITE(10,*) 0.
              WRITE(10,*) 0.
           ENDDO
           WRITE(10,'(a)') 'quad4'
-          WRITE(10,*) params%nbproc-params%interface
+          WRITE(10,*) params%nb_proc-params%is_interfacing
           WRITE(11,'(a)') 'part'
           WRITE(11,*) 1
           WRITE(11,'(a)') 'quad4'
-          DO i=1,params%nbproc-params%interface
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) 4*(i-1)+1,4*(i-1)+2,4*(i-1)+3,4*(i-1)+4
              WRITE(11,*) i
           ENDDO
-       ELSEIF (params%seuil==1) THEN
-          WRITE(10,*) 8*(params%nbproc-params%interface)
-          DO i=1,params%nbproc-params%interface
+       ELSEIF (params%is_threshold==1) THEN
+          WRITE(10,*) 8*(params%nb_proc-params%is_interfacing)
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) x_min(i)
              WRITE(10,*) x_max(i)
              WRITE(10,*) x_max(i)
@@ -159,7 +159,7 @@ CONTAINS
              WRITE(10,*) x_max(i)
              WRITE(10,*) x_min(i)
           ENDDO
-          DO i=1,params%nbproc-params%interface
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) y_min(i)
              WRITE(10,*) y_min(i)
              WRITE(10,*) y_max(i)
@@ -169,7 +169,7 @@ CONTAINS
              WRITE(10,*) y_max(i)
              WRITE(10,*) y_max(i)
           ENDDO
-          DO i=1,params%nbproc-params%interface
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) z_min(i)
              WRITE(10,*) z_min(i)
              WRITE(10,*) z_min(i)
@@ -180,23 +180,23 @@ CONTAINS
              WRITE(10,*) z_max(i)
           ENDDO
           WRITE(10,'(a)') 'hexa8'
-          WRITE(10,*) params%nbproc-params%interface
+          WRITE(10,*) params%nb_proc-params%is_interfacing
           WRITE(11,'(a)') 'part'
           WRITE(11,*) 1
           WRITE(11,'(a)') 'hexa8'
-          DO i=1,params%nbproc-params%interface
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) 8*(i-1)+1,8*(i-1)+2,8*(i-1)+3,8*(i-1)+4,&
                   8*(i-1)+5,8*(i-1)+6,8*(i-1)+7,8*(i-1)+8
              WRITE(11,*) i
           ENDDO
        ENDIF
-    ELSEIF (((params%coord==1).AND.(params%dim==3)) &
-         .OR.((params%image==1).AND.(params%imgdim==3)) &
-         .OR.((params%geom==1).AND.(params%imgdim+params%imgt==3))) THEN
+    ELSEIF (((params%coords==1).AND.(params%dim==3)) &
+         .OR.((params%is_image==1).AND.(params%image_dim==3)) &
+         .OR.((params%is_geom==1).AND.(params%image_dim+params%image_times==3))) THEN
        !3D
-       IF ((params%coord==1).OR.(params%geom==1).OR.(params%image==1)) THEN
-          WRITE(10,*) 8*(params%nbproc-params%interface)
-          DO i=1,params%nbproc-params%interface
+       IF ((params%coords==1).OR.(params%is_geom==1).OR.(params%is_image==1)) THEN
+          WRITE(10,*) 8*(params%nb_proc-params%is_interfacing)
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) x_min(i)
              WRITE(10,*) x_max(i)
              WRITE(10,*) x_max(i)
@@ -206,7 +206,7 @@ CONTAINS
              WRITE(10,*) x_max(i)
              WRITE(10,*) x_min(i)
           ENDDO
-          DO i=1,params%nbproc-params%interface
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) y_min(i)
              WRITE(10,*) y_min(i)
              WRITE(10,*) y_max(i)
@@ -216,7 +216,7 @@ CONTAINS
              WRITE(10,*) y_max(i)
              WRITE(10,*) y_max(i)
           ENDDO
-          DO i=1,params%nbproc-params%interface
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) z_min(i)
              WRITE(10,*) z_min(i)
              WRITE(10,*) z_min(i)
@@ -227,11 +227,11 @@ CONTAINS
              WRITE(10,*) z_max(i)
           ENDDO
           WRITE(10,'(a)') 'hexa8'
-          WRITE(10,*) params%nbproc-params%interface
+          WRITE(10,*) params%nb_proc-params%is_interfacing
           WRITE(11,'(a)') 'part'
           WRITE(11,*) 1
           WRITE(11,'(a)') 'hexa8'
-          DO i=1,params%nbproc-params%interface
+          DO i=1,params%nb_proc-params%is_interfacing
              WRITE(10,*) 8*(i-1)+1,8*(i-1)+2,8*(i-1)+3,8*(i-1)+4,&
                   8*(i-1)+5,8*(i-1)+6,8*(i-1)+7,8*(i-1)+8
              WRITE(11,*) i
@@ -297,15 +297,15 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     ! Reading of files
-    IF (params%nbproc==1) THEN
+    IF (params%nb_proc==1) THEN
        offset=1
        nb_slaves=1
     ELSE
        offset=0
-       nb_slaves=params%nbproc-1
+       nb_slaves=params%nb_proc-1
     ENDIF
     DO i=offset,nb_slaves
-       IF ((i==0).AND.(params%interface==1).AND.(params%nbproc>1)) THEN
+       IF ((i==0).AND.(params%is_interfacing==1).AND.(params%nb_proc>1)) THEN
           ! File aside for interfacing 
           PRINT *,'-> visu/affectation-interface.geo'
           PRINT *,'-> visu/affectation-interface.indices'
@@ -316,8 +316,8 @@ CONTAINS
           WRITE(10,'(a)') 'node id assign'
           WRITE(10,'(a)') 'element id assign'
           WRITE(11,*) '** Indexes of processes **'
-       ELSEIF (((i==1).AND.(params%interface==1)).OR. &
-            ((i==0).AND.(params%interface==0))) THEN
+       ELSEIF (((i==1).AND.(params%is_interfacing==1)).OR. &
+            ((i==0).AND.(params%is_interfacing==0))) THEN
           ! General file for others subdomains
           PRINT *,'-> visu/affectation.geo'
           PRINT *,'-> visu/affectation.indices'
@@ -343,7 +343,7 @@ CONTAINS
        proc_ids(:)=0
        IF (nb_points>0) THEN
           DO j=1,nb_points
-             IF (params%coord==1) THEN
+             IF (params%coords==1) THEN
                 ! Partitioning by coordinates
                 READ(20,*) coords(j,:)
                 ids(j)=i
@@ -354,7 +354,7 @@ CONTAINS
              ENDIF
           ENDDO
           ! Writing
-          IF (params%coord==1) THEN
+          IF (params%coords==1) THEN
              ! Partitioning by coordinates
              CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ids,1)
           ELSE
@@ -365,7 +365,7 @@ CONTAINS
        DEALLOCATE(coords)
        DEALLOCATE(ids)
        CLOSE(20)
-       IF ((i==0).AND.(params%interface==1)) THEN
+       IF ((i==0).AND.(params%is_interfacing==1)) THEN
           ! Closes interfacing files
           CLOSE(10)
           CLOSE(11)
@@ -374,7 +374,7 @@ CONTAINS
     CLOSE(10)
     CLOSE(11)
     ! Writes interfacing data
-    IF ((params%interface==1).AND.(params%nbproc>1)) THEN
+    IF ((params%is_interfacing==1).AND.(params%nb_proc>1)) THEN
        PRINT *,'-> affectation-interface.CASE'
        OPEN(FILE='affectation-interface.CASE',UNIT=12)
        WRITE(12,'(a)') 'FORMAT'
@@ -439,11 +439,11 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################  
     ! Number of generic characters to be used
-    nb_zeros=floor(log(real(params%nbproc-1))/log(real(10)))+1
+    nb_zeros=floor(log(real(params%nb_proc-1))/log(real(10)))+1
     DO i=1,nb_zeros
        extension(i:i)='0'
     ENDDO
-    DO i=0,params%nbproc-1
+    DO i=0,params%nb_proc-1
        ! File name
        WRITE(num,*) i
        num=adjustl(num)
@@ -470,7 +470,7 @@ CONTAINS
        ids(:)=0
        ALLOCATE(proc_ids(max(1,nb_points)))
        proc_ids(:)=0
-       IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
+       IF ((params%is_image==1).OR.(params%is_geom==1).OR.(params%is_threshold==1)) THEN
           ! Reading the matchings
           files='decoupe.'//trim(num)
           OPEN(FILE=files,UNIT=21)
@@ -482,7 +482,7 @@ CONTAINS
           CLOSE(21)
        ENDIF
        DO j=1,nb_points
-          IF (params%coord==1) THEN
+          IF (params%coords==1) THEN
              READ(20,*) coords(j,:),ids(j)
           ELSE
              READ(20,*) proc_ids(j),ids(j)
@@ -491,7 +491,7 @@ CONTAINS
        ENDDO
        CLOSE(20) 
        ! Writing
-       IF (params%coord==1) THEN
+       IF (params%coords==1) THEN
           ! Partitioning by coordinates
           CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ids,1)
        ELSE
@@ -503,7 +503,7 @@ CONTAINS
        DEALLOCATE(proc_ids)
        CLOSE(10)
        CLOSE(11)
-       IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
+       IF ((params%is_image==1).OR.(params%is_geom==1).OR.(params%is_threshold==1)) THEN
           DEALLOCATE(matchings)
        ENDIF
     ENDDO
@@ -524,12 +524,12 @@ CONTAINS
     WRITE(12,*) 
     WRITE(12,'(a)') 'TIME'
     WRITE(12,'(a)') 'time set:         1'
-    WRITE(num,*) params%nbproc
+    WRITE(num,*) params%nb_proc
     WRITE(12,'(a)') 'number of steps: '//trim(adjustl(num))
     WRITE(12,'(a)') 'filename start number: 0'
     WRITE(12,'(a)') 'filename increment: 1'
     WRITE(12,'(a)') 'time values:'
-    DO i=0,params%nbproc-1
+    DO i=0,params%nb_proc-1
        WRITE(12,*) i
     ENDDO
     CLOSE(12)
@@ -569,8 +569,8 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    IF (params%coord==1) THEN
-       OPEN(FILE=params%mesh,UNIT=1)
+    IF (params%coords==1) THEN
+       OPEN(FILE=params%input_file,UNIT=1)
        READ(1,*) j,k
        PRINT *, 'Reading mesh file...', j, k
        ALLOCATE(coords(j,k))
@@ -595,9 +595,9 @@ CONTAINS
     WRITE(10,'(a)') 'node id assign'
     WRITE(10,'(a)') 'element id assign'
     WRITE(11,*) '** clusters **'
-    ALLOCATE(ids(max(1,params%nbp)))
+    ALLOCATE(ids(max(1,params%nb_points)))
     ids(:)=0
-    ALLOCATE(proc_ids(max(1,params%nbp)))
+    ALLOCATE(proc_ids(max(1,params%nb_points)))
     proc_ids(:)=0
     ! Reading files
     DO i=1,params%nb_clusters
@@ -614,18 +614,18 @@ CONTAINS
        ENDDO
        CLOSE(20)
     ENDDO
-    IF (params%coord==1) THEN
+    IF (params%coords==1) THEN
        ! Classical coordinates
-       CALL write_points_coord_format(10,11,params%nbp,params%dim,coords,ids,1)
+       CALL write_points_coord_format(10,11,params%nb_points,params%dim,coords,ids,1)
     ELSE
        ! Pictures reassembly
-       CALL write_points_picture_format(10,11,params%nbp,params,ids,proc_ids)
+       CALL write_points_picture_format(10,11,params%nb_points,params,ids,proc_ids)
     ENDIF
     CLOSE(10)
     CLOSE(11)
     DEALLOCATE(ids)
     DEALLOCATE(proc_ids)
-    IF (params%coord==1) DEALLOCATE(coords)
+    IF (params%coords==1) DEALLOCATE(coords)
     ! Master file
     PRINT *,'-> cluster.final.CASE'
     OPEN(FILE='cluster.final.CASE',UNIT=12)
@@ -748,13 +748,13 @@ CONTAINS
     ky(:)=0
     ALLOCATE(kz(nb_pixels))
     kz(:)=0
-    IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
-         .AND.(params%imgdim==2)) THEN
-       ALLOCATE(data(params%nbp))
-       OPEN(FILE=params%mesh,UNIT=50)
+    IF (((params%is_image==1).OR.(params%is_geom==1).OR.(params%is_threshold==1)) &
+         .AND.(params%image_dim==2)) THEN
+       ALLOCATE(data(params%nb_points))
+       OPEN(FILE=params%input_file,UNIT=50)
        READ(50,*)
        READ(50,*)
-       DO i=1,params%nbp
+       DO i=1,params%nb_points
           READ(50,*) data(i)
        ENDDO
        CLOSE(50)
@@ -762,34 +762,34 @@ CONTAINS
     ! Search the points
     DO i=1,nb_pixels
        k=proc_ids(i)
-       ix=params%refimg(k,1)
-       iy=params%refimg(k,2)
-       IF (params%imgdim==2) THEN
+       ix=params%image_ref(k,1)
+       iy=params%image_ref(k,2)
+       IF (params%image_dim==2) THEN
           ! 2D points
-          IF (params%geom==1) THEN
-             kx(i)=iy*params%pas(2)
-             ky(i)=-ix*params%pas(1)
+          IF (params%is_geom==1) THEN
+             kx(i)=iy*params%step(2)
+             ky(i)=-ix*params%step(1)
           ELSE
              kx(i)=float(iy)
              ky(i)=-float(ix)
           ENDIF
-          IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
-               .AND.(params%imgdim==2)) THEN
+          IF (((params%is_image==1).OR.(params%is_geom==1).OR.(params%is_threshold==1)) &
+               .AND.(params%image_dim==2)) THEN
              kz(i)=data(k)
           ELSE
              kz(i)=0.
           ENDIF
-       ELSEIF (params%imgdim==3) THEN
+       ELSEIF (params%image_dim==3) THEN
           ! 3D points
-          IF (params%geom==1) THEN
-             kx(i)=iy*params%pas(2)
-             ky(i)=-ix*params%pas(1)
-             kz(i)=float(params%refimg(k,3))*params%pas(3)
+          IF (params%is_geom==1) THEN
+             kx(i)=iy*params%step(2)
+             ky(i)=-ix*params%step(1)
+             kz(i)=float(params%image_ref(k,3))*params%step(3)
           ELSE
 
              kx(i)=float(iy)
              ky(i)=-float(ix)
-             kz(i)=float(params%refimg(k,3))
+             kz(i)=float(params%image_ref(k,3))
           ENDIF
        ENDIF
     ENDDO
@@ -820,8 +820,8 @@ CONTAINS
     DEALLOCATE(kx)
     DEALLOCATE(ky)
     DEALLOCATE(kz)
-    IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
-         .AND.(params%imgdim==2)) DEALLOCATE(data)
+    IF (((params%is_image==1).OR.(params%is_geom==1).OR.(params%is_threshold==1)) &
+         .AND.(params%image_dim==2)) DEALLOCATE(data)
     RETURN
   END SUBROUTINE write_points_picture_format
 

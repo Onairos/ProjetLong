@@ -2,16 +2,16 @@
 MODULE module_teste_clusters
 
   TYPE type_test
-     CHARACTER (LEN=80) :: datatype
-     CHARACTER (LEN=80) :: decoupetype
-     CHARACTER (LEN=80) :: dir
-     CHARACTER (LEN=80) :: fichier
+     CHARACTER (LEN=80) :: data_type
+     CHARACTER (LEN=80) :: partition_type
+     CHARACTER (LEN=80) :: directory
+     CHARACTER (LEN=80) :: file
      CHARACTER (LEN=80) :: output
-     CHARACTER (LEN=80) :: visup
-     CHARACTER (LEN=80) :: visug
-     DOUBLE PRECISION :: epaisseur
-     INTEGER, DIMENSION(:), POINTER :: decoupe
-     INTEGER :: nbproc
+     CHARACTER (LEN=80) :: visu_paraview
+     CHARACTER (LEN=80) :: visu_gmsh
+     DOUBLE PRECISION :: thickness
+     INTEGER, DIMENSION(:), POINTER :: partitioning
+     INTEGER :: nb_proc
   END TYPE type_test
 
 CONTAINS
@@ -37,18 +37,18 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     ! Directory
-    files='mkdir '//trim(adjustl(test%dir))
+    files='mkdir '//trim(adjustl(test%directory))
     CALL system(files)
     ! File
-    files=trim(adjustl(test%dir))//'/go'
+    files=trim(adjustl(test%directory))//'/go'
     PRINT *, '> Creation of file '//files
     OPEN(FILE=files,UNIT=10)
     WRITE(10,*) 'rm -rf visu/ fort.* *.CASE *.visu decoupe.* cluster* temps.MPI'
-    WRITE(num,*) test%nbproc
+    WRITE(num,*) test%nb_proc
     WRITE(10,*) 'runclusters.ubuntu '//trim(adjustl(num)) &
          //' test > ../'//trim(adjustl(test%output))
-    WRITE(10,*) 'visuclusters paraview > ../'//trim(adjustl(test%visup))
-    WRITE(10,*) 'visuclusters gmsh > ../'//trim(adjustl(test%visug))
+    WRITE(10,*) 'visuclusters paraview > ../'//trim(adjustl(test%visu_paraview))
+    WRITE(10,*) 'visuclusters gmsh > ../'//trim(adjustl(test%visu_gmsh))
     CLOSE(10)
     ! Make it executable
     files='chmod a+x '//trim(adjustl(files))
@@ -75,23 +75,23 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    files=trim(adjustl(test%dir))//'/test'
+    files=trim(adjustl(test%directory))//'/test'
     PRINT *,'> Creation of file '//files
     OPEN(FILE=files,UNIT=10)
     WRITE(10,'(a)') 'DATA'
-    WRITE(10,'(a)') test%datatype
-    WRITE(10,'(a)') test%fichier
+    WRITE(10,'(a)') test%data_type
+    WRITE(10,'(a)') test%file
     WRITE(10,'(a)') 'NBLIMIT'
     WRITE(10,'(a)') '5'
     WRITE(10,'(a)') 'EPAISSEUR'
-    WRITE(10,*) test%epaisseur
+    WRITE(10,*) test%thickness
     WRITE(10,'(a)') 'DECOUPAGE'
-    WRITE(10,'(a)') test%decoupetype
-    WRITE(10,*) test%decoupe(:)
+    WRITE(10,'(a)') test%partition_type
+    WRITE(10,*) test%partitioning(:)
     WRITE(10,'(a)') 'END'
     CLOSE(10)
     ! Copying the meshing files
-    files='cp '//trim(adjustl(test%fichier))//' '//trim(adjustl(test%dir))//'/.'
+    files='cp '//trim(adjustl(test%file))//' '//trim(adjustl(test%directory))//'/.'
     CALL system(files)
     RETURN
   END SUBROUTINE create_test
@@ -115,16 +115,16 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    files='cd '//trim(adjustl(test%dir))//'; go; cd ..'
+    files='cd '//trim(adjustl(test%directory))//'; go; cd ..'
     PRINT *, '> Launching test...'
     CALL system(files)
-    files=trim(adjustl(test%dir))//'/temps.MPI'
+    files=trim(adjustl(test%directory))//'/temps.MPI'
     INQUIRE(FILE=files,EXIST=existe)
     PRINT *, '> Computing clusters : ', existe
-    files=trim(adjustl(test%dir))//'/visuclusters.paraview'
+    files=trim(adjustl(test%directory))//'/visuclusters.paraview'
     INQUIRE(FILE=files,EXIST=existe)
     PRINT *, '> visu_clusters paraview :', existe
-    files=trim(adjustl(test%dir))//'/visuclusters.gmsh'
+    files=trim(adjustl(test%directory))//'/visuclusters.gmsh'
     INQUIRE(FILE=files,EXIST=existe)
     PRINT *, '> visu_clusters gmsh :', existe
     RETURN

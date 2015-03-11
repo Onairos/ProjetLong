@@ -49,7 +49,7 @@ PROGRAM visuclusters
   CALL write_assignment(format_output,params)
 
   ! Outout file of clusters before regrouping
-  IF (params%nbproc>1) CALL write_partial_clusters(format_output,params)
+  IF (params%nb_proc>1) CALL write_partial_clusters(format_output,params)
 
   ! Outout file of clusters after regrouping
   CALL write_final_clusters(format_output,params)

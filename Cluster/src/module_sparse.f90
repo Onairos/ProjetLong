@@ -90,7 +90,7 @@ CONTAINS
           norm=0.0
 
           DO k=1,partitioned_data%dim
-             norm=norm+(partitioned_data%point(i)%coords(k)-partitioned_data%point(j)%coords(k))**2
+             norm=norm+(partitioned_data%points(i)%coords(k)-partitioned_data%points(j)%coords(k))**2
           ENDDO
 
           IF(sqrt(norm) <= treshold) THEN
@@ -115,7 +115,7 @@ CONTAINS
        DO j=i+1,n
           norm=0.0
           DO k=1,partitioned_data%dim
-             norm=norm+(partitioned_data%point(i)%coords(k)-partitioned_data%point(j)%coords(k))**2
+             norm=norm+(partitioned_data%points(i)%coords(k)-partitioned_data%points(j)%coords(k))**2
           ENDDO
           value=exp(-norm/sigma)
           ! kepp if value <= treshold
@@ -289,7 +289,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
             ratio_rii(1))
 
        DO i=1,partitioned_data%nb_points
-          partitioned_data%point(i)%clusters=clusters(i)
+          partitioned_data%points(i)%clusters=clusters(i)
        ENDDO
 
        DEALLOCATE(clusters)
@@ -307,7 +307,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        PRINT *, 'DEBUG : ', proc_id, ' : OK'
 #endif
        DO i=1,partitioned_data%nb_points
-          partitioned_data%point(i)%clusters=1
+          partitioned_data%points(i)%clusters=1
        ENDDO
 #if aff
        PRINT *, 'DEBUG : ', proc_id, ' : cluster'

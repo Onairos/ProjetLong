@@ -182,11 +182,11 @@ PROGRAM clusters
      partitioned_data%nb_points=data%nb_points
      partitioned_data%dim=data%dim
      partitioned_data%nb_clusters=0
-     ALLOCATE(partitioned_data%point(data%nb_points))
+     ALLOCATE(partitioned_data%points(data%nb_points))
      DO i=1,data%nb_points
-        ALLOCATE(partitioned_data%point(i)%coords(data%dim))
-        partitioned_data%point(i)%coords=data%point(i)%coords
-        partitioned_data%point(i)%cluster=0
+        ALLOCATE(partitioned_data%points(i)%coords(data%dim))
+        partitioned_data%points(i)%coords=data%points(i)%coords
+        partitioned_data%points(i)%cluster=0
      ENDDO
      nb_clusters_opt=list_nb_clusters(1)
   ENDIF
@@ -200,7 +200,7 @@ PROGRAM clusters
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF (proc_id==0) THEN
         PRINT *, proc_id,' : computing global sigma :',sigma
-        IF (data%interface==1) THEN 
+        IF (data%is_interfacing==1) THEN 
            CALL get_sigma_interface(proc_id,partitioned_data,sigma,bounds,partitioning,epsilon) 
            PRINT *, proc_id,' : computing interface sigma interface :',sigma
         ENDIF
@@ -280,7 +280,7 @@ PROGRAM clusters
      points_by_cluster(:)=0
      n_max=0
      DO i=1,partitioned_data%nb_points
-        j=partitioned_data%point(i)%cluster
+        j=partitioned_data%points(i)%cluster
         points_by_cluster(j)=points_by_cluster(j)+1
         n_max=max(n_max,points_by_cluster(j))
      ENDDO
@@ -288,7 +288,7 @@ PROGRAM clusters
      cluster_map(:,:)=0
      points_by_cluster(:)=0
      DO i=1,partitioned_data%nb_points
-        j=partitioned_data%point(i)%cluster
+        j=partitioned_data%points(i)%cluster
         points_by_cluster(j)=points_by_cluster(j)+1
         cluster_map(j,points_by_cluster(j))=i
      ENDDO
