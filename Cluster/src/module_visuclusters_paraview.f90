@@ -282,13 +282,13 @@ CONTAINS
     TYPE(type_params) :: params
     
     !#### Variables  ####
-    CHARACTER (LEN=30) :: num
     CHARACTER (LEN=30) :: files
+    CHARACTER (LEN=30) :: num
     INTEGER :: i
     INTEGER :: j
     INTEGER :: nb_points
-    INTEGER :: offset
     INTEGER :: nb_slaves
+    INTEGER :: offset
     INTEGER, DIMENSION(:), POINTER :: ids
     INTEGER, DIMENSION(:), POINTER :: proc_ids
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
@@ -422,17 +422,17 @@ CONTAINS
     
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
+    CHARACTER (LEN=30) :: extension
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    CHARACTER (LEN=30) :: extension
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: length
     INTEGER :: nb_points
     INTEGER :: nb_zeros
-    INTEGER, DIMENSION(:), POINTER :: matchings
     INTEGER, DIMENSION(:), POINTER :: ids
+    INTEGER, DIMENSION(:), POINTER :: matchings
     INTEGER, DIMENSION(:), POINTER :: proc_ids
     
     !###########################################      
@@ -652,12 +652,12 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    INTEGER :: unit_geo
-    INTEGER :: unit_ind
+    INTEGER :: dim
+    INTEGER :: i
     INTEGER :: k
     INTEGER :: nb_points
-    INTEGER :: i
-    INTEGER :: dim
+    INTEGER :: unit_geo
+    INTEGER :: unit_ind
     INTEGER, DIMENSION(:), POINTER :: ids
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     

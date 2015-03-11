@@ -32,24 +32,24 @@ CONTAINS
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
     DOUBLE PRECISION :: factor
-    DOUBLE PRECISION :: threshold_rij
     DOUBLE PRECISION :: norm
     DOUBLE PRECISION :: ratio
     DOUBLE PRECISION :: ratio1
     DOUBLE PRECISION :: ratio2
-    DOUBLE PRECISION :: threshold
     DOUBLE PRECISION :: t1
     DOUBLE PRECISION :: t2
     DOUBLE PRECISION :: t_cons_a
     DOUBLE PRECISION :: t_cons_vp
+    DOUBLE PRECISION :: threshold
+    DOUBLE PRECISION :: threshold_rij
     DOUBLE PRECISION, DIMENSION(:), POINTER :: AS
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
     DOUBLE PRECISION, DIMENSION(:), POINTER :: D
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomin
     DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_moy
     DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_rii
     DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_rij
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomin
     DOUBLE PRECISION, DIMENSION(:), POINTER :: W
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
@@ -57,10 +57,10 @@ CONTAINS
     INTEGER :: l
     INTEGER :: n
     INTEGER :: nb
+    INTEGER :: nb_clusters
+    INTEGER :: nbproc
     INTEGER :: nnz
     INTEGER :: nnz2
-    INTEGER :: nbproc
-    INTEGER :: nb_clusters
     INTEGER, DIMENSION(:), POINTER :: clusters
     INTEGER, DIMENSION(:), POINTER :: IAS
     INTEGER, DIMENSION(:), POINTER :: JAS
@@ -375,23 +375,23 @@ PRINT *, 'DEBUG : Frobenius ratio'
     INTEGER :: nb_info
 
     !#### Variables  ####
+    INTEGER :: i
     INTEGER :: it_max
     INTEGER :: it_num
-    INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: ki
     INTEGER :: kj
     INTEGER :: l
+    INTEGER :: nb_max
     INTEGER :: ni
     INTEGER :: nj
-    INTEGER :: ok
-    INTEGER :: nb_max
     INTEGER :: num1
     INTEGER :: num2
+    INTEGER :: ok
     INTEGER, DIMENSION(:,:), POINTER :: matchings
-    DOUBLE PRECISION :: test
     DOUBLE PRECISION :: ratiomin
+    DOUBLE PRECISION :: test
     DOUBLE PRECISION, DIMENSION(:), POINTER :: Z3
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1
@@ -521,10 +521,10 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    INTEGER, :: n
-    INTEGER, :: nnz
     INTEGER, DIMENSION(nnz) :: IA
     INTEGER, DIMENSION(nnz) :: JA
+    INTEGER, :: n
+    INTEGER, :: nnz
     DOUBLE PRECISION, DIMENSION(n) :: X
     DOUBLE PRECISION, DIMENSION(nnz) :: A
 
@@ -586,18 +586,18 @@ PRINT *, 'DEBUG : Frobenius ratio'
     DOUBLE PRECISION, DIMENSION(:) :: A
 
     !====  OUT ====
-    DOUBLE PRECISION, POINTER :: Z(:,:)
     DOUBLE PRECISION, POINTER :: W(:)
+    DOUBLE PRECISION, POINTER :: Z(:,:)
 
     !#### Variables  ####
     CHARACTER :: bmat*1
     CHARACTER :: which*2
-    INTEGER :: iparam(11)
-    INTEGER :: ipntr(14)
     INTEGER :: i
     INTEGER :: ido
     INTEGER :: ierr
     INTEGER :: info
+    INTEGER :: iparam(11)
+    INTEGER :: ipntr(14)
     INTEGER :: ishfts
     INTEGER :: j
     INTEGER :: ldv
@@ -609,9 +609,9 @@ PRINT *, 'DEBUG : Frobenius ratio'
     INTEGER :: mode1
     INTEGER :: n
     INTEGER :: nbite
-    INTEGER :: nev
     INTEGER :: nconv
     INTEGER :: ncv
+    INTEGER :: nev
     INTEGER :: nx
     DOUBLE PRECISION :: dlapy2
     DOUBLE PRECISION :: dnrm2

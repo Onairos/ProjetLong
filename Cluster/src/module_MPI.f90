@@ -37,11 +37,11 @@ CONTAINS
     
     !#### Variables  ####
     INTEGER :: i
-    INTEGER :: j
+    INTEGER :: id_mpi
     INTEGER :: ierr
+    INTEGER :: j
     INTEGER :: m
     INTEGER :: n
-    INTEGER :: id_mpi
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     
     !###########################################      
@@ -131,10 +131,10 @@ CONTAINS
     !#### Variables  ####
     INTEGER status(MPI_STATUS_SIZE)
     INTEGER :: i
+    INTEGER :: id_mpi
     INTEGER :: ierr
     INTEGER :: m
     INTEGER :: n
-    INTEGER :: id_mpi
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     
     !###########################################      
@@ -216,9 +216,9 @@ CONTAINS
     !#### Variables  ####    
     INTEGER status(MPI_STATUS_SIZE)
     INTEGER :: i
+    INTEGER :: id_mpi
     INTEGER :: ierr
     INTEGER :: nb
-    INTEGER :: id_mpi
     
     !###########################################      
     ! INSTRUCTIONS
@@ -272,8 +272,8 @@ CONTAINS
     INTEGER :: proc_id
 
     !#### Variables  ####
-    INTEGER :: id_mpi
     INTEGER :: i
+    INTEGER :: id_mpi
     INTEGER :: ierr
     INTEGER, DIMENSION(:), POINTER :: list
     
@@ -319,8 +319,8 @@ CONTAINS
     
     !#### Variables  ####  
     INTEGER :: i
-    INTEGER :: ierr
     INTEGER :: id_mpi
+    INTEGER :: ierr
     INTEGER, DIMENSION(:), POINTER :: list_clusters
     
     !###########################################      
@@ -367,8 +367,8 @@ CONTAINS
     !====  IN  ====
     TYPE(type_clusters), DIMENSION(:), POINTER :: array_clust
     TYPE(type_data) ::partitioned_data
-    INTEGER :: nb_proc
     INTEGER :: nb_clusters
+    INTEGER :: nb_proc
     INTEGER, DIMENSION(:), POINTER :: points_by_domain 
     INTEGER, DIMENSION(:,:), POINTER :: assignments
 
@@ -382,8 +382,8 @@ CONTAINS
     INTEGER :: ierr
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: points_max
     INTEGER :: p
+    INTEGER :: points_max
     INTEGER :: status(MPI_STATUS_SIZE)
     INTEGER, DIMENSION(:), POINTER :: list_clusters
     

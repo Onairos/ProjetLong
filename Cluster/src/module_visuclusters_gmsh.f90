@@ -174,8 +174,8 @@ CONTAINS
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb
-    INTEGER :: offset
     INTEGER :: nb_slaves
+    INTEGER :: offset
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
 
     !###########################################

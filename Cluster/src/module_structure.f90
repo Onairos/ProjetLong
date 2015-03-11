@@ -5,17 +5,17 @@ MODULE module_structure
   TYPE type_data
      ! Data parameters
      TYPE(type_points), DIMENSION(:), POINTER :: points
-     INTEGER :: nb_points ! Number of points
      INTEGER :: dim ! Dimension of points
      INTEGER :: nb_clusters ! Number of clusters
+     INTEGER :: nb_points ! Number of points
 
      ! Input parameters : format + processing
      INTEGER :: coords ! Data format classic points
-     INTEGER :: is_image ! If image mode activated
      INTEGER :: is_geom ! Image in mode geom ?
-     INTEGER :: is_threshold ! Image in threshold mode ?
+     INTEGER :: is_image ! If image mode activated
      INTEGER :: is_interfacing ! Partitioning + interfacing ?
      INTEGER :: is_overlapping ! Partitioning + overlapping ?
+     INTEGER :: is_threshold ! Image in threshold mode ?
 
      ! Image processing parameters
      INTEGER :: image_dim ! Dimension of images
@@ -44,9 +44,9 @@ MODULE module_structure
   !### Kernel parameter ####
   TYPE type_clustering_param
      ! Clustering method id
-      DOUBLE PRECISION :: sigma
-      DOUBLE PRECISION :: gamma
       DOUBLE PRECISION :: delta
+      DOUBLE PRECISION :: gamma
+      DOUBLE PRECISION :: sigma
       INTEGER :: clustering_method_id
       INTEGER :: kernelfunindex
      !mean shift

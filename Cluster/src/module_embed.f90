@@ -63,12 +63,12 @@ CONTAINS
     
     !#### Variables  ####
     INTEGER :: i
-    INTEGER :: nb_iter_max
-    INTEGER :: nb_iter
     INTEGER :: j
     INTEGER :: k
     INTEGER :: ki
     INTEGER :: kj
+    INTEGER :: nb_iter
+    INTEGER :: nb_iter_max
     INTEGER :: nb_max
     INTEGER :: ni
     INTEGER :: nj
@@ -247,9 +247,9 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     INTEGER :: dim ! the number of spatial dimensions
-    INTEGER :: nb_points ! the number of points + TODO reorganisation
     INTEGER :: nb_clusters ! the number of clusters
     INTEGER :: nb_iter_max ! the maximum number of iterations
+    INTEGER :: nb_points ! the number of points + TODO reorganisation
     INTEGER :: proc_id ! UNUSED
     DOUBLE PRECISION :: points (dim, nb_points) ! the points
 
@@ -257,25 +257,25 @@ CONTAINS
     DOUBLE PRECISION :: clusters_centers (dim, nb_clusters) ! the cluster centers
 
     !====  OUT ====
-    INTEGER :: nb_iter ! the number of iterations taken
     INTEGER :: clusters (nb_points) ! indicates which cluster each point belongs to
+    INTEGER :: nb_iter ! the number of iterations taken
     INTEGER :: points_by_clusters (nb_clusters) ! the number of points in each cluster
     DOUBLE PRECISION :: clusters_energies (nb_clusters) ! the cluster energies
     
     !#### Variables  ####
+    INTEGER :: cluster_id (nb_clusters)
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: swap
     INTEGER :: p
-    INTEGER :: cluster_id (nb_clusters)
     INTEGER :: stock_population (nb_clusters)
-    DOUBLE PRECISION :: threshold
-    DOUBLE PRECISION :: value
+    INTEGER :: swap
+    DOUBLE PRECISION :: list_norm (nb_points, nb_clusters)
     DOUBLE PRECISION :: max_value
     DOUBLE PRECISION :: stock_center (dim, nb_clusters)
     DOUBLE PRECISION :: stock_energy (nb_clusters)
-    DOUBLE PRECISION :: list_norm (nb_points, nb_clusters)
+    DOUBLE PRECISION :: threshold
+    DOUBLE PRECISION :: value
     LOGICAL :: ok
     LOGICAL :: ok2
     

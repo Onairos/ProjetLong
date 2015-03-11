@@ -204,31 +204,31 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     INTEGER :: k
-    INTEGER :: M
-    INTEGER :: N
     INTEGER :: LIWORK
     INTEGER :: LWORK
-    DOUBLE PRECISION :: W(N)
+    INTEGER :: M
+    INTEGER :: N
     DOUBLE PRECISION :: A(N,N)
+    DOUBLE PRECISION :: W(N)
     DOUBLE PRECISION :: Z(N,N)
 
     !#### Variables  ####
     CHARACTER :: JOBZ
     CHARACTER :: RANGE
     CHARACTER :: UPLO
-    INTEGER :: INFO
     INTEGER :: i
     INTEGER :: IL
+    INTEGER :: INFO
+    INTEGER :: ISUPPZ(2*N)
     INTEGER :: IU
+    INTEGER :: IWORK(LIWORK)
     INTEGER :: j
     INTEGER :: LDA
     INTEGER :: LDZ
-    INTEGER :: ISUPPZ(2*N)
-    INTEGER :: IWORK(LIWORK)
-    DOUBLE PRECISION :: WORK(LWORK)
     DOUBLE PRECISION :: ABSTOL
     DOUBLE PRECISION :: VL
     DOUBLE PRECISION :: VU
+    DOUBLE PRECISION :: WORK(LWORK)
 
     !###########################################      
     ! INSTRUCTIONS
@@ -276,28 +276,28 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !=== IN/OUT ===
+    INTEGER :: k
     INTEGER :: LIWORK
     INTEGER :: LWORK
-    INTEGER :: k
     INTEGER :: M
     INTEGER :: N
-    DOUBLE PRECISION :: W(N)
     DOUBLE PRECISION :: A(N,N)
+    DOUBLE PRECISION :: W(N)
     DOUBLE PRECISION :: Z(N,N)
 
     !#### Variables  ####
     CHARACTER :: JOBZ
-    CHARACTER :: UPLO
     CHARACTER :: RANGE
+    CHARACTER :: UPLO
     INTEGER :: i
     INTEGER :: IFAIL
     INTEGER :: IL
     INTEGER :: INFO
     INTEGER :: IU
+    INTEGER :: IWORK(LIWORK)
     INTEGER :: j
     INTEGER :: LDA
     INTEGER :: LDZ
-    INTEGER :: IWORK(LIWORK)
     DOUBLE PRECISION :: ABSTOL
     DOUBLE PRECISION :: VL
     DOUBLE PRECISION :: VU

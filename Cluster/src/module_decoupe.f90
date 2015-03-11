@@ -541,7 +541,7 @@ CONTAINS
     DO WHILE(.NOT.ok)
        j=j+1 
        IF (j>points_by_cluster(i)) THEN
-          ! Line nÃÂ°1 is entirely tested
+          ! Line nÃÂÃÂ°1 is entirely tested
 #if aff
           PRINT *, 'DEBUG : number of elements after grouping :', points_by_cluster(i)
 #endif
