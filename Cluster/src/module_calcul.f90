@@ -849,14 +849,16 @@ SUBROUTINE mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,b
 		
 			DO i=1, point_num
 				!dist squared from mean to all points still active
-				sqDist = 0
-				DO j=1, dim_num
-					sqDist = sqDist + (partitioned_data%point(i)%coords(j) - myMean(j))**2
-				ENDDO
-				IF (sqDist < bandSq) THEN
-					thisClusterVotes(i) = thisClusterVotes(i) + 1	!add a vote for all the in points belonging to this cluster
-					myMembers(i) = 1								!add any point within bandwidth to the cluster
-					beenVisitedFlag(i) = 1							!mark that these points have been visited
+				IF (beenVisitedFlag(i)==0) THEN
+					sqDist = 0
+					DO j=1, dim_num
+						sqDist = sqDist + (partitioned_data%point(i)%coords(j) - myMean(j))**2
+					ENDDO
+					IF (sqDist < bandSq) THEN
+						thisClusterVotes(i) = thisClusterVotes(i) + 1	!add a vote for all the in points belonging to this cluster
+						myMembers(i) = 1								!add any point within bandwidth to the cluster
+						beenVisitedFlag(i) = 1							!mark that these points have been visited
+					ENDIF
 				ENDIF
 			ENDDO
 			
@@ -914,8 +916,8 @@ SUBROUTINE mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,b
 		
 		ENDDO
 			
+		numInitPts = 0
 		DO i=1, point_num
-			numInitPts = 0
 			IF (beenVisitedFlag(i)==0) THEN
 				numInitPts = numInitPts + 1
 			ENDIF
