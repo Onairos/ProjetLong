@@ -22,19 +22,19 @@ CONTAINS
     
     !#### Variables  ####
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: x_max
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: x_min
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: y_max
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: y_min
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: z_max
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: z_min
+    INTEGER :: i
     DOUBLE PRECISION :: x0
     DOUBLE PRECISION :: x1
     DOUBLE PRECISION :: y0
     DOUBLE PRECISION :: y1
     DOUBLE PRECISION :: z0
     DOUBLE PRECISION :: z1
-    INTEGER :: i
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: x_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: x_min
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: y_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: y_min
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: z_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: z_min
     
     !###########################################      
     ! INSTRUCTIONS
@@ -282,16 +282,16 @@ CONTAINS
     TYPE(type_params) :: params
     
     !#### Variables  ####
-    CHARACTER (LEN=30) :: num
     CHARACTER (LEN=30) :: files
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: ids
-    INTEGER, DIMENSION(:), POINTER :: proc_ids
+    CHARACTER (LEN=30) :: num
     INTEGER :: i
     INTEGER :: j
     INTEGER :: nb_points
-    INTEGER :: offset
     INTEGER :: nb_slaves
+    INTEGER :: offset
+    INTEGER, DIMENSION(:), POINTER :: ids
+    INTEGER, DIMENSION(:), POINTER :: proc_ids
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     
     !###########################################      
     ! INSTRUCTIONS
@@ -422,18 +422,18 @@ CONTAINS
     
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
+    CHARACTER (LEN=30) :: extension
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    CHARACTER (LEN=30) :: extension
-    INTEGER, DIMENSION(:), POINTER :: matchings
-    INTEGER, DIMENSION(:), POINTER :: ids
-    INTEGER, DIMENSION(:), POINTER :: proc_ids
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: length
     INTEGER :: nb_points
     INTEGER :: nb_zeros
+    INTEGER, DIMENSION(:), POINTER :: ids
+    INTEGER, DIMENSION(:), POINTER :: matchings
+    INTEGER, DIMENSION(:), POINTER :: proc_ids
     
     !###########################################      
     ! INSTRUCTIONS
@@ -557,14 +557,14 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: ids
-    INTEGER, DIMENSION(:), POINTER :: proc_ids
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb_points
     INTEGER :: nb_points_temp
+    INTEGER, DIMENSION(:), POINTER :: ids
+    INTEGER, DIMENSION(:), POINTER :: proc_ids
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     
     !###########################################
     ! INSTRUCTIONS
@@ -652,14 +652,14 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: ids
-    INTEGER :: unit_geo
-    INTEGER :: unit_ind
+    INTEGER :: dim
+    INTEGER :: i
     INTEGER :: k
     INTEGER :: nb_points
-    INTEGER :: i
-    INTEGER :: dim
+    INTEGER :: unit_geo
+    INTEGER :: unit_ind
+    INTEGER, DIMENSION(:), POINTER :: ids
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     
     !###########################################
     ! INSTRUCTIONS
@@ -721,23 +721,23 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_params) :: params
-    INTEGER, DIMENSION(:), POINTER :: ids
-    INTEGER, DIMENSION(:), POINTER :: proc_ids
     INTEGER :: nb_pixels
     INTEGER :: unit_geo
     INTEGER :: unit_ind
+    INTEGER, DIMENSION(:), POINTER :: ids
+    INTEGER, DIMENSION(:), POINTER :: proc_ids
     !=== IN/OUT ===
     !====  OUT ====
     
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: data
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: kx
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ky
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: kz
     INTEGER :: i
     INTEGER :: ix
     INTEGER :: iy
     INTEGER :: k
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: data
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: kx
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ky
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: kz
     
     !###########################################
     ! INSTRUCTIONS

@@ -19,9 +19,9 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    TYPE(type_data) :: data
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domains  
+    TYPE(type_data) :: data 
     INTEGER :: nb_proc
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domains 
     
     !#### Variables  ####
     INTEGER :: i
@@ -57,9 +57,9 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    INTEGER,DIMENSION(:,:),POINTER :: assignments
-    INTEGER,DIMENSION(:),POINTER :: points_by_domain
     INTEGER :: nb_proc
+    INTEGER,DIMENSION(:),POINTER :: points_by_domain
+    INTEGER,DIMENSION(:,:),POINTER :: assignments
     
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
@@ -175,8 +175,8 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    INTEGER,DIMENSION(:,:),POINTER :: cluster_map
     INTEGER,DIMENSION(:),POINTER :: points_by_cluster
+    INTEGER,DIMENSION(:,:),POINTER :: cluster_map
 
     !=== IN/OUT === 
     INTEGER :: nb_clusters

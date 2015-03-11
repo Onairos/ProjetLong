@@ -99,10 +99,10 @@ CONTAINS
     INTEGER :: nb
     INTEGER, DIMENSION(:,:), POINTER :: array
     INTEGER, DIMENSION(:), POINTER :: partitioning_tmp
-    DOUBLE PRECISION :: long
-    DOUBLE PRECISION :: sigma0
     DOUBLE PRECISION :: ext_volume
     DOUBLE PRECISION :: int_volume
+    DOUBLE PRECISION :: long
+    DOUBLE PRECISION :: sigma0
 
     !###########################################
     ! INSTRUCTIONS
@@ -240,7 +240,7 @@ CONTAINS
     gaussian_kernel=K
     RETURN
   END
-!Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||Â²))
+!Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||ÃÂ²))
 
 
 
@@ -261,30 +261,30 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     TYPE(type_data) :: partitioned_data
 
     !#### Variables  ####
-    INTEGER :: cluster_population (partitioned_data%nb_clusters) ! the number of points in each cluster
-    INTEGER :: it_num ! the number of iterations taken
     INTEGER :: cluster_id (partitioned_data%nb_clusters)
-    INTEGER :: stockpopulation (partitioned_data%nb_clusters)
+    INTEGER :: cluster_population (partitioned_data%nb_clusters) ! the number of points in each cluster
     INTEGER :: i
     INTEGER :: it_max ! the maximum number of iterations
+    INTEGER :: it_num ! the number of iterations taken
     INTEGER :: j
     INTEGER :: k
     INTEGER :: l
-    INTEGER :: swap
     INTEGER :: p
-    DOUBLE PRECISION :: norm
-    DOUBLE PRECISION :: seuil
-    DOUBLE PRECISION :: val
-    DOUBLE PRECISION :: valmax
-    DOUBLE PRECISION :: num1
-    DOUBLE PRECISION :: den1
-    DOUBLE PRECISION :: num2
-    DOUBLE PRECISION :: den2
+    INTEGER :: stockpopulation (partitioned_data%nb_clusters)
+    INTEGER :: swap
     DOUBLE PRECISION :: cluster_center (partitioned_data%dim, partitioned_data%nb_clusters) ! the cluster centers
     DOUBLE PRECISION :: cluster_energy (partitioned_data%nb_clusters) ! the cluster energies
+    DOUBLE PRECISION :: den1
+    DOUBLE PRECISION :: den2
     DOUBLE PRECISION :: listnorm (partitioned_data%nb_points, partitioned_data%nb_clusters)
+    DOUBLE PRECISION :: norm
+    DOUBLE PRECISION :: num1
+    DOUBLE PRECISION :: num2
+    DOUBLE PRECISION :: seuil
     DOUBLE PRECISION :: stockcenter (partitioned_data%dim, partitioned_data%nb_clusters)
     DOUBLE PRECISION :: stockenergy (partitioned_data%nb_clusters)
+    DOUBLE PRECISION :: val
+    DOUBLE PRECISION :: valmax
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Ker
     LOGICAL :: ok 
     LOGICAL :: ok2
@@ -478,8 +478,8 @@ PRINT *, 'recherche des centres'
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_clustering_param) :: clust_param
-    INTEGER :: nb_clusters_opt
     INTEGER :: nb_clusters_max
+    INTEGER :: nb_clusters_opt
     INTEGER :: proc_id
     DOUBLE PRECISION :: sigma
 
@@ -496,16 +496,16 @@ PRINT *, 'recherche des centres'
     INTEGER :: nbvp
     INTEGER :: solver ! solveur au valeur propre => parametre de controle
     INTEGER, DIMENSION(:), POINTER :: cluster
-    INTEGER, DIMENSION(:), POINTER :: points_by_clusters
     INTEGER, DIMENSION(:), POINTER :: nb_info
+    INTEGER, DIMENSION(:), POINTER :: points_by_clusters
     DOUBLE PRECISION :: norm
     DOUBLE PRECISION :: ratio
     DOUBLE PRECISION :: ratio1
     DOUBLE PRECISION :: ratio2
     DOUBLE PRECISION :: seuilrij
-    DOUBLE PRECISION :: t_cons_vp
     DOUBLE PRECISION :: t1
     DOUBLE PRECISION :: t2
+    DOUBLE PRECISION :: t_cons_vp
     DOUBLE PRECISION :: val
     DOUBLE PRECISION :: value
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
@@ -750,10 +750,10 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    INTEGER :: nb_clusters_opt
-    INTEGER :: nb_clusters_max
-    INTEGER :: proc_id
     INTEGER :: bandwidth !bandwidth parameter
+    INTEGER :: nb_clusters_max
+    INTEGER :: nb_clusters_opt
+    INTEGER :: proc_id
 
     !=== IN/OUT ===
     TYPE(type_data) :: partitioned_data
@@ -761,24 +761,24 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !#### Variables  ####
     INTEGER ::point_num !number of points
     INTEGER ::dim_num !number of dimensions
-    INTEGER :: numClust !the cluster number  
     INTEGER :: beenVisitedFlag(partitioned_data%nb_points) !track if a point has been seen already
-    INTEGER :: numInitPts !number of points to possibly use as initialization points
-    INTEGER :: thisClusterVotes(partitioned_data%nb_points) !used to resolve conflicts on cluster membership
-    INTEGER :: stInd !start point of mean
-    INTEGER :: myMembers(partitioned_data%nb_points) !1 if the point belongs to the cluster, else 0
-    INTEGER :: mergeWith !used to merge clusters
     INTEGER :: clusterVotes(partitioned_data%nb_clusters,partitioned_data%nb_points) !number of votes for each point for each cluster
+    INTEGER :: cN
     INTEGER :: i
     INTEGER :: j
+    INTEGER :: mergeWith !used to merge clusters
+    INTEGER :: myMembers(partitioned_data%nb_points) !1 if the point belongs to the cluster, else 0
     INTEGER :: num
-    INTEGER :: cN
-    DOUBLE PRECISION :: sqDist
+    INTEGER :: numClust !the cluster number  
+    INTEGER :: numInitPts !number of points to possibly use as initialization points
+    INTEGER :: stInd !start point of mean
+    INTEGER :: thisClusterVotes(partitioned_data%nb_points) !used to resolve conflicts on cluster membership
     DOUBLE PRECISION :: bandSq !square of bandwidth
-    DOUBLE PRECISION :: stopThresh !when mean has converged
     DOUBLE PRECISION :: clustCent(partitioned_data%dim,partitioned_data%nb_clusters) !centers of each cluster
     DOUBLE PRECISION :: myMean(partitioned_data%dim) !mean of this cluster
     DOUBLE PRECISION :: myOldMean(partitioned_data%dim) !old mean computed for this cluster
+    DOUBLE PRECISION :: sqDist
+    DOUBLE PRECISION :: stopThresh !when mean has converged
     
     !###########################################
     ! INSTRUCTIONS

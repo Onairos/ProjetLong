@@ -3,12 +3,12 @@ MODULE module_teste_clusters
 
   TYPE type_test
      CHARACTER (LEN=80) :: data_type
-     CHARACTER (LEN=80) :: partition_type
      CHARACTER (LEN=80) :: directory
      CHARACTER (LEN=80) :: file
      CHARACTER (LEN=80) :: output
-     CHARACTER (LEN=80) :: visu_paraview
+     CHARACTER (LEN=80) :: partition_type
      CHARACTER (LEN=80) :: visu_gmsh
+     CHARACTER (LEN=80) :: visu_paraview
      DOUBLE PRECISION :: thickness
      INTEGER, DIMENSION(:), POINTER :: partitioning
      INTEGER :: nb_proc

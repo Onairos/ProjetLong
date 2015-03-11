@@ -20,10 +20,10 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION :: sigma
     INTEGER :: nb_clusters_max
     INTEGER :: nb_clusters_opt
     INTEGER :: proc_id
+    DOUBLE PRECISION :: sigma
 
     !=== IN/OUT ===
     TYPE(type_data) :: partitioned_data
@@ -31,41 +31,41 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: AS
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: D
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomin
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_moy
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_rii
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_rij
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: W
     DOUBLE PRECISION :: factor
-    DOUBLE PRECISION :: threshold_rij
     DOUBLE PRECISION :: norm
     DOUBLE PRECISION :: ratio
     DOUBLE PRECISION :: ratio1
     DOUBLE PRECISION :: ratio2
-    DOUBLE PRECISION :: threshold
     DOUBLE PRECISION :: t1
     DOUBLE PRECISION :: t2
     DOUBLE PRECISION :: t_cons_a
     DOUBLE PRECISION :: t_cons_vp
+    DOUBLE PRECISION :: threshold
+    DOUBLE PRECISION :: threshold_rij
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: AS
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: D
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_moy
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_rii
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratio_rij
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: W
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
+    INTEGER :: k
+    INTEGER :: l
+    INTEGER :: n
+    INTEGER :: nb
+    INTEGER :: nb_clusters
+    INTEGER :: nbproc
+    INTEGER :: nnz
+    INTEGER :: nnz2
     INTEGER, DIMENSION(:), POINTER :: clusters
     INTEGER, DIMENSION(:), POINTER :: IAS
     INTEGER, DIMENSION(:), POINTER :: JAS
     INTEGER, DIMENSION(:), POINTER :: nb_info
     INTEGER, DIMENSION(:), POINTER :: points_by_clusters
-    INTEGER :: k
-    INTEGER :: l
-    INTEGER :: n
-    INTEGER :: nb
-    INTEGER :: nnz
-    INTEGER :: nnz2
-    INTEGER :: nbproc
-    INTEGER :: nb_clusters
 
     !###########################################      
     ! INSTRUCTIONS
@@ -354,48 +354,48 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
-    DOUBLE PRECISION, DIMENSION(:), POINTER:: AS
-    INTEGER, DIMENSION(:), POINTER :: IAS
-    INTEGER, DIMENSION(:), POINTER :: JAS
     INTEGER :: n
     INTEGER :: nb_clusters      
     INTEGER :: nnz
     INTEGER :: proc_id
+    INTEGER, DIMENSION(:), POINTER :: IAS
+    INTEGER, DIMENSION(:), POINTER :: JAS
+    DOUBLE PRECISION, DIMENSION(:), POINTER:: AS
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
 
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
+    INTEGER, DIMENSION(:), POINTER :: clusters
+    INTEGER, DIMENSION(:), POINTER :: points_by_clusters
     DOUBLE PRECISION :: ratio
     DOUBLE PRECISION :: ratio_moy
     DOUBLE PRECISION :: ratio_rii
     DOUBLE PRECISION :: ratio_rij
-    INTEGER, DIMENSION(:), POINTER :: clusters
-    INTEGER, DIMENSION(:), POINTER :: points_by_clusters
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
     INTEGER :: nb_info
 
     !#### Variables  ####
-    DOUBLE PRECISION :: test
-    DOUBLE PRECISION :: ratiomin
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z2
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: Z3
-    INTEGER, DIMENSION(:,:), POINTER :: matchings
+    INTEGER :: i
     INTEGER :: it_max
     INTEGER :: it_num
-    INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: ki
     INTEGER :: kj
     INTEGER :: l
+    INTEGER :: nb_max
     INTEGER :: ni
     INTEGER :: nj
-    INTEGER :: ok
-    INTEGER :: nb_max
     INTEGER :: num1
     INTEGER :: num2
+    INTEGER :: ok
+    INTEGER, DIMENSION(:,:), POINTER :: matchings
+    DOUBLE PRECISION :: ratiomin
+    DOUBLE PRECISION :: test
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: Z3
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z2
     !###########################################      
     ! INSTRUCTIONS
     !###########################################  
@@ -521,12 +521,12 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(nnz) :: A
-    DOUBLE PRECISION, DIMENSION(n) :: X
     INTEGER, DIMENSION(nnz) :: IA
     INTEGER, DIMENSION(nnz) :: JA
     INTEGER, :: n
     INTEGER, :: nnz
+    DOUBLE PRECISION, DIMENSION(n) :: X
+    DOUBLE PRECISION, DIMENSION(nnz) :: A
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(n) :: Y
@@ -578,38 +578,26 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(:) :: A
-    INTEGER, DIMENSION(:) :: IA
-    INTEGER, DIMENSION(:) :: JA
     INTEGER :: dim
     INTEGER :: nb_clusters_max
     INTEGER :: nnz
+    INTEGER, DIMENSION(:) :: IA
+    INTEGER, DIMENSION(:) :: JA
+    DOUBLE PRECISION, DIMENSION(:) :: A
 
     !====  OUT ====
-    DOUBLE PRECISION, POINTER :: Z(:,:)
     DOUBLE PRECISION, POINTER :: W(:)
+    DOUBLE PRECISION, POINTER :: Z(:,:)
 
     !#### Variables  ####
     CHARACTER :: bmat*1
     CHARACTER :: which*2
-    DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: d
-    DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: v
-    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: ax
-    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: resid
-    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: workd
-    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: workev
-    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: workl
-    DOUBLE PRECISION :: dlapy2
-    DOUBLE PRECISION :: dnrm2
-    DOUBLE PRECISION :: sigmai
-    DOUBLE PRECISION :: sigmar
-    DOUBLE PRECISION :: zero
-    INTEGER :: iparam(11)
-    INTEGER :: ipntr(14)
     INTEGER :: i
     INTEGER :: ido
     INTEGER :: ierr
     INTEGER :: info
+    INTEGER :: iparam(11)
+    INTEGER :: ipntr(14)
     INTEGER :: ishfts
     INTEGER :: j
     INTEGER :: ldv
@@ -621,13 +609,25 @@ PRINT *, 'DEBUG : Frobenius ratio'
     INTEGER :: mode1
     INTEGER :: n
     INTEGER :: nbite
-    INTEGER :: nev
     INTEGER :: nconv
     INTEGER :: ncv
+    INTEGER :: nev
     INTEGER :: nx
-    LOGICAL, DIMENSION(:), ALLOCATABLE :: array_select
+    DOUBLE PRECISION :: dlapy2
+    DOUBLE PRECISION :: dnrm2
+    DOUBLE PRECISION :: sigmai
+    DOUBLE PRECISION :: sigmar
+    DOUBLE PRECISION :: zero
+    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: ax
+    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: resid
+    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: workd
+    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: workev
+    DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: workl
+    DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: d
+    DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: v
     LOGICAL :: first
     LOGICAL :: rvec
+    LOGICAL, DIMENSION(:), ALLOCATABLE :: array_select
 
     !###########################################      
     ! INSTRUCTIONS

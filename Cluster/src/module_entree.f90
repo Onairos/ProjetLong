@@ -99,8 +99,8 @@ CONTAINS
     !====  OUT ====
     CHARACTER (LEN=30) :: input_file
     INTEGER :: nb_clusters_max
-    INTEGER, DIMENSION(:), POINTER :: partitioning
     INTEGER, DIMENSION(:), POINTER :: list_nb_clusters
+    INTEGER, DIMENSION(:), POINTER :: partitioning
     DOUBLE PRECISION :: epsilon
     DOUBLE PRECISION :: sigma
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
@@ -112,8 +112,8 @@ CONTAINS
     INTEGER :: i
     INTEGER :: ierr
     INTEGER :: tot
-    LOGICAL :: partitioning_bool
     LOGICAL :: ok
+    LOGICAL :: partitioning_bool
 
     !###########################################
     ! INSTRUCTIONS

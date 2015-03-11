@@ -14,6 +14,7 @@ PROGRAM clusters
   ! DECLARATIONS
   !###########################################
   !#### Variables  ####
+  TYPE(type_clustering_param) :: clust_param
   TYPE(type_clusters), DIMENSION(:), POINTER :: array_clusters
   TYPE(type_data) :: data
   TYPE(type_data) :: partitioned_data
@@ -24,32 +25,31 @@ PROGRAM clusters
   INTEGER :: ierr ! MPI variable
   INTEGER :: j
   INTEGER :: length ! MPI variable
-  INTEGER :: nb_clusters
-  INTEGER :: nb_clusters_opt
-  INTEGER :: nb_clusters_max
-  INTEGER :: nb_proc ! MPI variable
   INTEGER :: n_max
+  INTEGER :: nb_clusters
+  INTEGER :: nb_clusters_max
+  INTEGER :: nb_clusters_opt
+  INTEGER :: nb_proc ! MPI variable
   INTEGER :: proc_id ! MPI variable
   INTEGER :: status(MPI_STATUS_SIZE) ! MPI variable
   INTEGER :: tag ! MPI variable
+  INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
   INTEGER,DIMENSION(:), POINTER :: partitioning
   INTEGER,DIMENSION(:), POINTER :: points_by_cluster
   INTEGER,DIMENSION(:), POINTER :: points_by_domain
-  INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
+  INTEGER,DIMENSION(:,:), POINTER :: assignments
   INTEGER,DIMENSION(:,:), POINTER :: cluster_map
-  INTEGER,DIMENSION(:,:) ,POINTER :: assignments
   DOUBLE PRECISION :: end_time
   DOUBLE PRECISION :: epsilon
   DOUBLE PRECISION :: sigma
   DOUBLE PRECISION :: start_time
-  DOUBLE PRECISION :: t_parall
-  DOUBLE PRECISION :: t_parallg
   DOUBLE PRECISION :: t1
   DOUBLE PRECISION :: t2
+  DOUBLE PRECISION :: t_parall
+  DOUBLE PRECISION :: t_parallg
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
   DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
   DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-  TYPE(type_clustering_param) :: clust_param
   LOGICAL :: exist_bool
 
   !###########################################

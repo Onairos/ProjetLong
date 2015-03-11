@@ -18,26 +18,18 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
     INTEGER :: N
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
 
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VR
     DOUBLE PRECISION, DIMENSION(:), POINTER :: WR
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VR
 
     !#### Variables  ####
     CHARACTER :: BALANC
     CHARACTER :: JOBVL
     CHARACTER :: JOBVR
     CHARACTER :: SENSE
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VL
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: RCONDE
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: RCONDV
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: SCALE
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: WI
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: WORK
-    DOUBLE PRECISION :: ABNRM
-    INTEGER, DIMENSION(:), POINTER :: IWORK
     INTEGER :: IHI
     INTEGER :: ILO
     INTEGER :: INFO
@@ -45,6 +37,14 @@ CONTAINS
     INTEGER :: LDVL
     INTEGER :: LDVR
     INTEGER :: LWORK
+    INTEGER, DIMENSION(:), POINTER :: IWORK
+    DOUBLE PRECISION :: ABNRM
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: RCONDE
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: RCONDV
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: SCALE
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: WI
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: WORK
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VL
 
     !###########################################      
     ! INSTRUCTIONS
@@ -99,20 +99,20 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
 
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VR
     DOUBLE PRECISION, DIMENSION(:), POINTER :: WR
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VR
 
     !#### Variables  ####
     CHARACTER :: JOBVL
     CHARACTER :: JOBVR
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VL
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: WI
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: WORK
     INTEGER :: INFO
     INTEGER :: LDA
     INTEGER :: LDVL
     INTEGER :: LDVR
     INTEGER :: LWORK
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: WI
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: WORK
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: VL
 
     !###########################################      
     ! INSTRUCTIONS
@@ -158,19 +158,19 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION :: A(N,N)
     INTEGER :: N
+    DOUBLE PRECISION :: A(N,N)
 
     !====  OUT ====
-    DOUBLE PRECISION :: W(N)
     INTEGER :: LWORK
+    DOUBLE PRECISION :: W(N)
 
     !#### Variables  ####
     CHARACTER :: JOBZ
     CHARACTER :: UPLO
-    DOUBLE PRECISION :: WORK(LWORK)
     INTEGER :: INFO
     INTEGER :: LDA
+    DOUBLE PRECISION :: WORK(LWORK)
 
     !###########################################      
     ! INSTRUCTIONS
@@ -203,32 +203,32 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION :: A(N,N)
-    DOUBLE PRECISION :: Z(N,N)
-    DOUBLE PRECISION :: W(N)
     INTEGER :: k
-    INTEGER :: M
-    INTEGER :: N
     INTEGER :: LIWORK
     INTEGER :: LWORK
+    INTEGER :: M
+    INTEGER :: N
+    DOUBLE PRECISION :: A(N,N)
+    DOUBLE PRECISION :: W(N)
+    DOUBLE PRECISION :: Z(N,N)
 
     !#### Variables  ####
     CHARACTER :: JOBZ
     CHARACTER :: RANGE
     CHARACTER :: UPLO
-    DOUBLE PRECISION :: WORK(LWORK)
-    DOUBLE PRECISION :: ABSTOL
-    DOUBLE PRECISION :: VL
-    DOUBLE PRECISION :: VU
-    INTEGER :: ISUPPZ(2*N)
-    INTEGER :: IWORK(LIWORK)
-    INTEGER :: INFO
     INTEGER :: i
     INTEGER :: IL
+    INTEGER :: INFO
+    INTEGER :: ISUPPZ(2*N)
     INTEGER :: IU
+    INTEGER :: IWORK(LIWORK)
     INTEGER :: j
     INTEGER :: LDA
     INTEGER :: LDZ
+    DOUBLE PRECISION :: ABSTOL
+    DOUBLE PRECISION :: VL
+    DOUBLE PRECISION :: VU
+    DOUBLE PRECISION :: WORK(LWORK)
 
     !###########################################      
     ! INSTRUCTIONS
@@ -276,23 +276,19 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !=== IN/OUT ===
-    DOUBLE PRECISION :: A(N,N)
-    DOUBLE PRECISION :: Z(N,N)
-    DOUBLE PRECISION :: W(N)
+    INTEGER :: k
     INTEGER :: LIWORK
     INTEGER :: LWORK
-    INTEGER :: k
     INTEGER :: M
     INTEGER :: N
+    DOUBLE PRECISION :: A(N,N)
+    DOUBLE PRECISION :: W(N)
+    DOUBLE PRECISION :: Z(N,N)
 
     !#### Variables  ####
     CHARACTER :: JOBZ
-    CHARACTER :: UPLO
     CHARACTER :: RANGE
-    DOUBLE PRECISION :: WORK(LWORK)
-    DOUBLE PRECISION :: ABSTOL
-    DOUBLE PRECISION :: VL
-    DOUBLE PRECISION :: VU
+    CHARACTER :: UPLO
     INTEGER :: i
     INTEGER :: IFAIL
     INTEGER :: IL
@@ -302,6 +298,10 @@ CONTAINS
     INTEGER :: j
     INTEGER :: LDA
     INTEGER :: LDZ
+    DOUBLE PRECISION :: ABSTOL
+    DOUBLE PRECISION :: VL
+    DOUBLE PRECISION :: VU
+    DOUBLE PRECISION :: WORK(LWORK)
 
     !###########################################      
     ! INSTRUCTIONS
