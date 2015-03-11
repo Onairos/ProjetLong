@@ -38,10 +38,10 @@ CONTAINS
     DOUBLE PRECISION :: sigma
 
     !#### Variables  ####
-    DOUBLE PRECISION :: norm
     INTEGER :: i1
     INTEGER :: j1
     INTEGER :: k1
+    DOUBLE PRECISION :: norm
 
     !###########################################
     ! INSTRUCTIONS
@@ -84,25 +84,25 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: partitioned_data
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-    DOUBLE PRECISION :: epsilon
-    INTEGER, DIMENSION(:), POINTER :: partitioning
     INTEGER :: proc_id
+    INTEGER, DIMENSION(:), POINTER :: partitioning
+    DOUBLE PRECISION :: epsilon
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
 
     !====  OUT ====
     DOUBLE PRECISION :: sigma
 
     !#### Variables  ####
-    DOUBLE PRECISION :: long
-    DOUBLE PRECISION :: sigma0
-    DOUBLE PRECISION :: ext_volume
-    DOUBLE PRECISION :: int_volume
-    INTEGER, DIMENSION(:,:), POINTER :: array
-    INTEGER, DIMENSION(:), POINTER :: partitioning_tmp
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb
+    INTEGER, DIMENSION(:,:), POINTER :: array
+    INTEGER, DIMENSION(:), POINTER :: partitioning_tmp
+    DOUBLE PRECISION :: long
+    DOUBLE PRECISION :: sigma0
+    DOUBLE PRECISION :: ext_volume
+    DOUBLE PRECISION :: int_volume
 
     !###########################################
     ! INSTRUCTIONS
@@ -173,11 +173,11 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(partitioned_data%nb_points,partitioned_data%nb_points) :: poly_kernel
 
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: K
     INTEGER :: d
     INTEGER :: i
     INTEGER :: j
     INTEGER :: n
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: K
 
     !###########################################
     ! INSTRUCTIONS
@@ -213,11 +213,11 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(partitioned_data%nb_points,partitioned_data%nb_points) :: gaussian_kernel
 
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: K
     INTEGER d
     INTEGER i
     INTEGER j
     INTEGER n
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: K
 
     !###########################################
     ! INSTRUCTIONS
@@ -261,13 +261,17 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     TYPE(type_data) :: partitioned_data
 
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Ker
+    INTEGER :: cluster_population (partitioned_data%nb_clusters) ! the number of points in each cluster
+    INTEGER :: it_num ! the number of iterations taken
+    INTEGER :: cluster_id (partitioned_data%nb_clusters)
+    INTEGER :: stockpopulation (partitioned_data%nb_clusters)
+    INTEGER :: i
     INTEGER :: it_max ! the maximum number of iterations
-    DOUBLE PRECISION :: cluster_center (partitioned_data%dim, partitioned_data%nb_clusters) ! the cluster centers
-    DOUBLE PRECISION :: cluster_energy (partitioned_data%nb_clusters) ! the cluster energies
-    DOUBLE PRECISION :: listnorm (partitioned_data%nb_points, partitioned_data%nb_clusters)
-    DOUBLE PRECISION :: stockcenter (partitioned_data%dim, partitioned_data%nb_clusters)
-    DOUBLE PRECISION :: stockenergy (partitioned_data%nb_clusters)
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: l
+    INTEGER :: swap
+    INTEGER :: p
     DOUBLE PRECISION :: norm
     DOUBLE PRECISION :: seuil
     DOUBLE PRECISION :: val
@@ -276,16 +280,12 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     DOUBLE PRECISION :: den1
     DOUBLE PRECISION :: num2
     DOUBLE PRECISION :: den2
-    INTEGER :: cluster_population (partitioned_data%nb_clusters) ! the number of points in each cluster
-    INTEGER :: it_num ! the number of iterations taken
-    INTEGER :: cluster_id (partitioned_data%nb_clusters)
-    INTEGER :: stockpopulation (partitioned_data%nb_clusters)
-    INTEGER :: i
-    INTEGER :: j
-    INTEGER :: k
-    INTEGER :: l
-    INTEGER :: swap
-    INTEGER :: p
+    DOUBLE PRECISION :: cluster_center (partitioned_data%dim, partitioned_data%nb_clusters) ! the cluster centers
+    DOUBLE PRECISION :: cluster_energy (partitioned_data%nb_clusters) ! the cluster energies
+    DOUBLE PRECISION :: listnorm (partitioned_data%nb_points, partitioned_data%nb_clusters)
+    DOUBLE PRECISION :: stockcenter (partitioned_data%dim, partitioned_data%nb_clusters)
+    DOUBLE PRECISION :: stockenergy (partitioned_data%nb_clusters)
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Ker
     LOGICAL :: ok 
     LOGICAL :: ok2
     !###########################################      
@@ -478,27 +478,26 @@ PRINT *, 'recherche des centres'
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_clustering_param) :: clust_param
-    DOUBLE PRECISION :: sigma
     INTEGER :: nb_clusters_opt
     INTEGER :: nb_clusters_max
     INTEGER :: proc_id
+    DOUBLE PRECISION :: sigma
 
     !=== IN/OUT ===
     TYPE(type_data) :: partitioned_data
 
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A2
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: D
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomin
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomoy
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiorii
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiorij
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: W
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: n
+    INTEGER :: nb
+    INTEGER :: nb_clusters
+    INTEGER :: nbvp
+    INTEGER :: solver ! solveur au valeur propre => parametre de controle
+    INTEGER, DIMENSION(:), POINTER :: cluster
+    INTEGER, DIMENSION(:), POINTER :: points_by_clusters
+    INTEGER, DIMENSION(:), POINTER :: nb_info
     DOUBLE PRECISION :: norm
     DOUBLE PRECISION :: ratio
     DOUBLE PRECISION :: ratio1
@@ -509,17 +508,18 @@ PRINT *, 'recherche des centres'
     DOUBLE PRECISION :: t2
     DOUBLE PRECISION :: val
     DOUBLE PRECISION :: value
-    INTEGER, DIMENSION(:), POINTER :: cluster
-    INTEGER, DIMENSION(:), POINTER :: points_by_clusters
-    INTEGER, DIMENSION(:), POINTER :: nb_info
-    INTEGER :: i
-    INTEGER :: j
-    INTEGER :: k
-    INTEGER :: n
-    INTEGER :: nb
-    INTEGER :: nb_clusters
-    INTEGER :: nbvp
-    INTEGER :: solver ! solveur au valeur propre => parametre de controle
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: D
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomax
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomin
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiomoy
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiorii
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: ratiorij
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: W
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A2
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z
 
     !###########################################
     ! INSTRUCTIONS
