@@ -22,6 +22,7 @@ CONTAINS
 
     !#### Variables  ####
     CHARACTER (LEN=30) :: num
+    INTEGER :: i
     DOUBLE PRECISION :: x0
     DOUBLE PRECISION :: x1
     DOUBLE PRECISION :: x_max
@@ -34,7 +35,6 @@ CONTAINS
     DOUBLE PRECISION :: z1
     DOUBLE PRECISION :: zmax
     DOUBLE PRECISION :: zmin
-    INTEGER :: i
 
     !###########################################
     ! INSTRUCTIONS
@@ -42,27 +42,27 @@ CONTAINS
     PRINT *,'-> decoupe.geo'
     OPEN(FILE='fort.2',UNIT=2)
     OPEN(FILE='decoupe.geo',UNIT=10)
-    DO i=1,params%nbproc-params%interface
-       IF (((params%coord==1).AND.(params%dim==2)) &
-          .OR.((params%image==1).AND.(params%imgdim==2)) &
-          .OR.((params%seuil==1).AND.(params%imgdim==2)) &
-          .OR.((params%geom==1).AND.(params%imgdim+params%imgt==2))) THEN
+    DO i=1,params%nb_proc-params%is_interfacing
+       IF (((params%coords==1).AND.(params%dim==2)) &
+          .OR.((params%is_image==1).AND.(params%image_dim==2)) &
+          .OR.((params%is_threshold==1).AND.(params%image_dim==2)) &
+          .OR.((params%is_geom==1).AND.(params%image_dim+params%image_times==2))) THEN
           !2D
-          IF (params%coord==1) THEN
+          IF (params%coords==1) THEN
              READ(2,*) x0,y0,num,x1,y1
              x_min=x0
              y_min=y0
              x_max=x1
              y_max=y1
-          ELSEIF (params%seuil==1) THEN
+          ELSEIF (params%is_threshold==1) THEN
              READ(2,*) x0,num,x1
              x_min=1
              y_min=-1
-             x_max=params%imgmap(2)
-             y_max=-params%imgmap(1)
+             x_max=params%partitioning(2)
+             y_max=-params%partitioning(1)
              zmin=x0
              zmax=x1
-          ELSEIF ((params%image==1).OR.(params%geom==1)) THEN
+          ELSEIF ((params%is_image==1).OR.(params%is_geom==1)) THEN
              READ(2,*) x0,y0,num,x1,y1
              x_min=y0
              y_min=-x0
@@ -70,7 +70,7 @@ CONTAINS
              y_max=-x1
              zmin=x0
           ENDIF
-          IF (params%seuil==1) THEN
+          IF (params%is_threshold==1) THEN
              WRITE(10,*) 'Point(',8*(i-1)+1,')={',x_min,',',y_min,',',zmin,'};'
              WRITE(10,*) 'Point(',8*(i-1)+2,')={',x_max,',',y_min,',',zmin,'};'
              WRITE(10,*) 'Point(',8*(i-1)+3,')={',x_max,',',y_max,',',zmin,'};'
@@ -101,11 +101,11 @@ CONTAINS
              WRITE(10,*) 'Line(',4*(i-1)+3,')={',4*(i-1)+3,',',4*(i-1)+4,'};'
              WRITE(10,*) 'Line(',4*(i-1)+4,')={',4*(i-1)+4,',',4*(i-1)+1,'};'
           ENDIF
-       ELSEIF (((params%coord==1).AND.(params%dim==3)) &
-          .OR.((params%image==1).AND.(params%imgdim==3)) &
-          .OR.((params%geom==1).AND.(params%imgdim+params%imgt==3))) THEN
+       ELSEIF (((params%coords==1).AND.(params%dim==3)) &
+          .OR.((params%is_image==1).AND.(params%image_dim==3)) &
+          .OR.((params%is_geom==1).AND.(params%image_dim+params%image_times==3))) THEN
           !3D
-          IF (params%coord==1) THEN
+          IF (params%coords==1) THEN
              READ(2,*) x0,y0,z0,num,x1,y1,z1
              x_min=x0
              y_min=y0
@@ -113,7 +113,7 @@ CONTAINS
              x_max=x1
              y_max=y1
              zmax=z1
-          ELSEIF ((params%image==1).OR.(params%geom==1)) THEN
+          ELSEIF ((params%is_image==1).OR.(params%is_geom==1)) THEN
              READ(2,*) x0,y0,z0,num,x1,y1,z1
              x_min=y0
              y_min=-x0
@@ -170,13 +170,13 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb
-    INTEGER :: offset
     INTEGER :: nb_slaves
+    INTEGER :: offset
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
 
     !###########################################
     ! INSTRUCTIONS
@@ -184,12 +184,12 @@ CONTAINS
     OPEN(FILE='decoupe.visu',UNIT=1)
     WRITE(1,*) 'View "MPI" {'
     !Reading files
-    IF (params%nbproc==1) THEN
+    IF (params%nb_proc==1) THEN
        offset=1
        nb_slaves=1
     ELSE
        offset=0
-       nb_slaves=params%nbproc-1
+       nb_slaves=params%nb_proc-1
     ENDIF
     ALLOCATE(coords(1,params%dim))
     DO i=offset,nb_slaves
@@ -200,7 +200,7 @@ CONTAINS
        READ(10,*) nb
        PRINT *, '> ', i, ' : ', nb
        DO j=1,nb
-          IF (params%coord==1) THEN
+          IF (params%coords==1) THEN
              ! Partitioning by coordinates
              coords(:,:)=0.
              READ(10,*) coords(1,:)
@@ -241,19 +241,19 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: matchings
     INTEGER :: i
     INTEGER :: id
     INTEGER :: j
     INTEGER :: k
     INTEGER :: length
     INTEGER :: nb
+    INTEGER, DIMENSION(:), POINTER :: matchings
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
 
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    DO i=0,params%nbproc-1
+    DO i=0,params%nb_proc-1
        ! File name
        WRITE(num,*) i
        num=adjustl(num)
@@ -267,7 +267,7 @@ CONTAINS
        READ(10,*) nb,k
        PRINT *, '> ', i, ' : ', nb, ' -> ', files
        ALLOCATE(coords(1,k))
-       IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
+       IF ((params%is_image==1).OR.(params%is_geom==1).OR.(params%is_threshold==1)) THEN
           ! Reading the matchings
           files='decoupe.'//trim(num)
           OPEN(FILE=files,UNIT=11)
@@ -279,7 +279,7 @@ CONTAINS
           CLOSE(11)
        ENDIF
        DO j=1,nb
-          IF (params%coord==1) THEN
+          IF (params%coords==1) THEN
              READ(10,*) coords(1,:),k
              CALL write_point_coord_format(1,params%dim,coords,k,1)
           ELSE
@@ -291,7 +291,7 @@ CONTAINS
        WRITE(1,*) '};'
        CLOSE(1)
        DEALLOCATE(coords)
-       IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
+       IF ((params%is_image==1).OR.(params%is_geom==1).OR.(params%is_threshold==1)) THEN
           DEALLOCATE(matchings)
        ENDIF
     ENDDO
@@ -321,18 +321,18 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb
     INTEGER :: nb0
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
 
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    OPEN(FILE=params%mesh,UNIT=1)
-    IF (params%coord==1) THEN
+    OPEN(FILE=params%input_file,UNIT=1)
+    IF (params%coords==1) THEN
        ! Reading with coordinates format
        READ(1,*) j,k
        PRINT *, 'Reading mesh file...', j, k
@@ -360,7 +360,7 @@ CONTAINS
        PRINT *,'  > ',i,' :',nb
        DO j=1,nb
           READ(10,*) k
-          IF (params%coord==1) THEN
+          IF (params%coords==1) THEN
              ! Classic coordinates
              CALL write_point_coord_format(1,nb0,coords,i,k)
           ELSE
@@ -373,7 +373,7 @@ CONTAINS
     WRITE(1,*) '};'
     CLOSE(1)
     PRINT *,'-> cluster.final.visu'
-    IF (params%coord==1) DEALLOCATE(coords)
+    IF (params%coords==1) DEALLOCATE(coords)
     RETURN
   END SUBROUTINE write_final_clusters_gmsh
 
@@ -387,11 +387,11 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: dim
     INTEGER :: id
     INTEGER :: k
     INTEGER :: unit
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
 
     !###########################################
     ! INSTRUCTIONS
@@ -433,56 +433,56 @@ CONTAINS
     INTEGER :: unit
 
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: data
-    DOUBLE PRECISION :: kx
-    DOUBLE PRECISION :: ky
-    DOUBLE PRECISION :: kz
     INTEGER :: i
     INTEGER :: ix
     INTEGER :: iy
+    DOUBLE PRECISION :: kx
+    DOUBLE PRECISION :: ky
+    DOUBLE PRECISION :: kz
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: data
 
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
-         .AND.(params%imgdim==2)) THEN
-       ALLOCATE(data(params%nbp))
-       OPEN(FILE=params%mesh,UNIT=50)
+    IF (((params%is_image==1).OR.(params%is_geom==1).OR.(params%is_threshold==1)) &
+         .AND.(params%image_dim==2)) THEN
+       ALLOCATE(data(params%nb_points))
+       OPEN(FILE=params%input_file,UNIT=50)
        READ(50,*)
        READ(50,*)
-       DO i=1,params%nbp
+       DO i=1,params%nb_points
           READ(50,*) data(i)
        ENDDO
        CLOSE(50)
     ENDIF
     ! Coordinates
-    ix=params%refimg(k,1)
-    iy=params%refimg(k,2)
-    IF (params%imgdim==2) THEN
+    ix=params%image_ref(k,1)
+    iy=params%image_ref(k,2)
+    IF (params%image_dim==2) THEN
        ! 2D points
-       IF (params%geom==1) THEN
-          kx=iy*params%pas(2)
-          ky=-ix*params%pas(1)
+       IF (params%is_geom==1) THEN
+          kx=iy*params%step(2)
+          ky=-ix*params%step(1)
        ELSE
           kx=float(iy)
           ky=-float(ix)
        ENDIF
-       IF (((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) &
-            .AND.(params%imgdim==2)) THEN
+       IF (((params%is_image==1).OR.(params%is_geom==1).OR.(params%is_threshold==1)) &
+            .AND.(params%image_dim==2)) THEN
           kz=data(k)
        ELSE
           kz=0.
        ENDIF
-    ELSEIF (params%imgdim==3) THEN
+    ELSEIF (params%image_dim==3) THEN
        ! 3D points
-       IF (params%geom==1) THEN
-          kx=iy*params%pas(2)
-          ky=-ix*params%pas(1)
-          kz=float(params%refimg(k,3))*params%pas(3)
+       IF (params%is_geom==1) THEN
+          kx=iy*params%step(2)
+          ky=-ix*params%step(1)
+          kz=float(params%image_ref(k,3))*params%step(3)
        ELSE
           kx=float(iy)
           ky=-float(ix)
-          kz=float(params%refimg(k,3))
+          kz=float(params%image_ref(k,3))
        ENDIF
     ENDIF
     ! Writing

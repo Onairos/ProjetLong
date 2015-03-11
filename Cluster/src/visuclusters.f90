@@ -9,8 +9,8 @@ PROGRAM visuclusters
   !#### Variables  ####
   TYPE(type_params) :: params
   CHARACTER (LEN=30) :: format_output
-  REAL :: elapsed(2) ! For receiving user and system time
-  REAL :: time
+  DOUBLE PRECISION :: elapsed(2) ! For receiving user and system time
+  DOUBLE PRECISION :: time
 
   !###########################################
   ! INSTRUCTIONS
@@ -49,7 +49,7 @@ PROGRAM visuclusters
   CALL write_assignment(format_output,params)
 
   ! Outout file of clusters before regrouping
-  IF (params%nbproc>1) CALL write_partial_clusters(format_output,params)
+  IF (params%nb_proc>1) CALL write_partial_clusters(format_output,params)
 
   ! Outout file of clusters after regrouping
   CALL write_final_clusters(format_output,params)

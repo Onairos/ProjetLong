@@ -19,9 +19,9 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    TYPE(type_data) :: data
-    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domains  
+    TYPE(type_data) :: data 
     INTEGER :: nb_proc
+    DOUBLE PRECISION,DIMENSION(:,:,:),POINTER :: domains 
     
     !#### Variables  ####
     INTEGER :: i
@@ -29,7 +29,7 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################    
-    DO i=1,nb_proc-data%interface
+    DO i=1,nb_proc-data%is_interfacing
        WRITE(2,*) domains(i,:,1),'|', domains(i,:,2)
     ENDDO
     CALL flush(2)
@@ -57,9 +57,9 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    INTEGER,DIMENSION(:,:),POINTER :: assignments
-    INTEGER,DIMENSION(:),POINTER :: points_by_domain
     INTEGER :: nb_proc
+    INTEGER,DIMENSION(:),POINTER :: points_by_domain
+    INTEGER,DIMENSION(:,:),POINTER :: assignments
     
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
@@ -75,11 +75,11 @@ CONTAINS
     PRINT *, '> Partitioning review :'
     offset=1
     nb_domains=nb_proc
-    IF ((data%interface==1).AND.(nb_proc>1)) THEN
+    IF ((data%is_interfacing==1).AND.(nb_proc>1)) THEN
        offset=0
        nb_domains=nb_proc-1
     ENDIF
-    IF (data%recouvrement==1) THEN
+    IF (data%is_overlapping==1) THEN
        offset=0
        nb_domains=nb_proc-1
     ENDIF
@@ -93,8 +93,8 @@ CONTAINS
        DO j=1,points_by_domain(i)
           IF (data%coords==1) THEN
              ! Writing in coordinates
-             WRITE(10,*) data%point(assignments(i,j))%coords(:)
-          ELSEIF ((data%is_image==1).OR.(data%seuil==1).OR.(data%geom==1)) THEN
+             WRITE(10,*) data%points(assignments(i,j))%coords(:)
+          ELSEIF ((data%is_image==1).OR.(data%is_threshold==1).OR.(data%is_geom==1)) THEN
              ! Writing in picture format
              WRITE(10,*) assignments(i,j)
           ENDIF
@@ -139,7 +139,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     ! File name
-    WRITE(num,*),proc_id
+    WRITE(num,*) proc_id
     num=adjustl(num)
     files='cluster.partiel.'//trim(num)
     PRINT *, proc_id, ' : clusters writing : ', files
@@ -147,9 +147,9 @@ CONTAINS
     WRITE(10,*) partitioned_data%nb_points,partitioned_data%dim
     DO i=1,partitioned_data%nb_points
        IF (partitioned_data%coords==1) THEN
-          WRITE(10,*) partitioned_data%point(i)%coords(:), partitioned_data%point(i)%cluster
+          WRITE(10,*) partitioned_data%points(i)%coords(:), partitioned_data%points(i)%cluster
        ELSE
-          WRITE(10,*) i, partitioned_data%point(i)%cluster
+          WRITE(10,*) i, partitioned_data%points(i)%cluster
        ENDIF
     ENDDO
     CALL flush(10)
@@ -175,8 +175,8 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    INTEGER,DIMENSION(:,:),POINTER :: cluster_map
     INTEGER,DIMENSION(:),POINTER :: points_by_cluster
+    INTEGER,DIMENSION(:,:),POINTER :: cluster_map
 
     !=== IN/OUT === 
     INTEGER :: nb_clusters
@@ -263,9 +263,9 @@ CONTAINS
     WRITE(3,*) '# Number of process : '
     WRITE(3,*) nb_proc
     WRITE(3,*) '# Partitioning by interfacing : '
-    WRITE(3,*) data%interface
+    WRITE(3,*) data%is_interfacing
     WRITE(3,*) '# Partitioning by overlapping : '
-    WRITE(3,*) data%recouvrement
+    WRITE(3,*) data%is_overlapping
     WRITE(3,*) '# Number of clusters : '
     WRITE(3,*) nb_clusters
     WRITE(3,*) '# Coord format : '
@@ -273,19 +273,19 @@ CONTAINS
     WRITE(3,*) '# Image format : '
     WRITE(3,*) data%is_image
     WRITE(3,*) '# Geom format : '
-    WRITE(3,*) data%geom
+    WRITE(3,*) data%is_geom
     WRITE(3,*) '# Threshold format : '
-    WRITE(3,*) data%seuil
-    IF ((data%is_image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+    WRITE(3,*) data%is_threshold
+    IF ((data%is_image==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
        WRITE(3,*) '# DIMENSION : '
-       WRITE(3,*) data%imgdim
+       WRITE(3,*) data%image_dim
        WRITE(3,*) '# Partitioning : '
-       WRITE(3,*) data%imgmap(:)
+       WRITE(3,*) data%partitioning(:)
        WRITE(3,*) '# Number of time : '
-       WRITE(3,*) data%imgt
-       IF (data%geom==1) THEN
+       WRITE(3,*) data%image_times
+       IF (data%is_geom==1) THEN
           WRITE(3,*) '## No mesh : '
-          WRITE(3,*) data%pas(:)
+          WRITE(3,*) data%step(:)
        ENDIF
     ENDIF
     CALL flush(3)

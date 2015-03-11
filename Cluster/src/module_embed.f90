@@ -44,41 +44,41 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z ! matrice des vecteurs propres
     INTEGER :: n
     INTEGER :: nb_clusters ! nbre de clusters
     INTEGER :: proc_id
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: A
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z ! matrice des vecteurs propres
     
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers ! centre des clusters
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies ! somme des energies par cluster
+    INTEGER :: nb_info
+    INTEGER, DIMENSION(:), POINTER :: clusters ! appartenance des clusters
+    INTEGER, DIMENSION(:), POINTER :: points_by_clusters ! nbre de points par cluster
     DOUBLE PRECISION :: ratio ! max des ration de frob sur matrice aff reordonnancee suivant
     DOUBLE PRECISION :: ratio_moy
     DOUBLE PRECISION :: ratio_rii
     DOUBLE PRECISION :: ratio_rij
-    INTEGER, DIMENSION(:), POINTER :: clusters ! appartenance des clusters
-    INTEGER, DIMENSION(:), POINTER :: points_by_clusters ! nbre de points par cluster
-    INTEGER :: nb_info
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers ! centre des clusters
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies ! somme des energies par cluster
     
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z2
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: Z3
-    DOUBLE PRECISION :: ratio_min
-    DOUBLE PRECISION :: test
-    INTEGER, DIMENSION(:,:), POINTER :: corresp_cluster
     INTEGER :: i
-    INTEGER :: nb_iter_max
-    INTEGER :: nb_iter
     INTEGER :: j
     INTEGER :: k
     INTEGER :: ki
     INTEGER :: kj
+    INTEGER :: nb_iter
+    INTEGER :: nb_iter_max
     INTEGER :: nb_max
     INTEGER :: ni
     INTEGER :: nj
+    INTEGER, DIMENSION(:,:), POINTER :: corresp_cluster
+    DOUBLE PRECISION :: ratio_min
+    DOUBLE PRECISION :: test
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: Z3
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Frob
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z1
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Z2
     LOGICAL :: ok
     
     !###########################################      
@@ -247,35 +247,35 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     INTEGER :: dim ! the number of spatial dimensions
-    INTEGER :: nb_points ! the number of points + TODO reorganisation
-    DOUBLE PRECISION :: points (dim, nb_points) ! the points
     INTEGER :: nb_clusters ! the number of clusters
     INTEGER :: nb_iter_max ! the maximum number of iterations
+    INTEGER :: nb_points ! the number of points + TODO reorganisation
     INTEGER :: proc_id ! UNUSED
+    DOUBLE PRECISION :: points (dim, nb_points) ! the points
 
     !=== IN/OUT ===
     DOUBLE PRECISION :: clusters_centers (dim, nb_clusters) ! the cluster centers
 
     !====  OUT ====
-    DOUBLE PRECISION :: clusters_energies (nb_clusters) ! the cluster energies
-    INTEGER :: nb_iter ! the number of iterations taken
     INTEGER :: clusters (nb_points) ! indicates which cluster each point belongs to
+    INTEGER :: nb_iter ! the number of iterations taken
     INTEGER :: points_by_clusters (nb_clusters) ! the number of points in each cluster
-
+    DOUBLE PRECISION :: clusters_energies (nb_clusters) ! the cluster energies
+    
     !#### Variables  ####
+    INTEGER :: cluster_id (nb_clusters)
+    INTEGER :: i
+    INTEGER :: j
+    INTEGER :: k
+    INTEGER :: p
+    INTEGER :: stock_population (nb_clusters)
+    INTEGER :: swap
     DOUBLE PRECISION :: list_norm (nb_points, nb_clusters)
+    DOUBLE PRECISION :: max_value
     DOUBLE PRECISION :: stock_center (dim, nb_clusters)
     DOUBLE PRECISION :: stock_energy (nb_clusters)
     DOUBLE PRECISION :: threshold
     DOUBLE PRECISION :: value
-    DOUBLE PRECISION :: max_value
-    INTEGER :: cluster_id (nb_clusters)
-    INTEGER :: stock_population (nb_clusters)
-    INTEGER :: i
-    INTEGER :: j
-    INTEGER :: k
-    INTEGER :: swap
-    INTEGER :: p
     LOGICAL :: ok
     LOGICAL :: ok2
     

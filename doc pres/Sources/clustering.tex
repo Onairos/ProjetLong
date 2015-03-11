@@ -24,44 +24,221 @@
 \end{frame}
 \section{Introduction}
 \begin{frame}
-\frametitle{Presentation}
-\includegraphics[width=\textwidth]{Image/slide1.png}
+\frametitle{Clustering method}
+\includegraphics[width=0.5\textwidth]{Image/Oranger.png}\includegraphics[width=0.5\textwidth]{Image/OrangerClust.png}
 \end{frame}
 \begin{frame}
-\frametitle{Presentation}
-\includegraphics[width=\textwidth]{Image/slide2.png}
+\frametitle{High computational complexity}
+\begin{columns}
+\begin{column}{0.4\textwidth}
+\begin{itemize}
+\item Huge quantity of data
+\item Dense matrices
+\item Extended applications
+\end{itemize}
+\end{column}
+\begin{column}{0.6\textwidth}
+\includegraphics[width=\columnwidth]{Image/parallel.png}
+\end{column}
+\end{columns}
 \end{frame}
 \section{Work organisation}
 \subsection{Project management}
 \begin{frame}
+\small
 \frametitle{Development Plan}
-\includegraphics[width=\textwidth]{Image/slide3.png}
+\begin{description}
+\item [Step 1] Theoritical study + Matlab new methods implementation
+\item [Step 2] Code documentation + Fortran interfaces specification
+\item [Step 3] Code refactoring + Fortran implementation
+\item [Step 4] Validation
+\end{description}
+\tiny
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Risk Description} & \textbf{Probability} & \textbf{Impact} & \textbf{Action}
+\\
+\hline
+Unsatisfied client & Light & Heavy & Specification with the client
+\\
+\hline
+Unsuitable ressources & Medium & Heavy & Lighter test creation, early access request
+\\
+\hline
+Insufficient knowledge & Heavy & Medium & Increase the time dedicated to each risky task
+\\
+\hline
+\end{tabular}
 \end{frame}
 \begin{frame}
-\frametitle{Team organisation}
-\includegraphics[width=\textwidth]{Image/slide4.png}
+\frametitle{Team organization}
+\includegraphics[width=\textwidth]{Image/organisation.png}
+\end{frame}
+\begin{frame}
+\frametitle{Technologies}
+\includegraphics[width=\textwidth]{Image/logos.png}
 \end{frame}
 \subsection{Starting point}
 \begin{frame}
-\frametitle{Configuration}
+\frametitle{Environment}
+\begin{block}{Source code}
+A package containing source code file have been provided: functional but with a poor design.
+\end{block}
+\begin{block}{Configuration and setup}
 \begin{itemize}
-\item Makefile for specific environment
-\item Libraries:
+\item Libraries: MPI, Lapack and Arpack
+\item F90 Compiler: GFortran
+\item Configuration: Makefile
+\end{itemize}
+\end{block}
+\end{frame}
+%\begin{frame}
+%\frametitle{Configuration}
+%\begin{itemize}
+%\item Makefile for specific environment
+%\item Libraries:
+%\begin{itemize}
+%\item MPI
+%\item Lapack
+%\item Arpack
+%\end{itemize}
+%\item F90 compilator (gfortran, ifort…)
+%\item Makefile.x has to specify the correct paths of the libraries above
+%\end{itemize}
+%\end{frame}
+\section{Reverse engineering}
+\subsection{Code refactoring}
+\begin{frame}
+\frametitle{Changing source code}
+\begin{block}{Purpose}
+Improve software quality and portability
+\end{block}
+\begin{enumerate}
+\item Changing the types "REAL" and "REAL(KIND=*)" into "DOUBLE PRECISION" and "INTEGER(KIND=*)" into "INTEGER"
+\item Changing the types "CHARACTER*x" into "CHARACTER (LEN=x)"
+\item Changing the types of some “INTEGER” variables used as boolean into “LOGICAL”
+\end{enumerate}
+\end{frame}
+\begin{frame}
+\frametitle{Organising source code}
+\begin{block}{Purpose}
+Improve readability and maintainability of the code
+\end{block}
+\begin{enumerate}
+\item Fortran keywords transformed in UPPERCASE
+\item Removing of the commented code
+\item Declarations of parameters and variables at the beginning of a subroutine or program : one declaration line, ordered by type and name
+\item Removing the semicolons : only one instruction per line
+\item Removing the unused variables
+\end{enumerate}
+\end{frame}
+\begin{frame}
+\frametitle{Renaming and translating}
+\begin{block}{Purpose}
+Improve readability and internationalization
+\end{block}
+\begin{enumerate}
+\item Translation of the comments helping the understanding of the code
+\item Rename methods : standardization (underscore to separate the different words), translation in english, better naming, blank space after each comma in the signature, blank space after each comma in the signature
+\item Rename parameters of methods and variables : standardization (underscore to separate the different words), translation in english, better naming
+\item Translation of all the “PRINT” messages (displayed in the console during execution)
+\end{enumerate}
+\end{frame}
+\subsection{Doxygen documentation}
+\begin{frame}[fragile]
+\begin{block}{Produced output formats}
 \begin{itemize}
-\item MPI
-\item Lapack
-\item Arpack
+\item \textit{HTML}: Documentation readable by a web browser
+\item \textit{PDF}: Documentation written in LaTex to generate a PDF file
 \end{itemize}
-\item F90 compilator (gfortran, ifort…)
-\item Makefile.x has to specify the correct paths of the libraries above
-\end{itemize}
+\end{block}
+
+\frametitle{Autogeneration with Doxygen}
+\begin{block}{Targets}
+Description for each module, program, routine and parameters.
+\end{block}
+
+\begin{example}
+\begin{lstlisting}
+!> Here is a brief description of the routine.
+!! @details Here is a detailed description.
+!! @param[dir] param Here is the parameter description
+SUBROUTINE my_routine(parameter)
+\end{lstlisting}
+\end{example}
+\end{frame}
+
+\begin{frame}
+\frametitle{How to proceed}
+\only<1>{
+\begin{alertblock}{Main issues}
+\begin{enumerate}
+\item Renaming and reordering parameters before documenting
+\item Repetitive work : 62 routines and 249 parameters
+\end{enumerate}
+\end{alertblock}
+}
+\only<1-2>{
+\begin{block}{Automated comments writing}
+A small software have been programmed to automatically write headers.
+\end{block}
+}
+\only<2>{
+\begin{columns}
+\begin{column}{0.4\textwidth}
+\begin{enumerate}
+\item Classify modules, methods and parameters
+\item Write descriptions in a database
+\item Extract information from the database
+\item Write header into the source file
+\end{enumerate}
+\end{column}
+\begin{column}{0.6\textwidth}
+\animategraphics[step,width=\columnwidth]{1}{Image/dox}{1}{5}
+\end{column}
+\end{columns}
+}
+\end{frame}
+\begin{frame}[allowframebreaks]
+\frametitle{Before and after}
 \end{frame}
 \section{Clustering algorithms}
+\tableofcontents[currentsection]
+\begin{frame}
+\frametitle{Overview}
+\begin{columns}
+\begin{column}{0.4\textwidth}
+\begin{itemize}
+\item Spectral Clustering
+\item Kernel K-Means
+\item Mean Shift
+\end{itemize}
+\end{column}
+\begin{column}{0.6\textwidth}
+\includegraphics[width=\columnwidth]{Image/parallel.png}
+\end{column}
+\end{columns}
+\end{frame}
+\begin{frame}
+\frametitle{Overview}
+\begin{columns}
+\begin{column}{0.4\textwidth}
+\begin{itemize}
+\item Spectral Clustering
+\item Kernel K-Means
+\item Mean Shift
+\end{itemize}
+\end{column}
+\begin{column}{0.6\textwidth}
+%\includegraphics[width=\columnwidth]{Image/exemple.png}
+\end{column}
+\end{columns}
+\end{frame}
 \subsection{Spectral Clustering}
 \begin{frame}
 \frametitle{Description}
 \begin{block}{Main idea}
-Create a pounded graph between points
+Create a weighted graph between points
 \end{block}
 \vfill
 \begin{columns}
@@ -76,7 +253,7 @@ Create a pounded graph between points
 \end{column}
 \end{columns}
 \end{frame}
-\subsection{Kernel-K-Means}
+\subsection{Kernel K-Means}
 \begin{frame}
 \frametitle{K-Means}
 \begin{block}{Main idea}
@@ -129,97 +306,7 @@ Move a window over the data set following the density gradient.
 \begin{frame}
 
 \end{frame}
-\section{Reverse engineering}
-\subsection{Doxygen documentation}
-\begin{frame}
-\frametitle{Autogeneration with Doxygen}
-\begin{block}{Detected features}
-\begin{itemize}
-\item \textbf{Modules and programs} : name
-\item \textbf{Methods} : name and parameters
-\item \textbf{Parameters} : name and type
-\end{itemize}
-\end{block}
-\begin{block}{Produced output formats}
-\begin{itemize}
-\item \textit{HTML}: Documentation readable by a web browser
-\item \textit{PDF}: Documentation written in LaTex to generate a PDF file
-\end{itemize}
-\end{block}
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]
-\frametitle{Specific comments}
-\begin{block}{Useful keywords}
-\begin{itemize}
-\item \textbf{@details} \textit{text}: detailed description of a module, structure or method
-\item \textbf{@param} \textit{name} [\textit{dir}] \textit{text}: description of a parameter 
-\end{itemize}
-\end{block}
-\begin{example}
-\begin{lstlisting}
-!> Puts the index number of the pixels into an array.
-!! @details Each point of the data set is mapped to 
-!! an array corresponding to an image. Two indices 
-!! will be used (row and column) instead of one.
-!! @param[in,out] data the entire data for computing
-SUBROUTINE assign_picture_array(data)
-\end{lstlisting}
-\end{example}
-
-\begin{alertblock}{Remarks}
-\begin{enumerate}
-\item Documentation depends on refactoring
-\item Most of the parameters are similar from one method to another
-\item It is an highly repetitive work
-\end{enumerate}
-\end{alertblock}
-\begin{block}{Automatized comments writing}
-\begin{itemize}
-\item Descriptions in tables
-\item Software for writing specific comments
-\end{itemize}
-\end{block}
-\end{frame}
-\subsection{Code refactoring}
-\begin{frame}
-\frametitle{Changing source code}
-\begin{block}{Purpose}
-Improve software quality and portability
-\end{block}
-\begin{enumerate}
-\item Changing the types "REAL" and "REAL(KIND=*)" into "DOUBLE PRECISION" and "INTEGER(KIND=*)" into "INTEGER"
-\item Changing the types "CHARACTER*x" into "CHARACTER (LEN=x)"
-\item Changing the types of some “INTEGER” variables used as boolean into “LOGICAL”
-\end{enumerate}
-\end{frame}
-\begin{frame}
-\frametitle{Organising source code}
-\begin{block}{Purpose}
-Improve readability and maintainability of the code
-\end{block}
-\begin{enumerate}
-\item Fortran keywords transformed in UPPERCASE
-\item Removing of the commented code
-\item Declarations of parameters and variables at the beginning of a subroutine or program : one declaration line, ordered by type and name
-\item Removing the semicolons : only one instruction per line
-\item Removing the unused variables
-\end{enumerate}
-\end{frame}
-\begin{frame}
-\frametitle{Renaming and translating}
-\begin{block}{Purpose}
-Improve readability and internationalization
-\end{block}
-\begin{enumerate}
-\item Translation of the comments helping the understanding of the code
-\item Rename methods : standardization (underscore to separate the different words), translation in english, better naming, blank space after each comma in the signature, blank space after each comma in the signature
-\item Rename parameters of methods and variables : standardization (underscore to separate the different words), translation in english, better naming
-\item Translation of all the “PRINT” messages (displayed in the console during execution)
-\end{enumerate}
-\end{frame}
 \section{Conclusion}
 \begin{frame}
-
 \end{frame}
 \end{document}

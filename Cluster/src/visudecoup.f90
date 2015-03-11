@@ -6,24 +6,24 @@ PROGRAM visudecoup
   !#### Variables  ####
   CHARACTER (LEN=30) :: files
   CHARACTER (LEN=30) :: num
+  INTEGER :: i
+  INTEGER :: j
+  INTEGER :: n
+  INTEGER :: nb
   DOUBLE PRECISION :: coord(2)
   DOUBLE PRECISION :: x_max
   DOUBLE PRECISION :: x_min
   DOUBLE PRECISION :: y_max
   DOUBLE PRECISION :: y_min
-  INTEGER :: i
-  INTEGER :: j
-  INTEGER :: n
-  INTEGER :: nb
 
   !###########################################
   ! INSTRUCTIONS
   !###########################################
   PRINT *
-  PRINT *,'visualisation du decoupage parallele en 2D'
+  PRINT *,'visualisation of parallele partitionings in 2D'
   PRINT *
 
-  PRINT *,'nb de decoupages +1 ? (=nbproc)'
+  PRINT *,'nb partitionings +1 ? (=nbproc)'
   READ *,n
   PRINT *
   
@@ -50,11 +50,11 @@ PROGRAM visudecoup
   DO i=0,n-1
      ! File name
      IF (i<10) THEN
-        WRITE(num,'(i1)'),i
+        WRITE(num,'(i1)') i
      ELSEIF (i<100) THEN
-        WRITE(num,'(i2)'),i
+        WRITE(num,'(i2)') i
      ELSEIF (i<1000) THEN
-        WRITE(num,'(i3)'),i
+        WRITE(num,'(i3)') i
      ENDIF
      files='decoupe.'//trim(adjustl(num))
      OPEN(FILE=files,UNIT=10)

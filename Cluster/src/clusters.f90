@@ -14,42 +14,42 @@ PROGRAM clusters
   ! DECLARATIONS
   !###########################################
   !#### Variables  ####
+  TYPE(type_clustering_param) :: clust_param
   TYPE(type_clusters), DIMENSION(:), POINTER :: array_clusters
   TYPE(type_data) :: data
   TYPE(type_data) :: partitioned_data
   CHARACTER (LEN=80) :: proc_name ! MPI variable
   CHARACTER (LEN=30) :: input
   CHARACTER (LEN=30) :: input_file
-  DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
-  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
-  DOUBLE PRECISION :: end_time
-  DOUBLE PRECISION :: epsilon
-  DOUBLE PRECISION :: sigma
-  DOUBLE PRECISION :: start_time
-  DOUBLE PRECISION :: t_parall
-  DOUBLE PRECISION :: t_parallg
-  DOUBLE PRECISION :: t1
-  DOUBLE PRECISION :: t2
-  INTEGER,DIMENSION(:,:), POINTER :: cluster_map
-  INTEGER,DIMENSION(:,:) ,POINTER :: assignments
-  INTEGER,DIMENSION(:), POINTER :: partitioning
-  INTEGER,DIMENSION(:), POINTER :: points_by_cluster
-  INTEGER,DIMENSION(:), POINTER :: points_by_domain
-  INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
-  TYPE(type_clustering_param) :: clust_param
   INTEGER :: i
   INTEGER :: ierr ! MPI variable
   INTEGER :: j
   INTEGER :: length ! MPI variable
-  INTEGER :: nb_clusters
-  INTEGER :: nb_clusters_opt
-  INTEGER :: nb_clusters_max
-  INTEGER :: nb_proc ! MPI variable
   INTEGER :: n_max
+  INTEGER :: nb_clusters
+  INTEGER :: nb_clusters_max
+  INTEGER :: nb_clusters_opt
+  INTEGER :: nb_proc ! MPI variable
   INTEGER :: proc_id ! MPI variable
   INTEGER :: status(MPI_STATUS_SIZE) ! MPI variable
   INTEGER :: tag ! MPI variable
+  INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
+  INTEGER,DIMENSION(:), POINTER :: partitioning
+  INTEGER,DIMENSION(:), POINTER :: points_by_cluster
+  INTEGER,DIMENSION(:), POINTER :: points_by_domain
+  INTEGER,DIMENSION(:,:), POINTER :: assignments
+  INTEGER,DIMENSION(:,:), POINTER :: cluster_map
+  DOUBLE PRECISION :: end_time
+  DOUBLE PRECISION :: epsilon
+  DOUBLE PRECISION :: sigma
+  DOUBLE PRECISION :: start_time
+  DOUBLE PRECISION :: t1
+  DOUBLE PRECISION :: t2
+  DOUBLE PRECISION :: t_parall
+  DOUBLE PRECISION :: t_parallg
+  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
+  DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
   LOGICAL :: exist_bool
 
 PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
@@ -191,11 +191,11 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
      partitioned_data%nb_points=data%nb_points
      partitioned_data%dim=data%dim
      partitioned_data%nb_clusters=0
-     ALLOCATE(partitioned_data%point(data%nb_points))
+     ALLOCATE(partitioned_data%points(data%nb_points))
      DO i=1,data%nb_points
-        ALLOCATE(partitioned_data%point(i)%coords(data%dim))
-        partitioned_data%point(i)%coords=data%point(i)%coords
-        partitioned_data%point(i)%cluster=0
+        ALLOCATE(partitioned_data%points(i)%coords(data%dim))
+        partitioned_data%points(i)%coords=data%points(i)%coords
+        partitioned_data%points(i)%cluster=0
      ENDDO
      nb_clusters_opt=list_nb_clusters(1)
   ENDIF
@@ -209,7 +209,7 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF (proc_id==0) THEN
         PRINT *, proc_id,' : computing global sigma :',sigma
-        IF (data%interface==1) THEN 
+        IF (data%is_interfacing==1) THEN 
            CALL get_sigma_interface(proc_id,partitioned_data,sigma,bounds,partitioning,epsilon) 
            PRINT *, proc_id,' : computing interface sigma interface :',sigma
         ENDIF
@@ -295,7 +295,7 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
      points_by_cluster(:)=0
      n_max=0
      DO i=1,partitioned_data%nb_points
-        j=partitioned_data%point(i)%cluster
+        j=partitioned_data%points(i)%cluster
         points_by_cluster(j)=points_by_cluster(j)+1
         n_max=max(n_max,points_by_cluster(j))
      ENDDO
@@ -303,7 +303,7 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
      cluster_map(:,:)=0
      points_by_cluster(:)=0
      DO i=1,partitioned_data%nb_points
-        j=partitioned_data%point(i)%cluster
+        j=partitioned_data%points(i)%cluster
         points_by_cluster(j)=points_by_cluster(j)+1
         cluster_map(j,points_by_cluster(j))=i
      ENDDO

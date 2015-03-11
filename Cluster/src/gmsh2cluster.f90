@@ -5,13 +5,13 @@ PROGRAM gmsh2cluster
   !###########################################
   !#### Variables  ####
   CHARACTER(30) :: file_name
-  DOUBLE PRECISION :: x
-  DOUBLE PRECISION :: y
-  DOUBLE PRECISION :: z
   INTEGER :: dim
   INTEGER :: i
   INTEGER :: j
   INTEGER :: nb_nodes
+  DOUBLE PRECISION :: x
+  DOUBLE PRECISION :: y
+  DOUBLE PRECISION :: z
 
   !###########################################
   ! INSTRUCTIONS

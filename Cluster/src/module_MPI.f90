@@ -25,9 +25,9 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    INTEGER, DIMENSION(:,:), POINTER :: assignments
-    INTEGER, DIMENSION(:), POINTER :: points_by_domain
     INTEGER :: nb_proc
+    INTEGER, DIMENSION(:), POINTER :: points_by_domain
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
 
     !=== IN/OUT ===
     TYPE(type_data) :: data
@@ -36,13 +36,13 @@ CONTAINS
     TYPE(type_data) :: partitioned_data
     
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: i
-    INTEGER :: j
+    INTEGER :: id_mpi
     INTEGER :: ierr
+    INTEGER :: j
     INTEGER :: m
     INTEGER :: n
-    INTEGER :: id_mpi
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     
     !###########################################      
     ! INSTRUCTIONS
@@ -58,7 +58,7 @@ CONTAINS
           ALLOCATE(coords(m,n))
           coords=0.0
           DO j=1,m
-             coords(j,1:n)=data%point(assignments(i,j))%coords(1:n)
+             coords(j,1:n)=data%points(assignments(i,j))%coords(1:n)
           ENDDO
           ! Sending arrays
           id_mpi=i*10
@@ -73,11 +73,11 @@ CONTAINS
     partitioned_data%dim=n
     partitioned_data%nb_clusters=0
     IF (m>0) THEN
-       ALLOCATE(partitioned_data%point(m))
+       ALLOCATE(partitioned_data%points(m))
        DO i=1,m
-          ALLOCATE(partitioned_data%point(i)%coords(n))
-          partitioned_data%point(i)%coords(:)=data%point(assignments(0,i))%coords(:)
-          partitioned_data%point(i)%cluster=0
+          ALLOCATE(partitioned_data%points(i)%coords(n))
+          partitioned_data%points(i)%coords(:)=data%points(assignments(0,i))%coords(:)
+          partitioned_data%points(i)%cluster=0
        ENDDO
     ENDIF
     ! Sending flags picture, threshold, geometric...
@@ -87,17 +87,17 @@ CONTAINS
     n=data%is_image
     partitioned_data%is_image=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%geom
-    partitioned_data%geom=n
+    n=data%is_geom
+    partitioned_data%is_geom=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%seuil
-    partitioned_data%seuil=n
+    n=data%is_threshold
+    partitioned_data%is_threshold=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%recouvrement
-    partitioned_data%recouvrement=n
+    n=data%is_overlapping
+    partitioned_data%is_overlapping=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%interface
-    partitioned_data%interface=n
+    n=data%is_interfacing
+    partitioned_data%is_interfacing=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     n=data%dim
     partitioned_data%dim=n
@@ -129,13 +129,13 @@ CONTAINS
     TYPE(type_data) :: partitioned_data
     
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER status(MPI_STATUS_SIZE)
     INTEGER :: i
+    INTEGER :: id_mpi
     INTEGER :: ierr
     INTEGER :: m
     INTEGER :: n
-    INTEGER :: id_mpi
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     
     !###########################################      
     ! INSTRUCTIONS
@@ -155,11 +155,11 @@ CONTAINS
        CALL MPI_RECV(coords,m*n,MPI_DOUBLE_PRECISION,0,id_mpi,&
             MPI_COMM_WORLD,status,ierr)
        ! Creation of TYPE partitioned_data of subdomain
-       ALLOCATE(partitioned_data%point(m))
+       ALLOCATE(partitioned_data%points(m))
        DO i=1,m
-          ALLOCATE(partitioned_data%point(i)%coords(n))
-          partitioned_data%point(i)%coords=coords(i,:)
-          partitioned_data%point(i)%cluster=0
+          ALLOCATE(partitioned_data%points(i)%coords(n))
+          partitioned_data%points(i)%coords=coords(i,:)
+          partitioned_data%points(i)%cluster=0
        ENDDO
        DEALLOCATE(coords)
     ENDIF
@@ -169,13 +169,13 @@ CONTAINS
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     partitioned_data%is_image=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%geom=n
+    partitioned_data%is_geom=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%seuil=n
+    partitioned_data%is_threshold=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%recouvrement=n
+    partitioned_data%is_overlapping=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%interface=n
+    partitioned_data%is_interfacing=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     partitioned_data%dim=n
     RETURN
@@ -206,19 +206,19 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ==== 
     TYPE(type_data) ::partitioned_data
-    INTEGER, DIMENSION(:), POINTER :: points_by_domain
     INTEGER :: nb_proc
+    INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
     !====  OUT ====
-    TYPE(type_clusters), DIMENSION(:), POINTER :: array_clust
     INTEGER :: nb_clusters
+    TYPE(type_clusters), DIMENSION(:), POINTER :: array_clust
     
     !#### Variables  ####    
     INTEGER status(MPI_STATUS_SIZE)
     INTEGER :: i
+    INTEGER :: id_mpi
     INTEGER :: ierr
     INTEGER :: nb
-    INTEGER :: id_mpi
     
     !###########################################      
     ! INSTRUCTIONS
@@ -243,8 +243,8 @@ CONTAINS
     DO i=1,nb_proc-1
        IF (points_by_domain(i)>0) THEN
           id_mpi=i*11+1
-          ALLOCATE(array_clust(i)%nbelt(array_clust(i)%nb))
-          CALL MPI_RECV(array_clust(i)%nbelt,array_clust(i)%nb,MPI_INTEGER,i,id_mpi,MPI_COMM_WORLD,status,ierr)
+          ALLOCATE(array_clust(i)%nb_elements(array_clust(i)%nb))
+          CALL MPI_RECV(array_clust(i)%nb_elements,array_clust(i)%nb,MPI_INTEGER,i,id_mpi,MPI_COMM_WORLD,status,ierr)
        ENDIF
     ENDDO
     RETURN
@@ -272,10 +272,10 @@ CONTAINS
     INTEGER :: proc_id
 
     !#### Variables  ####
-    INTEGER, DIMENSION(:), POINTER :: list
-    INTEGER :: id_mpi
     INTEGER :: i
+    INTEGER :: id_mpi
     INTEGER :: ierr
+    INTEGER, DIMENSION(:), POINTER :: list
     
     !###########################################      
     ! INSTRUCTIONS
@@ -288,7 +288,7 @@ CONTAINS
        ALLOCATE(list(partitioned_data%nb_clusters))
        list(:) = 0
        DO i=1,partitioned_data%nb_points
-          list(partitioned_data%point(i)%cluster)=list(partitioned_data%point(i)%cluster)+1
+          list(partitioned_data%points(i)%cluster)=list(partitioned_data%points(i)%cluster)+1
        ENDDO
        id_mpi=id_mpi+1
        CALL MPI_SEND(list,partitioned_data%nb_clusters,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
@@ -318,10 +318,10 @@ CONTAINS
     INTEGER :: proc_id
     
     !#### Variables  ####  
-    INTEGER, DIMENSION(:), POINTER :: list_clusters
     INTEGER :: i
-    INTEGER :: ierr
     INTEGER :: id_mpi
+    INTEGER :: ierr
+    INTEGER, DIMENSION(:), POINTER :: list_clusters
     
     !###########################################      
     ! INSTRUCTIONS
@@ -329,7 +329,7 @@ CONTAINS
     IF (partitioned_data%nb_points>0) THEN
        ALLOCATE(list_clusters(partitioned_data%nb_points))
        DO i=1,partitioned_data%nb_points
-          list_clusters(i)=partitioned_data%point(i)%cluster
+          list_clusters(i)=partitioned_data%points(i)%cluster
        ENDDO
        id_mpi=proc_id*12
        CALL MPI_SEND(list_clusters,partitioned_data%nb_points,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
@@ -367,25 +367,25 @@ CONTAINS
     !====  IN  ====
     TYPE(type_clusters), DIMENSION(:), POINTER :: array_clust
     TYPE(type_data) ::partitioned_data
-    INTEGER, DIMENSION(:,:), POINTER :: assignments
-    INTEGER, DIMENSION(:), POINTER :: points_by_domain 
-    INTEGER :: nb_proc
     INTEGER :: nb_clusters
+    INTEGER :: nb_proc
+    INTEGER, DIMENSION(:), POINTER :: points_by_domain 
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
 
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: cluster_map
     INTEGER, DIMENSION(:), POINTER :: points_by_cluster
+    INTEGER, DIMENSION(:,:), POINTER :: cluster_map
     
     !#### Variables  ####
-    INTEGER, DIMENSION(:), POINTER :: list_clusters
-    INTEGER status(MPI_STATUS_SIZE)
     INTEGER :: i
     INTEGER :: i0
     INTEGER :: ierr
     INTEGER :: j
     INTEGER :: k
-    INTEGER :: points_max
     INTEGER :: p
+    INTEGER :: points_max
+    INTEGER :: status(MPI_STATUS_SIZE)
+    INTEGER, DIMENSION(:), POINTER :: list_clusters
     
     !###########################################      
     ! INSTRUCTIONS
@@ -396,7 +396,7 @@ CONTAINS
     IF (partitioned_data%nb_points>0) THEN
        ! Storage of local clusters in the global array
        DO i=1,partitioned_data%nb_points
-          j=partitioned_data%point(i)%cluster
+          j=partitioned_data%points(i)%cluster
           points_by_cluster(j)=points_by_cluster(j)+1
           cluster_map(j,points_by_cluster(j))=assignments(0,i)
        ENDDO
