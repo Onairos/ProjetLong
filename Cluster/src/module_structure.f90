@@ -44,11 +44,12 @@ MODULE module_structure
      ! Clustering method id
       INTEGER :: clustering_method_id
       INTEGER :: kernelfunindex
+      INTEGER :: nbLimitClust
       DOUBLE PRECISION :: sigma
       DOUBLE PRECISION :: gam
       DOUBLE PRECISION :: delta
      !mean shift
-     INTEGER :: bandwidth !bandwidth for mean shift
+     DOUBLE PRECISION :: bandwidth !bandwidth for mean shift
   END TYPE type_clustering_param
 
 END MODULE module_structure
