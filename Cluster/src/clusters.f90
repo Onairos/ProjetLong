@@ -52,6 +52,9 @@ PROGRAM clusters
   DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
   LOGICAL :: exist_bool
 
+PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
+
+
   !###########################################
   ! INSTRUCTIONS
   !###########################################
@@ -70,6 +73,10 @@ PROGRAM clusters
   IF(proc_id==0) THEN
     start_time = MPI_WTIME()
   ENDIF
+
+
+
+
 #if aff
   PRINT *,'DEBUG : Launching process ',proc_id,' of ',nb_proc
 #endif
@@ -164,6 +171,8 @@ PROGRAM clusters
      IF (proc_id==0) THEN
         ! Data sending
 #if aff
+
+
         PRINT *
         PRINT *,'DEBUG : Transferring partitioned data...'
 #endif
@@ -219,13 +228,19 @@ PROGRAM clusters
 #if aff
      PRINT *,'DEBUG : ', proc_id, ' : computing clusters...'
 #endif
+
+
+
+        CALL send_clustering_param( clust_param )
+
+
     !SELECT CASE (clust_param%clustering_method_id)
     !CASE (1)
-      CALL apply_spectral_clustering(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,sigma,clust_param)
+     ! CALL apply_spectral_clustering(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,sigma,clust_param)
     !CASE (2)
-      !CALL mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param%bandwidth)
+     ! CALL mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
     !CASE (3)
-      !CALL apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
+      CALL apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
     !END SELECT
 
   ENDIF
@@ -305,6 +320,7 @@ PROGRAM clusters
   ! Outputs
   IF (proc_id==0) THEN
      ! Writing of the cluster.final files
+PRINT*, 'Calling write_final_clusters'
      CALL write_final_clusters(nb_clusters,points_by_cluster,cluster_map)
 
      ! Information writing
