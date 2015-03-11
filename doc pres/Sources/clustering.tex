@@ -30,18 +30,17 @@
 \end{frame}
 \begin{frame}
 \frametitle{High computational complexity}
-\begin{columns}
-\begin{column}{0.4\textwidth}
-\begin{itemize}
-\item Huge quantity of data
-\item Dense matrices
-\item Extended applications
-\end{itemize}
-\end{column}
-\begin{column}{0.6\textwidth}
-\includegraphics[width=\columnwidth]{Image/parallel.png}
-\end{column}
-\end{columns}
+\begin{alertblock}{Challenge}
+The data used leads to computations using big dense matrices.
+\end{alertblock}
+\begin{center}
+\only<1>{
+\includegraphics[width=0.5\textwidth]{Image/parallel.png}
+}
+\only<2>{
+\includegraphics[width=0.5\textwidth]{Image/parallel2.png}
+}
+\end{center}
 \end{frame}
 \section{Work organisation}
 \subsection{Project management}
@@ -49,7 +48,7 @@
 \small
 \frametitle{Development Plan}
 \begin{description}
-\item [Step 1] Theoritical study + Matlab new methods implementation
+\item [Step 1] Theoretical study + Matlab new methods implementation
 \item [Step 2] Code documentation + Fortran interfaces specification
 \item [Step 3] Code refactoring + Fortran implementation
 \item [Step 4] Validation
@@ -63,7 +62,7 @@
 Unsatisfied client & Light & Heavy & Specification with the client
 \\
 \hline
-Unsuitable ressources & Medium & Heavy & Lighter test creation, early access request
+Unsuitable hardware resources & Medium & Heavy & Lighter test creation, early access request
 \\
 \hline
 Insufficient knowledge & Heavy & Medium & Increase the time dedicated to each risky task
