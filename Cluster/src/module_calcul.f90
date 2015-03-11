@@ -52,7 +52,7 @@ CONTAINS
           norm=0.0
           DO k1=1,partitioned_data%dim
              norm=norm+&
-                  (partitioned_data%points(i1)%coords(k1)-partitioned_data%points(j1)%coords(k1))**2
+                  (partitioned_data%pointss(i1)%coords(k1)-partitioned_data%pointss(j1)%coords(k1))**2
           ENDDO
           sigma=max(sigma,sqrt(norm))
        ENDDO
@@ -189,7 +189,7 @@ CONTAINS
     DO i=1,n-1
       DO j=1,n-1
         DO d=1,partitioned_data%dim
-        K(i,j)=K(i,j)+partitioned_data%points(i)%coords(d)*partitioned_data%points(j)%coords(d)
+        K(i,j)=K(i,j)+partitioned_data%pointss(i)%coords(d)*partitioned_data%pointss(j)%coords(d)
         ENDDO 
         K(i,j)=(K(i,j)+gam)**delta
       ENDDO
@@ -230,7 +230,7 @@ CONTAINS
     DO i=1,n-1
       DO j=i+1,n
         DO d=1,partitioned_data%dim
-        K(i,j)=K(i,j)+(partitioned_data%points(i)%coords(d)-partitioned_data%points(j)%coords(d))**2
+        K(i,j)=K(i,j)+(partitioned_data%pointss(i)%coords(d)-partitioned_data%pointss(j)%coords(d))**2
         ENDDO
         K(i,j)=exp(- K(i,j)/(2*sigma**2))
         ! Symetry
@@ -240,7 +240,7 @@ CONTAINS
     gaussian_kernel=K
     RETURN
   END
-!Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||²))
+!Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||Â²))
 
 
 
@@ -321,7 +321,7 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     ENDIF
 
  
-    IF (clust_param%kernelfunindex==0 .AND. (clust_param%gamma <0.0 .OR. clust_param%delta<0.0) )  THEN
+    IF (clust_param%kernelfunindex==0 .AND. (clust_param%gammama <0.0 .OR. clust_param%delta<0.0) )  THEN
        WRITE ( *, '(a)' ) ' '
        WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
        WRITE ( *, '(a)' ) '  GAMMA AND DELTA NOT INITIALIZED IN POLYNOMIAL KERNEL'
@@ -337,7 +337,7 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
 
 
     IF (clust_param%kernelfunindex==0) THEN
-        Ker=poly_kernel( partitioned_data, clust_param%gamma, clust_param%delta)
+        Ker=poly_kernel( partitioned_data, clust_param%gammama, clust_param%delta)
     ELSEIF (clust_param%kernelfunindex==1) THEN
         Ker=gaussian_kernel(partitioned_data, clust_param%sigma)
     ENDIF
@@ -346,7 +346,7 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     !  center, and assign to the nearest.
 
     !  Assign one point to each cluster center.
-    cluster_center(:,1) = partitioned_data%point(1)%coords(:) !point(:,1) %%
+    cluster_center(:,1) = partitioned_data%points(1)%coords(:) !point(:,1) %%
     cluster_id(:)=0
     cluster_id(1)=1
     p=2
@@ -361,7 +361,7 @@ PRINT *, 'recherche des centres'
           !recherche si le point est deja utilise dans comme centre
           ok2=.FALSE.
           DO j=1,i-1
-             IF (partitioned_data%points(j)%cluster==p) ok2=.TRUE.
+             IF (partitioned_data%pointss(j)%cluster==p) ok2=.TRUE.
           ENDDO
           !si point pas centre, teste par rapport au seuil
           IF (.NOT.ok2) THEN
@@ -369,7 +369,7 @@ PRINT *, 'recherche des centres'
                 val=0.0
                 norm=0.0
                 DO k=1,partitioned_data%dim
-                   val=max(val,abs(cluster_center(k,j)-partitioned_data%point(p)%coords(k))) 
+                   val=max(val,abs(cluster_center(k,j)-partitioned_data%points(p)%coords(k))) 
 !VOIR SI CELA DOIT ETRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 ENDDO
                 valmax=min(val,valmax)
@@ -388,7 +388,7 @@ PRINT *, 'recherche des centres'
           ENDIF
        ENDDO
        p=p-1
-       cluster_center(:,i)= partitioned_data%points(P)%coords(:) !point(:,p) 
+       cluster_center(:,i)= partitioned_data%pointss(P)%coords(:) !point(:,p) 
        cluster_id(i)=p
     ENDDO
 !#if aff
@@ -399,7 +399,7 @@ PRINT *, 'recherche des centres'
 !!! boucle            
     it_num = 0
     swap=1
-    partitioned_data%points(:)%cluster=1 !  cluster(:)=1
+    partitioned_data%pointss(:)%cluster=1 !  cluster(:)=1
     DO WHILE ((it_num<it_max).AND.(swap/=0))
        it_num = it_num + 1
        swap=0
@@ -421,12 +421,12 @@ PRINT *, 'recherche des centres'
        DO k=1,partitioned_data%nb_clusters
            DO i=1,partitioned_data%nb_points
                DO j=1,partitioned_data%nb_points
-                   IF ( partitioned_data%points(j)%cluster.EQ.k) THEN
+                   IF ( partitioned_data%pointss(j)%cluster.EQ.k) THEN
                    num1=num1 + 2*(Ker(i,j))
                    den1=den1+1 
                    ENDIF
                    DO l=1,partitioned_data%nb_points
-                       IF ( partitioned_data%points(j)%cluster.EQ.k .AND. partitioned_data%points(l)%cluster.EQ.k) THEN
+                       IF ( partitioned_data%pointss(j)%cluster.EQ.k .AND. partitioned_data%pointss(l)%cluster.EQ.k) THEN
                        num2=num2 + Ker(j,l)
                        den2=den2+1
                        ENDIF
@@ -446,22 +446,22 @@ PRINT *, 'recherche des centres'
        cluster_population(:)=0
        DO i=1,partitioned_data%nb_points
           DO j=1,partitioned_data%nb_clusters
-             IF (listnorm(i,j)<listnorm(i,partitioned_data%points(i)%cluster)) THEN
-                partitioned_data%points(i)%cluster=j
+             IF (listnorm(i,j)<listnorm(i,partitioned_data%pointss(i)%cluster)) THEN
+                partitioned_data%pointss(i)%cluster=j
                 swap=swap+1
              ENDIF
           ENDDO
-          cluster_energy(partitioned_data%points(i)%cluster)=cluster_energy(partitioned_data%points(i)%cluster)&
-               +listnorm(i,partitioned_data%points(i)%cluster)
-          cluster_population(partitioned_data%points(i)%cluster)=cluster_population(partitioned_data%points(i)%cluster)+1
+          cluster_energy(partitioned_data%pointss(i)%cluster)=cluster_energy(partitioned_data%pointss(i)%cluster)&
+               +listnorm(i,partitioned_data%pointss(i)%cluster)
+          cluster_population(partitioned_data%pointss(i)%cluster)=cluster_population(partitioned_data%pointss(i)%cluster)+1
        ENDDO
 
        !! mise a jour des centres
        cluster_center(:,:)=0.0
        DO j=1,partitioned_data%nb_points
-          i=partitioned_data%points(j)%cluster 
+          i=partitioned_data%pointss(j)%cluster 
           DO k=1,partitioned_data%dim
-             cluster_center(k,i)=cluster_center(k,i)+partitioned_data%points(j)%coords(k)
+             cluster_center(k,i)=cluster_center(k,i)+partitioned_data%pointss(j)%coords(k)
           ENDDO
        ENDDO
        DO i=1,partitioned_data%nb_clusters
@@ -538,7 +538,7 @@ PRINT *, 'recherche des centres'
        DO j=i+1,n
           norm=0.0
           DO k=1,partitioned_data%dim
-             norm=norm+(partitioned_data%points(i)%coords(k)-partitioned_data%points(j)%coords(k))**2
+             norm=norm+(partitioned_data%pointss(i)%coords(k)-partitioned_data%pointss(j)%coords(k))**2
           ENDDO
           value=exp(-norm/sigma)
           ! Upper triangular part
@@ -714,7 +714,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
             clusters_centers,points_by_clusters,clusters_energies,&
             nb_info(partitioned_data%nb_clusters),proc_id,ratiomin(1),ratiorij(1),ratiorii(1))
        DO i=1,partitioned_data%nb_points
-          partitioned_data%points(i)%cluster=cluster(i)
+          partitioned_data%pointss(i)%cluster=cluster(i)
        ENDDO
        DEALLOCATE(cluster)
        DEALLOCATE(points_by_clusters)
@@ -734,7 +734,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        PRINT *, proc_id, ' : OK'
 #endif
        DO i=1,partitioned_data%nb_points
-          partitioned_data%points(i)%cluster=1
+          partitioned_data%pointss(i)%cluster=1
        ENDDO
 #if aff
        PRINT *, proc_id,' : Cluster'
@@ -805,9 +805,9 @@ PRINT *, 'DEBUG : Frobenius ratio'
           EXIT
         ENDIF
       ENDDO
-      myMean = partitioned_data%point(stInd)%coords !initialize mean to this points location
+      myMean = partitioned_data%points(stInd)%coords !initialize mean to this points location
       DO j=1, dim_num
-        myMean(j) = partitioned_data%point(i)%coords(j)
+        myMean(j) = partitioned_data%points(i)%coords(j)
       ENDDO
       myMembers(:) = 0
       thisClusterVotes(:) = 0 !used to resolve conflicts on cluster membership
@@ -818,7 +818,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
           IF (beenVisitedFlag(i)==0) THEN
             sqDist = 0
             DO j=1, dim_num
-              sqDist = sqDist + (partitioned_data%point(i)%coords(j) - myMean(j))**2
+              sqDist = sqDist + (partitioned_data%points(i)%coords(j) - myMean(j))**2
             ENDDO
             IF (sqDist < bandSq) THEN
               thisClusterVotes(i) = thisClusterVotes(i) + 1 !add a vote for all the in points belonging to this cluster
@@ -833,7 +833,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
           num = 0
           IF (myMembers(i)==1) THEN
             DO j=1, dim_num
-              myMean(j) = myMean(j) + partitioned_data%point(i)%coords(j)
+              myMean(j) = myMean(j) + partitioned_data%points(i)%coords(j)
             ENDDO
             num = num + 1
           ENDIF
@@ -879,7 +879,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     ENDDO
 
     DO i=1, point_num
-      partitioned_data%point(i)%cluster = MAXLOC(clusterVotes(:,i), DIM=1)
+      partitioned_data%points(i)%cluster = MAXLOC(clusterVotes(:,i), DIM=1)
     ENDDO
 END SUBROUTINE mean_shift
 
