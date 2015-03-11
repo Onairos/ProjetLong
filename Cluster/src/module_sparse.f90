@@ -90,7 +90,7 @@ CONTAINS
           norm=0.0
 
           DO k=1,partitioned_data%dim
-             norm=norm+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
+             norm=norm+(partitioned_data%point(i)%coords(k)-partitioned_data%point(j)%coords(k))**2
           ENDDO
 
           IF(sqrt(norm) <= treshold) THEN
@@ -115,7 +115,7 @@ CONTAINS
        DO j=i+1,n
           norm=0.0
           DO k=1,partitioned_data%dim
-             norm=norm+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
+             norm=norm+(partitioned_data%point(i)%coords(k)-partitioned_data%point(j)%coords(k))**2
           ENDDO
           value=exp(-norm/sigma)
           ! kepp if value <= treshold

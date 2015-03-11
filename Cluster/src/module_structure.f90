@@ -10,7 +10,7 @@ MODULE module_structure
      INTEGER :: nb_clusters ! Number of clusters
 
      ! Input parameters : format + processing
-     INTEGER :: coord ! Data format classic points
+     INTEGER :: coords ! Data format classic points
      INTEGER :: image ! If image mode activated
      INTEGER :: geom ! Image in mode geom ?
      INTEGER :: seuil ! Image in threshold mode ?
@@ -29,7 +29,7 @@ MODULE module_structure
 
   !#### Points description ####
   TYPE type_points
-     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord
+     DOUBLE PRECISION, DIMENSION(:), POINTER :: coords
      INTEGER :: cluster
   END TYPE type_points
 

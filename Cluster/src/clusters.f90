@@ -184,8 +184,8 @@ PROGRAM clusters
      partitioned_data%nb_clusters=0
      ALLOCATE(partitioned_data%point(data%nb_points))
      DO i=1,data%nb_points
-        ALLOCATE(partitioned_data%point(i)%coord(data%dim))
-        partitioned_data%point(i)%coord=data%point(i)%coord
+        ALLOCATE(partitioned_data%point(i)%coords(data%dim))
+        partitioned_data%point(i)%coords=data%point(i)%coords
         partitioned_data%point(i)%cluster=0
      ENDDO
      nb_clusters_opt=list_nb_clusters(1)

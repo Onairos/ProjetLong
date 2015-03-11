@@ -148,7 +148,7 @@ CONTAINS
 
 
 
- IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+ IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        ! Processing : coordinates, coordinates picture or thresholded picture
        ALLOCATE(bounds(data%dim,max(nb_proc-data%interface,1),2))
        bounds(:,:,:)=0.0
@@ -240,7 +240,7 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+    IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        ! Processing : coordinates, coordinates picture or thresholded picture
        ALLOCATE(domains(max(1,nb_proc-data%interface),data%dim,2))
        domains(:,:,:)=0.0
@@ -359,11 +359,11 @@ CONTAINS
        DO WHILE(.NOT. ok)
           n=n+1
           ok=.TRUE.
-          IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
-                IF ((data%point(i)%coord(j)>domains(n,j,2)).OR.&
-                     (data%point(i)%coord(j)<domains(n,j,1))) ok=.FALSE.
+                IF ((data%point(i)%coords(j)>domains(n,j,2)).OR.&
+                     (data%point(i)%coords(j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
           ELSEIF (data%image==1) THEN
              ! Processing for partitioning in pixels of picture
@@ -378,7 +378,7 @@ CONTAINS
 #endif
              IF (data%geom==0) THEN
 #if aff
-                PRINT *, 'DEBUG : ', data%point(i)%coord(:)
+                PRINT *, 'DEBUG : ', data%point(i)%coords(:)
 #endif
              ELSE
 #if aff
@@ -394,11 +394,11 @@ CONTAINS
        IF (nb_proc>1) THEN
           ! Search of interface if > 1 proc
           ok=.FALSE.
-          IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
-                IF ((abs(data%point(i)%coord(j)-domains(n,j,1))<epsilon).OR.&
-                     (abs(data%point(i)%coord(j)-domains(n,j,2))<epsilon)) ok=.TRUE.
+                IF ((abs(data%point(i)%coords(j)-domains(n,j,1))<epsilon).OR.&
+                     (abs(data%point(i)%coords(j)-domains(n,j,2))<epsilon)) ok=.TRUE.
              ENDDO
           ELSEIF (data%image==1) THEN
              ! Processing for partitioning in pixels of picture
@@ -465,11 +465,11 @@ CONTAINS
        ! Search of packages
        DO n=1,nb_proc
           ok=.TRUE.
-          IF ((data%coord==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
-                IF ((data%point(i)%coord(j)>domains(n,j,2)).OR.&
-                     (data%point(i)%coord(j)<domains(n,j,1))) ok=.FALSE.
+                IF ((data%point(i)%coords(j)>domains(n,j,2)).OR.&
+                     (data%point(i)%coords(j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
           ELSEIF (data%image==1) THEN
              ! Processing for partitioning in pixels of picture

@@ -52,7 +52,7 @@ CONTAINS
           norm=0.0
           DO k1=1,partitioned_data%dim
              norm=norm+&
-                  (partitioned_data%point(i1)%coord(k1)-partitioned_data%point(j1)%coord(k1))**2
+                  (partitioned_data%point(i1)%coords(k1)-partitioned_data%point(j1)%coords(k1))**2
           ENDDO
           sigma=max(sigma,sqrt(norm))
        ENDDO
@@ -186,7 +186,7 @@ FUNCTION poly_kernel( partitioned_data, gam, delta )
     DO i=1,n-1
       DO j=1,n-1
         DO d=1,partitioned_data%dim
-        K(i,j)=K(i,j)+partitioned_data%point(i)%coord(d)*partitioned_data%point(j)%coord(d)
+        K(i,j)=K(i,j)+partitioned_data%point(i)%coords(d)*partitioned_data%point(j)%coords(d)
         ENDDO 
         K(i,j)=(K(i,j)+gam)**delta
       ENDDO
@@ -223,7 +223,7 @@ FUNCTION poly_kernel( partitioned_data, gam, delta )
     DO i=1,n-1
       DO j=i+1,n
         DO d=1,partitioned_data%dim
-        K(i,j)=K(i,j)+(partitioned_data%point(i)%coord(d)-partitioned_data%point(j)%coord(d))**2
+        K(i,j)=K(i,j)+(partitioned_data%point(i)%coords(d)-partitioned_data%point(j)%coords(d))**2
         ENDDO
         K(i,j)=exp(- K(i,j)/(2*sigma**2))
         ! Symetry
@@ -358,7 +358,7 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     !
     !  Assign one point to each cluster center.
     !
-    cluster_center(:,1) = partitioned_data%point(1)%coord(:) !point(:,1) %%
+    cluster_center(:,1) = partitioned_data%point(1)%coords(:) !point(:,1) %%
     cluster_id(:)=0
     cluster_id(1)=1
     p=2
@@ -381,7 +381,7 @@ PRINT *, 'recherche des centres'
                 val=0.0
                 norm=0.0
                 DO k=1,partitioned_data%dim
-                   val=max(val,abs(cluster_center(k,j)-partitioned_data%point(p)%coord(k))) 
+                   val=max(val,abs(cluster_center(k,j)-partitioned_data%point(p)%coords(k))) 
 !VOIR SI CELA DOIT Ã?TRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 ENDDO
                 valmax=min(val,valmax)
@@ -400,7 +400,7 @@ PRINT *, 'recherche des centres'
           ENDIF
        ENDDO
        p=p-1
-       cluster_center(:,i)= partitioned_data%point(P)%coord(:) !point(:,p) 
+       cluster_center(:,i)= partitioned_data%point(P)%coords(:) !point(:,p) 
        cluster_id(i)=p
     ENDDO
 !#if aff
@@ -474,7 +474,7 @@ PRINT *, 'recherche des centres'
        DO j=1,partitioned_data%nb_points
           i=partitioned_data%point(j)%cluster 
           DO k=1,partitioned_data%dim
-             cluster_center(k,i)=cluster_center(k,i)+partitioned_data%point(j)%coord(k)
+             cluster_center(k,i)=cluster_center(k,i)+partitioned_data%point(j)%coords(k)
           ENDDO
        ENDDO
        DO i=1,partitioned_data%nb_clusters
@@ -564,7 +564,7 @@ PRINT *, 'recherche des centres'
        DO j=i+1,n
           norm=0.0
           DO k=1,partitioned_data%dim
-             norm=norm+(partitioned_data%point(i)%coord(k)-partitioned_data%point(j)%coord(k))**2
+             norm=norm+(partitioned_data%point(i)%coords(k)-partitioned_data%point(j)%coords(k))**2
           ENDDO
           value=exp(-norm/sigma)
           ! Upper triangular part
@@ -838,9 +838,9 @@ SUBROUTINE mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,b
 				EXIT
 			ENDIF
 		ENDDO
-		myMean = partitioned_data%point(stInd)%coord	!initialize mean to this points location
+		myMean = partitioned_data%point(stInd)%coords	!initialize mean to this points location
 		DO j=1, dim_num
-			myMean(j) = partitioned_data%point(i)%coord(j)
+			myMean(j) = partitioned_data%point(i)%coords(j)
 		ENDDO
 		myMembers(:) = 0
 		thisClusterVotes(:) = 0	!used to resolve conflicts on cluster membership
@@ -851,7 +851,7 @@ SUBROUTINE mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,b
 				!dist squared from mean to all points still active
 				sqDist = 0
 				DO j=1, dim_num
-					sqDist = sqDist + (partitioned_data%point(i)%coord(j) - myMean(j))**2
+					sqDist = sqDist + (partitioned_data%point(i)%coords(j) - myMean(j))**2
 				ENDDO
 				IF (sqDist < bandSq) THEN
 					thisClusterVotes(i) = thisClusterVotes(i) + 1	!add a vote for all the in points belonging to this cluster
@@ -867,7 +867,7 @@ SUBROUTINE mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,b
 				num = 0
 				IF (myMembers(i)==1) THEN
 					DO j=1, dim_num
-						myMean(j) = myMean(j) + partitioned_data%point(i)%coord(j)
+						myMean(j) = myMean(j) + partitioned_data%point(i)%coords(j)
 					ENDDO
 					num = num + 1
 				ENDIF

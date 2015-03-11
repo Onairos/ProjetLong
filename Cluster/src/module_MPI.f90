@@ -36,7 +36,7 @@ CONTAINS
     TYPE(type_data) :: partitioned_data
     
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: i
     INTEGER :: j
     INTEGER :: ierr
@@ -55,15 +55,15 @@ CONTAINS
        CALL MPI_SEND(n,1,MPI_INTEGER,i,id_mpi,MPI_COMM_WORLD,ierr)   
        IF (m>0) THEN
           ! Creation of coordinates arrays
-          ALLOCATE(coord(m,n))
-          coord=0.0
+          ALLOCATE(coords(m,n))
+          coords=0.0
           DO j=1,m
-             coord(j,1:n)=data%point(assignments(i,j))%coord(1:n)
+             coords(j,1:n)=data%point(assignments(i,j))%coords(1:n)
           ENDDO
           ! Sending arrays
           id_mpi=i*10
-          CALL MPI_SEND(coord,m*n,MPI_DOUBLE_PRECISION,i,id_mpi,MPI_COMM_WORLD,ierr)
-          DEALLOCATE(coord)
+          CALL MPI_SEND(coords,m*n,MPI_DOUBLE_PRECISION,i,id_mpi,MPI_COMM_WORLD,ierr)
+          DEALLOCATE(coords)
        ENDIF
     ENDDO
     ! Creation of TYPE partitioned_data of interface
@@ -75,14 +75,14 @@ CONTAINS
     IF (m>0) THEN
        ALLOCATE(partitioned_data%point(m))
        DO i=1,m
-          ALLOCATE(partitioned_data%point(i)%coord(n))
-          partitioned_data%point(i)%coord(:)=data%point(assignments(0,i))%coord(:)
+          ALLOCATE(partitioned_data%point(i)%coords(n))
+          partitioned_data%point(i)%coords(:)=data%point(assignments(0,i))%coords(:)
           partitioned_data%point(i)%cluster=0
        ENDDO
     ENDIF
     ! Sending flags picture, threshold, geometric...
-    n=data%coord
-    partitioned_data%coord=n
+    n=data%coords
+    partitioned_data%coords=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     n=data%image
     partitioned_data%image=n
@@ -129,7 +129,7 @@ CONTAINS
     TYPE(type_data) :: partitioned_data
     
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coord
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER status(MPI_STATUS_SIZE)
     INTEGER :: i
     INTEGER :: ierr
@@ -148,24 +148,24 @@ CONTAINS
     partitioned_data%dim=n
     partitioned_data%nb_clusters=0
     IF (m>0) THEN
-       ALLOCATE(coord(m,n))
-       coord=0.0
+       ALLOCATE(coords(m,n))
+       coords=0.0
        ! Receiving arrays
        id_mpi=proc_id*10
-       CALL MPI_RECV(coord,m*n,MPI_DOUBLE_PRECISION,0,id_mpi,&
+       CALL MPI_RECV(coords,m*n,MPI_DOUBLE_PRECISION,0,id_mpi,&
             MPI_COMM_WORLD,status,ierr)
        ! Creation of TYPE partitioned_data of subdomain
        ALLOCATE(partitioned_data%point(m))
        DO i=1,m
-          ALLOCATE(partitioned_data%point(i)%coord(n))
-          partitioned_data%point(i)%coord=coord(i,:)
+          ALLOCATE(partitioned_data%point(i)%coords(n))
+          partitioned_data%point(i)%coords=coords(i,:)
           partitioned_data%point(i)%cluster=0
        ENDDO
-       DEALLOCATE(coord)
+       DEALLOCATE(coords)
     ENDIF
     ! Sending flags picture, threshold, geometric...
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%coord=n
+    partitioned_data%coords=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     partitioned_data%image=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
