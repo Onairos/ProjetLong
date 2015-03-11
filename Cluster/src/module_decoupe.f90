@@ -32,18 +32,18 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION :: epsilon
-    INTEGER, DIMENSION(:), POINTER :: partitioning
     INTEGER :: nb_proc
+    INTEGER, DIMENSION(:), POINTER :: partitioning
+    DOUBLE PRECISION :: epsilon
 
     !=== IN/OUT ===
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
 
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
@@ -101,9 +101,9 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION :: epsilon
-    INTEGER,DIMENSION(:), POINTER :: partitioning
     INTEGER :: nb_proc
+    INTEGER,DIMENSION(:), POINTER :: partitioning
+    DOUBLE PRECISION :: epsilon
 
     !=== IN/OUT ===
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
@@ -115,12 +115,12 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
+    INTEGER :: i
+    INTEGER :: j
     DOUBLE PRECISION :: prod
     DOUBLE PRECISION :: prod1
     DOUBLE PRECISION :: prod2
     DOUBLE PRECISION :: som1
-    INTEGER :: i
-    INTEGER :: j
 
     !###########################################
     ! INSTRUCTIONS
@@ -223,17 +223,17 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-    INTEGER, DIMENSION(:), POINTER :: partitioning
     INTEGER :: nb_proc
+    INTEGER, DIMENSION(:), POINTER :: partitioning
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
 
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
 
     !#### Variables  ####
-    INTEGER, DIMENSION(:), POINTER :: list
     INTEGER :: k
     INTEGER :: n
+    INTEGER, DIMENSION(:), POINTER :: list
     LOGICAL :: ok
 
 
@@ -331,12 +331,13 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
-    DOUBLE PRECISION :: epsilon
     INTEGER :: nb_proc
+    DOUBLE PRECISION :: epsilon
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
+
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
 
     !#### Variables  ####
     INTEGER :: i
@@ -442,11 +443,12 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: data
-    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
     INTEGER :: nb_proc
+    DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: domains
+
     !====  OUT ====
-    INTEGER, DIMENSION(:,:), POINTER :: assignments
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
+    INTEGER, DIMENSION(:,:), POINTER :: assignments
 
     !#### Variables  ####
     INTEGER :: i
@@ -508,8 +510,8 @@ CONTAINS
     INTEGER :: nb_clusters
 
     !=== IN/OUT ===
-    INTEGER, DIMENSION(:,:), POINTER :: cluster_map
     INTEGER, DIMENSION(:), POINTER :: points_by_cluster
+    INTEGER, DIMENSION(:,:), POINTER :: cluster_map
 
     !====  OUT ====
     TYPE(type_data) :: data

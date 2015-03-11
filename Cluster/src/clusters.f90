@@ -20,24 +20,6 @@ PROGRAM clusters
   CHARACTER (LEN=80) :: proc_name ! MPI variable
   CHARACTER (LEN=30) :: input
   CHARACTER (LEN=30) :: input_file
-  DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
-  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
-  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
-  DOUBLE PRECISION :: end_time
-  DOUBLE PRECISION :: epsilon
-  DOUBLE PRECISION :: sigma
-  DOUBLE PRECISION :: start_time
-  DOUBLE PRECISION :: t_parall
-  DOUBLE PRECISION :: t_parallg
-  DOUBLE PRECISION :: t1
-  DOUBLE PRECISION :: t2
-  INTEGER,DIMENSION(:,:), POINTER :: cluster_map
-  INTEGER,DIMENSION(:,:) ,POINTER :: assignments
-  INTEGER,DIMENSION(:), POINTER :: partitioning
-  INTEGER,DIMENSION(:), POINTER :: points_by_cluster
-  INTEGER,DIMENSION(:), POINTER :: points_by_domain
-  INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
-  TYPE(type_clustering_param) :: clust_param
   INTEGER :: i
   INTEGER :: ierr ! MPI variable
   INTEGER :: j
@@ -50,6 +32,24 @@ PROGRAM clusters
   INTEGER :: proc_id ! MPI variable
   INTEGER :: status(MPI_STATUS_SIZE) ! MPI variable
   INTEGER :: tag ! MPI variable
+  INTEGER,DIMENSION(:), POINTER :: partitioning
+  INTEGER,DIMENSION(:), POINTER :: points_by_cluster
+  INTEGER,DIMENSION(:), POINTER :: points_by_domain
+  INTEGER,DIMENSION(:), POINTER :: list_nb_clusters
+  INTEGER,DIMENSION(:,:), POINTER :: cluster_map
+  INTEGER,DIMENSION(:,:) ,POINTER :: assignments
+  DOUBLE PRECISION :: end_time
+  DOUBLE PRECISION :: epsilon
+  DOUBLE PRECISION :: sigma
+  DOUBLE PRECISION :: start_time
+  DOUBLE PRECISION :: t_parall
+  DOUBLE PRECISION :: t_parallg
+  DOUBLE PRECISION :: t1
+  DOUBLE PRECISION :: t2
+  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+  DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
+  DOUBLE PRECISION, DIMENSION(:,:,:), POINTER :: bounds
+  TYPE(type_clustering_param) :: clust_param
   LOGICAL :: exist_bool
 
   !###########################################

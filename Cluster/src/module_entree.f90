@@ -98,24 +98,24 @@ CONTAINS
 
     !====  OUT ====
     CHARACTER (LEN=30) :: input_file
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
-    DOUBLE PRECISION :: epsilon
-    DOUBLE PRECISION :: sigma
+    INTEGER :: nb_clusters_max
     INTEGER, DIMENSION(:), POINTER :: partitioning
     INTEGER, DIMENSION(:), POINTER :: list_nb_clusters
-    INTEGER :: nb_clusters_max
+    DOUBLE PRECISION :: epsilon
+    DOUBLE PRECISION :: sigma
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
     
 
     !#### Variables  ####
     CHARACTER (LEN=30) :: word
-    LOGICAL :: partitioning_bool
     INTEGER :: i
     INTEGER :: ierr
     INTEGER :: tot
-    LOGICAL :: ok
     DOUBLE PRECISION :: gam
     DOUBLE PRECISION :: delta
+    LOGICAL :: partitioning_bool
+    LOGICAL :: ok
 
     !###########################################
     ! INSTRUCTIONS
@@ -415,8 +415,10 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     CHARACTER (LEN=30) :: input_file
+
     !=== IN/OUT ===
     TYPE(type_data) :: data
+
     !====  OUT ====
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_max
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
@@ -504,10 +506,10 @@ CONTAINS
     DOUBLE PRECISION, DIMENSION(:), POINTER :: coord_min
 
     !#### Variables  ####
-    DOUBLE PRECISION :: max_step
     INTEGER :: i
     INTEGER :: j
     INTEGER :: nb
+    DOUBLE PRECISION :: max_step
 
     !###########################################
     ! INSTRUCTIONS
@@ -675,10 +677,10 @@ CONTAINS
     TYPE(type_data) :: data
 
     !#### Variables  ####
-    INTEGER, DIMENSION(:), POINTER :: plane
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
+    INTEGER, DIMENSION(:), POINTER :: plane
     LOGICAL :: ok
 
     !###########################################
