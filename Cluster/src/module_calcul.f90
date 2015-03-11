@@ -93,16 +93,16 @@ CONTAINS
     DOUBLE PRECISION :: sigma
 
     !#### Variables  ####
+    DOUBLE PRECISION :: long
+    DOUBLE PRECISION :: sigma0
+    DOUBLE PRECISION :: ext_volume
+    DOUBLE PRECISION :: int_volume
     INTEGER, DIMENSION(:,:), POINTER :: array
     INTEGER, DIMENSION(:), POINTER :: partitioning_tmp
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb
-    DOUBLE PRECISION :: long
-    DOUBLE PRECISION :: sigma0
-    DOUBLE PRECISION :: ext_volume
-    DOUBLE PRECISION :: int_volume
 
     !###########################################
     ! INSTRUCTIONS
@@ -158,8 +158,7 @@ CONTAINS
   END SUBROUTINE get_sigma_interface
 
 
-
-FUNCTION poly_kernel( partitioned_data, gam, delta )
+  FUNCTION poly_kernel( partitioned_data, gam, delta )
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -167,18 +166,22 @@ FUNCTION poly_kernel( partitioned_data, gam, delta )
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_data) :: partitioned_data
-    DOUBLE PRECISION :: gam 
     DOUBLE PRECISION :: delta
+    DOUBLE PRECISION :: gam 
 
     !====  OUT  ====
     DOUBLE PRECISION, DIMENSION(partitioned_data%nb_points,partitioned_data%nb_points) :: poly_kernel
+
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: K
-    INTEGER :: n
+    INTEGER :: d
     INTEGER :: i
     INTEGER :: j
-    INTEGER :: d
+    INTEGER :: n
 
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     n=partitioned_data%nb_points
     ALLOCATE(K(n,n))
     K(:,:)=0.0
@@ -195,7 +198,9 @@ FUNCTION poly_kernel( partitioned_data, gam, delta )
     RETURN
   END
 
-    FUNCTION gaussian_kernel( partitioned_data, sigma )
+
+  FUNCTION gaussian_kernel( partitioned_data, sigma )
+    IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
@@ -204,17 +209,19 @@ FUNCTION poly_kernel( partitioned_data, gam, delta )
     TYPE(type_data) :: partitioned_data
     DOUBLE PRECISION sigma
 
-
     !====  OUT  ====
     DOUBLE PRECISION, DIMENSION(partitioned_data%nb_points,partitioned_data%nb_points) :: gaussian_kernel
 
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: K
-    INTEGER n
+    INTEGER d
     INTEGER i
     INTEGER j
-    INTEGER d
+    INTEGER n
 
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     n=partitioned_data%nb_points
     ALLOCATE(K(n,n))
     !ALLOCATE(gaussian_kernel)
@@ -233,42 +240,30 @@ FUNCTION poly_kernel( partitioned_data, gam, delta )
     gaussian_kernel=K
     RETURN
   END
-
-
 !Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||Â²))
-
 
 
 SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
     IMPLICIT NONE
-
-   INCLUDE 'mpif.h'
+    INCLUDE 'mpif.h'
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-  
-    INTEGER :: nb_clusters_opt
-    INTEGER :: nb_clusters_max
-    INTEGER :: proc_id
     TYPE(type_clustering_param) :: clust_param
+    INTEGER :: nb_clusters_max
+    INTEGER :: nb_clusters_opt
+    INTEGER :: proc_id
 
     !=== IN/OUT ===
     TYPE(type_data) :: partitioned_data
 
-
-    !###########################################
-    ! DECLARATIONS
-    !###########################################      
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Ker
     INTEGER :: it_max ! the maximum number of iterations
     DOUBLE PRECISION :: cluster_center (partitioned_data%dim, partitioned_data%nb_clusters) ! the cluster centers
     DOUBLE PRECISION :: cluster_energy (partitioned_data%nb_clusters) ! the cluster energies
-    INTEGER :: it_num ! the number of iterations taken
-    INTEGER :: cluster (partitioned_data%nb_points) ! indicates which cluster each point belongs to
-    INTEGER :: cluster_population (partitioned_data%nb_clusters) ! the number of points in each cluster
     DOUBLE PRECISION :: listnorm (partitioned_data%nb_points, partitioned_data%nb_clusters)
     DOUBLE PRECISION :: stockcenter (partitioned_data%dim, partitioned_data%nb_clusters)
     DOUBLE PRECISION :: stockenergy (partitioned_data%nb_clusters)
@@ -276,31 +271,29 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     DOUBLE PRECISION :: seuil
     DOUBLE PRECISION :: val
     DOUBLE PRECISION :: valmax
+    DOUBLE PRECISION :: num1
+    DOUBLE PRECISION :: den1
+    DOUBLE PRECISION :: num2
+    DOUBLE PRECISION :: den2
+    INTEGER :: cluster (partitioned_data%nb_points) ! indicates which cluster each point belongs to
+    INTEGER :: cluster_population (partitioned_data%nb_clusters) ! the number of points in each cluster
+    INTEGER :: it_num ! the number of iterations taken
     INTEGER :: cluster_id (partitioned_data%nb_clusters)
     INTEGER :: stockpopulation (partitioned_data%nb_clusters)
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: l
-
-    DOUBLE PRECISION :: num1
-    DOUBLE PRECISION :: den1
-    DOUBLE PRECISION :: num2
-    DOUBLE PRECISION :: den2
-
-    LOGICAL :: ok 
-    LOGICAL :: ok2
     INTEGER :: swap
     INTEGER :: p
-    
-
-    ALLOCATE(Ker(partitioned_data%nb_points,partitioned_data%nb_points))
-    Ker(:,:)=0.0
-
-
+    LOGICAL :: ok 
+    LOGICAL :: ok2
     !###########################################      
     ! INSTRUCTIONS
     !###########################################   
+    ALLOCATE(Ker(partitioned_data%nb_points,partitioned_data%nb_points))
+    Ker(:,:)=0.0
+
     it_num = 0
     !
     !  Idiot checks.
@@ -348,16 +341,10 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
         Ker=gaussian_kernel(partitioned_data, clust_param%sigma)
     ENDIF
 
-
-
-    !
     !  For each observation, calculate the distance from each cluster
     !  center, and assign to the nearest.
-    !
 
-    !
     !  Assign one point to each cluster center.
-    !
     cluster_center(:,1) = partitioned_data%point(1)%coords(:) !point(:,1) %%
     cluster_id(:)=0
     cluster_id(1)=1
@@ -382,7 +369,7 @@ PRINT *, 'recherche des centres'
                 norm=0.0
                 DO k=1,partitioned_data%dim
                    val=max(val,abs(cluster_center(k,j)-partitioned_data%point(p)%coords(k))) 
-!VOIR SI CELA DOIT Ã?TRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!VOIR SI CELA DOIT ETRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 ENDDO
                 valmax=min(val,valmax)
              ENDDO
@@ -453,7 +440,6 @@ PRINT *, 'recherche des centres'
                ENDIF
            ENDDO
        ENDDO
-     
 
        !!assignation par rapport au min des distances
        cluster_population(:)=0
@@ -480,22 +466,9 @@ PRINT *, 'recherche des centres'
        DO i=1,partitioned_data%nb_clusters
           cluster_center(:,i)=cluster_center(:,i)/cluster_population(i)
        ENDDO
-
-
-
     ENDDO
-
     RETURN
   END SUBROUTINE apply_kernel_k_means
-
-
-
-
-
-
-
-
-
 
 
   SUBROUTINE apply_spectral_clustering(proc_id, nb_clusters_max, nb_clusters_opt, partitioned_data, sigma,clust_param)
@@ -506,11 +479,11 @@ PRINT *, 'recherche des centres'
     !###########################################
     !#### Parameters ####
     !====  IN  ====
+    TYPE(type_clustering_param) :: clust_param
     DOUBLE PRECISION :: sigma
     INTEGER :: nb_clusters_opt
     INTEGER :: nb_clusters_max
     INTEGER :: proc_id
-    TYPE(type_clustering_param) :: clust_param
 
     !=== IN/OUT ===
     TYPE(type_data) :: partitioned_data
@@ -771,17 +744,14 @@ PRINT *, 'DEBUG : Frobenius ratio'
   END SUBROUTINE apply_spectral_clustering
 
 
-
-SUBROUTINE mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,bandwidth)
-
-   INCLUDE 'mpif.h'
+  SUBROUTINE mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,bandwidth)
+    INCLUDE 'mpif.h'
     !IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-  
     INTEGER :: nb_clusters_opt
     INTEGER :: nb_clusters_max
     INTEGER :: proc_id
@@ -790,35 +760,30 @@ SUBROUTINE mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,b
     !=== IN/OUT ===
     TYPE(type_data) :: partitioned_data
     
-    !###########################################
-    ! DECLARATIONS
-    !###########################################      
-    INTEGER ::point_num												!number of points
-    INTEGER ::dim_num													!number of dimensions
-    INTEGER ::cluster_num												!number of clusters
-    
     !#### Variables  ####
-    INTEGER :: numClust 												!the cluster number  
-    DOUBLE PRECISION :: bandSq										!square of bandwidth
-    DOUBLE PRECISION :: stopThresh									!when mean has converged
-    INTEGER :: beenVisitedFlag(partitioned_data%nb_points)								!track if a point has been seen already
-    INTEGER :: numInitPts												!number of points to possibly use as initialization points
-    INTEGER :: thisClusterVotes(partitioned_data%nb_points)								!used to resolve conflicts on cluster membership
-    INTEGER :: stInd													!start point of mean
-    DOUBLE PRECISION :: myMean(partitioned_data%dim)								!mean of this cluster
-    DOUBLE PRECISION :: myOldMean(partitioned_data%dim)							!old mean computed for this cluster
-    INTEGER :: myMembers(partitioned_data%nb_points)										!1 if the point belongs to the cluster, else 0
-    INTEGER :: mergeWith												!used to merge clusters
-    DOUBLE PRECISION :: clustCent(partitioned_data%dim,partitioned_data%nb_clusters)			!centers of each cluster
-	INTEGER :: clusterVotes(partitioned_data%nb_clusters,partitioned_data%nb_points)					!number of votes for each point for each cluster
+    INTEGER ::point_num !number of points
+    INTEGER ::dim_num !number of dimensions
+    INTEGER ::cluster_num !number of clusters
+    INTEGER :: numClust !the cluster number  
+    INTEGER :: beenVisitedFlag(partitioned_data%nb_points) !track if a point has been seen already
+    INTEGER :: numInitPts !number of points to possibly use as initialization points
+    INTEGER :: thisClusterVotes(partitioned_data%nb_points) !used to resolve conflicts on cluster membership
+    INTEGER :: stInd !start point of mean
+    INTEGER :: myMembers(partitioned_data%nb_points) !1 if the point belongs to the cluster, else 0
+    INTEGER :: mergeWith !used to merge clusters
+    INTEGER :: clusterVotes(partitioned_data%nb_clusters,partitioned_data%nb_points) !number of votes for each point for each cluster
     INTEGER :: i
     INTEGER :: j
     INTEGER :: num
-    DOUBLE PRECISION :: sqDist
     INTEGER :: cN
+    DOUBLE PRECISION :: sqDist
+    DOUBLE PRECISION :: bandSq !square of bandwidth
+    DOUBLE PRECISION :: stopThresh !when mean has converged
+    DOUBLE PRECISION :: clustCent(partitioned_data%dim,partitioned_data%nb_clusters) !centers of each cluster
     
-    
-    
+    !###########################################
+    ! INSTRUCTIONS
+    !###########################################
     !INITIALIZE STUFF    
     point_num=partitioned_data%nb_points
     dim_num=partitioned_data%dim
@@ -827,108 +792,93 @@ SUBROUTINE mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,b
     stopThresh = 1e-3*bandwidth
     beenVisitedFlag(:) = 0
     numInitPts = point_num
-    clusterVotes(:,:) = 0		
+    clusterVotes(:,:) = 0
     
     DO WHILE (numInitPts>0)
-    
-		!take the first point as start of mean
-		DO i=1, point_num
-			IF (beenVisitedFlag(i)==0) THEN
-				stInd = i
-				EXIT
-			ENDIF
-		ENDDO
-		myMean = partitioned_data%point(stInd)%coords	!initialize mean to this points location
-		DO j=1, dim_num
-			myMean(j) = partitioned_data%point(i)%coords(j)
-		ENDDO
-		myMembers(:) = 0
-		thisClusterVotes(:) = 0	!used to resolve conflicts on cluster membership
-		
-		DO
-		
-			DO i=1, point_num
-				!dist squared from mean to all points still active
-				IF (beenVisitedFlag(i)==0) THEN
-					sqDist = 0
-					DO j=1, dim_num
-						sqDist = sqDist + (partitioned_data%point(i)%coords(j) - myMean(j))**2
-					ENDDO
-					IF (sqDist < bandSq) THEN
-						thisClusterVotes(i) = thisClusterVotes(i) + 1	!add a vote for all the in points belonging to this cluster
-						myMembers(i) = 1								!add any point within bandwidth to the cluster
-						beenVisitedFlag(i) = 1							!mark that these points have been visited
-					ENDIF
-				ENDIF
-			ENDDO
-			
-			myOldMean = myMean
-			
-			!compute the new mean
-			DO i=1, point_num
-				num = 0
-				IF (myMembers(i)==1) THEN
-					DO j=1, dim_num
-						myMean(j) = myMean(j) + partitioned_data%point(i)%coords(j)
-					ENDDO
-					num = num + 1
-				ENDIF
-			ENDDO
-			myMean = myMean/num
-			
-			!compute the distance from myMean to myOldMean
-			sqDist = 0
-			DO j=1, dim_num
-				sqDist = sqDist + (myOldMean(j) - myMean(j))**2
-			ENDDO
-			
-			!if mean doesn't move much stop this cluster
-			IF (sqDist < stopThresh**2) THEN
-			
-				!check for merge posibilities
-				mergeWith = 0
-				DO cN=1, numclust-1
-					!compute the distance from possible new clust max to old clust max
-					sqDist = 0
-					DO j=1, dim_num
-						sqDist = sqDist + (clustCent(j,cN) - myMean(j))**2
-					ENDDO
-					IF (sqDist < (bandwidth/2)**2) THEN
-						mergeWith = cN
-						EXIT
-					ENDIF
-				ENDDO
-				
-				IF (mergeWith > 0) THEN		!something to merge
-				
-					clustCent(:,mergeWith) = (myMean+clustCent(:,mergeWith))/2					!mean of centers
-					clusterVotes(mergeWith,:) = clusterVotes(mergeWith,:) + thisClusterVotes !add these votes to the merged cluster
-					
-				ELSE
-				
-					numClust = numClust + 1
-					clustCent(:,numClust) = myMean
-					clusterVotes(numClust,:) = thisClusterVotes
-				ENDIF
-				EXIT
-				
-			ENDIF
-		
-		ENDDO
-			
-		numInitPts = 0
-		DO i=1, point_num
-			IF (beenVisitedFlag(i)==0) THEN
-				numInitPts = numInitPts + 1
-			ENDIF
-		ENDDO
-			
-	ENDDO
-	
-	DO i=1, point_num
-		partitioned_data%point(i)%cluster = MAXLOC(clusterVotes(:,i), DIM=1)
-	ENDDO
-	
+      !take the first point as start of mean
+      DO i=1, point_num
+        IF (beenVisitedFlag(i)==0) THEN
+          stInd = i
+          EXIT
+        ENDIF
+      ENDDO
+      myMean = partitioned_data%point(stInd)%coords !initialize mean to this points location
+      DO j=1, dim_num
+        myMean(j) = partitioned_data%point(i)%coords(j)
+      ENDDO
+      myMembers(:) = 0
+      thisClusterVotes(:) = 0 !used to resolve conflicts on cluster membership
+
+      DO
+        DO i=1, point_num
+          !dist squared from mean to all points still active
+          IF (beenVisitedFlag(i)==0) THEN
+            sqDist = 0
+            DO j=1, dim_num
+              sqDist = sqDist + (partitioned_data%point(i)%coords(j) - myMean(j))**2
+            ENDDO
+            IF (sqDist < bandSq) THEN
+              thisClusterVotes(i) = thisClusterVotes(i) + 1 !add a vote for all the in points belonging to this cluster
+              myMembers(i) = 1 !add any point within bandwidth to the cluster
+              beenVisitedFlag(i) = 1 !mark that these points have been visited
+            ENDIF
+          ENDIF
+        ENDDO      
+        myOldMean = myMean      
+        !compute the new mean
+        DO i=1, point_num
+          num = 0
+          IF (myMembers(i)==1) THEN
+            DO j=1, dim_num
+              myMean(j) = myMean(j) + partitioned_data%point(i)%coords(j)
+            ENDDO
+            num = num + 1
+          ENDIF
+        ENDDO
+        myMean = myMean/num
+        !compute the distance from myMean to myOldMean
+        sqDist = 0
+        DO j=1, dim_num
+          sqDist = sqDist + (myOldMean(j) - myMean(j))**2
+        ENDDO
+        !if mean doesn't move much stop this cluster
+        IF (sqDist < stopThresh**2) THEN      
+          !check for merge posibilities
+          mergeWith = 0
+          DO cN=1, numclust-1
+            !compute the distance from possible new clust max to old clust max
+            sqDist = 0
+            DO j=1, dim_num
+              sqDist = sqDist + (clustCent(j,cN) - myMean(j))**2
+            ENDDO
+            IF (sqDist < (bandwidth/2)**2) THEN
+              mergeWith = cN
+              EXIT
+            ENDIF
+          ENDDO
+          IF (mergeWith > 0) THEN !something to merge
+            clustCent(:,mergeWith) = (myMean+clustCent(:,mergeWith))/2 !mean of centers
+            clusterVotes(mergeWith,:) = clusterVotes(mergeWith,:) + thisClusterVotes !add these votes to the merged cluster
+          ELSE
+            numClust = numClust + 1
+            clustCent(:,numClust) = myMean
+            clusterVotes(numClust,:) = thisClusterVotes
+          ENDIF
+          EXIT
+        ENDIF
+      ENDDO
+      numInitPts = 0
+      DO i=1, point_num
+        IF (beenVisitedFlag(i)==0) THEN
+          numInitPts = numInitPts + 1
+        ENDIF
+      ENDDO
+    ENDDO
+
+    DO i=1, point_num
+      partitioned_data%point(i)%cluster = MAXLOC(clusterVotes(:,i), DIM=1)
+    ENDDO
 END SUBROUTINE mean_shift
+
 
 END MODULE module_calcul
