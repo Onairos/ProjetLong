@@ -354,15 +354,15 @@ CONTAINS
     !###########################################
     ! Reading classic data
     OPEN(FILE=input_file,UNIT=2)
-    READ(2,*) data%nb,data%dim
+    READ(2,*) data%nb_points,data%dim
     data%nb_clusters=0
-    PRINT *, '> Number of points : ', data%nb
+    PRINT *, '> Number of points : ', data%nb_points
     PRINT *, '> Dimension : ', data%dim
-    ALLOCATE(data%point(data%nb))
+    ALLOCATE(data%point(data%nb_points))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
     nb=0
-    DO i=1,data%nb
+    DO i=1,data%nb_points
        ALLOCATE(data%point(i)%coord(data%dim))
        READ(2,*,END=100) data%point(i)%coord(:)
        nb=nb+1
@@ -378,7 +378,7 @@ CONTAINS
        ENDIF
     ENDDO
 100 PRINT *, 'Number of points : ',nb
-    data%nb=nb
+    data%nb_points=nb
     CLOSE(2)
     PRINT *, '> Min/max coordinates : '
     DO j=1,data%dim
@@ -436,14 +436,14 @@ CONTAINS
     ALLOCATE(data%imgmap(data%imgdim))
     READ(2,*) data%imgmap(:)
     PRINT *, '> Spatial partitioning : ', data%imgmap
-    data%nb=1
+    data%nb_points=1
     DO i=1,data%imgdim
-       data%nb=data%nb*data%imgmap(i)
+       data%nb_points=data%nb_points*data%imgmap(i)
     ENDDO
     data%dim=data%imgt
     data%nb_clusters=0
-    PRINT *, '> Number of points to read : ', data%nb
-    ALLOCATE(data%point(data%nb))
+    PRINT *, '> Number of points to read : ', data%nb_points
+    ALLOCATE(data%point(data%nb_points))
     ALLOCATE(coord_max(data%imgdim))
     ALLOCATE(coord_min(data%imgdim))
     coord_min(:)=0.9
@@ -451,14 +451,14 @@ CONTAINS
        coord_max(i)=data%imgmap(i)+0.1
     ENDDO
     nb=0
-    DO i=1,data%nb
+    DO i=1,data%nb_points
        ALLOCATE(data%point(i)%coord(data%dim))
        READ(2,*,END=200) data%point(i)%coord(:)
        nb=nb+1
        data%point(i)%cluster=-1
     ENDDO
 200 PRINT *, '> Number of points read : ', nb       
-    data%nb=nb
+    data%nb_points=nb
     CLOSE(2)
     PRINT *, '> Min/max coordinates :'
     DO j=1,data%dim
@@ -521,18 +521,18 @@ CONTAINS
     ALLOCATE(data%imgmap(data%imgdim))
     READ(2,*) data%imgmap(:)
     PRINT *, '> Spatial partitioning : ', data%imgmap
-    data%nb=1
+    data%nb_points=1
     DO i=1,data%imgdim
-       data%nb=data%nb*data%imgmap(i)
+       data%nb_points=data%nb_points*data%imgmap(i)
     ENDDO
     data%dim=data%imgdim+data%imgt
     data%nb_clusters=0
-    PRINT *,'> Number of points to read : ', data%nb
-    ALLOCATE(data%point(data%nb))
+    PRINT *,'> Number of points to read : ', data%nb_points
+    ALLOCATE(data%point(data%nb_points))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
     nb=0
-    DO i=1,data%nb
+    DO i=1,data%nb_points
        ALLOCATE(data%point(i)%coord(data%dim))
        data%point(i)%coord(:)=0.0
        READ(2,*,END=300) data%point(i)%coord(data%imgdim+1:data%imgdim+data%imgt)
@@ -549,7 +549,7 @@ CONTAINS
        ENDIF
     ENDDO
 300 PRINT *, '> Number of points read : ', nb
-    data%nb=nb
+    data%nb_points=nb
     CLOSE(2)
     PRINT *, '> Min/max coordinates : '
     max_step=1.e-13
@@ -621,18 +621,18 @@ CONTAINS
     ALLOCATE(data%imgmap(data%imgdim))
     READ(2,*) data%imgmap(:)
     PRINT *, '> Spatial dimension : ', data%imgmap
-    data%nb=1
+    data%nb_points=1
     DO i=1,data%imgdim
-       data%nb=data%nb*data%imgmap(i)
+       data%nb_points=data%nb_points*data%imgmap(i)
     ENDDO
     data%dim=data%imgt
     data%nb_clusters=0
-    PRINT *, '> Number of points to read : ', data%nb
-    ALLOCATE(data%point(data%nb))
+    PRINT *, '> Number of points to read : ', data%nb_points
+    ALLOCATE(data%point(data%nb_points))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
     nb=0
-    DO i=1,data%nb
+    DO i=1,data%nb_points
        ALLOCATE(data%point(i)%coord(data%dim))
        READ(2,*,END=400) data%point(i)%coord(:)
        nb=nb+1
@@ -648,7 +648,7 @@ CONTAINS
        ENDIF
     ENDDO
 400 PRINT *, 'Number of points : ', nb
-    data%nb=nb
+    data%nb_points=nb
     CLOSE(2)
     PRINT *, '> Min/max coordinates : '
     DO j=1,data%dim
@@ -685,10 +685,10 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     ! Creation of array points/image_coordinates
-    ALLOCATE(data%refimg(data%nb,data%imgdim))
+    ALLOCATE(data%refimg(data%nb_points,data%imgdim))
     ALLOCATE(plane(data%imgdim))
     plane(:)=1
-    DO i=1,data%nb
+    DO i=1,data%nb_points
        DO j=1,data%imgdim
           ! Index in the array points/pixel
           data%refimg(i,j)=plane(j)

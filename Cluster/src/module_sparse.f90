@@ -74,7 +74,7 @@ CONTAINS
 #if aff
     PRINT *, 'DEBUG : ', proc_id, ' : value of sigma : ', sigma
 #endif
-    n=partitioned_data%nb
+    n=partitioned_data%nb_points
 
     ! Beginning of sparsification
     nnz = 0
@@ -288,7 +288,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
             nb_info(partitioned_data%nb_clusters),proc_id,ratiomin(1),ratio_rij(1),&
             ratio_rii(1))
 
-       DO i=1,partitioned_data%nb
+       DO i=1,partitioned_data%nb_points
           partitioned_data%point(i)%clusters=clusters(i)
        ENDDO
 
@@ -306,7 +306,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 #if aff
        PRINT *, 'DEBUG : ', proc_id, ' : OK'
 #endif
-       DO i=1,partitioned_data%nb
+       DO i=1,partitioned_data%nb_points
           partitioned_data%point(i)%clusters=1
        ENDDO
 #if aff

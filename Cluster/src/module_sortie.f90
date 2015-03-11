@@ -144,8 +144,8 @@ CONTAINS
     files='cluster.partiel.'//trim(num)
     PRINT *, proc_id, ' : clusters writing : ', files
     OPEN(FILE=files,UNIT=10)
-    WRITE(10,*) partitioned_data%nb,partitioned_data%dim
-    DO i=1,partitioned_data%nb
+    WRITE(10,*) partitioned_data%nb_points,partitioned_data%dim
+    DO i=1,partitioned_data%nb_points
        IF (partitioned_data%coord==1) THEN
           WRITE(10,*) partitioned_data%point(i)%coord(:), partitioned_data%point(i)%cluster
        ELSE
@@ -257,7 +257,7 @@ CONTAINS
     WRITE(3,*) '# Mesh file : '
     WRITE(3,*) input_file
     WRITE(3,*) '# Number of points : '
-    WRITE(3,*) data%nb
+    WRITE(3,*) data%nb_points
     WRITE(3,*) '# DIMENSION : '
     WRITE(3,*) data%dim
     WRITE(3,*) '# Number of process : '

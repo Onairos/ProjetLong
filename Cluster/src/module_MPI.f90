@@ -69,7 +69,7 @@ CONTAINS
     ! Creation of TYPE partitioned_data of interface
     m=points_by_domain(0)
     n=data%dim
-    partitioned_data%nb=m
+    partitioned_data%nb_points=m
     partitioned_data%dim=n
     partitioned_data%nb_clusters=0
     IF (m>0) THEN
@@ -144,7 +144,7 @@ CONTAINS
     id_mpi=proc_id
     CALL MPI_RECV(m,1,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,status,ierr)
     CALL MPI_RECV(n,1,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,status,ierr)
-    partitioned_data%nb=m
+    partitioned_data%nb_points=m
     partitioned_data%dim=n
     partitioned_data%nb_clusters=0
     IF (m>0) THEN
@@ -223,7 +223,7 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !########################################### 
-    IF (partitioned_data%nb>0) THEN
+    IF (partitioned_data%nb_points>0) THEN
        nb_clusters=partitioned_data%nb_clusters
     ELSE
        nb_clusters=0
@@ -280,14 +280,14 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################
-    IF (partitioned_data%nb>0) THEN
+    IF (partitioned_data%nb_points>0) THEN
        ! Number of clusters
        id_mpi=proc_id*11
        CALL MPI_SEND(partitioned_data%nb_clusters,1,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
        ! Number of points by cluster
        ALLOCATE(list(partitioned_data%nb_clusters))
        list(:) = 0
-       DO i=1,partitioned_data%nb
+       DO i=1,partitioned_data%nb_points
           list(partitioned_data%point(i)%cluster)=list(partitioned_data%point(i)%cluster)+1
        ENDDO
        id_mpi=id_mpi+1
@@ -326,13 +326,13 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################    
-    IF (partitioned_data%nb>0) THEN
-       ALLOCATE(list_clusters(partitioned_data%nb))
-       DO i=1,partitioned_data%nb
+    IF (partitioned_data%nb_points>0) THEN
+       ALLOCATE(list_clusters(partitioned_data%nb_points))
+       DO i=1,partitioned_data%nb_points
           list_clusters(i)=partitioned_data%point(i)%cluster
        ENDDO
        id_mpi=proc_id*12
-       CALL MPI_SEND(list_clusters,partitioned_data%nb,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
+       CALL MPI_SEND(list_clusters,partitioned_data%nb_points,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
        DEALLOCATE(list_clusters)
     ENDIF
     RETURN
@@ -393,9 +393,9 @@ CONTAINS
     i0=0
     ALLOCATE(points_by_cluster(nb_clusters))
     points_by_cluster(:)=0
-    IF (partitioned_data%nb>0) THEN
+    IF (partitioned_data%nb_points>0) THEN
        ! Storage of local clusters in the global array
-       DO i=1,partitioned_data%nb
+       DO i=1,partitioned_data%nb_points
           j=partitioned_data%point(i)%cluster
           points_by_cluster(j)=points_by_cluster(j)+1
           cluster_map(j,points_by_cluster(j))=assignments(0,i)

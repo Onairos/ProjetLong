@@ -350,9 +350,9 @@ CONTAINS
     !###########################################
     ALLOCATE(points_by_domain(0:max(1,nb_proc-1)))
     points_by_domain(:)=0
-    ALLOCATE(assignments(0:max(1,nb_proc-1),data%nb))
+    ALLOCATE(assignments(0:max(1,nb_proc-1),data%nb_points))
     assignments(:,:)=0
-    DO i=1,data%nb
+    DO i=1,data%nb_points
        ! Search of packages
        n=0
        ok=.FALSE.
@@ -459,9 +459,9 @@ CONTAINS
     !###########################################
     ALLOCATE(points_by_domain(0:max(1,nb_proc-1)))
     points_by_domain(:)=0
-    ALLOCATE(assignments(0:max(1,nb_proc-1),data%nb))
+    ALLOCATE(assignments(0:max(1,nb_proc-1),data%nb_points))
     assignments(:,:)=0
-    DO i=1,data%nb
+    DO i=1,data%nb_points
        ! Search of packages
        DO n=1,nb_proc
           ok=.TRUE.

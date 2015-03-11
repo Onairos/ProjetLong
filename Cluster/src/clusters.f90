@@ -179,11 +179,11 @@ PROGRAM clusters
 
   ELSE
      ! Case of 1 proc alone
-     partitioned_data%nb=data%nb
+     partitioned_data%nb_points=data%nb_points
      partitioned_data%dim=data%dim
      partitioned_data%nb_clusters=0
-     ALLOCATE(partitioned_data%point(data%nb))
-     DO i=1,data%nb
+     ALLOCATE(partitioned_data%point(data%nb_points))
+     DO i=1,data%nb_points
         ALLOCATE(partitioned_data%point(i)%coord(data%dim))
         partitioned_data%point(i)%coord=data%point(i)%coord
         partitioned_data%point(i)%cluster=0
@@ -215,7 +215,7 @@ PROGRAM clusters
   ! Clusters computing
   ! Parallel part
   t1 = MPI_WTIME()
-  IF (partitioned_data%nb>0) THEN
+  IF (partitioned_data%nb_points>0) THEN
 #if aff
      PRINT *,'DEBUG : ', proc_id, ' : computing clusters...'
 #endif
@@ -257,7 +257,7 @@ PROGRAM clusters
         PRINT *,'DEBUG : number of clusters with duplications found : ', nb_clusters
 #endif
         ! Receiving of clusters info
-        ALLOCATE(cluster_map(nb_clusters,data%nb))
+        ALLOCATE(cluster_map(nb_clusters,data%nb_points))
         CALL receive_clusters(nb_proc,nb_clusters,points_by_domain,assignments,partitioned_data,&
              cluster_map,array_clusters,points_by_cluster)
      ELSE
@@ -279,7 +279,7 @@ PROGRAM clusters
      ALLOCATE(points_by_cluster(nb_clusters))
      points_by_cluster(:)=0
      n_max=0
-     DO i=1,partitioned_data%nb
+     DO i=1,partitioned_data%nb_points
         j=partitioned_data%point(i)%cluster
         points_by_cluster(j)=points_by_cluster(j)+1
         n_max=max(n_max,points_by_cluster(j))
@@ -287,7 +287,7 @@ PROGRAM clusters
      ALLOCATE(cluster_map(nb_clusters,n_max))
      cluster_map(:,:)=0
      points_by_cluster(:)=0
-     DO i=1,partitioned_data%nb
+     DO i=1,partitioned_data%nb_points
         j=partitioned_data%point(i)%cluster
         points_by_cluster(j)=points_by_cluster(j)+1
         cluster_map(j,points_by_cluster(j))=i
