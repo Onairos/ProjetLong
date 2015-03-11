@@ -780,6 +780,8 @@ PRINT *, 'DEBUG : Frobenius ratio'
     DOUBLE PRECISION :: bandSq !square of bandwidth
     DOUBLE PRECISION :: stopThresh !when mean has converged
     DOUBLE PRECISION :: clustCent(partitioned_data%dim,partitioned_data%nb_clusters) !centers of each cluster
+    DOUBLE PRECISION :: myMean(partitioned_data%dim) !mean of this cluster
+    DOUBLE PRECISION :: myOldMean(partitioned_data%dim) !old mean computed for this cluster
     
     !###########################################
     ! INSTRUCTIONS
