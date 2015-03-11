@@ -24,8 +24,23 @@
 \end{frame}
 \section{Introduction}
 \begin{frame}
-\frametitle{Clustering Method}
+\frametitle{Clustering method}
 \includegraphics[width=0.5\textwidth]{Image/Oranger.png}\includegraphics[width=0.5\textwidth]{Image/OrangerClust.png}
+\end{frame}
+\begin{frame}
+\frametitle{High computational complexity}
+\begin{columns}
+\begin{column}{0.4\textwidth}
+\begin{itemize}
+\item Huge quantity of data
+\item Dense matrices
+\item Extended applications
+\end{itemize}
+\end{column}
+\begin{column}{0.6\textwidth}
+\includegraphics[width=\columnwidth]{Image/parallel.png}
+\end{column}
+\end{columns}
 \end{frame}
 \section{Work organisation}
 \subsection{Project management}
@@ -61,7 +76,15 @@ Insufficient knowledge & Heavy & Medium & Increase the time dedicated to each ri
 \end{frame}
 \begin{frame}
 \frametitle{Technologies}
-
+\includegraphics[width=0.25\textwidth]{Image/fortran.png}
+\includegraphics[width=0.25\textwidth]{Image/matlab.png}
+\includegraphics[width=0.25\textwidth]{Image/java.png}
+\includegraphics[width=0.25\textwidth]{Image/doxygen.png}\\
+\begin{center}
+\includegraphics[width=0.25\textwidth]{Image/mysql.png}
+\includegraphics[width=0.25\textwidth]{Image/git.png}
+\includegraphics[width=0.25\textwidth]{Image/GoogleDocs1.png}
+\end{center}
 \end{frame}
 \subsection{Starting point}
 \begin{frame}
@@ -197,47 +220,31 @@ SUBROUTINE assign_picture_array(data)
 \item It is an highly repetitive work
 \end{enumerate}
 \end{alertblock}
-\begin{block}{Automatized comments writing}
+\begin{block}{Automated comments writing}
 \begin{itemize}
-\item Descriptions in tables
-\item Software for writing specific comments
+\item Descriptions in tables in a MySQL Database
+\item Software in Java for writing specific comments
 \end{itemize}
 \end{block}
 \end{frame}
 \subsection{Code refactoring}
-\begin{frame}
-\frametitle{Changing source code}
-\begin{block}{Purpose}
-Improve software quality and portability
-\end{block}
-\begin{enumerate}
-\item Changing the types "REAL" and "REAL(KIND=*)" into "DOUBLE PRECISION" and "INTEGER(KIND=*)" into "INTEGER"
-\item Changing the types "CHARACTER*x" into "CHARACTER (LEN=x)"
-\item Changing the types of some “INTEGER” variables used as boolean into “LOGICAL”
-\end{enumerate}
-\end{frame}
-\begin{frame}
-\frametitle{Organising source code}
+\begin{frame}[allowframebreaks]
 \begin{block}{Purpose}
 Improve readability and maintainability of the code
 \end{block}
 \begin{enumerate}
 \item Fortran keywords transformed in UPPERCASE
+\item Changing the types "REAL" and "REAL(KIND=*)" into "DOUBLE PRECISION" and "INTEGER(KIND=*)" into "INTEGER"
+\item Changing the types "CHARACTER*x" into "CHARACTER (LEN=x)"
 \item Removing of the commented code
 \item Declarations of parameters and variables at the beginning of a subroutine or program : one declaration line, ordered by type and name
-\item Removing the semicolons : only one instruction per line
+\item Rename methods : standardization (underscore to separate the different words), translation in english, better naming, blank space after each comma in the signature
 \item Removing the unused variables
-\end{enumerate}
-\end{frame}
-\begin{frame}
-\frametitle{Renaming and translating}
-\begin{block}{Purpose}
-Improve readability and internationalization
-\end{block}
-\begin{enumerate}
 \item Translation of the comments helping the understanding of the code
-\item Rename methods : standardization (underscore to separate the different words), translation in english, better naming, blank space after each comma in the signature, blank space after each comma in the signature
-\item Rename parameters of methods and variables : standardization (underscore to separate the different words), translation in english, better naming
+\item Removing the semicolons : only one instruction per line
+\item Changing the types of some “INTEGER” variables used as boolean into “LOGICAL”
+\item Rename methods : standardization (underscore to separate the different words), translation in english, better naming, blank space after each comma in the signature
+\item Rename parameters of methods : standardization (underscore to separate the different words), translation in english, better naming
 \item Translation of all the “PRINT” messages (displayed in the console during execution)
 \end{enumerate}
 \end{frame}
