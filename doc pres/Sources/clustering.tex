@@ -76,15 +76,7 @@ Insufficient knowledge & Heavy & Medium & Increase the time dedicated to each ri
 \end{frame}
 \begin{frame}
 \frametitle{Technologies}
-\includegraphics[width=0.25\textwidth]{Image/fortran.png}
-\includegraphics[width=0.25\textwidth]{Image/matlab.png}
-\includegraphics[width=0.25\textwidth]{Image/java.png}
-\includegraphics[width=0.25\textwidth]{Image/doxygen.png}\\
-\begin{center}
-\includegraphics[width=0.25\textwidth]{Image/mysql.png}
-\includegraphics[width=0.25\textwidth]{Image/git.png}
-\includegraphics[width=0.25\textwidth]{Image/GoogleDocs1.png}
-\end{center}
+\includegraphics[width=\textwidth]{Image/logos.png}
 \end{frame}
 \subsection{Starting point}
 \begin{frame}
@@ -100,79 +92,6 @@ Insufficient knowledge & Heavy & Medium & Increase the time dedicated to each ri
 \item F90 compilator (gfortran, ifort…)
 \item Makefile.x has to specify the correct paths of the libraries above
 \end{itemize}
-\end{frame}
-\section{Clustering algorithms}
-\subsection{Spectral Clustering}
-\begin{frame}
-\frametitle{Description}
-\begin{block}{Main idea}
-Create a pounded graph between points
-\end{block}
-\vfill
-\begin{columns}
-\begin{column}{0.6\textwidth}
-\begin{itemize}
-\item Each vertice weight represents the similarity between points
-\item The final graph is cut on the lowest similarity vertices
-\end{itemize}
-\end{column}
-\begin{column}{0.4\textwidth}
-\includegraphics[width=\columnwidth, height=4cm]{Image/graph.png}
-\end{column}
-\end{columns}
-\end{frame}
-\subsection{Kernel-K-Means}
-\begin{frame}
-\frametitle{K-Means}
-\begin{block}{Main idea}
-Select random centers for cluster and move them until they reach centers of density.
-\end{block}
-\begin{columns}
-\begin{column}{0.6\textwidth}
-\begin{enumerate}
-\item Find minimum distances to cluster centers
-\item Compute density centers
-\item Select new cluster centers
-\item Continue until cluster centers and density centers are similar
-\end{enumerate}
-\end{column}
-\begin{column}{0.4\textwidth}
-\animategraphics[autoplay,loop,width=\columnwidth]{1}{Image/kmeans}{1}{7}
-\end{column}
-\end{columns}
-\end{frame}
-\begin{frame}
-\frametitle{Description}
-\begin{block}{Main idea}
-Enhance K-Means algorithm using a Kernel function to map the original points to a feature space.
-\end{block}
-\begin{center}
-\includegraphics[width=0.5\textwidth]{Image/kernel.png}
-\end{center}
-\end{frame}
-\subsection{Mean Shift}
-\begin{frame}
-\frametitle{Description}
-\begin{block}{Main idea}
-Move a window over the data set following the density gradient.
-\end{block}
-\begin{columns}
-\begin{column}{0.6\textwidth}
-\begin{enumerate}
-\item Compute the mean of density in the specified window
-\item Compute difference between center of the window and computed mean
-\item Select the computed mean as the new center of the window
-\item Restart until difference close to 0
-\end{enumerate}
-\end{column}
-\begin{column}{0.4\textwidth}
-\animategraphics[autoplay,loop,width=\columnwidth]{1}{Image/meanshift}{1}{6}
-\end{column}
-\end{columns}
-\end{frame}
-\subsection{Results}
-\begin{frame}
-
 \end{frame}
 \section{Reverse engineering}
 \subsection{Doxygen documentation}
@@ -263,6 +182,79 @@ Improve readability and internationalization
 \item Rename parameters of methods and variables : standardization (underscore to separate the different words), translation in english, better naming
 \item Translation of all the “PRINT” messages (displayed in the console during execution)
 \end{enumerate}
+\end{frame}
+\section{Clustering algorithms}
+\subsection{Spectral Clustering}
+\begin{frame}
+\frametitle{Description}
+\begin{block}{Main idea}
+Create a pounded graph between points
+\end{block}
+\vfill
+\begin{columns}
+\begin{column}{0.6\textwidth}
+\begin{itemize}
+\item Each vertice weight represents the similarity between points
+\item The final graph is cut on the lowest similarity vertices
+\end{itemize}
+\end{column}
+\begin{column}{0.4\textwidth}
+\includegraphics[width=\columnwidth, height=4cm]{Image/graph.png}
+\end{column}
+\end{columns}
+\end{frame}
+\subsection{Kernel-K-Means}
+\begin{frame}
+\frametitle{K-Means}
+\begin{block}{Main idea}
+Select random centers for cluster and move them until they reach centers of density.
+\end{block}
+\begin{columns}
+\begin{column}{0.6\textwidth}
+\begin{enumerate}
+\item Find minimum distances to cluster centers
+\item Compute density centers
+\item Select new cluster centers
+\item Continue until cluster centers and density centers are similar
+\end{enumerate}
+\end{column}
+\begin{column}{0.4\textwidth}
+\animategraphics[autoplay,loop,width=\columnwidth]{1}{Image/kmeans}{1}{7}
+\end{column}
+\end{columns}
+\end{frame}
+\begin{frame}
+\frametitle{Description}
+\begin{block}{Main idea}
+Enhance K-Means algorithm using a Kernel function to map the original points to a feature space.
+\end{block}
+\begin{center}
+\includegraphics[width=0.5\textwidth]{Image/kernel.png}
+\end{center}
+\end{frame}
+\subsection{Mean Shift}
+\begin{frame}
+\frametitle{Description}
+\begin{block}{Main idea}
+Move a window over the data set following the density gradient.
+\end{block}
+\begin{columns}
+\begin{column}{0.6\textwidth}
+\begin{enumerate}
+\item Compute the mean of density in the specified window
+\item Compute difference between center of the window and computed mean
+\item Select the computed mean as the new center of the window
+\item Restart until difference close to 0
+\end{enumerate}
+\end{column}
+\begin{column}{0.4\textwidth}
+\animategraphics[autoplay,loop,width=\columnwidth]{1}{Image/meanshift}{1}{6}
+\end{column}
+\end{columns}
+\end{frame}
+\subsection{Results}
+\begin{frame}
+
 \end{frame}
 \section{Conclusion}
 \begin{frame}
