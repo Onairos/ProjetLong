@@ -80,72 +80,33 @@ Insufficient knowledge & Heavy & Medium & Increase the time dedicated to each ri
 \end{frame}
 \subsection{Starting point}
 \begin{frame}
-\frametitle{Configuration}
+\frametitle{Environment}
+\begin{block}{Source code}
+A package containing source code file have been provided: functional but with a poor design.
+\end{block}
+\begin{block}{Configuration and setup}
 \begin{itemize}
-\item Makefile for specific environment
-\item Libraries:
-\begin{itemize}
-\item MPI
-\item Lapack
-\item Arpack
+\item Libraries: MPI, Lapack and Arpack
+\item F90 Compiler: GFortran
+\item Configuration: Makefile
 \end{itemize}
-\item F90 compilator (gfortran, ifort…)
-\item Makefile.x has to specify the correct paths of the libraries above
-\end{itemize}
+\end{block}
 \end{frame}
+%\begin{frame}
+%\frametitle{Configuration}
+%\begin{itemize}
+%\item Makefile for specific environment
+%\item Libraries:
+%\begin{itemize}
+%\item MPI
+%\item Lapack
+%\item Arpack
+%\end{itemize}
+%\item F90 compilator (gfortran, ifort…)
+%\item Makefile.x has to specify the correct paths of the libraries above
+%\end{itemize}
+%\end{frame}
 \section{Reverse engineering}
-\subsection{Doxygen documentation}
-\begin{frame}
-\frametitle{Autogeneration with Doxygen}
-\begin{block}{Detected features}
-\begin{itemize}
-\item \textbf{Modules and programs} : name
-\item \textbf{Routines} : name and parameters
-\item \textbf{Parameters} : name and type
-\end{itemize}
-\end{block}
-\begin{block}{Produced output formats}
-\begin{itemize}
-\item \textit{HTML}: Documentation readable by a web browser
-\item \textit{PDF}: Documentation written in LaTex to generate a PDF file
-\end{itemize}
-\end{block}
-\end{frame}
-
-\begin{frame}[fragile,allowframebreaks]
-\frametitle{Specific comments}
-\begin{block}{Useful keywords}
-\begin{itemize}
-\item \textbf{@details} \textit{text}: detailed description of a module, structure or method
-\item \textbf{@param} \textit{name} [\textit{dir}] \textit{text}: description of a parameter 
-\end{itemize}
-\end{block}
-\begin{example}
-\begin{lstlisting}
-!> Puts the index number of the pixels into an array.
-!! @details Each point of the data set is mapped to 
-!! an array corresponding to an image. Two indices 
-!! will be used (row and column) instead of one.
-!! @note the data set has to be in picture format.
-!! @param[in,out] data the data set
-SUBROUTINE assign_picture_array(data)
-\end{lstlisting}
-\end{example}
-
-\begin{alertblock}{Remarks}
-\begin{enumerate}
-\item Documentation depends on refactoring
-\item Most of the parameters are similar from one method to another
-\item It is an highly repetitive work
-\end{enumerate}
-\end{alertblock}
-\begin{block}{Automated comments writing}
-\begin{itemize}
-\item Descriptions in tables in a MySQL Database
-\item Software in Java for writing specific comments
-\end{itemize}
-\end{block}
-\end{frame}
 \subsection{Code refactoring}
 \begin{frame}
 \frametitle{Changing source code}
@@ -183,12 +144,71 @@ Improve readability and internationalization
 \item Translation of all the “PRINT” messages (displayed in the console during execution)
 \end{enumerate}
 \end{frame}
+\subsection{Doxygen documentation}
+\begin{frame}[fragile]
+\begin{block}{Produced output formats}
+\begin{itemize}
+\item \textit{HTML}: Documentation readable by a web browser
+\item \textit{PDF}: Documentation written in LaTex to generate a PDF file
+\end{itemize}
+\end{block}
+
+\frametitle{Autogeneration with Doxygen}
+\begin{block}{Targets}
+Description for each module, program, routine and parameters.
+\end{block}
+
+\begin{example}
+\begin{lstlisting}
+!> Here is a brief description of the routine.
+!! @details Here is a detailed description.
+!! @param[dir] param Here is the parameter description
+SUBROUTINE my_routine(parameter)
+\end{lstlisting}
+\end{example}
+\end{frame}
+
+\begin{frame}
+\frametitle{How to proceed}
+\only<1>{
+\begin{alertblock}{Main issues}
+\begin{enumerate}
+\item Renaming and reordering parameters before documenting
+\item Repetitive work : 62 routines and 249 parameters
+\end{enumerate}
+\end{alertblock}
+}
+\only<1-2>{
+\begin{block}{Automated comments writing}
+A small software have been programmed to automatically write headers.
+\end{block}
+}
+\only<2>{
+\begin{columns}
+\begin{column}{0.4\textwidth}
+\begin{enumerate}
+\item Classify modules, methods and parameters
+\item Write descriptions in a database
+\item Extract information from the database
+\item Write header into the source file
+\end{enumerate}
+\end{column}
+\begin{column}{0.6\textwidth}
+\animategraphics[step,width=\columnwidth]{1}{Image/dox}{1}{5}
+\end{column}
+\end{columns}
+}
+\end{frame}
+\subsection{Quality improvement}
+\begin{frame}[allowframebreaks]
+\frametitle{Before and after}
+\end{frame}
 \section{Clustering algorithms}
 \subsection{Spectral Clustering}
 \begin{frame}
 \frametitle{Description}
 \begin{block}{Main idea}
-Create a pounded graph between points
+Create a weighted graph between points
 \end{block}
 \vfill
 \begin{columns}
