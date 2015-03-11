@@ -24,22 +24,67 @@
 \end{frame}
 \section{Introduction}
 \begin{frame}
-\frametitle{Presentation}
-\includegraphics[width=\textwidth]{Image/slide1.png}
+\frametitle{Clustering method}
+\includegraphics[width=0.5\textwidth]{Image/Oranger.png}\includegraphics[width=0.5\textwidth]{Image/OrangerClust.png}
 \end{frame}
 \begin{frame}
-\frametitle{Presentation}
-\includegraphics[width=\textwidth]{Image/slide2.png}
+\frametitle{High computational complexity}
+\begin{columns}
+\begin{column}{0.4\textwidth}
+\begin{itemize}
+\item Huge quantity of data
+\item Dense matrices
+\item Extended applications
+\end{itemize}
+\end{column}
+\begin{column}{0.6\textwidth}
+\includegraphics[width=\columnwidth]{Image/parallel.png}
+\end{column}
+\end{columns}
 \end{frame}
 \section{Work organisation}
 \subsection{Project management}
 \begin{frame}
+\small
 \frametitle{Development Plan}
-\includegraphics[width=\textwidth]{Image/slide3.png}
+\begin{description}
+\item [Step 1] Theoritical study + Matlab new methods implementation
+\item [Step 2] Code documentation + Fortran interfaces specification
+\item [Step 3] Code refactoring + Fortran implementation
+\item [Step 4] Validation
+\end{description}
+\tiny
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Risk Description} & \textbf{Probability} & \textbf{Impact} & \textbf{Action}
+\\
+\hline
+Unsatisfied client & Light & Heavy & Specification with the client
+\\
+\hline
+Unsuitable ressources & Medium & Heavy & Lighter test creation, early access request
+\\
+\hline
+Insufficient knowledge & Heavy & Medium & Increase the time dedicated to each risky task
+\\
+\hline
+\end{tabular}
 \end{frame}
 \begin{frame}
-\frametitle{Team organisation}
-\includegraphics[width=\textwidth]{Image/slide4.png}
+\frametitle{Team organization}
+\includegraphics[width=\textwidth]{Image/organisation.png}
+\end{frame}
+\begin{frame}
+\frametitle{Technologies}
+\includegraphics[width=0.25\textwidth]{Image/fortran.png}
+\includegraphics[width=0.25\textwidth]{Image/matlab.png}
+\includegraphics[width=0.25\textwidth]{Image/java.png}
+\includegraphics[width=0.25\textwidth]{Image/doxygen.png}\\
+\begin{center}
+\includegraphics[width=0.25\textwidth]{Image/mysql.png}
+\includegraphics[width=0.25\textwidth]{Image/git.png}
+\includegraphics[width=0.25\textwidth]{Image/GoogleDocs1.png}
+\end{center}
 \end{frame}
 \subsection{Starting point}
 \begin{frame}
@@ -136,7 +181,7 @@ Move a window over the data set following the density gradient.
 \begin{block}{Detected features}
 \begin{itemize}
 \item \textbf{Modules and programs} : name
-\item \textbf{Methods} : name and parameters
+\item \textbf{Routines} : name and parameters
 \item \textbf{Parameters} : name and type
 \end{itemize}
 \end{block}
@@ -162,7 +207,8 @@ Move a window over the data set following the density gradient.
 !! @details Each point of the data set is mapped to 
 !! an array corresponding to an image. Two indices 
 !! will be used (row and column) instead of one.
-!! @param[in,out] data the entire data for computing
+!! @note the data set has to be in picture format.
+!! @param[in,out] data the data set
 SUBROUTINE assign_picture_array(data)
 \end{lstlisting}
 \end{example}
@@ -174,10 +220,10 @@ SUBROUTINE assign_picture_array(data)
 \item It is an highly repetitive work
 \end{enumerate}
 \end{alertblock}
-\begin{block}{Automatized comments writing}
+\begin{block}{Automated comments writing}
 \begin{itemize}
-\item Descriptions in tables
-\item Software for writing specific comments
+\item Descriptions in tables in a MySQL Database
+\item Software in Java for writing specific comments
 \end{itemize}
 \end{block}
 \end{frame}
@@ -220,6 +266,5 @@ Improve readability and internationalization
 \end{frame}
 \section{Conclusion}
 \begin{frame}
-
 \end{frame}
 \end{document}
