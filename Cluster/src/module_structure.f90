@@ -39,7 +39,9 @@ MODULE module_structure
      INTEGER, DIMENSION(:), POINTER :: nb_elements
      INTEGER :: nb
   END TYPE type_clusters
-  !### Kernel parameter
+
+
+  !### Kernel parameter ####
   TYPE type_clustering_param
      ! Clustering method id
       INTEGER :: clustering_method_id

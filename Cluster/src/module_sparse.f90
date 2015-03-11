@@ -506,7 +506,6 @@ PRINT *, 'DEBUG : Frobenius ratio'
     RETURN 
     END SUBROUTINE apply_spectral_embedding_sparse
 
-<<<<<<< HEAD
 !>Computes the matrix vector product using sparsity
 !! @param[in] A the sparse matrix
 !! @param[in] X the input vector
