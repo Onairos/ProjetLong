@@ -129,7 +129,7 @@ CONTAINS
     TYPE(type_data) :: partitioned_data
     
     !#### Variables  ####
-    INTEGER status(MPI_STATUS_SIZE)
+    INTEGER :: status(MPI_STATUS_SIZE)
     INTEGER :: i
     INTEGER :: id_mpi
     INTEGER :: ierr
@@ -205,7 +205,7 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ==== 
-    TYPE(type_data) ::partitioned_data
+    TYPE(type_data) :: partitioned_data
     INTEGER :: nb_proc
     INTEGER, DIMENSION(:), POINTER :: points_by_domain
 
@@ -214,7 +214,7 @@ CONTAINS
     TYPE(type_clusters), DIMENSION(:), POINTER :: array_clust
     
     !#### Variables  ####    
-    INTEGER status(MPI_STATUS_SIZE)
+    INTEGER :: status(MPI_STATUS_SIZE)
     INTEGER :: i
     INTEGER :: id_mpi
     INTEGER :: ierr
@@ -268,7 +268,7 @@ CONTAINS
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    TYPE(type_data) ::partitioned_data
+    TYPE(type_data) :: partitioned_data
     INTEGER :: proc_id
 
     !#### Variables  ####
@@ -366,7 +366,7 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     TYPE(type_clusters), DIMENSION(:), POINTER :: array_clust
-    TYPE(type_data) ::partitioned_data
+    TYPE(type_data) :: partitioned_data
     INTEGER :: nb_clusters
     INTEGER :: nb_proc
     INTEGER, DIMENSION(:), POINTER :: points_by_domain 
