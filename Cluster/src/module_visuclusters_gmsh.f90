@@ -351,7 +351,7 @@ CONTAINS
     OPEN(FILE='cluster.final.visu',UNIT=1)
     WRITE(1,*) 'View "Clusters" {'
     ! Reading files
-    DO i=1,params%nbclusters
+    DO i=1,params%nb_clusters
        ! File name
        WRITE(num,*) i
        files='cluster.final.'//trim(adjustl(num))

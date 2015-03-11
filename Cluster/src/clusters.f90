@@ -181,7 +181,7 @@ PROGRAM clusters
      ! Case of 1 proc alone
      partitioned_data%nb=data%nb
      partitioned_data%dim=data%dim
-     partitioned_data%nbclusters=0
+     partitioned_data%nb_clusters=0
      ALLOCATE(partitioned_data%point(data%nb))
      DO i=1,data%nb
         ALLOCATE(partitioned_data%point(i)%coord(data%dim))
@@ -275,7 +275,7 @@ PROGRAM clusters
 
   ELSE
      ! Case of 1 proc alone
-     nb_clusters=partitioned_data%nbclusters
+     nb_clusters=partitioned_data%nb_clusters
      ALLOCATE(points_by_cluster(nb_clusters))
      points_by_cluster(:)=0
      n_max=0

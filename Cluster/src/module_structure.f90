@@ -7,7 +7,7 @@ MODULE module_structure
      TYPE(type_points), DIMENSION(:), POINTER :: point
      INTEGER :: nb ! Number of points
      INTEGER :: dim ! Dimension of points
-     INTEGER :: nbclusters ! Number of clusters
+     INTEGER :: nb_clusters ! Number of clusters
 
      ! Input parameters : format + processing
      INTEGER :: coord ! Data format classic points

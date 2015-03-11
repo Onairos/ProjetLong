@@ -13,7 +13,7 @@ MODULE module_visuclusters_structure
      INTEGER :: imgdim
      INTEGER :: imgt
      INTEGER :: interface
-     INTEGER :: nbclusters
+     INTEGER :: nb_clusters
      INTEGER :: nbp
      INTEGER :: nbproc
      INTEGER :: recouvrement

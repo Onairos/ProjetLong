@@ -355,7 +355,7 @@ CONTAINS
     ! Reading classic data
     OPEN(FILE=input_file,UNIT=2)
     READ(2,*) data%nb,data%dim
-    data%nbclusters=0
+    data%nb_clusters=0
     PRINT *, '> Number of points : ', data%nb
     PRINT *, '> Dimension : ', data%dim
     ALLOCATE(data%point(data%nb))
@@ -441,7 +441,7 @@ CONTAINS
        data%nb=data%nb*data%imgmap(i)
     ENDDO
     data%dim=data%imgt
-    data%nbclusters=0
+    data%nb_clusters=0
     PRINT *, '> Number of points to read : ', data%nb
     ALLOCATE(data%point(data%nb))
     ALLOCATE(coord_max(data%imgdim))
@@ -526,7 +526,7 @@ CONTAINS
        data%nb=data%nb*data%imgmap(i)
     ENDDO
     data%dim=data%imgdim+data%imgt
-    data%nbclusters=0
+    data%nb_clusters=0
     PRINT *,'> Number of points to read : ', data%nb
     ALLOCATE(data%point(data%nb))
     ALLOCATE(coord_max(data%dim))
@@ -626,7 +626,7 @@ CONTAINS
        data%nb=data%nb*data%imgmap(i)
     ENDDO
     data%dim=data%imgt
-    data%nbclusters=0
+    data%nb_clusters=0
     PRINT *, '> Number of points to read : ', data%nb
     ALLOCATE(data%point(data%nb))
     ALLOCATE(coord_max(data%dim))

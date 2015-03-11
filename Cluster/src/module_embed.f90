@@ -51,7 +51,7 @@ CONTAINS
     INTEGER :: proc_id
     
     !====  OUT ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers ! centre des nbclusters clusters
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: clusters_centers ! centre des clusters
     DOUBLE PRECISION, DIMENSION(:), POINTER :: clusters_energies ! somme des energies par cluster
     DOUBLE PRECISION :: ratio ! max des ration de frob sur matrice aff reordonnancee suivant
     DOUBLE PRECISION :: ratio_moy

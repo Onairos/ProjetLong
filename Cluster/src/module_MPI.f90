@@ -71,7 +71,7 @@ CONTAINS
     n=data%dim
     partitioned_data%nb=m
     partitioned_data%dim=n
-    partitioned_data%nbclusters=0
+    partitioned_data%nb_clusters=0
     IF (m>0) THEN
        ALLOCATE(partitioned_data%point(m))
        DO i=1,m
@@ -146,7 +146,7 @@ CONTAINS
     CALL MPI_RECV(n,1,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,status,ierr)
     partitioned_data%nb=m
     partitioned_data%dim=n
-    partitioned_data%nbclusters=0
+    partitioned_data%nb_clusters=0
     IF (m>0) THEN
        ALLOCATE(coord(m,n))
        coord=0.0
@@ -224,7 +224,7 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     IF (partitioned_data%nb>0) THEN
-       nb_clusters=partitioned_data%nbclusters
+       nb_clusters=partitioned_data%nb_clusters
     ELSE
        nb_clusters=0
     ENDIF
@@ -283,15 +283,15 @@ CONTAINS
     IF (partitioned_data%nb>0) THEN
        ! Number of clusters
        id_mpi=proc_id*11
-       CALL MPI_SEND(partitioned_data%nbclusters,1,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
+       CALL MPI_SEND(partitioned_data%nb_clusters,1,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
        ! Number of points by cluster
-       ALLOCATE(list(partitioned_data%nbclusters))
+       ALLOCATE(list(partitioned_data%nb_clusters))
        list(:) = 0
        DO i=1,partitioned_data%nb
           list(partitioned_data%point(i)%cluster)=list(partitioned_data%point(i)%cluster)+1
        ENDDO
        id_mpi=id_mpi+1
-       CALL MPI_SEND(list,partitioned_data%nbclusters,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
+       CALL MPI_SEND(list,partitioned_data%nb_clusters,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
     ENDIF
     RETURN
   END SUBROUTINE send_number_clusters
@@ -400,7 +400,7 @@ CONTAINS
           points_by_cluster(j)=points_by_cluster(j)+1
           cluster_map(j,points_by_cluster(j))=assignments(0,i)
        ENDDO
-       i0=i0+partitioned_data%nbclusters
+       i0=i0+partitioned_data%nb_clusters
     ENDIF
     points_max = maxval(points_by_domain)
     ALLOCATE(list_clusters(points_max))

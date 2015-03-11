@@ -264,20 +264,20 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     !#### Variables  ####
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Ker
     INTEGER :: it_max ! the maximum number of iterations
-    DOUBLE PRECISION :: cluster_center (partitioned_data%dim, partitioned_data%nbclusters) ! the cluster centers
-    DOUBLE PRECISION :: cluster_energy (partitioned_data%nbclusters) ! the cluster energies
+    DOUBLE PRECISION :: cluster_center (partitioned_data%dim, partitioned_data%nb_clusters) ! the cluster centers
+    DOUBLE PRECISION :: cluster_energy (partitioned_data%nb_clusters) ! the cluster energies
     INTEGER :: it_num ! the number of iterations taken
     INTEGER :: cluster (partitioned_data%nb) ! indicates which cluster each point belongs to
-    INTEGER :: cluster_population (partitioned_data%nbclusters) ! the number of points in each cluster
-    DOUBLE PRECISION :: listnorm (partitioned_data%nb, partitioned_data%nbclusters)
-    DOUBLE PRECISION :: stockcenter (partitioned_data%dim, partitioned_data%nbclusters)
-    DOUBLE PRECISION :: stockenergy (partitioned_data%nbclusters)
+    INTEGER :: cluster_population (partitioned_data%nb_clusters) ! the number of points in each cluster
+    DOUBLE PRECISION :: listnorm (partitioned_data%nb, partitioned_data%nb_clusters)
+    DOUBLE PRECISION :: stockcenter (partitioned_data%dim, partitioned_data%nb_clusters)
+    DOUBLE PRECISION :: stockenergy (partitioned_data%nb_clusters)
     DOUBLE PRECISION :: norm
     DOUBLE PRECISION :: seuil
     DOUBLE PRECISION :: val
     DOUBLE PRECISION :: valmax
-    INTEGER :: cluster_id (partitioned_data%nbclusters)
-    INTEGER :: stockpopulation (partitioned_data%nbclusters)
+    INTEGER :: cluster_id (partitioned_data%nb_clusters)
+    INTEGER :: stockpopulation (partitioned_data%nb_clusters)
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
@@ -305,7 +305,7 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     !
     !  Idiot checks.
     !
-    IF ( partitioned_data%nbclusters < 1 ) THEN
+    IF ( partitioned_data%nb_clusters < 1 ) THEN
        WRITE ( *, '(a)' ) ' '
        WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
        WRITE ( *, '(a)' ) '  CLUSTER_NUM < 1.0'
@@ -366,7 +366,7 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
 !#if aff
 PRINT *, 'recherche des centres'
 !#endif
-    DO i = 2, partitioned_data%nbclusters
+    DO i = 2, partitioned_data%nb_clusters
        ok=.FALSE.
        DO WHILE(.NOT.ok)
           valmax=2.0*seuil
@@ -415,7 +415,7 @@ PRINT *, 'recherche des centres'
     DO WHILE ((it_num<it_max).AND.(swap/=0))
        it_num = it_num + 1
        swap=0
-       DO i=1,partitioned_data%nbclusters
+       DO i=1,partitioned_data%nb_clusters
           stockenergy(i)=cluster_energy(i)
           stockpopulation(i)=cluster_population(i)
           DO j=1,partitioned_data%dim
@@ -424,13 +424,13 @@ PRINT *, 'recherche des centres'
        ENDDO
 
        !! Calcul de toutes les distances
-       cluster_population(1:partitioned_data%nbclusters) = 1
+       cluster_population(1:partitioned_data%nb_clusters) = 1
        listnorm(:,:)=0.0
        num1=0.0
        den1=0.0
        num2=0.0
        den2=0.0
-       DO k=1,partitioned_data%nbclusters
+       DO k=1,partitioned_data%nb_clusters
            DO i=1,partitioned_data%nb
                DO j=1,partitioned_data%nb
                    IF ( partitioned_data%point(j)%cluster.EQ.k) THEN
@@ -458,7 +458,7 @@ PRINT *, 'recherche des centres'
        !!assignation par rapport au min des distances
        cluster_population(:)=0
        DO i=1,partitioned_data%nb
-          DO j=1,partitioned_data%nbclusters
+          DO j=1,partitioned_data%nb_clusters
              IF (listnorm(i,j)<listnorm(i,partitioned_data%point(i)%cluster)) THEN
                 partitioned_data%point(i)%cluster=j
                 swap=swap+1
@@ -477,7 +477,7 @@ PRINT *, 'recherche des centres'
              cluster_center(k,i)=cluster_center(k,i)+partitioned_data%point(j)%coord(k)
           ENDDO
        ENDDO
-       DO i=1,partitioned_data%nbclusters
+       DO i=1,partitioned_data%nb_clusters
           cluster_center(:,i)=cluster_center(:,i)/cluster_population(i)
        ENDDO
 
@@ -684,13 +684,13 @@ PRINT *, 'DEBUG : Frobenius ratio'
 #endif
        ! Norm of frobenius ratio
        ratio=ratiomax(nb_clusters_max)
-       partitioned_data%nbclusters=nb_clusters_max
+       partitioned_data%nb_clusters=nb_clusters_max
        ratio1=0.0
        ratio2=1e+10
        DO i=2,nb_clusters_max
           seuilrij=1e-4
           IF ((ratiorii(i)>=0.95*ratio1).AND.(ratiorij(i)-ratio2<=seuilrij)) THEN  
-             partitioned_data%nbclusters=i
+             partitioned_data%nb_clusters=i
              ratio1=ratiorii(i)
              ratio2=ratiorij(i)
           ENDIF
@@ -702,14 +702,14 @@ PRINT *, 'DEBUG : Frobenius ratio'
        nb_info(:)=0
        ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
-       partitioned_data%nbclusters=nb_clusters_opt
+       partitioned_data%nb_clusters=nb_clusters_opt
     ELSE
        ! Case of a domain with less points than nb_clusters_opt or only one point
        ALLOCATE(nb_info(n))
        nb_info(:)=0
        ALLOCATE(ratiomin(1))
        ratiomin(:)=0.0
-       partitioned_data%nbclusters=n
+       partitioned_data%nb_clusters=n
        ALLOCATE(ratiomax(n))
        ratiomax(:)=0
        ALLOCATE(ratiomoy(n))
@@ -722,23 +722,23 @@ PRINT *, 'DEBUG : Frobenius ratio'
        ratiorij(:)=0
     ENDIF
     ! Case of nb_clusters==1
-    IF (partitioned_data%nbclusters==2) THEN
+    IF (partitioned_data%nb_clusters==2) THEN
        PRINT *, 'Ratio difference : ', ratiorij(2)/ratiorii(2)
        IF (ratiomax(2)>=0.6) THEN 
-          partitioned_data%nbclusters=1
+          partitioned_data%nb_clusters=1
        ELSE 
-          partitioned_data%nbclusters=2
+          partitioned_data%nb_clusters=2
        ENDIF
     ENDIF
 #if aff
-    PRINT *, 'DEBUG : ', proc_id,' : final cluster got : ', partitioned_data%nbclusters
+    PRINT *, 'DEBUG : ', proc_id,' : final cluster got : ', partitioned_data%nb_clusters
 #endif
 
     ! Final clustering computing
-    IF (partitioned_data%nbclusters>1) THEN
-       CALL apply_spectral_embedding(partitioned_data%nbclusters,n,Z,A,ratio,cluster,&
+    IF (partitioned_data%nb_clusters>1) THEN
+       CALL apply_spectral_embedding(partitioned_data%nb_clusters,n,Z,A,ratio,cluster,&
             clusters_centers,points_by_clusters,clusters_energies,&
-            nb_info(partitioned_data%nbclusters),proc_id,ratiomin(1),ratiorij(1),ratiorii(1))
+            nb_info(partitioned_data%nb_clusters),proc_id,ratiomin(1),ratiorij(1),ratiorii(1))
        DO i=1,partitioned_data%nb
           partitioned_data%point(i)%cluster=cluster(i)
        ENDDO
@@ -809,8 +809,8 @@ SUBROUTINE mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,b
     DOUBLE PRECISION :: myOldMean(partitioned_data%dim)							!old mean computed for this cluster
     INTEGER :: myMembers(partitioned_data%nb)										!1 if the point belongs to the cluster, else 0
     INTEGER :: mergeWith												!used to merge clusters
-    DOUBLE PRECISION :: clustCent(partitioned_data%dim,partitioned_data%nbclusters)			!centers of each cluster
-	INTEGER :: clusterVotes(partitioned_data%nbclusters,partitioned_data%nb)					!number of votes for each point for each cluster
+    DOUBLE PRECISION :: clustCent(partitioned_data%dim,partitioned_data%nb_clusters)			!centers of each cluster
+	INTEGER :: clusterVotes(partitioned_data%nb_clusters,partitioned_data%nb)					!number of votes for each point for each cluster
     INTEGER :: i
     INTEGER :: j
     INTEGER :: num
