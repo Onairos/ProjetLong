@@ -48,7 +48,7 @@ CONTAINS
     DOUBLE PRECISION :: ratio
     DOUBLE PRECISION :: ratio1
     DOUBLE PRECISION :: ratio2
-    DOUBLE PRECISION :: treshold
+    DOUBLE PRECISION :: threshold
     DOUBLE PRECISION :: t1
     DOUBLE PRECISION :: t2
     DOUBLE PRECISION :: t_cons_a
@@ -78,10 +78,10 @@ CONTAINS
 
     ! Beginning of sparsification
     nnz = 0
-    ! Arbitrary treshold value 
+    ! Arbitrary threshold value 
     ! TODO : mettre la valeur du facteur dans le fichier param
     factor = 3.0
-    treshold = factor*sigma
+    threshold = factor*sigma
 
     t1 = MPI_WTIME()
     DO i=1,n-1  ! bound ?
@@ -93,7 +93,7 @@ CONTAINS
              norm=norm+(partitioned_data%points(i)%coords(k)-partitioned_data%points(j)%coords(k))**2
           ENDDO
 
-          IF(sqrt(norm) <= treshold) THEN
+          IF(sqrt(norm) <= threshold) THEN
             nnz = nnz + 1
           ENDIF
 
@@ -118,9 +118,9 @@ CONTAINS
              norm=norm+(partitioned_data%points(i)%coords(k)-partitioned_data%points(j)%coords(k))**2
           ENDDO
           value=exp(-norm/sigma)
-          ! kepp if value <= treshold
+          ! kepp if value <= threshold
           ! (if we want to keep it all, do comment line IF, ENDIF)
-          IF(sqrt(norm) <= treshold) THEN
+          IF(sqrt(norm) <= threshold) THEN
             AS(l) = value
             IAS(l) = i
             JAS(l) = j
@@ -558,7 +558,6 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !! @param[out] Z the matrix of eigen vectors
 !! @param[out] W 
   SUBROUTINE solve_arpack(A, IA, JA, dim, nnz, nb_clusters_max, W, Z)
-
 !     %-------------------------------------------------%
 !     | The following INCLUDE statement and assignments |
 !     | initiate trace output from the internal         |
@@ -568,7 +567,6 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !     | time spent in the various stages of computation |
 !     | given by setting mnaupd = 1.                    |
 !     %-------------------------------------------------%
-
     INCLUDE 'debug.h'
     INTRINSIC abs
     EXTERNAL dlapy2

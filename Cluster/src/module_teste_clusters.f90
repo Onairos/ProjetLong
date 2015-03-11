@@ -110,7 +110,7 @@ CONTAINS
 
     !#### Variables  ####
     CHARACTER (LEN=80) :: files
-    LOGICAL :: existe
+    LOGICAL :: exist_bool
 
     !###########################################
     ! INSTRUCTIONS
@@ -119,14 +119,14 @@ CONTAINS
     PRINT *, '> Launching test...'
     CALL system(files)
     files=trim(adjustl(test%directory))//'/temps.MPI'
-    INQUIRE(FILE=files,EXIST=existe)
-    PRINT *, '> Computing clusters : ', existe
+    INQUIRE(FILE=files,EXIST=exist_bool)
+    PRINT *, '> Computing clusters : ', exist_bool
     files=trim(adjustl(test%directory))//'/visuclusters.paraview'
-    INQUIRE(FILE=files,EXIST=existe)
-    PRINT *, '> visu_clusters paraview :', existe
+    INQUIRE(FILE=files,EXIST=exist_bool)
+    PRINT *, '> visu_clusters paraview :', exist_bool
     files=trim(adjustl(test%directory))//'/visuclusters.gmsh'
-    INQUIRE(FILE=files,EXIST=existe)
-    PRINT *, '> visu_clusters gmsh :', existe
+    INQUIRE(FILE=files,EXIST=exist_bool)
+    PRINT *, '> visu_clusters gmsh :', exist_bool
     RETURN
   END SUBROUTINE execute_test
 
