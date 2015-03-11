@@ -61,7 +61,7 @@ CONTAINS
     CALL write_domains(data,nb_proc,domains)
 
     ! Partitioning definition
-    IF ((data%interface==1).OR.(nb_proc==1)) THEN
+    IF ((data%is_interfacing==1).OR.(nb_proc==1)) THEN
        ! Partitioning by interfacing
        CALL partition_with_interface(nb_proc,data,points_by_domain,assignments,domains,epsilon)
     ELSE
@@ -148,9 +148,9 @@ CONTAINS
 
 
 
- IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+ IF ((data%coords==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
        ! Processing : coordinates, coordinates picture or thresholded picture
-       ALLOCATE(bounds(data%dim,max(nb_proc-data%interface,1),2))
+       ALLOCATE(bounds(data%dim,max(nb_proc-data%is_interfacing,1),2))
        bounds(:,:,:)=0.0
        DO i=1,data%dim
           coord_min(i)=coord_min(i)-epsilon*1.1
@@ -159,7 +159,7 @@ CONTAINS
              bounds(i,j,1)=coord_min(i)+(j-1)*(coord_max(i)-coord_min(i))/partitioning(i)
              bounds(i,j,2)=coord_min(i)+j*(coord_max(i)-coord_min(i))/partitioning(i)
           ENDDO
-          IF (data%recouvrement==1) THEN
+          IF (data%is_overlapping==1) THEN
             ! Partitioning with interface mode
              DO j=1,partitioning(i)
                 bounds(i,j,1)=bounds(i,j,1)-epsilon
@@ -169,25 +169,25 @@ CONTAINS
           bounds(i,1,1)=coord_min(i)-0.01*abs(coord_min(i))
           bounds(i,partitioning(i),2)=coord_max(i)+0.01*abs(coord_max(i))
        ENDDO
-    ELSEIF (data%image==1) THEN
+    ELSEIF (data%is_image==1) THEN
        ! Processing for partionning pixels of picture
-       ALLOCATE(bounds(data%imgdim,max(nb_proc-1,1),2))
+       ALLOCATE(bounds(data%image_dim,max(nb_proc-1,1),2))
        bounds(:,:,:)=0.0
-       IF ((data%imgdim/=2).AND.(data%imgdim/=3)) THEN
+       IF ((data%image_dim/=2).AND.(data%image_dim/=3)) THEN
 #if aff
           PRINT *
           PRINT *, 'DEBUG : Picture format /= 2D, 3D is not supported !!!!'
 #endif
           STOP
        ENDIF
-       DO i=1,data%imgdim
+       DO i=1,data%image_dim
           coord_min(i)=1.0-epsilon*1.1
-          coord_max(i)=data%imgmap(i)+epsilon*1.1
+          coord_max(i)=data%partitioning(i)+epsilon*1.1
           DO j=1,partitioning(i)
              bounds(i,j,1)=coord_min(i)+(j-1)*(coord_max(i)-coord_min(i))/partitioning(i)
              bounds(i,j,2)=coord_min(i)+j*(coord_max(i)-coord_min(i))/partitioning(i)
           ENDDO
-          IF (data%recouvrement==1) THEN
+          IF (data%is_overlapping==1) THEN
             ! Partitioning with interface mode
              DO j=1,partitioning(i)
                 bounds(i,j,1)=bounds(i,j,1)-epsilon
@@ -240,15 +240,15 @@ CONTAINS
     !###########################################
     ! INSTRUCTIONS
     !###########################################
-    IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+    IF ((data%coords==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
        ! Processing : coordinates, coordinates picture or thresholded picture
-       ALLOCATE(domains(max(1,nb_proc-data%interface),data%dim,2))
+       ALLOCATE(domains(max(1,nb_proc-data%is_interfacing),data%dim,2))
        domains(:,:,:)=0.0
        ALLOCATE(list(data%dim))
        list(:)=1
        IF (nb_proc>1) THEN
           ! >1 proc
-          DO n=1,nb_proc-data%interface
+          DO n=1,nb_proc-data%is_interfacing
              DO k=1,data%dim
                 domains(n,k,:)=bounds(k,list(k),:)
              ENDDO
@@ -271,20 +271,20 @@ CONTAINS
           ENDDO
        ENDIF
        DEALLOCATE(list)
-    ELSEIF (data%image==1) THEN
+    ELSEIF (data%is_image==1) THEN
        ! Processing for partitioning in pixels of picture
-       ALLOCATE(domains(max(1,nb_proc-data%interface),data%imgdim,2))
+       ALLOCATE(domains(max(1,nb_proc-data%is_interfacing),data%image_dim,2))
        domains(:,:,:)=0.0
-       ALLOCATE(list(data%imgdim))
+       ALLOCATE(list(data%image_dim))
        list(:)=1
        IF (nb_proc>1) THEN
           ! >1 proc
-          DO n=1,nb_proc-data%interface
-             DO k=1,data%imgdim
+          DO n=1,nb_proc-data%is_interfacing
+             DO k=1,data%image_dim
                 domains(n,k,:)=bounds(k,list(k),:)
              ENDDO
              ok=.TRUE.
-             DO k=data%imgdim,1,-1
+             DO k=data%image_dim,1,-1
                 IF (ok) THEN
                    list(k)=list(k)+1
                    IF (list(k)>partitioning(k)) THEN
@@ -297,7 +297,7 @@ CONTAINS
           ENDDO
        ELSE
           ! 1 proc
-          DO k=1,data%imgdim
+          DO k=1,data%image_dim
              domains(1,k,:)=bounds(k,1,:)
           ENDDO
        ENDIF
@@ -359,30 +359,30 @@ CONTAINS
        DO WHILE(.NOT. ok)
           n=n+1
           ok=.TRUE.
-          IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          IF ((data%coords==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
-                IF ((data%point(i)%coords(j)>domains(n,j,2)).OR.&
-                     (data%point(i)%coords(j)<domains(n,j,1))) ok=.FALSE.
+                IF ((data%points(i)%coords(j)>domains(n,j,2)).OR.&
+                     (data%points(i)%coords(j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
-          ELSEIF (data%image==1) THEN
+          ELSEIF (data%is_image==1) THEN
              ! Processing for partitioning in pixels of picture
-             DO j=1,data%imgdim
-                IF ((data%refimg(i,j)>domains(n,j,2)).OR.&
-                     (data%refimg(i,j)<domains(n,j,1))) ok=.FALSE.
+             DO j=1,data%image_dim
+                IF ((data%image_ref(i,j)>domains(n,j,2)).OR.&
+                     (data%image_ref(i,j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
           ENDIF
           IF ((n>nb_proc-1).AND.(nb_proc>1)) THEN
 #if aff
              PRINT *, 'DEBUG : there is a bug in the partitioning ! n=', n, '. Number of process : ', nb_proc-1
 #endif
-             IF (data%geom==0) THEN
+             IF (data%is_geom==0) THEN
 #if aff
-                PRINT *, 'DEBUG : ', data%point(i)%coords(:)
+                PRINT *, 'DEBUG : ', data%points(i)%coords(:)
 #endif
              ELSE
 #if aff
-                PRINT *, 'DEBUG :', i, data%refimg(i,:)
+                PRINT *, 'DEBUG :', i, data%image_ref(i,:)
 #endif
              ENDIF
              CALL MPI_ABORT(ierr)
@@ -394,17 +394,17 @@ CONTAINS
        IF (nb_proc>1) THEN
           ! Search of interface if > 1 proc
           ok=.FALSE.
-          IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          IF ((data%coords==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
-                IF ((abs(data%point(i)%coords(j)-domains(n,j,1))<epsilon).OR.&
-                     (abs(data%point(i)%coords(j)-domains(n,j,2))<epsilon)) ok=.TRUE.
+                IF ((abs(data%points(i)%coords(j)-domains(n,j,1))<epsilon).OR.&
+                     (abs(data%points(i)%coords(j)-domains(n,j,2))<epsilon)) ok=.TRUE.
              ENDDO
-          ELSEIF (data%image==1) THEN
+          ELSEIF (data%is_image==1) THEN
              ! Processing for partitioning in pixels of picture
-             DO j=1,data%imgdim
-                IF ((abs(data%refimg(i,j)-domains(n,j,1))<epsilon).OR.&
-                     (abs(data%refimg(i,j)-domains(n,j,2))<epsilon)) ok=.TRUE.
+             DO j=1,data%image_dim
+                IF ((abs(data%image_ref(i,j)-domains(n,j,1))<epsilon).OR.&
+                     (abs(data%image_ref(i,j)-domains(n,j,2))<epsilon)) ok=.TRUE.
              ENDDO
           ENDIF
           IF (.NOT. ok) THEN
@@ -465,17 +465,17 @@ CONTAINS
        ! Search of packages
        DO n=1,nb_proc
           ok=.TRUE.
-          IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          IF ((data%coords==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
              ! Processing : coordinates, coordinates picture or thresholded picture
              DO j=1,data%dim
-                IF ((data%point(i)%coords(j)>domains(n,j,2)).OR.&
-                     (data%point(i)%coords(j)<domains(n,j,1))) ok=.FALSE.
+                IF ((data%points(i)%coords(j)>domains(n,j,2)).OR.&
+                     (data%points(i)%coords(j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
-          ELSEIF (data%image==1) THEN
+          ELSEIF (data%is_image==1) THEN
              ! Processing for partitioning in pixels of picture
-             DO j=1,data%imgdim
-                IF ((data%refimg(i,j)>domains(n,j,2)).OR.&
-                     (data%refimg(i,j)<domains(n,j,1))) ok=.FALSE.
+             DO j=1,data%image_dim
+                IF ((data%image_ref(i,j)>domains(n,j,2)).OR.&
+                     (data%image_ref(i,j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
           ENDIF
           IF (ok) THEN
@@ -539,7 +539,7 @@ CONTAINS
     DO WHILE(.NOT.ok)
        j=j+1 
        IF (j>points_by_cluster(i)) THEN
-          ! Line nÂ°1 is entirely tested
+          ! Line nÃÂ°1 is entirely tested
 #if aff
           PRINT *, 'DEBUG : number of elements after grouping :', points_by_cluster(i)
 #endif
@@ -554,14 +554,14 @@ CONTAINS
           ok=.TRUE.
        ELSEIF (points_by_cluster(i)>0) THEN
           ! Storage of index
-          data%point(cluster_map(i,j))%cluster=i
+          data%points(cluster_map(i,j))%cluster=i
           ! Test of overlappings
           ok2=.FALSE.
           i2=i+1
           j2=1
           DO WHILE(.NOT. ok2)
              IF (j2>points_by_cluster(i2)) THEN
-                ! Line nÂ°i2 entirely tested for the point (i,j)
+                ! Line nÃÂ°i2 entirely tested for the point (i,j)
                 i2=i2+1
                 j2=1
              ENDIF
@@ -571,7 +571,7 @@ CONTAINS
              ELSE
                 ! Intersections test
                 IF (cluster_map(i,j)==cluster_map(i2,j2)) THEN
-                   ! Intersection found : line nÂ°i2 added to line nÂ°i
+                   ! Intersection found : line nÃÂ°i2 added to line nÃÂ°i
                    n=0
                    DO k=1,points_by_cluster(i2)
                       ! Test of removal of duplications

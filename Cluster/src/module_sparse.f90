@@ -90,7 +90,7 @@ CONTAINS
           norm=0.0
 
           DO k=1,partitioned_data%dim
-             norm=norm+(partitioned_data%point(i)%coords(k)-partitioned_data%point(j)%coords(k))**2
+             norm=norm+(partitioned_data%points(i)%coords(k)-partitioned_data%points(j)%coords(k))**2
           ENDDO
 
           IF(sqrt(norm) <= treshold) THEN
@@ -115,7 +115,7 @@ CONTAINS
        DO j=i+1,n
           norm=0.0
           DO k=1,partitioned_data%dim
-             norm=norm+(partitioned_data%point(i)%coords(k)-partitioned_data%point(j)%coords(k))**2
+             norm=norm+(partitioned_data%points(i)%coords(k)-partitioned_data%points(j)%coords(k))**2
           ENDDO
           value=exp(-norm/sigma)
           ! kepp if value <= treshold
@@ -289,7 +289,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
             ratio_rii(1))
 
        DO i=1,partitioned_data%nb_points
-          partitioned_data%point(i)%clusters=clusters(i)
+          partitioned_data%points(i)%clusters=clusters(i)
        ENDDO
 
        DEALLOCATE(clusters)
@@ -307,7 +307,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
        PRINT *, 'DEBUG : ', proc_id, ' : OK'
 #endif
        DO i=1,partitioned_data%nb_points
-          partitioned_data%point(i)%clusters=1
+          partitioned_data%points(i)%clusters=1
        ENDDO
 #if aff
        PRINT *, 'DEBUG : ', proc_id, ' : cluster'
@@ -506,7 +506,6 @@ PRINT *, 'DEBUG : Frobenius ratio'
     RETURN 
     END SUBROUTINE apply_spectral_embedding_sparse
 
-<<<<<<< HEAD
 !>Computes the matrix vector product using sparsity
 !! @param[in] A the sparse matrix
 !! @param[in] X the input vector
@@ -522,15 +521,15 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, INTENT(IN), DIMENSION(nnz) :: A
-    DOUBLE PRECISION, INTENT(IN), DIMENSION(n) :: X
-    INTEGER, INTENT(IN), DIMENSION(nnz) :: IA
-    INTEGER, INTENT(IN), DIMENSION(nnz) :: JA
-    INTEGER, INTENT(IN) :: n
-    INTEGER, INTENT(IN) :: nnz
+    DOUBLE PRECISION, DIMENSION(nnz) :: A
+    DOUBLE PRECISION, DIMENSION(n) :: X
+    INTEGER, DIMENSION(nnz) :: IA
+    INTEGER, DIMENSION(nnz) :: JA
+    INTEGER, :: n
+    INTEGER, :: nnz
 
     !====  OUT ====
-    DOUBLE PRECISION, INTENT(OUT), DIMENSION(n) :: Y
+    DOUBLE PRECISION, DIMENSION(n) :: Y
 
     !#### Variables  ####
     INTEGER :: l
@@ -581,16 +580,16 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, INTENT(IN), DIMENSION(:) :: A
-    INTEGER, INTENT(IN), DIMENSION(:) :: IA
-    INTEGER, INTENT(IN), DIMENSION(:) :: JA
-    INTEGER, INTENT(IN) :: dim
-    INTEGER, INTENT(IN) :: nb_clusters_max
-    INTEGER, INTENT(IN) :: nnz
+    DOUBLE PRECISION, DIMENSION(:) :: A
+    INTEGER, DIMENSION(:) :: IA
+    INTEGER, DIMENSION(:) :: JA
+    INTEGER :: dim
+    INTEGER :: nb_clusters_max
+    INTEGER :: nnz
 
     !====  OUT ====
-    DOUBLE PRECISION, INTENT(OUT), POINTER :: Z(:,:)
-    DOUBLE PRECISION, INTENT(OUT), POINTER :: W(:)
+    DOUBLE PRECISION, POINTER :: Z(:,:)
+    DOUBLE PRECISION, POINTER :: W(:)
 
     !#### Variables  ####
     CHARACTER :: bmat*1

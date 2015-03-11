@@ -123,11 +123,11 @@ CONTAINS
     epsilon=0.0
     sigma=-1.0
     data%coords=0
-    data%image=0
-    data%geom=0
-    data%seuil=0
-    data%interface=0
-    data%recouvrement=0
+    data%is_image=0
+    data%is_geom=0
+    data%is_threshold=0
+    data%is_interfacing=0
+    data%is_overlapping=0
 
 
     nb_clusters_max=4
@@ -149,19 +149,19 @@ CONTAINS
           ok=.FALSE.
           READ(1,*) input_file
           IF (input_file=='IMAGE') THEN
-             data%image=1
+             data%is_image=1
              READ (1,*) input_file
              PRINT *, '> Input image format + partitioning by pixel'
              PRINT *, '> Reading input data file : ', input_file
              CALL read_picture_data(input_file,data,coord_min,coord_max)
           ELSEIF (input_file=='GEOM') THEN
-             data%geom=1
+             data%is_geom=1
              READ (1,*) input_file
              PRINT *, '> Input image format + geometric partitioning'
              PRINT *, '> Reading input data file : ', input_file
              CALL read_geometric_data(input_file,data,coord_min,coord_max)
           ELSEIF (input_file=='SEUIL') THEN
-             data%seuil=1
+             data%is_threshold=1
              READ (1,*) input_file
              PRINT *, '> Input image format + partitioning by threshold'
              PRINT *, '> Reading input data file : ', input_file
@@ -177,7 +177,7 @@ CONTAINS
              PRINT *, 'Non-recognized data format !!!'
              CALL help
           ENDIF
-          IF ((data%image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          IF ((data%is_image==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
              ! Creation of array pixels/coordinates
              PRINT *, '> Decoding image format...'
              CALL assign_picture_array(data)
@@ -204,8 +204,8 @@ CONTAINS
           PRINT *, '> clustering method id =', clust_param%clustering_method_id
        CASE('GAMMA')
           ok=.FALSE.
-          READ(1,*) clust_param%gam
-          PRINT *, '> 	gamma =', clust_param%gam
+          READ(1,*) clust_param%gamma
+          PRINT *, '> 	gamma =', clust_param%gamma
        CASE('DELTA')
           ok=.FALSE.
           READ(1,*) clust_param%delta
@@ -215,7 +215,7 @@ CONTAINS
           READ(1,*) sigma
           PRINT *, '> Imposed value of sigma : ', sigma
           clust_param%sigma=sigma
-          IF (data%image==1) THEN
+          IF (data%is_image==1) THEN
              IF (sigma<1.0) THEN
                 PRINT *, 'Too small thickness for image mode !!!!'
                 STOP
@@ -231,10 +231,10 @@ CONTAINS
           READ (1,*) word
           SELECT CASE(word)
           CASE('INTERFACE')
-             data%interface=1
+             data%is_interfacing=1
              PRINT *, '> Partitioning by interface activated.'
           CASE('RECOUVREMENT')
-             data%recouvrement=1
+             data%is_overlapping=1
              PRINT *, '> Partitioning by overlapping activated.'
           CASE DEFAULT
              PRINT *
@@ -243,42 +243,42 @@ CONTAINS
              CALL help
           END SELECT
           PRINT *, 'dim : ', data%dim
-          IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          IF ((data%coords==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
              ALLOCATE(partitioning(data%dim))
-          ELSEIF (data%image==1) THEN
+          ELSEIF (data%is_image==1) THEN
              ! Partitioning per pixel
-             ALLOCATE(partitioning(data%imgdim))
+             ALLOCATE(partitioning(data%image_dim))
           ENDIF
           READ(1,*) partitioning(:)
           PRINT *, 'partitioning', partitioning
           IF (nb_proc>1) THEN
              tot=1
-             IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+             IF ((data%coords==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
                 DO i=1,data%dim
                    tot=tot*partitioning(i)
                 ENDDO
-             ELSEIF (data%image==1) THEN
+             ELSEIF (data%is_image==1) THEN
                 ! Partitioning per pixel
-                DO i=1,data%imgdim
+                DO i=1,data%image_dim
                    tot=tot*partitioning(i)
                 ENDDO
              ENDIF
-             IF (tot/=nb_proc-data%interface) THEN
+             IF (tot/=nb_proc-data%is_interfacing) THEN
                 PRINT *, 'Invalidated partitioning !'
-                PRINT *, 'Number of process must be equal to ', tot+data%interface
+                PRINT *, 'Number of process must be equal to ', tot+data%is_interfacing
                 CALL MPI_ABORT(ierr)
                 STOP
              ENDIF
           ELSE
              ! 1 proc
-             IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+             IF ((data%coords==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
                 DO i=1,data%dim
                    partitioning(i)=1
                 ENDDO
                 tot=1
-             ELSEIF (data%image==1) THEN
+             ELSEIF (data%is_image==1) THEN
                 ! Partitioning per pixel
-                DO i=1,data%imgdim
+                DO i=1,data%image_dim
                    partitioning(i)=1
                 ENDDO
                 tot=1
@@ -302,22 +302,22 @@ CONTAINS
     IF (nb_proc==1) THEN
        ! Initialization to 1 by default of all the partitioning parameters
        IF (partitioning_bool) DEALLOCATE(partitioning)
-       IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+       IF ((data%coords==1).OR.(data%is_geom==1).OR.(data%is_threshold==1)) THEN
           ALLOCATE(partitioning(data%dim) )
-       ELSEIF (data%image==1) THEN
-          ALLOCATE(partitioning(data%imgdim))
+       ELSEIF (data%is_image==1) THEN
+          ALLOCATE(partitioning(data%image_dim))
        ENDIF
        partitioning(:)=1
        epsilon=1.0
     ENDIF   
     ! Validation of the combinations of input parameters
-    tot=data%geom+data%seuil+data%coords+data%image
+    tot=data%is_geom+data%is_threshold+data%coords+data%is_image
     IF (tot/=1) THEN
        PRINT *
        PRINT *, 'Problem with data format !'
        CALL help
     ENDIF
-    tot=data%interface+data%recouvrement
+    tot=data%is_interfacing+data%is_overlapping
     IF (tot/=1) THEN
        PRINT *
        PRINT *, 'Problem with data format !'
@@ -358,22 +358,22 @@ CONTAINS
     data%nb_clusters=0
     PRINT *, '> Number of points : ', data%nb_points
     PRINT *, '> Dimension : ', data%dim
-    ALLOCATE(data%point(data%nb_points))
+    ALLOCATE(data%points(data%nb_points))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
     nb=0
     DO i=1,data%nb_points
-       ALLOCATE(data%point(i)%coords(data%dim))
-       READ(2,*,END=100) data%point(i)%coords(:)
+       ALLOCATE(data%points(i)%coords(data%dim))
+       READ(2,*,END=100) data%points(i)%coords(:)
        nb=nb+1
-       data%point(i)%cluster=-1
+       data%points(i)%cluster=-1
        IF (i==1) THEN
-          coord_max(:)=data%point(1)%coords(:)
-          coord_min(:)=data%point(1)%coords(:)
+          coord_max(:)=data%points(1)%coords(:)
+          coord_min(:)=data%points(1)%coords(:)
        ELSE
           DO j=1,data%dim
-             coord_min(j)=min(coord_min(j),data%point(i)%coords(j))
-             coord_max(j)=max(coord_max(j),data%point(i)%coords(j))
+             coord_min(j)=min(coord_min(j),data%points(i)%coords(j))
+             coord_max(j)=max(coord_max(j),data%points(i)%coords(j))
           ENDDO
        ENDIF
     ENDDO
@@ -430,32 +430,32 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     OPEN(FILE=input_file,UNIT=2)
-    READ(2,*) data%imgdim,data%imgt
-    PRINT *, '> Image dimension : ', data%imgdim
-    PRINT *, '> Number of time : ', data%imgt
-    ALLOCATE(data%imgmap(data%imgdim))
-    READ(2,*) data%imgmap(:)
-    PRINT *, '> Spatial partitioning : ', data%imgmap
+    READ(2,*) data%image_dim,data%image_times
+    PRINT *, '> Image dimension : ', data%image_dim
+    PRINT *, '> Number of time : ', data%image_times
+    ALLOCATE(data%partitioning(data%image_dim))
+    READ(2,*) data%partitioning(:)
+    PRINT *, '> Spatial partitioning : ', data%partitioning
     data%nb_points=1
-    DO i=1,data%imgdim
-       data%nb_points=data%nb_points*data%imgmap(i)
+    DO i=1,data%image_dim
+       data%nb_points=data%nb_points*data%partitioning(i)
     ENDDO
-    data%dim=data%imgt
+    data%dim=data%image_times
     data%nb_clusters=0
     PRINT *, '> Number of points to read : ', data%nb_points
-    ALLOCATE(data%point(data%nb_points))
-    ALLOCATE(coord_max(data%imgdim))
-    ALLOCATE(coord_min(data%imgdim))
+    ALLOCATE(data%points(data%nb_points))
+    ALLOCATE(coord_max(data%image_dim))
+    ALLOCATE(coord_min(data%image_dim))
     coord_min(:)=0.9
-    DO i=1,data%imgdim
-       coord_max(i)=data%imgmap(i)+0.1
+    DO i=1,data%image_dim
+       coord_max(i)=data%partitioning(i)+0.1
     ENDDO
     nb=0
     DO i=1,data%nb_points
-       ALLOCATE(data%point(i)%coords(data%dim))
-       READ(2,*,END=200) data%point(i)%coords(:)
+       ALLOCATE(data%points(i)%coords(data%dim))
+       READ(2,*,END=200) data%points(i)%coords(:)
        nb=nb+1
-       data%point(i)%cluster=-1
+       data%points(i)%cluster=-1
     ENDDO
 200 PRINT *, '> Number of points read : ', nb       
     data%nb_points=nb
@@ -513,38 +513,38 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     OPEN(FILE=input_file,UNIT=2)
-    READ(2,*) data%imgdim,data%imgt
-    PRINT *, '> Image dimension : ', data%imgdim
-    PRINT *, '> Number of time : ', data%imgt
-    ALLOCATE(data%pas(data%imgdim))
-    data%pas(:)=0.0
-    ALLOCATE(data%imgmap(data%imgdim))
-    READ(2,*) data%imgmap(:)
-    PRINT *, '> Spatial partitioning : ', data%imgmap
+    READ(2,*) data%image_dim,data%image_times
+    PRINT *, '> Image dimension : ', data%image_dim
+    PRINT *, '> Number of time : ', data%image_times
+    ALLOCATE(data%step(data%image_dim))
+    data%step(:)=0.0
+    ALLOCATE(data%partitioning(data%image_dim))
+    READ(2,*) data%partitioning(:)
+    PRINT *, '> Spatial partitioning : ', data%partitioning
     data%nb_points=1
-    DO i=1,data%imgdim
-       data%nb_points=data%nb_points*data%imgmap(i)
+    DO i=1,data%image_dim
+       data%nb_points=data%nb_points*data%partitioning(i)
     ENDDO
-    data%dim=data%imgdim+data%imgt
+    data%dim=data%image_dim+data%image_times
     data%nb_clusters=0
     PRINT *,'> Number of points to read : ', data%nb_points
-    ALLOCATE(data%point(data%nb_points))
+    ALLOCATE(data%points(data%nb_points))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
     nb=0
     DO i=1,data%nb_points
-       ALLOCATE(data%point(i)%coords(data%dim))
-       data%point(i)%coords(:)=0.0
-       READ(2,*,END=300) data%point(i)%coords(data%imgdim+1:data%imgdim+data%imgt)
+       ALLOCATE(data%points(i)%coords(data%dim))
+       data%points(i)%coords(:)=0.0
+       READ(2,*,END=300) data%points(i)%coords(data%image_dim+1:data%image_dim+data%image_times)
        nb=nb+1
-       data%point(i)%cluster=-1
+       data%points(i)%cluster=-1
        IF (i==1) THEN
-          coord_max(:)=data%point(1)%coords(:)
-          coord_min(:)=data%point(1)%coords(:)
+          coord_max(:)=data%points(1)%coords(:)
+          coord_min(:)=data%points(1)%coords(:)
        ELSE
           DO j=1,data%dim
-             coord_min(j)=min(coord_min(j),data%point(i)%coords(j))
-             coord_max(j)=max(coord_max(j),data%point(i)%coords(j))
+             coord_min(j)=min(coord_min(j),data%points(i)%coords(j))
+             coord_max(j)=max(coord_max(j),data%points(i)%coords(j))
           ENDDO
        ENDIF
     ENDDO
@@ -553,17 +553,17 @@ CONTAINS
     CLOSE(2)
     PRINT *, '> Min/max coordinates : '
     max_step=1.e-13
-    DO j=data%imgdim+1,data%imgdim+data%imgt
+    DO j=data%image_dim+1,data%image_dim+data%image_times
        max_step=max(max_step,coord_max(j)-coord_min(j))
        PRINT *, '> ', j, ' : ', coord_min(j), coord_max(j)
     ENDDO
     PRINT *,'> Maximal step : ', max_step
     ! Searching steps by picture dimension
-    DO j=1,data%imgdim
-       data%pas(j)=max_step/data%imgmap(j)
-       PRINT *, '> Step : ', j, data%pas(j)
-       coord_min(j)=0.9*data%pas(j)
-       coord_max(j)=(data%imgmap(j)+1)*data%pas(j)
+    DO j=1,data%image_dim
+       data%step(j)=max_step/data%partitioning(j)
+       PRINT *, '> Step : ', j, data%step(j)
+       coord_min(j)=0.9*data%step(j)
+       coord_max(j)=(data%partitioning(j)+1)*data%step(j)
     ENDDO
     RETURN
   END SUBROUTINE read_geometric_data
@@ -615,35 +615,35 @@ CONTAINS
     !###########################################
     ! Reading classic data
     OPEN(FILE=input_file,UNIT=2)
-    READ(2,*) data%imgdim,data%imgt
-    PRINT *, '> Image dimension : ', data%imgdim
-    PRINT *, '> Number of time : ', data%imgt
-    ALLOCATE(data%imgmap(data%imgdim))
-    READ(2,*) data%imgmap(:)
-    PRINT *, '> Spatial dimension : ', data%imgmap
+    READ(2,*) data%image_dim,data%image_times
+    PRINT *, '> Image dimension : ', data%image_dim
+    PRINT *, '> Number of time : ', data%image_times
+    ALLOCATE(data%partitioning(data%image_dim))
+    READ(2,*) data%partitioning(:)
+    PRINT *, '> Spatial dimension : ', data%partitioning
     data%nb_points=1
-    DO i=1,data%imgdim
-       data%nb_points=data%nb_points*data%imgmap(i)
+    DO i=1,data%image_dim
+       data%nb_points=data%nb_points*data%partitioning(i)
     ENDDO
-    data%dim=data%imgt
+    data%dim=data%image_times
     data%nb_clusters=0
     PRINT *, '> Number of points to read : ', data%nb_points
-    ALLOCATE(data%point(data%nb_points))
+    ALLOCATE(data%points(data%nb_points))
     ALLOCATE(coord_max(data%dim))
     ALLOCATE(coord_min(data%dim))
     nb=0
     DO i=1,data%nb_points
-       ALLOCATE(data%point(i)%coords(data%dim))
-       READ(2,*,END=400) data%point(i)%coords(:)
+       ALLOCATE(data%points(i)%coords(data%dim))
+       READ(2,*,END=400) data%points(i)%coords(:)
        nb=nb+1
-       data%point(i)%cluster=-1
+       data%points(i)%cluster=-1
        IF (i==1) THEN
-          coord_max(:)=data%point(1)%coords(:)
-          coord_min(:)=data%point(1)%coords(:)
+          coord_max(:)=data%points(1)%coords(:)
+          coord_min(:)=data%points(1)%coords(:)
        ELSE
           DO j=1,data%dim
-             coord_min(j)=min(coord_min(j),data%point(i)%coords(j))
-             coord_max(j)=max(coord_max(j),data%point(i)%coords(j))
+             coord_min(j)=min(coord_min(j),data%points(i)%coords(j))
+             coord_max(j)=max(coord_max(j),data%points(i)%coords(j))
           ENDDO
        ENDIF
     ENDDO
@@ -685,22 +685,22 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     ! Creation of array points/image_coordinates
-    ALLOCATE(data%refimg(data%nb_points,data%imgdim))
-    ALLOCATE(plane(data%imgdim))
+    ALLOCATE(data%image_ref(data%nb_points,data%image_dim))
+    ALLOCATE(plane(data%image_dim))
     plane(:)=1
     DO i=1,data%nb_points
-       DO j=1,data%imgdim
+       DO j=1,data%image_dim
           ! Index in the array points/pixel
-          data%refimg(i,j)=plane(j)
-          IF (data%geom==1) THEN
+          data%image_ref(i,j)=plane(j)
+          IF (data%is_geom==1) THEN
              ! Input of coordinates 1:imgdim for the geometric cluster
-             data%point(i)%coords(j)=plane(j)*data%pas(j)
+             data%points(i)%coords(j)=plane(j)*data%step(j)
           ENDIF
        ENDDO
        ok=.FALSE.
-       k=data%imgdim
+       k=data%image_dim
        DO WHILE(.NOT. ok)
-          IF (plane(k)<data%imgmap(k)) THEN
+          IF (plane(k)<data%partitioning(k)) THEN
              plane(k)=plane(k)+1
              ok=.TRUE.
           ELSE

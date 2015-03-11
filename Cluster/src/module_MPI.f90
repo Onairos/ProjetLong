@@ -58,7 +58,7 @@ CONTAINS
           ALLOCATE(coords(m,n))
           coords=0.0
           DO j=1,m
-             coords(j,1:n)=data%point(assignments(i,j))%coords(1:n)
+             coords(j,1:n)=data%points(assignments(i,j))%coords(1:n)
           ENDDO
           ! Sending arrays
           id_mpi=i*10
@@ -73,31 +73,31 @@ CONTAINS
     partitioned_data%dim=n
     partitioned_data%nb_clusters=0
     IF (m>0) THEN
-       ALLOCATE(partitioned_data%point(m))
+       ALLOCATE(partitioned_data%points(m))
        DO i=1,m
-          ALLOCATE(partitioned_data%point(i)%coords(n))
-          partitioned_data%point(i)%coords(:)=data%point(assignments(0,i))%coords(:)
-          partitioned_data%point(i)%cluster=0
+          ALLOCATE(partitioned_data%points(i)%coords(n))
+          partitioned_data%points(i)%coords(:)=data%points(assignments(0,i))%coords(:)
+          partitioned_data%points(i)%cluster=0
        ENDDO
     ENDIF
     ! Sending flags picture, threshold, geometric...
     n=data%coords
     partitioned_data%coords=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%image
-    partitioned_data%image=n
+    n=data%is_image
+    partitioned_data%is_image=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%geom
-    partitioned_data%geom=n
+    n=data%is_geom
+    partitioned_data%is_geom=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%seuil
-    partitioned_data%seuil=n
+    n=data%is_threshold
+    partitioned_data%is_threshold=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%recouvrement
-    partitioned_data%recouvrement=n
+    n=data%is_overlapping
+    partitioned_data%is_overlapping=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%interface
-    partitioned_data%interface=n
+    n=data%is_interfacing
+    partitioned_data%is_interfacing=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     n=data%dim
     partitioned_data%dim=n
@@ -155,11 +155,11 @@ CONTAINS
        CALL MPI_RECV(coords,m*n,MPI_DOUBLE_PRECISION,0,id_mpi,&
             MPI_COMM_WORLD,status,ierr)
        ! Creation of TYPE partitioned_data of subdomain
-       ALLOCATE(partitioned_data%point(m))
+       ALLOCATE(partitioned_data%points(m))
        DO i=1,m
-          ALLOCATE(partitioned_data%point(i)%coords(n))
-          partitioned_data%point(i)%coords=coords(i,:)
-          partitioned_data%point(i)%cluster=0
+          ALLOCATE(partitioned_data%points(i)%coords(n))
+          partitioned_data%points(i)%coords=coords(i,:)
+          partitioned_data%points(i)%cluster=0
        ENDDO
        DEALLOCATE(coords)
     ENDIF
@@ -167,15 +167,15 @@ CONTAINS
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     partitioned_data%coords=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%image=n
+    partitioned_data%is_image=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%geom=n
+    partitioned_data%is_geom=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%seuil=n
+    partitioned_data%is_threshold=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%recouvrement=n
+    partitioned_data%is_overlapping=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%interface=n
+    partitioned_data%is_interfacing=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     partitioned_data%dim=n
     RETURN
@@ -243,8 +243,8 @@ CONTAINS
     DO i=1,nb_proc-1
        IF (points_by_domain(i)>0) THEN
           id_mpi=i*11+1
-          ALLOCATE(array_clust(i)%nbelt(array_clust(i)%nb))
-          CALL MPI_RECV(array_clust(i)%nbelt,array_clust(i)%nb,MPI_INTEGER,i,id_mpi,MPI_COMM_WORLD,status,ierr)
+          ALLOCATE(array_clust(i)%nb_elements(array_clust(i)%nb))
+          CALL MPI_RECV(array_clust(i)%nb_elements,array_clust(i)%nb,MPI_INTEGER,i,id_mpi,MPI_COMM_WORLD,status,ierr)
        ENDIF
     ENDDO
     RETURN
@@ -288,7 +288,7 @@ CONTAINS
        ALLOCATE(list(partitioned_data%nb_clusters))
        list(:) = 0
        DO i=1,partitioned_data%nb_points
-          list(partitioned_data%point(i)%cluster)=list(partitioned_data%point(i)%cluster)+1
+          list(partitioned_data%points(i)%cluster)=list(partitioned_data%points(i)%cluster)+1
        ENDDO
        id_mpi=id_mpi+1
        CALL MPI_SEND(list,partitioned_data%nb_clusters,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
@@ -329,7 +329,7 @@ CONTAINS
     IF (partitioned_data%nb_points>0) THEN
        ALLOCATE(list_clusters(partitioned_data%nb_points))
        DO i=1,partitioned_data%nb_points
-          list_clusters(i)=partitioned_data%point(i)%cluster
+          list_clusters(i)=partitioned_data%points(i)%cluster
        ENDDO
        id_mpi=proc_id*12
        CALL MPI_SEND(list_clusters,partitioned_data%nb_points,MPI_INTEGER,0,id_mpi,MPI_COMM_WORLD,ierr)
@@ -396,7 +396,7 @@ CONTAINS
     IF (partitioned_data%nb_points>0) THEN
        ! Storage of local clusters in the global array
        DO i=1,partitioned_data%nb_points
-          j=partitioned_data%point(i)%cluster
+          j=partitioned_data%points(i)%cluster
           points_by_cluster(j)=points_by_cluster(j)+1
           cluster_map(j,points_by_cluster(j))=assignments(0,i)
        ENDDO

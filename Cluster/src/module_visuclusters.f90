@@ -45,79 +45,79 @@ CONTAINS
     !###########################################      
     ! INSTRUCTIONS
     !###########################################     
-    params%geom=0
-    params%seuil=0
+    params%is_geom=0
+    params%is_threshold=0
     PRINT *
     PRINT *, 'Reading info...'
     READ (3,*)
-    READ(3,*) params%mesh
-    PRINT *, '> Mesh file name : ', params%mesh
+    READ(3,*) params%input_file
+    PRINT *, '> Mesh file name : ', params%input_file
     READ (3,*)
-    READ(3,*) params%nbp
-    PRINT *, '> Number of points : ', params%nbp
+    READ(3,*) params%nb_points
+    PRINT *, '> Number of points : ', params%nb_points
     READ (3,*)
     READ (3,*) params%dim
     PRINT *, '> Dimension : ', params%dim
     READ (3,*)
-    READ(3,*) params%nbproc
-    PRINT *, '> Number of process : ', params%nbproc
+    READ(3,*) params%nb_proc
+    PRINT *, '> Number of process : ', params%nb_proc
     READ (3,*)
-    READ(3,*) params%interface
-    PRINT *, '> Partitioning by interfacing ? : ', params%interface
+    READ(3,*) params%is_interfacing
+    PRINT *, '> Partitioning by interfacing ? : ', params%is_interfacing
     READ (3,*)
-    READ(3,*) params%recouvrement
-    PRINT *, '> Partitioning by overlapping ? : ', params%recouvrement
+    READ(3,*) params%is_overlapping
+    PRINT *, '> Partitioning by overlapping ? : ', params%is_overlapping
     READ (3,*)
     READ(3,*) params%nb_clusters  
     PRINT *, '> Number of clusters got : ', params%nb_clusters
     READ (3,*)
-    READ(3,*) params%coord
-    PRINT *, '> Coordinates format ? : ', params%coord
+    READ(3,*) params%coords
+    PRINT *, '> Coordinates format ? : ', params%coords
     READ (3,*)
-    READ(3,*) params%image
-    PRINT *, '> Image format ? : ', params%image
+    READ(3,*) params%is_image
+    PRINT *, '> Image format ? : ', params%is_image
     READ (3,*)
-    READ(3,*) params%geom
-    PRINT *, '> Geometric format ? : ', params%geom
+    READ(3,*) params%is_geom
+    PRINT *, '> Geometric format ? : ', params%is_geom
     READ (3,*)
-    READ(3,*) params%seuil
-    PRINT *, '> Threshold format ? : ', params%seuil
-    IF ((params%image==1).OR.(params%geom==1).OR.(params%seuil==1)) THEN
+    READ(3,*) params%is_threshold
+    PRINT *, '> Threshold format ? : ', params%is_threshold
+    IF ((params%is_image==1).OR.(params%is_geom==1).OR.(params%is_threshold==1)) THEN
        READ (3,*)
-       READ(3,*) params%imgdim
-       PRINT *, '> Image dimension : ', params%imgdim
-       ALLOCATE(params%imgmap(params%imgdim))
+       READ(3,*) params%image_dim
+       PRINT *, '> Image dimension : ', params%image_dim
+       ALLOCATE(params%partitioning(params%image_dim))
        READ (3,*)
-       READ(3,*) params%imgmap(:)
-       PRINT *, '> Image partitioning : ', params%imgmap
+       READ(3,*) params%partitioning(:)
+       PRINT *, '> Image partitioning : ', params%partitioning
        READ (3,*)
-       READ(3,*) params%imgt
-       PRINT *, '> Number of time : ', params%imgt
+       READ(3,*) params%image_times
+       PRINT *, '> Number of time : ', params%image_times
        ! Points referencing
-       ALLOCATE(params%refimg(params%nbp,params%imgdim))
-       params%refimg(:,:)=0
+       ALLOCATE(params%image_ref(params%nb_points,params%image_dim))
+       params%image_ref(:,:)=0
        n=0
-       DO i=1,params%imgmap(1)
-          DO j=1,params%imgmap(2)
-             IF (params%imgdim==2) THEN
+       DO i=1,params%partitioning(1)
+          DO j=1,params%partitioning(2)
+             IF (params%image_dim==2) THEN
                 n=n+1
-                params%refimg(n,1)=i
-                params%refimg(n,2)=j
+                params%image_ref(n,1)=i
+                params%image_ref(n,2)=j
              ELSE
-                DO k=1,params%imgmap(3)
+                DO k=1,params%partitioning(3)
                    n=n+1
-                   params%refimg(n,1)=i
-                   params%refimg(n,2)=j
-                   params%refimg(n,3)=k
+                   params%image_ref(n,1)=i
+                   params%image_ref(n,2)=j
+                   params%image_ref(n,3)=k
                 ENDDO
              ENDIF
           ENDDO
        ENDDO
-       IF (params%geom==1) THEN
-          ALLOCATE(params%pas(params%imgdim))
+       IF (params%is_geom==1) THEN
+          ALLOCATE(params%step(params%image_dim))
           READ (3,*)
-          READ (3,*) params%pas(:)
-          PRINT *, '> Mesh step : ', params%pas(:)
+          READ (3,*) params%step(:)
+          PRINT *, '> Mesh step : ', params%step(:)
        ENDIF
     ENDIF
     RETURN

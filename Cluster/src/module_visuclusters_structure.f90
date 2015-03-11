@@ -2,22 +2,22 @@
 MODULE module_visuclusters_structure
 
   TYPE type_params
-     CHARACTER (LEN=30) :: mesh
-     DOUBLE PRECISION, DIMENSION(:), POINTER :: pas
-     INTEGER, DIMENSION(:,:), POINTER :: refimg
-     INTEGER, DIMENSION(:), POINTER :: imgmap
-     INTEGER :: coord
+     CHARACTER (LEN=30) :: input_file
+     DOUBLE PRECISION, DIMENSION(:), POINTER :: step
+     INTEGER, DIMENSION(:,:), POINTER :: image_ref
+     INTEGER, DIMENSION(:), POINTER :: partitioning
+     INTEGER :: coords
      INTEGER :: dim
-     INTEGER :: geom
-     INTEGER :: image
-     INTEGER :: imgdim
-     INTEGER :: imgt
-     INTEGER :: interface
+     INTEGER :: is_geom
+     INTEGER :: is_image
+     INTEGER :: image_dim
+     INTEGER :: image_times
+     INTEGER :: is_interfacing
      INTEGER :: nb_clusters
-     INTEGER :: nbp
-     INTEGER :: nbproc
-     INTEGER :: recouvrement
-     INTEGER :: seuil
+     INTEGER :: nb_points
+     INTEGER :: nb_proc
+     INTEGER :: is_overlapping
+     INTEGER :: is_threshold
   END TYPE type_params
 
 END MODULE module_visuclusters_structure
