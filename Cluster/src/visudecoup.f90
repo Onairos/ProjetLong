@@ -6,15 +6,15 @@ PROGRAM visudecoup
   !#### Variables  ####
   CHARACTER (LEN=30) :: files
   CHARACTER (LEN=30) :: num
+  INTEGER :: i
+  INTEGER :: j
+  INTEGER :: n
+  INTEGER :: nb
   DOUBLE PRECISION :: coord(2)
   DOUBLE PRECISION :: x_max
   DOUBLE PRECISION :: x_min
   DOUBLE PRECISION :: y_max
   DOUBLE PRECISION :: y_min
-  INTEGER :: i
-  INTEGER :: j
-  INTEGER :: n
-  INTEGER :: nb
 
   !###########################################
   ! INSTRUCTIONS

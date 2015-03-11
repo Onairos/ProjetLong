@@ -3,9 +3,6 @@ MODULE module_visuclusters_structure
 
   TYPE type_params
      CHARACTER (LEN=30) :: input_file
-     DOUBLE PRECISION, DIMENSION(:), POINTER :: step
-     INTEGER, DIMENSION(:,:), POINTER :: image_ref
-     INTEGER, DIMENSION(:), POINTER :: partitioning
      INTEGER :: coords
      INTEGER :: dim
      INTEGER :: is_geom
@@ -18,6 +15,9 @@ MODULE module_visuclusters_structure
      INTEGER :: nb_proc
      INTEGER :: is_overlapping
      INTEGER :: is_threshold
+     INTEGER, DIMENSION(:,:), POINTER :: image_ref
+     INTEGER, DIMENSION(:), POINTER :: partitioning
+     DOUBLE PRECISION, DIMENSION(:), POINTER :: step
   END TYPE type_params
 
 END MODULE module_visuclusters_structure

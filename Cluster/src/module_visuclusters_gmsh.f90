@@ -22,6 +22,7 @@ CONTAINS
 
     !#### Variables  ####
     CHARACTER (LEN=30) :: num
+    INTEGER :: i
     DOUBLE PRECISION :: x0
     DOUBLE PRECISION :: x1
     DOUBLE PRECISION :: x_max
@@ -34,7 +35,6 @@ CONTAINS
     DOUBLE PRECISION :: z1
     DOUBLE PRECISION :: zmax
     DOUBLE PRECISION :: zmin
-    INTEGER :: i
 
     !###########################################
     ! INSTRUCTIONS
@@ -170,13 +170,13 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb
     INTEGER :: offset
     INTEGER :: nb_slaves
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
 
     !###########################################
     ! INSTRUCTIONS
@@ -241,14 +241,14 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
-    INTEGER, DIMENSION(:), POINTER :: matchings
     INTEGER :: i
     INTEGER :: id
     INTEGER :: j
     INTEGER :: k
     INTEGER :: length
     INTEGER :: nb
+    INTEGER, DIMENSION(:), POINTER :: matchings
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
 
     !###########################################
     ! INSTRUCTIONS
@@ -321,12 +321,12 @@ CONTAINS
     !#### Variables  ####
     CHARACTER (LEN=30) :: files
     CHARACTER (LEN=30) :: num
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: i
     INTEGER :: j
     INTEGER :: k
     INTEGER :: nb
     INTEGER :: nb0
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
 
     !###########################################
     ! INSTRUCTIONS
@@ -387,11 +387,11 @@ CONTAINS
     !###########################################
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     INTEGER :: dim
     INTEGER :: id
     INTEGER :: k
     INTEGER :: unit
+    DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
 
     !###########################################
     ! INSTRUCTIONS
@@ -433,13 +433,13 @@ CONTAINS
     INTEGER :: unit
 
     !#### Variables  ####
-    DOUBLE PRECISION, DIMENSION(:), POINTER :: data
-    DOUBLE PRECISION :: kx
-    DOUBLE PRECISION :: ky
-    DOUBLE PRECISION :: kz
     INTEGER :: i
     INTEGER :: ix
     INTEGER :: iy
+    DOUBLE PRECISION :: kx
+    DOUBLE PRECISION :: ky
+    DOUBLE PRECISION :: kz
+    DOUBLE PRECISION, DIMENSION(:), POINTER :: data
 
     !###########################################
     ! INSTRUCTIONS

@@ -18,39 +18,39 @@ MODULE module_structure
      INTEGER :: is_overlapping ! Partitioning + overlapping ?
 
      ! Image processing parameters
-     DOUBLE PRECISION, DIMENSION(:), POINTER :: step ! Step for geom mode
-     INTEGER, DIMENSION(:,:), POINTER :: image_ref ! Point reference in pixel coordinates
-     INTEGER, DIMENSION(:), POINTER :: partitioning   ! Pixel partitionings of picture
      INTEGER :: image_dim ! Dimension of images
      INTEGER :: image_times ! Number of "times"
+     INTEGER, DIMENSION(:), POINTER :: partitioning   ! Pixel partitionings of picture
+     INTEGER, DIMENSION(:,:), POINTER :: image_ref ! Point reference in pixel coordinates
+     DOUBLE PRECISION, DIMENSION(:), POINTER :: step ! Step for geom mode
 
   END TYPE type_data
 
 
   !#### Points description ####
   TYPE type_points
-     DOUBLE PRECISION, DIMENSION(:), POINTER :: coords
      INTEGER :: cluster
+     DOUBLE PRECISION, DIMENSION(:), POINTER :: coords
   END TYPE type_points
 
 
   !#### Sub-clusters description ####
   TYPE type_clusters
-     INTEGER, DIMENSION(:), POINTER :: nb_elements
      INTEGER :: nb
+     INTEGER, DIMENSION(:), POINTER :: nb_elements
   END TYPE type_clusters
 
 
   !### Kernel parameter ####
   TYPE type_clustering_param
      ! Clustering method id
-      INTEGER :: clustering_method_id
-      INTEGER :: kernelfunindex
       DOUBLE PRECISION :: sigma
       DOUBLE PRECISION :: gamma
       DOUBLE PRECISION :: delta
+      INTEGER :: clustering_method_id
+      INTEGER :: kernelfunindex
      !mean shift
-     INTEGER :: bandwidth !bandwidth for mean shift
+      INTEGER :: bandwidth !bandwidth for mean shift
   END TYPE type_clustering_param
 
 END MODULE module_structure
