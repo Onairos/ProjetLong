@@ -114,8 +114,6 @@ CONTAINS
     INTEGER :: ierr
     INTEGER :: tot
     LOGICAL :: ok
-    DOUBLE PRECISION :: gam
-    DOUBLE PRECISION :: delta
 
     !###########################################
     ! INSTRUCTIONS
