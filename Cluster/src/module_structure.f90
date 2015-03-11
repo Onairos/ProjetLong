@@ -11,7 +11,7 @@ MODULE module_structure
 
      ! Input parameters : format + processing
      INTEGER :: coords ! Data format classic points
-     INTEGER :: image ! If image mode activated
+     INTEGER :: is_image ! If image mode activated
      INTEGER :: geom ! Image in mode geom ?
      INTEGER :: seuil ! Image in threshold mode ?
      INTEGER :: interface ! Partitioning + interfacing ?

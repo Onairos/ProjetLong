@@ -123,7 +123,7 @@ CONTAINS
     epsilon=0.0
     sigma=-1.0
     data%coords=0
-    data%image=0
+    data%is_image=0
     data%geom=0
     data%seuil=0
     data%interface=0
@@ -149,7 +149,7 @@ CONTAINS
           ok=.FALSE.
           READ(1,*) input_file
           IF (input_file=='IMAGE') THEN
-             data%image=1
+             data%is_image=1
              READ (1,*) input_file
              PRINT *, '> Input image format + partitioning by pixel'
              PRINT *, '> Reading input data file : ', input_file
@@ -177,7 +177,7 @@ CONTAINS
              PRINT *, 'Non-recognized data format !!!'
              CALL help
           ENDIF
-          IF ((data%image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+          IF ((data%is_image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ! Creation of array pixels/coordinates
              PRINT *, '> Decoding image format...'
              CALL assign_picture_array(data)
@@ -215,7 +215,7 @@ CONTAINS
           READ(1,*) sigma
           PRINT *, '> Imposed value of sigma : ', sigma
           clust_param%sigma=sigma
-          IF (data%image==1) THEN
+          IF (data%is_image==1) THEN
              IF (sigma<1.0) THEN
                 PRINT *, 'Too small thickness for image mode !!!!'
                 STOP
@@ -245,7 +245,7 @@ CONTAINS
           PRINT *, 'dim : ', data%dim
           IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
              ALLOCATE(partitioning(data%dim))
-          ELSEIF (data%image==1) THEN
+          ELSEIF (data%is_image==1) THEN
              ! Partitioning per pixel
              ALLOCATE(partitioning(data%imgdim))
           ENDIF
@@ -257,7 +257,7 @@ CONTAINS
                 DO i=1,data%dim
                    tot=tot*partitioning(i)
                 ENDDO
-             ELSEIF (data%image==1) THEN
+             ELSEIF (data%is_image==1) THEN
                 ! Partitioning per pixel
                 DO i=1,data%imgdim
                    tot=tot*partitioning(i)
@@ -276,7 +276,7 @@ CONTAINS
                    partitioning(i)=1
                 ENDDO
                 tot=1
-             ELSEIF (data%image==1) THEN
+             ELSEIF (data%is_image==1) THEN
                 ! Partitioning per pixel
                 DO i=1,data%imgdim
                    partitioning(i)=1
@@ -304,14 +304,14 @@ CONTAINS
        IF (partitioning_bool) DEALLOCATE(partitioning)
        IF ((data%coords==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
           ALLOCATE(partitioning(data%dim) )
-       ELSEIF (data%image==1) THEN
+       ELSEIF (data%is_image==1) THEN
           ALLOCATE(partitioning(data%imgdim))
        ENDIF
        partitioning(:)=1
        epsilon=1.0
     ENDIF   
     ! Validation of the combinations of input parameters
-    tot=data%geom+data%seuil+data%coords+data%image
+    tot=data%geom+data%seuil+data%coords+data%is_image
     IF (tot/=1) THEN
        PRINT *
        PRINT *, 'Problem with data format !'

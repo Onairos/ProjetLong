@@ -169,7 +169,7 @@ CONTAINS
           bounds(i,1,1)=coord_min(i)-0.01*abs(coord_min(i))
           bounds(i,partitioning(i),2)=coord_max(i)+0.01*abs(coord_max(i))
        ENDDO
-    ELSEIF (data%image==1) THEN
+    ELSEIF (data%is_image==1) THEN
        ! Processing for partionning pixels of picture
        ALLOCATE(bounds(data%imgdim,max(nb_proc-1,1),2))
        bounds(:,:,:)=0.0
@@ -271,7 +271,7 @@ CONTAINS
           ENDDO
        ENDIF
        DEALLOCATE(list)
-    ELSEIF (data%image==1) THEN
+    ELSEIF (data%is_image==1) THEN
        ! Processing for partitioning in pixels of picture
        ALLOCATE(domains(max(1,nb_proc-data%interface),data%imgdim,2))
        domains(:,:,:)=0.0
@@ -365,7 +365,7 @@ CONTAINS
                 IF ((data%point(i)%coords(j)>domains(n,j,2)).OR.&
                      (data%point(i)%coords(j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
-          ELSEIF (data%image==1) THEN
+          ELSEIF (data%is_image==1) THEN
              ! Processing for partitioning in pixels of picture
              DO j=1,data%imgdim
                 IF ((data%refimg(i,j)>domains(n,j,2)).OR.&
@@ -400,7 +400,7 @@ CONTAINS
                 IF ((abs(data%point(i)%coords(j)-domains(n,j,1))<epsilon).OR.&
                      (abs(data%point(i)%coords(j)-domains(n,j,2))<epsilon)) ok=.TRUE.
              ENDDO
-          ELSEIF (data%image==1) THEN
+          ELSEIF (data%is_image==1) THEN
              ! Processing for partitioning in pixels of picture
              DO j=1,data%imgdim
                 IF ((abs(data%refimg(i,j)-domains(n,j,1))<epsilon).OR.&
@@ -471,7 +471,7 @@ CONTAINS
                 IF ((data%point(i)%coords(j)>domains(n,j,2)).OR.&
                      (data%point(i)%coords(j)<domains(n,j,1))) ok=.FALSE.
              ENDDO
-          ELSEIF (data%image==1) THEN
+          ELSEIF (data%is_image==1) THEN
              ! Processing for partitioning in pixels of picture
              DO j=1,data%imgdim
                 IF ((data%refimg(i,j)>domains(n,j,2)).OR.&

@@ -94,7 +94,7 @@ CONTAINS
           IF (data%coords==1) THEN
              ! Writing in coordinates
              WRITE(10,*) data%point(assignments(i,j))%coords(:)
-          ELSEIF ((data%image==1).OR.(data%seuil==1).OR.(data%geom==1)) THEN
+          ELSEIF ((data%is_image==1).OR.(data%seuil==1).OR.(data%geom==1)) THEN
              ! Writing in picture format
              WRITE(10,*) assignments(i,j)
           ENDIF
@@ -271,12 +271,12 @@ CONTAINS
     WRITE(3,*) '# Coord format : '
     WRITE(3,*) data%coords
     WRITE(3,*) '# Image format : '
-    WRITE(3,*) data%image
+    WRITE(3,*) data%is_image
     WRITE(3,*) '# Geom format : '
     WRITE(3,*) data%geom
     WRITE(3,*) '# Threshold format : '
     WRITE(3,*) data%seuil
-    IF ((data%image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
+    IF ((data%is_image==1).OR.(data%geom==1).OR.(data%seuil==1)) THEN
        WRITE(3,*) '# DIMENSION : '
        WRITE(3,*) data%imgdim
        WRITE(3,*) '# Partitioning : '

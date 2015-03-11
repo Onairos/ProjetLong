@@ -84,8 +84,8 @@ CONTAINS
     n=data%coords
     partitioned_data%coords=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    n=data%image
-    partitioned_data%image=n
+    n=data%is_image
+    partitioned_data%is_image=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     n=data%geom
     partitioned_data%geom=n
@@ -167,7 +167,7 @@ CONTAINS
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     partitioned_data%coords=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-    partitioned_data%image=n
+    partitioned_data%is_image=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
     partitioned_data%geom=n
     CALL MPI_BCAST(n,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
