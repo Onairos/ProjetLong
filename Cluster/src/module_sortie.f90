@@ -139,7 +139,7 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################
     ! File name
-    WRITE(num,*),proc_id
+    WRITE(num,*) proc_id
     num=adjustl(num)
     files='cluster.partiel.'//trim(num)
     PRINT *, proc_id, ' : clusters writing : ', files

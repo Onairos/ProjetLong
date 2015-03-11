@@ -134,7 +134,7 @@ CONTAINS
        prod=prod*(coord_max(i)-coord_min(i))
     ENDDO
     files='diminterface'
-    WRITE(num,*),0
+    WRITE(num,*) 0
     num=adjustl(num)
     files=trim(files)//'.'//trim(num)
     OPEN(FILE=files,UNIT=20)
