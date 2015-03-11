@@ -20,10 +20,10 @@ PROGRAM visudecoup
   ! INSTRUCTIONS
   !###########################################
   PRINT *
-  PRINT *,'visualisation du decoupage parallele en 2D'
+  PRINT *,'visualisation of parallele partitionings in 2D'
   PRINT *
 
-  PRINT *,'nb de decoupages +1 ? (=nbproc)'
+  PRINT *,'nb partitionings +1 ? (=nbproc)'
   READ *,n
   PRINT *
   
