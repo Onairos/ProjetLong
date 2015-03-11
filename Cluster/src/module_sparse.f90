@@ -521,15 +521,15 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, INTENT(IN), DIMENSION(nnz) :: A
-    DOUBLE PRECISION, INTENT(IN), DIMENSION(n) :: X
-    INTEGER, INTENT(IN), DIMENSION(nnz) :: IA
-    INTEGER, INTENT(IN), DIMENSION(nnz) :: JA
-    INTEGER, INTENT(IN) :: n
-    INTEGER, INTENT(IN) :: nnz
+    DOUBLE PRECISION, DIMENSION(nnz) :: A
+    DOUBLE PRECISION, DIMENSION(n) :: X
+    INTEGER, DIMENSION(nnz) :: IA
+    INTEGER, DIMENSION(nnz) :: JA
+    INTEGER, :: n
+    INTEGER, :: nnz
 
     !====  OUT ====
-    DOUBLE PRECISION, INTENT(OUT), DIMENSION(n) :: Y
+    DOUBLE PRECISION, DIMENSION(n) :: Y
 
     !#### Variables  ####
     INTEGER :: l
@@ -580,16 +580,16 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !###########################################      
     !#### Parameters ####
     !====  IN  ====
-    DOUBLE PRECISION, INTENT(IN), DIMENSION(:) :: A
-    INTEGER, INTENT(IN), DIMENSION(:) :: IA
-    INTEGER, INTENT(IN), DIMENSION(:) :: JA
-    INTEGER, INTENT(IN) :: dim
-    INTEGER, INTENT(IN) :: nb_clusters_max
-    INTEGER, INTENT(IN) :: nnz
+    DOUBLE PRECISION, DIMENSION(:) :: A
+    INTEGER, DIMENSION(:) :: IA
+    INTEGER, DIMENSION(:) :: JA
+    INTEGER :: dim
+    INTEGER :: nb_clusters_max
+    INTEGER :: nnz
 
     !====  OUT ====
-    DOUBLE PRECISION, INTENT(OUT), POINTER :: Z(:,:)
-    DOUBLE PRECISION, INTENT(OUT), POINTER :: W(:)
+    DOUBLE PRECISION, POINTER :: Z(:,:)
+    DOUBLE PRECISION, POINTER :: W(:)
 
     !#### Variables  ####
     CHARACTER :: bmat*1
