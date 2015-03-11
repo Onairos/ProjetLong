@@ -188,6 +188,7 @@ CONTAINS
           ok=.FALSE.
           READ(1,*) nb_clusters_max
           PRINT *, '> Maximal number of searched clusters : ', nb_clusters_max
+	  clust_param%nbLimitClust = nb_clusters_max
        CASE('NBCLUST')
           ok=.FALSE.
           READ(1,*) list_nb_clusters(:)
@@ -222,7 +223,7 @@ CONTAINS
        CASE('BANDWIDTH')
           ok=.FALSE.
           READ(1,*) clust_param%bandwidth
-          PRINT *, '> 	delta =', clust_param%bandwidth
+          PRINT *, '> 	BANDWIDTH =', clust_param%bandwidth
        CASE('DECOUPAGE')
           partitioning_bool=.TRUE.
           ok=.FALSE.
