@@ -561,7 +561,7 @@ CONTAINS
           j2=1
           DO WHILE(.NOT. ok2)
              IF (j2>points_by_cluster(i2)) THEN
-                ! Line nÃÂ°i2 entirely tested for the point (i,j)
+                ! Line i2 entirely tested for the point (i,j)
                 i2=i2+1
                 j2=1
              ENDIF
@@ -571,7 +571,7 @@ CONTAINS
              ELSE
                 ! Intersections test
                 IF (cluster_map(i,j)==cluster_map(i2,j2)) THEN
-                   ! Intersection found : line nÃÂ°i2 added to line nÃÂ°i
+                   ! Intersection found : line i2 added to line i
                    n=0
                    DO k=1,points_by_cluster(i2)
                       ! Test of removal of duplications

@@ -296,9 +296,7 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     Ker(:,:)=0.0
 
     it_num = 0
-    !
     !  Idiot checks.
-    !
     IF ( partitioned_data%nb_clusters < 1 ) THEN
        WRITE ( *, '(a)' ) ' '
        WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
