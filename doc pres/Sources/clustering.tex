@@ -205,23 +205,39 @@ SUBROUTINE assign_picture_array(data)
 \end{block}
 \end{frame}
 \subsection{Code refactoring}
-\begin{frame}[allowframebreaks]
+\begin{frame}
+\frametitle{Changing source code}
+\begin{block}{Purpose}
+Improve software quality and portability
+\end{block}
+\begin{enumerate}
+\item Changing the types "REAL" and "REAL(KIND=*)" into "DOUBLE PRECISION" and "INTEGER(KIND=*)" into "INTEGER"
+\item Changing the types "CHARACTER*x" into "CHARACTER (LEN=x)"
+\item Changing the types of some “INTEGER” variables used as boolean into “LOGICAL”
+\end{enumerate}
+\end{frame}
+\begin{frame}
+\frametitle{Organising source code}
 \begin{block}{Purpose}
 Improve readability and maintainability of the code
 \end{block}
 \begin{enumerate}
 \item Fortran keywords transformed in UPPERCASE
-\item Changing the types "REAL" and "REAL(KIND=*)" into "DOUBLE PRECISION" and "INTEGER(KIND=*)" into "INTEGER"
-\item Changing the types "CHARACTER*x" into "CHARACTER (LEN=x)"
 \item Removing of the commented code
 \item Declarations of parameters and variables at the beginning of a subroutine or program : one declaration line, ordered by type and name
-\item Rename methods : standardization (underscore to separate the different words), translation in english, better naming, blank space after each comma in the signature
-\item Removing the unused variables
-\item Translation of the comments helping the understanding of the code
 \item Removing the semicolons : only one instruction per line
-\item Changing the types of some “INTEGER” variables used as boolean into “LOGICAL”
-\item Rename methods : standardization (underscore to separate the different words), translation in english, better naming, blank space after each comma in the signature
-\item Rename parameters of methods : standardization (underscore to separate the different words), translation in english, better naming
+\item Removing the unused variables
+\end{enumerate}
+\end{frame}
+\begin{frame}
+\frametitle{Renaming and translating}
+\begin{block}{Purpose}
+Improve readability and internationalization
+\end{block}
+\begin{enumerate}
+\item Translation of the comments helping the understanding of the code
+\item Rename methods : standardization (underscore to separate the different words), translation in english, better naming, blank space after each comma in the signature, blank space after each comma in the signature
+\item Rename parameters of methods and variables : standardization (underscore to separate the different words), translation in english, better naming
 \item Translation of all the “PRINT” messages (displayed in the console during execution)
 \end{enumerate}
 \end{frame}
