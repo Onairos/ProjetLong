@@ -276,7 +276,6 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     DOUBLE PRECISION :: den1
     DOUBLE PRECISION :: num2
     DOUBLE PRECISION :: den2
-    INTEGER :: cluster (partitioned_data%nb_points) ! indicates which cluster each point belongs to
     INTEGER :: cluster_population (partitioned_data%nb_clusters) ! the number of points in each cluster
     INTEGER :: it_num ! the number of iterations taken
     INTEGER :: cluster_id (partitioned_data%nb_clusters)
@@ -762,7 +761,6 @@ PRINT *, 'DEBUG : Frobenius ratio'
     !#### Variables  ####
     INTEGER ::point_num !number of points
     INTEGER ::dim_num !number of dimensions
-    INTEGER ::cluster_num !number of clusters
     INTEGER :: numClust !the cluster number  
     INTEGER :: beenVisitedFlag(partitioned_data%nb_points) !track if a point has been seen already
     INTEGER :: numInitPts !number of points to possibly use as initialization points
