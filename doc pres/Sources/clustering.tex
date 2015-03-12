@@ -215,58 +215,54 @@ Improve readability and internationalisation
 
 \subsection{Doxygen documentation}
 \begin{frame}[fragile]
-\begin{block}{Produced output formats}
-\begin{itemize}
-\item \textit{HTML}: Documentation readable by a web browser
-\item \textit{PDF}: Documentation written in LaTex to generate a PDF file
-\end{itemize}
-\end{block}
-
 \frametitle{Autogeneration with Doxygen}
-\begin{block}{Targets}
-Description for each module, program, routine and parameters.
+
+\only<1>{
+\begin{block}{Aim}
+Improving maintainability producing HTML and PDF documentation.
 \end{block}
+}
+
+\only<2>{
+\begin{alertblock}{Main issues}
+\begin{enumerate}
+\item Reordering of the parameters
+\item Repetitive work : 62 routines and 249 parameters
+\item Refactoring before documentation OR\\ Documentation before refactoring
+\end{enumerate}
+\end{alertblock}
+}
 
 \begin{example}
 \begin{lstlisting}
 !> Here is a brief description of the routine.
 !! @details Here is a detailed description.
-!! @param[dir] param Here is the parameter description
-SUBROUTINE my_routine(parameter)
+!! @param[dir] param1 Here is a description
+!! @param[dir] param2 Here is a description
+SUBROUTINE my_routine(param1, param2)
 \end{lstlisting}
 \end{example}
 \end{frame}
 
 \begin{frame}
 \frametitle{How to proceed}
-\only<1>{
-\begin{alertblock}{Main issues}
-\begin{enumerate}
-\item Renaming and reordering parameters before documenting
-\item Repetitive work : 62 routines and 249 parameters
-\end{enumerate}
-\end{alertblock}
-}
-\only<1-2>{
 \begin{block}{Automated comments writing}
 A small software have been programmed to automatically write headers.
 \end{block}
-}
-\only<2>{
+
 \begin{columns}
 \begin{column}{0.4\textwidth}
 \begin{enumerate}
 \item Classify modules, methods and parameters
 \item Write descriptions in a database
 \item Extract information from the database
-\item Write header into the source file
+\item Write headers into the source files
 \end{enumerate}
 \end{column}
 \begin{column}{0.6\textwidth}
 \animategraphics[step,width=\columnwidth]{1}{Image/dox}{1}{5}
 \end{column}
 \end{columns}
-}
 \end{frame}
 \section{Clustering algorithms}
 \tableofcontents[currentsection, hideallsubsections]
