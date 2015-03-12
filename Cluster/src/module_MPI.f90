@@ -444,13 +444,13 @@ CONTAINS
     ! INSTRUCTIONS
     !###########################################    
 
+    CALL MPI_BCAST(clust_param%delta,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
+    CALL MPI_BCAST(clust_param%gamma,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
+    CALL MPI_BCAST(clust_param%sigma,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
+    CALL MPI_BCAST(clust_param%clustering_method_id,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+    CALL MPI_BCAST(clust_param%kernelfunindex,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+    CALL MPI_BCAST(clust_param%nbLimitClust,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+    CALL MPI_BCAST(clust_param%bandwidth,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
 
-  CALL MPI_BCAST(clust_param%clustering_method_id,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-  CALL MPI_BCAST(clust_param%kernelfunindex,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-  CALL MPI_BCAST(clust_param%nbLimitClust,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
-  CALL MPI_BCAST(clust_param%sigma,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
-  CALL MPI_BCAST(clust_param%gamma,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
-  CALL MPI_BCAST(clust_param%delta,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
-  CALL MPI_BCAST(clust_param%bandwidth,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
 END SUBROUTINE send_clustering_param
 END MODULE module_MPI

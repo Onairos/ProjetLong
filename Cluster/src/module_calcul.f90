@@ -275,7 +275,6 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt, &
     INTEGER :: stockpopulation (clust_param%nbLimitClust)
     INTEGER :: swap
     DOUBLE PRECISION :: cluster_center (partitioned_data%dim, clust_param%nbLimitClust) ! the cluster centers
-    DOUBLE PRECISION :: cluster_energy (clust_param%nbLimitClust) ! the cluster energies
     DOUBLE PRECISION :: den1
     DOUBLE PRECISION :: den2
     DOUBLE PRECISION :: listnorm (partitioned_data%nb_points, clust_param%nbLimitClust)
@@ -284,7 +283,6 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt, &
     DOUBLE PRECISION :: num2
     DOUBLE PRECISION :: seuil
     DOUBLE PRECISION :: stockcenter (partitioned_data%dim, clust_param%nbLimitClust)
-    DOUBLE PRECISION :: stockenergy (clust_param%nbLimitClust)
     DOUBLE PRECISION :: val
     DOUBLE PRECISION :: valmax
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Ker
@@ -293,52 +291,20 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt, &
 
     !###########################################      
     ! INSTRUCTIONS
-    !###########################################   
+    !###########################################  
+
     ALLOCATE(Ker(partitioned_data%nb_points,partitioned_data%nb_points))
+
+
     Ker(:,:)=0.0
-PRINT*,'clust_param%nbLimitClust : ',clust_param%nbLimitClust
+
+
+    PRINT*,'clust_param%nbLimitClust : ',clust_param%nbLimitClust
     it_num = 0
-    !  Idiot checks.
-
-    !
-    IF ( clust_param%nbLimitClust < 1 ) THEN
-
-       WRITE ( *, '(a)' ) ' '
-       WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
-       WRITE ( *, '(a)' ) '  CLUSTER_NUM < 1.0'
-       STOP
-    ENDIF
-
-    IF ( partitioned_data%dim < 1 ) THEN
-       WRITE ( *, '(a)' ) ' '
-       WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
-       WRITE ( *, '(a)' ) '  DIM_NUM < 1.0'
-       STOP
-    ENDIF
-
-    IF ( partitioned_data%nb_points < 1 ) THEN
-       WRITE ( *, '(a)' ) ' '
-       WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
-       WRITE ( *, '(a)' ) '  POINT_NUM < 1.0'
-       STOP
-    ENDIF
-
  
-    IF (clust_param%kernelfunindex==0 .AND. (clust_param%gamma <0.0 .OR. clust_param%delta<0.0) )  THEN
-       WRITE ( *, '(a)' ) ' '
-       WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
-       WRITE ( *, '(a)' ) '  gamma AND DELTA NOT INITIALIZED IN POLYNOMIAL KERNEL'
-       STOP  
-    
-
-    ELSEIF (clust_param%kernelfunindex==1 .AND. clust_param%sigma<0.0) THEN
-       WRITE ( *, '(a)' ) ' '
-       WRITE ( *, '(a)' ) 'KERNELKMEANS_01 - Fatal error!'
-       WRITE ( *, '(a)' ) '  SIGMA NOT INITIALIZED IN GAUSSIAN KERNEL'
-       STOP 
-    ENDIF
-
-
+    !###########################################      
+    ! Kernel Calculus
+    !########################################### 
     IF (clust_param%kernelfunindex==0) THEN
         Ker=poly_kernel( partitioned_data, clust_param%gamma, clust_param%delta)
     ELSEIF (clust_param%kernelfunindex==1) THEN
@@ -354,69 +320,65 @@ PRINT*,'clust_param%nbLimitClust : ',clust_param%nbLimitClust
     cluster_id(1)=1
     p=2
     seuil=0.4
-!#if aff
-PRINT *, 'recherche des centres'
-!#endif
+    !###########################################      
+    PRINT *, 'Center research'
+    !###########################################      
     DO i = 2, clust_param%nbLimitClust
        ok=.FALSE.
        DO WHILE(.NOT.ok)
           valmax=2.0*seuil
-          !recherche si le point est deja utilise dans comme centre
+          !Search if the point is already used as a center
           ok2=.FALSE.
           DO j=1,i-1
              IF (partitioned_data%points(j)%cluster==p) ok2=.TRUE.
           ENDDO
-          !si point pas centre, teste par rapport au seuil
+          !If not a center check if it is out of a threshold
           IF (.NOT.ok2) THEN
              DO j=1,i-1
                 val=0.0
                 norm=0.0
                 DO k=1,partitioned_data%dim
                    val=max(val,abs(cluster_center(k,j)-partitioned_data%points(p)%coords(k))) 
-!VOIR SI CELA DOIT ETRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                  !VOIR SI CELA DOIT ETRE MODIFIE EN FONCTION DES KERNEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 ENDDO
                 valmax=min(val,valmax)
              ENDDO
-             IF (valmax>=seuil) ok=.TRUE.
+             IF (valmax>=seuil) THEN
+             ok=.TRUE.
+             ENDIF
           ENDIF
          p=p+1
 
-         !abaisse le seuil si pas assez de centre sont trouves
+         !Lower the threshold if not enough center are found after going through all the dataset
          IF ((p>partitioned_data%nb_points).AND.(.NOT.ok)) THEN 
+            ! Reinitialise the process with a lower threshold
             seuil=0.9*seuil
-!#if aff
-            PRINT *,'abaisse seuil :',seuil
-!#endif
             p=1
-          ENDIF
+            PRINT *,'Lower threshold :',seuil
+         ENDIF
        ENDDO
+       ! We are out of the loop => the previous point was out previous center threshold=> it s a new cluster center
        p=p-1
-       cluster_center(:,i)= partitioned_data%points(P)%coords(:) !point(:,p) 
+       cluster_center(:,i)= partitioned_data%points(p)%coords(:) !point(:,p) 
        cluster_id(i)=p
     ENDDO
-!#if aff
-   PRINT *,'centres initiaux',p
-!#endif
-!cluster_center
+    !###########################################      
+    PRINT *,'Points checked to find the nb cluster Max : ',p
+    !###########################################      
 
 !!! boucle            
     it_num = 0
     swap=1
-    
-    partitioned_data%points(:)%cluster=1 !  cluster(:)=1
-    DO WHILE ((it_num<partitioned_data%nb_points**2).AND.(swap/=0))
+    !Initialise the cluster points are part of
+    partitioned_data%points(:)%cluster=1 
 
+    DO WHILE ((it_num<partitioned_data%nb_points**2).AND.(swap/=0))
+   
        it_num = it_num + 1
        swap=0
-       DO i=1,clust_param%nbLimitClust
-          stockenergy(i)=cluster_energy(i)
-          stockpopulation(i)=cluster_population(i)
-          DO j=1,partitioned_data%dim
-             stockcenter(j,i)=cluster_center(j,i)
-          ENDDO
-       ENDDO
 
-       !! Calcul de toutes les distances
+
+       !! Computing the distances
        cluster_population(1:clust_param%nbLimitClust) = 1
        listnorm(:,:)=0.0
        num1=0.0
@@ -431,7 +393,7 @@ PRINT *, 'recherche des centres'
                    den1=den1+1 
                    ENDIF
                    DO l=1,partitioned_data%nb_points
-                       IF ( partitioned_data%points(j)%cluster.EQ.k .AND. partitioned_data%points(l)%cluster.EQ.k) THEN
+                       IF ( (partitioned_data%points(j)%cluster.EQ.k).AND.(partitioned_data%points(l)%cluster.EQ.k)) THEN
                        num2=num2 + Ker(j,l)
                        den2=den2+1
                        ENDIF
@@ -447,37 +409,48 @@ PRINT *, 'recherche des centres'
            ENDDO
        ENDDO
 
-       !!assignation par rapport au min des distances
+       !!Min distance assignation 
        cluster_population(:)=0
        DO i=1,partitioned_data%nb_points
 
           DO j=1,clust_param%nbLimitClust
-             IF (listnorm(i,j)<listnorm(i,partitioned_data%points(i)%cluster)) THEN
+             IF (listnorm(i,j)<listnorm(i,partitioned_data%points(i)%cluster).AND.( partitioned_data%points(i)%cluster.NE.j)) THEN
                 partitioned_data%points(i)%cluster=j
-
                 swap=swap+1
+                ! A point change its cluster
              ENDIF
           ENDDO
-          cluster_energy(partitioned_data%points(i)%cluster)=cluster_energy(partitioned_data%points(i)%cluster)&
-               +listnorm(i,partitioned_data%points(i)%cluster)
+
           cluster_population(partitioned_data%points(i)%cluster)=cluster_population(partitioned_data%points(i)%cluster)+1
        ENDDO
 
-       !! mise a jour des centres
-       cluster_center(:,:)=0.0
-       DO j=1,partitioned_data%nb_points
-          i=partitioned_data%points(j)%cluster 
-          DO k=1,partitioned_data%dim
-             cluster_center(k,i)=cluster_center(k,i)+partitioned_data%points(j)%coords(k)
-          ENDDO
-       ENDDO
-       DO i=1,clust_param%nbLimitClust
-          cluster_center(:,i)=cluster_center(:,i)/cluster_population(i)
-       ENDDO
+    !   !! mise a jour des centres
+    !   cluster_center(:,:)=0.0
+     ! DO j=1,partitioned_data%nb_points
+     !     i=partitioned_data%points(j)%cluster 
+     !     DO k=1,partitioned_data%dim
+     !        cluster_center(k,i)=cluster_center(k,i)+partitioned_data%points(j)%coords(k)
+    !      ENDDO
+   !    ENDDO
+    !   DO i=1,clust_param%nbLimitClust
+    !      cluster_center(:,i)=cluster_center(:,i)/cluster_population(i)
+    !   ENDDO
+
+ ! verifie si le cluster a converge
+   ! DO i=1,partitioned_data%nb_points
+   !   DO j=1,clust_param%nbLimitClust
+   !     IF (partitioned_data%points(i)%cluster.EQ.j) THEN
+   !       quit = quit + listnorm(i,j)
+   !     ENDIF
+   !   ENDDO
+   ! ENDDO
+       
     ENDDO
-partitioned_data%nb_clusters=clust_param%nbLimitClust
-PRINT*,'out  clust_param%nbLimitClust : ',clust_param%nbLimitClust
-    RETURN
+    partitioned_data%nb_clusters=clust_param%nbLimitClust
+    DEALLOCATE(Ker)
+    PRINT*,'OUT apply_kernel_k_means   clust_param%nbLimitClust : ',clust_param%nbLimitClust
+    !RETURN
+
   END SUBROUTINE apply_kernel_k_means
 
 

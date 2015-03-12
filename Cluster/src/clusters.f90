@@ -247,6 +247,7 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
     END SELECT
 
   ENDIF
+
   t2 = MPI_WTIME()
   t_parall = t2 - t1
   PRINT *, proc_id, ' : computing parallel cluster : ', t_parall
