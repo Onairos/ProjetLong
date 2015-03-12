@@ -109,14 +109,17 @@ A package containing source code file have been provided: functional but with a 
 \section{Reverse engineering}
 \subsection{Code refactoring}
 \begin{frame}
+\includegraphics[scale=0.45]{Image/process.png}
+\end{frame}
+\begin{frame}
 \frametitle{Changing source code}
 \begin{block}{Purpose}
 Improve software quality and portability
 \end{block}
 \begin{enumerate}
-\item Changing the types "REAL" and "REAL(KIND=*)" into "DOUBLE PRECISION" and "INTEGER(KIND=*)" into "INTEGER"
-\item Changing the types "CHARACTER*x" into "CHARACTER (LEN=x)"
-\item Changing the types of some “INTEGER” variables used as boolean into “LOGICAL”
+\item Changing the types \textit{REAL} and \textit{REAL(KIND=x)} into \textit{DOUBLE PRECISION} and \textit{INTEGER(KIND=x)} into \textit{INTEGER}
+\item Changing the types \textit{CHARACTER*x} into \textit{CHARACTER (LEN=x)}
+\item Changing the types of some \textit{INTEGER} variables used as boolean into \textit{LOGICAL}
 \end{enumerate}
 \end{frame}
 \begin{frame}
@@ -126,9 +129,9 @@ Improve readability and maintainability of the code
 \end{block}
 \begin{enumerate}
 \item Fortran keywords transformed in UPPERCASE
-\item Removing of the commented code
-\item Declarations of parameters and variables at the beginning of a subroutine or program : one declaration line, ordered by type and name
-\item Removing the semicolons : only one instruction per line
+\item Removing the commented code
+\item Declarations of parameters and variables at the beginning of a subroutine or program: one declaration per line, ordered by type and name
+\item Removing the semicolons: only one instruction per line
 \item Removing the unused variables
 \end{enumerate}
 \end{frame}
@@ -139,9 +142,9 @@ Improve readability and internationalization
 \end{block}
 \begin{enumerate}
 \item Translation of the comments helping the understanding of the code
-\item Rename methods : standardization (underscore to separate the different words), translation in english, better naming, blank space after each comma in the signature, blank space after each comma in the signature
-\item Rename parameters of methods and variables : standardization (underscore to separate the different words), translation in english, better naming
-\item Translation of all the “PRINT” messages (displayed in the console during execution)
+\item Rename methods: standardization (underscore to separate the different words), translation in english, better naming
+\item Rename parameters of methods and local variables: standardization (underscore to separate the different words), translation in english, better naming
+\item Translation of all the output console messages
 \end{enumerate}
 \end{frame}
 \subsection{Doxygen documentation}
