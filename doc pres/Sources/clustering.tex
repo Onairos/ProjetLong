@@ -116,12 +116,44 @@ A package containing source code file have been provided: functional but with a 
 \begin{block}{Purpose}
 Improve software quality and portability
 \end{block}
+\small
+\begin{tabular}{|l|l|p{100 pt}|}
+\hline
+\textbf{Old types} & \textbf{New Types} & \textbf{Reason}
+\\
+\hline
+REAL & DOUBLE PRECISION & better precision and readibility
+\\
+\hline
+INTEGER (KIND=8) & INTEGER & portability
+\\
+\hline
+CHARACTER*30 & CHARACTER (LEN=30) & deprecated syntax
+\\
+\hline
+INTEGER & LOGICAL & when used as booleans
+\\
+\hline
+\end{tabular}
+\end{frame}
+
+\begin{frame}
+\frametitle{Organising source code}
+\begin{block}{Purpose}
+Improve readability and maintainability of the code
+\end{block}
 \begin{enumerate}
-\item Changing the types \textit{REAL} and \textit{REAL(KIND=x)} into \textit{DOUBLE PRECISION} and \textit{INTEGER(KIND=x)} into \textit{INTEGER}
-\item Changing the types \textit{CHARACTER*x} into \textit{CHARACTER (LEN=x)}
-\item Changing the types of some \textit{INTEGER} variables used as boolean into \textit{LOGICAL}
+\item \begin{itemize}
+\item Fortran keywords transformed in UPPERCASE
+\item Removing the commented code
+\item Removing the semicolons: only one instruction per line
+\item Removing the unused variables
+\end{itemize}
+\item Declarations of parameters and variables at the beginning of a subroutine or program: one declaration per line, ordered by type and name
+\item Reorganise signatures: parameters ordered by type and name
 \end{enumerate}
 \end{frame}
+
 \begin{frame}
 \frametitle{Organising source code}
 \begin{block}{Purpose}
