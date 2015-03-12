@@ -3,6 +3,7 @@
 \usepackage{graphicx}
 \usepackage{perso}
 \usepackage{animate}
+\usepackage{geometry}
 
 \usetheme{Warsaw}
 \setbeamertemplate{navigation symbols}{\insertframenumber/\inserttotalframenumber}
@@ -15,6 +16,18 @@
   \tableofcontents[currentsubsection]
   \end{frame} 
 }
+
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{#1}%
+\setlength{\rightmargin}{#2}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+
 \title{New clustering methods into a parallel code}
 \author[SORIANO, AUBENEAU, DUVAL, PRIEUL, SANTINA]{SORIANO Tristan, AUBENEAU Simon, DUVAL Quentin, PRIEUL Simon, SANTINA Jeremy}
 \institute{\includegraphics[scale=0.5]{Image/logo.jpg}}
@@ -347,6 +360,23 @@ Move a window over the data set following the density gradient.
 
 \end{frame}
 \section{Conclusion}
+\tableofcontents[currentsection, hideallsubsections]
 \begin{frame}
+\begin{itemize}
+\item Initial Gantt
+\begin{changemargin}{-1.2cm}{0cm}
+\includegraphics[width=1.1\textwidth]{Image/gantt.png}
+\end{changemargin}
+\item Final Gantt
+\begin{changemargin}{-1.2cm}{0cm}
+\includegraphics[width=1.1\textwidth]{Image/gantt2.png}
+\end{changemargin}
+\end{itemize}
+\end{frame}
+\begin{frame}
+\huge
+\begin{center}
+Thank you for you attention.
+\end{center}
 \end{frame}
 \end{document}

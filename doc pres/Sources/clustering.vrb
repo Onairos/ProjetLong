@@ -1,0 +1,20 @@
+\begin {block}{Produced output formats}
+\begin{itemize}
+\item \textit{HTML}: Documentation readable by a web browser
+\item \textit{PDF}: Documentation written in LaTex to generate a PDF file
+\end{itemize}
+\end{block}
+
+\frametitle{Autogeneration with Doxygen}
+\begin{block}{Targets}
+Description for each module, program, routine and parameters.
+\end{block}
+
+\begin{example}
+\begin{lstlisting}
+!> Here is a brief description of the routine.
+!! @details Here is a detailed description.
+!! @param[dir] param Here is the parameter description
+SUBROUTINE my_routine(parameter)
+\end{lstlisting}
+\end{example}
