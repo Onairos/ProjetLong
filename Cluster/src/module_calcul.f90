@@ -423,27 +423,6 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt, &
 
           cluster_population(partitioned_data%points(i)%cluster)=cluster_population(partitioned_data%points(i)%cluster)+1
        ENDDO
-
-    !   !! mise a jour des centres
-    !   cluster_center(:,:)=0.0
-     ! DO j=1,partitioned_data%nb_points
-     !     i=partitioned_data%points(j)%cluster 
-     !     DO k=1,partitioned_data%dim
-     !        cluster_center(k,i)=cluster_center(k,i)+partitioned_data%points(j)%coords(k)
-    !      ENDDO
-   !    ENDDO
-    !   DO i=1,clust_param%nbLimitClust
-    !      cluster_center(:,i)=cluster_center(:,i)/cluster_population(i)
-    !   ENDDO
-
- ! verifie si le cluster a converge
-   ! DO i=1,partitioned_data%nb_points
-   !   DO j=1,clust_param%nbLimitClust
-   !     IF (partitioned_data%points(i)%cluster.EQ.j) THEN
-   !       quit = quit + listnorm(i,j)
-   !     ENDIF
-   !   ENDDO
-   ! ENDDO
        
     ENDDO
     partitioned_data%nb_clusters=clust_param%nbLimitClust
@@ -515,20 +494,6 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt, &
     ! Forall i, A(i,i) = 0
     ALLOCATE(A(n,n))
     A(:,:)=0.0
-
- !   DO i=1,n-1
- !     DO j=i+1,n
- !         norm=0.0
- !         DO k=1,partitioned_data%dim
- !            norm=norm+(partitioned_data%point(i)%coords(k)-partitioned_data%point(j)%coords(k))**2
- !         ENDDO
- !         value=exp(-norm/sigma)
- !         ! Upper triangular part
- !         A(i,j) = value
- !         ! Lower triangular part
- !         A(j,i)=A(i,j)
- !      ENDDO
- !   ENDDO
 
      IF (clust_param%kernelfunindex==0) THEN
         A=poly_kernel( partitioned_data, clust_param%gamma, clust_param%delta)
