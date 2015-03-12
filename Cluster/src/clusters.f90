@@ -321,7 +321,7 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
   IF (proc_id==0) THEN
      ! Writing of the cluster.final files
 PRINT*, 'Calling write_final_clusters'
-     CALL write_final_clusters(nb_clusters,points_by_cluster,cluster_map)
+     CALL write_final_clusters(points_by_cluster, cluster_map, nb_clusters)
 
      ! Information writing
      CALL write_metadata(data, input_file, nb_clusters, nb_proc)

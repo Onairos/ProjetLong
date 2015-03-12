@@ -168,7 +168,7 @@ CONTAINS
 !! @param[in,out] nb_clusters the number of clusters
 !! @param[in,out] nb_clusters the number of clusters
 !! @param[in,out] nb_clusters the number of clusters
-  SUBROUTINE write_final_clusters(nb_clusters, points_by_cluster, cluster_map)
+  SUBROUTINE write_final_clusters(points_by_cluster, cluster_map, nb_clusters)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

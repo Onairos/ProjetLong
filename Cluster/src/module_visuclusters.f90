@@ -229,7 +229,7 @@ CONTAINS
 !!@see module_calcul::write_final_clusters()
 !! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
 !! @param[in] format_output the file format for visualization
-  SUBROUTINE write_final_clusters(format_output, params)
+  SUBROUTINE write_final_clusters(params, format_output)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
