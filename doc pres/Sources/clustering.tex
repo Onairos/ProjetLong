@@ -92,17 +92,15 @@ Insufficient knowledge & Heavy & Medium & Increase the time dedicated to each ri
 \includegraphics[width=\textwidth]{Image/logos.png}
 \end{frame}
 \subsection{Starting point}
+
 \begin{frame}
 \frametitle{Environment}
 \begin{block}{Source code}
 A package containing source code file have been provided: functional but with a poor design.
 \end{block}
 \begin{block}{Configuration and setup}
-\begin{itemize}
-\item Libraries: MPI, Lapack and Arpack
-\item F90 Compiler: GFortran
-\item Configuration: Makefile
-\end{itemize}
+Libraries (MPI, Lapack and Arpack), F90 Compiler (GFortran), compilation flags
+\\File written explaining how to compile and run
 \end{block}
 \end{frame}
 %\begin{frame}
@@ -129,12 +127,29 @@ A package containing source code file have been provided: functional but with a 
 \begin{block}{Purpose}
 Improve software quality and portability
 \end{block}
-\begin{enumerate}
-\item Changing the types \textit{REAL} and \textit{REAL(KIND=x)} into \textit{DOUBLE PRECISION} and \textit{INTEGER(KIND=x)} into \textit{INTEGER}
-\item Changing the types \textit{CHARACTER*x} into \textit{CHARACTER (LEN=x)}
-\item Changing the types of some \textit{INTEGER} variables used as boolean into \textit{LOGICAL}
-\end{enumerate}
+\small
+\begin{changemargin}{-0.5cm}{0cm}
+\begin{tabular}{|l|l|p{100 pt}|}
+\hline
+\textbf{Old types} & \textbf{New Types} & \textbf{Reason}
+\\
+\hline
+REAL & DOUBLE PRECISION & better precision and readibility
+\\
+\hline
+INTEGER (KIND=8) & INTEGER & portability
+\\
+\hline
+CHARACTER*30 & CHARACTER (LEN=30) & deprecated syntax
+\\
+\hline
+INTEGER & LOGICAL & when used as booleans
+\\
+\hline
+\end{tabular}
+\end{changemargin}
 \end{frame}
+
 \begin{frame}
 \frametitle{Organising source code}
 \begin{block}{Purpose}
@@ -143,80 +158,111 @@ Improve readability and maintainability of the code
 \begin{enumerate}
 \item Fortran keywords transformed in UPPERCASE
 \item Removing the commented code
-\item Declarations of parameters and variables at the beginning of a subroutine or program: one declaration per line, ordered by type and name
 \item Removing the semicolons: only one instruction per line
 \item Removing the unused variables
 \end{enumerate}
 \end{frame}
+
+\begin{frame}
+\frametitle{Organising source code}
+\begin{enumerate}
+\item Declarations of parameters and variables at the beginning of a subroutine or program: one declaration per line, ordered by type and name
+\begin{columns}
+\begin{column}{150 pt}
+\begin{enumerate}
+\item image à venir
+\end{enumerate}
+\end{column}
+\begin{column}{150 pt}
+\begin{enumerate}
+\item image à venir
+\end{enumerate}
+\end{column}
+\end{columns}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Organising source code}
+\begin{enumerate}
+\item Reorganise signatures: parameters ordered by type and name
+\begin{columns}
+\begin{column}{150 pt}
+\begin{enumerate}
+\item image à venir
+\end{enumerate}
+\end{column}
+\begin{column}{150 pt}
+\begin{enumerate}
+\item image à venir
+\end{enumerate}
+\end{column}
+\end{columns}
+\end{enumerate}
+\end{frame}
+
 \begin{frame}
 \frametitle{Renaming and translating}
 \begin{block}{Purpose}
-Improve readability and internationalization
+Improve readability and internationalisation
 \end{block}
 \begin{enumerate}
-\item Translation of the comments helping the understanding of the code
-\item Rename methods: standardization (underscore to separate the different words), translation in english, better naming
-\item Rename parameters of methods and local variables: standardization (underscore to separate the different words), translation in english, better naming
-\item Translation of all the output console messages
+\item Translation of the comments of the code
+\item Translation of the output console messages
+\item Rename methods, parameters and variables: standardisation (snake\_case), translation in english, better naming
 \end{enumerate}
 \end{frame}
+
 \subsection{Doxygen documentation}
 \begin{frame}[fragile]
-\begin{block}{Produced output formats}
-\begin{itemize}
-\item \textit{HTML}: Documentation readable by a web browser
-\item \textit{PDF}: Documentation written in LaTex to generate a PDF file
-\end{itemize}
-\end{block}
-
 \frametitle{Autogeneration with Doxygen}
-\begin{block}{Targets}
-Description for each module, program, routine and parameters.
+
+\only<1>{
+\begin{block}{Aim}
+Improving maintainability producing HTML and PDF documentation.
 \end{block}
+}
+
+\only<2>{
+\begin{alertblock}{Main issues}
+\begin{enumerate}
+\item Reordering of the parameters
+\item Repetitive work : 62 routines and 249 parameters
+\item Refactoring before documentation OR\\ Documentation before refactoring
+\end{enumerate}
+\end{alertblock}
+}
 
 \begin{example}
 \begin{lstlisting}
 !> Here is a brief description of the routine.
 !! @details Here is a detailed description.
-!! @param[dir] param Here is the parameter description
-SUBROUTINE my_routine(parameter)
+!! @param[dir] param1 Here is a description
+!! @param[dir] param2 Here is a description
+SUBROUTINE my_routine(param1, param2)
 \end{lstlisting}
 \end{example}
 \end{frame}
 
 \begin{frame}
 \frametitle{How to proceed}
-\only<1>{
-\begin{alertblock}{Main issues}
-\begin{enumerate}
-\item Renaming and reordering parameters before documenting
-\item Repetitive work : 62 routines and 249 parameters
-\end{enumerate}
-\end{alertblock}
-}
-\only<1-2>{
 \begin{block}{Automated comments writing}
 A small software have been programmed to automatically write headers.
 \end{block}
-}
-\only<2>{
+
 \begin{columns}
 \begin{column}{0.4\textwidth}
 \begin{enumerate}
 \item Classify modules, methods and parameters
 \item Write descriptions in a database
 \item Extract information from the database
-\item Write header into the source file
+\item Write headers into the source files
 \end{enumerate}
 \end{column}
 \begin{column}{0.6\textwidth}
 \animategraphics[step,width=\columnwidth]{1}{Image/dox}{1}{5}
 \end{column}
 \end{columns}
-}
-\end{frame}
-\begin{frame}[allowframebreaks]
-\frametitle{Before and after}
 \end{frame}
 \section{Clustering algorithms}
 \tableofcontents[currentsection, hideallsubsections]
