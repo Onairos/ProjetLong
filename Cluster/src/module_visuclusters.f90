@@ -130,7 +130,7 @@ CONTAINS
 !!@see module_calcul::write_partitioning()
 !! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
 !! @param[in] format_output the file format for visualization
-  SUBROUTINE write_partitioning(format_output, params)
+  SUBROUTINE write_partitioning(params, format_output)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

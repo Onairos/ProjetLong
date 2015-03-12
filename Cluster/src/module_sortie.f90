@@ -49,7 +49,7 @@ CONTAINS
 !! @param[in] assignments the assignement of each point in a partition
 !! @param[in] nb_proc the number of processors used
 !! @param[in] points_by_domain the number of points in each partition
-  SUBROUTINE write_partitioning(nb_proc, data, points_by_domain, assignments)
+  SUBROUTINE write_partitioning(data, nb_proc, points_by_domain, assignments)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
