@@ -204,11 +204,11 @@ CONTAINS
              ! Partitioning by coordinates
              coords(:,:)=0.
              READ(10,*) coords(1,:)
-             CALL write_point_coord_format(1,params%dim,coords,i,1)
+             CALL write_point_coord_format(params%dim, i, 1, 1, coords)
           ELSE
              ! Partitioning 1D pictures
              READ (10,*) k
-             CALL write_point_picture_format(1,params,i,k)
+             CALL write_point_picture_format(params, i, k, 1)
           ENDIF
        ENDDO
        CLOSE(10)
@@ -281,10 +281,10 @@ CONTAINS
        DO j=1,nb
           IF (params%coords==1) THEN
              READ(10,*) coords(1,:),k
-             CALL write_point_coord_format(1,params%dim,coords,k,1)
+             CALL write_point_coord_format(params%dim, k, 1, 1, coords)
           ELSE
              READ(10,*) k,id
-             CALL write_point_picture_format(1,params,id,matchings(k))
+             CALL write_point_picture_format(params, id, matchings(k), 1)
           ENDIF
        ENDDO
        CLOSE(10) 
@@ -362,10 +362,10 @@ CONTAINS
           READ(10,*) k
           IF (params%coords==1) THEN
              ! Classic coordinates
-             CALL write_point_coord_format(1,nb0,coords,i,k)
+             CALL write_point_coord_format(nb0, i, k, 1, coords)
           ELSE
              ! Pictures reassembly
-             CALL write_point_picture_format(1,params,i,k)
+             CALL write_point_picture_format(params, i, k, 1)
           ENDIF
        ENDDO
        CLOSE(10)
@@ -380,7 +380,7 @@ CONTAINS
 
 
 !>Writes point coordinates from coordinates format for Gmsh visualization
-  SUBROUTINE write_point_coord_format(unit, dim, coords, id, k)
+  SUBROUTINE write_point_coord_format(dim, id, k, unit, coords)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -420,7 +420,7 @@ CONTAINS
 !! @param[in] id the process identifier
 !! @param[in] k 
 !! @param[in] unit the written file identifier
-  SUBROUTINE write_point_picture_format(unit, params, id, k)
+  SUBROUTINE write_point_picture_format(params, id, k, unit)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

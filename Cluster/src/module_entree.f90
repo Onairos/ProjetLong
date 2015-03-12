@@ -82,8 +82,9 @@ CONTAINS
 !! @param[out] nb_clusters_max the maximum number of clusters
 !! @param[out] list_nb_clusters the imposed numbers of clusters list for testing purpose (useless)
 !! @param[out] partitioning the partitionning (number of processors along each dimension)
-  SUBROUTINE read_params(data, epsilon, coord_min, coord_max, nb_proc, partitioning, &
-       input_file, sigma, nb_clusters_max, list_nb_clusters,clust_param)
+  SUBROUTINE read_params(nb_proc, data, clust_param, input_file, &
+               nb_clusters_max, list_nb_clusters, partitioning, epsilon, &
+               sigma, coord_max, coord_min)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -151,25 +152,25 @@ CONTAINS
              READ (1,*) input_file
              PRINT *, '> Input image format + partitioning by pixel'
              PRINT *, '> Reading input data file : ', input_file
-             CALL read_picture_data(input_file,data,coord_min,coord_max)
+             CALL read_picture_data(input_file, data, coord_max, coord_min)
           ELSEIF (input_file=='GEOM') THEN
              data%is_geom=1
              READ (1,*) input_file
              PRINT *, '> Input image format + geometric partitioning'
              PRINT *, '> Reading input data file : ', input_file
-             CALL read_geometric_data(input_file,data,coord_min,coord_max)
+             CALL read_geometric_data(input_file, data, coord_max, coord_min)
           ELSEIF (input_file=='SEUIL') THEN
              data%is_threshold=1
              READ (1,*) input_file
              PRINT *, '> Input image format + partitioning by threshold'
              PRINT *, '> Reading input data file : ', input_file
-             CALL read_threshold_data(input_file,data,coord_min,coord_max)
+             CALL read_threshold_data(input_file, data, coord_max, coord_min)
           ELSEIF (input_file=='COORD') THEN
              data%coords=1
              READ (1,*) input_file
              PRINT *, '> Input image format + partitioning by threshold'
              PRINT *, '> Reading input data file : ', input_file
-             CALL read_coordinates_data(input_file,data,coord_min,coord_max)
+             CALL read_coordinates_data(input_file, data, coord_max, coord_min)
           ELSE
              PRINT *
              PRINT *, 'Non-recognized data format !!!'
@@ -327,7 +328,7 @@ CONTAINS
 
 
 !>Reads data written in coordinates format
-  SUBROUTINE read_coordinates_data(input_file, data, coord_min, coord_max)
+  SUBROUTINE read_coordinates_data(input_file, data, coord_max, coord_min)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -406,7 +407,7 @@ CONTAINS
 !! @param[in,out] data the entire data for computing
 !! @param[out] coord_max the maxima along each dimension of the data (coordinates)
 !! @param[out] coord_min the minima along each dimension of the data (coordinates)
-  SUBROUTINE read_picture_data(input_file, data, coord_min, coord_max)
+  SUBROUTINE read_picture_data(input_file, data, coord_max, coord_min)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -488,7 +489,7 @@ CONTAINS
 !! @param[in,out] data the entire data for computing
 !! @param[out] coord_max the maxima along each dimension of the data (coordinates)
 !! @param[out] coord_min the minima along each dimension of the data (coordinates)
-  SUBROUTINE read_geometric_data(input_file, data, coord_min, coord_max)
+  SUBROUTINE read_geometric_data(input_file, data, coord_max, coord_min)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -590,7 +591,7 @@ CONTAINS
 !! @param[in,out] data the entire data for computing
 !! @param[out] coord_max the maxima along each dimension of the data (coordinates)
 !! @param[out] coord_min the minima along each dimension of the data (coordinates)
-  SUBROUTINE read_threshold_data(input_file, data, coord_min, coord_max)
+  SUBROUTINE read_threshold_data(input_file, data, coord_max, coord_min)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

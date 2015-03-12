@@ -359,7 +359,7 @@ CONTAINS
              CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ids,1)
           ELSE
              ! Partitioning 1D picture
-             CALL write_points_picture_format(10,11,nb_points,params,ids,proc_ids)
+             CALL write_points_picture_format(params, nb_points, 10, 11, ids, proc_ids)
           ENDIF
        ENDIF
        DEALLOCATE(coords)
@@ -496,7 +496,7 @@ CONTAINS
           CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ids,1)
        ELSE
           ! Partitioning 1D picture
-          CALL write_points_picture_format(10,11,nb_points,params,ids,proc_ids)
+          CALL write_points_picture_format(params, nb_points, 10, 11, ids, proc_ids)
        ENDIF
        DEALLOCATE(coords)
        DEALLOCATE(ids)
@@ -619,7 +619,7 @@ CONTAINS
        CALL write_points_coord_format(10,11,params%nb_points,params%dim,coords,ids,1)
     ELSE
        ! Pictures reassembly
-       CALL write_points_picture_format(10,11,params%nb_points,params,ids,proc_ids)
+       CALL write_points_picture_format(params, params%nb_points, 10, 11, ids, proc_ids)
     ENDIF
     CLOSE(10)
     CLOSE(11)
@@ -713,7 +713,7 @@ CONTAINS
 !! @param[in] unit_ind the written processus identifiers file unit
 !! @param[in] ids the process identifier for each point
 !! @param[in] proc_ids the pixel identifiers
-  SUBROUTINE write_points_picture_format(unit_geo, unit_ind, nb_pixels, params, ids, proc_ids)
+  SUBROUTINE write_points_picture_format(params, nb_pixels, unit_geo, unit_ind, ids, proc_ids)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

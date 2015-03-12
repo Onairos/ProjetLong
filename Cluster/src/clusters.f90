@@ -108,8 +108,9 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
 #endif
      OPEN(FILE=input,UNIT=1)
 
-     CALL read_params(data,epsilon,coord_min,coord_max,nb_proc,partitioning,input_file,&
-          sigma,nb_clusters_max,list_nb_clusters, clust_param)
+     CALL read_params(nb_proc, data, clust_param, input_file, nb_clusters_max, &
+                   list_nb_clusters, partitioning, epsilon, sigma, coord_max, &
+                   coord_min)
 
      t2 = MPI_WTIME()
      PRINT *, 'Time for reading data : ', t2-t1
@@ -124,8 +125,7 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
      PRINT *,'DEBUG : Partitioning data...'
 #endif
     t1 = MPI_WTIME()
-    CALL partition_data(data,epsilon,nb_proc,coord_min,coord_max,partitioning,&
-         points_by_domain,assignments,bounds)
+    CALL partition_data(data, nb_proc, partitioning, epsilon, coord_max, coord_min, points_by_domain, assignments, bounds)
     t2 = MPI_WTIME()
     PRINT *,'Time for partitioning data : ', t2-t1
   ENDIF
@@ -142,7 +142,7 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF ((sigma==0.0).AND.(proc_id==0)) THEN
      PRINT *,'DEBUG : clustmethid : ', clust_param%clustering_method_id
-        CALL get_sigma_interface(proc_id,data,sigma,bounds,partitioning,epsilon)
+        CALL get_sigma_interface(data, proc_id, partitioning, epsilon, bounds, sigma)
      ENDIF
 
      ! Sigma sending
@@ -176,14 +176,14 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
         PRINT *
         PRINT *,'DEBUG : Transferring partitioned data...'
 #endif
-        CALL send_partitioning(nb_proc,data,points_by_domain,assignments,partitioned_data)
+        CALL send_partitioning(nb_proc, points_by_domain, assignments, data, partitioned_data)
 #if aff
         PRINT *
         PRINT *,'DEBUG : Computing clusters...'
 #endif
      ELSE
         ! Data receiving
-        CALL receive_partitioning(proc_id,partitioned_data)
+        CALL receive_partitioning(proc_id, partitioned_data)
      ENDIF
 
   ELSE
@@ -205,12 +205,12 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
 #if aff
      PRINT *
 #endif
-     IF (proc_id==0) CALL get_sigma(data,sigma)
+     IF (proc_id==0) CALL get_sigma(data, sigma)
      CALL MPI_BCAST(sigma,1,MPI_DOUBLE_PRECISION,0,MPI_COMM_WORLD,ierr)
      IF (proc_id==0) THEN
         PRINT *, proc_id,' : computing global sigma :',sigma
         IF (data%is_interfacing==1) THEN 
-           CALL get_sigma_interface(proc_id,partitioned_data,sigma,bounds,partitioning,epsilon) 
+           CALL get_sigma_interface(partitioned_data, proc_id, partitioning, epsilon, bounds, sigma) 
            PRINT *, proc_id,' : computing interface sigma interface :',sigma
         ENDIF
      ENDIF
@@ -236,7 +236,7 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
 
     !SELECT CASE (clust_param%clustering_method_id)
     !CASE (1)
-     ! CALL apply_spectral_clustering(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,sigma,clust_param)
+     ! CALL apply_spectral_clustering(clust_param, nb_clusters_max, nb_clusters_opt, proc_id, sigma, partitioned_data)
     !CASE (2)
      ! CALL mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
     !CASE (3)
@@ -256,7 +256,7 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
   ENDIF
 
   ! Saves the partial clusters
-  CALL write_partial_clusters(proc_id,partitioned_data)
+  CALL write_partial_clusters(proc_id, partitioned_data)
 
   ! Exchanges part
   IF (nb_proc>1) THEN
@@ -267,25 +267,25 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
         PRINT *,'DEBUG : Grouping clusters...'
 #endif
         ! Receiving of the number of clusters with duplications
-        CALL receive_number_clusters(nb_proc,nb_clusters,points_by_domain,partitioned_data,array_clusters)
+        CALL receive_number_clusters(partitioned_data, nb_proc, points_by_domain, nb_clusters, array_clusters)
 #if aff
         PRINT *,'DEBUG : number of clusters with duplications found : ', nb_clusters
 #endif
         ! Receiving of clusters info
         ALLOCATE(cluster_map(nb_clusters,data%nb_points))
-        CALL receive_clusters(nb_proc,nb_clusters,points_by_domain,assignments,partitioned_data,&
-             cluster_map,array_clusters,points_by_cluster)
+        CALL receive_clusters(array_clusters, partitioned_data, nb_clusters, nb_proc, points_by_domain,  &
+                  assignments, points_by_cluster, cluster_map)
      ELSE
         ! Sends the number of clusters
-        CALL send_number_clusters(proc_id,partitioned_data)
+        CALL send_number_clusters(partitioned_data, proc_id)
         ! Sends the clusters
-        CALL send_clusters(proc_id,partitioned_data)
+        CALL send_clusters(partitioned_data, proc_id)
      ENDIF
 
      ! End of post-process
      IF (proc_id==0) THEN
         ! Groups the clusters and removes duplicates from the set of found clusters
-        CALL group_clusters(nb_clusters,points_by_cluster,cluster_map,data)
+        CALL group_clusters(nb_clusters, points_by_cluster, cluster_map, data)
      ENDIF
 
   ELSE
@@ -324,7 +324,7 @@ PRINT*, 'Calling write_final_clusters'
      CALL write_final_clusters(nb_clusters,points_by_cluster,cluster_map)
 
      ! Information writing
-     CALL write_metadata(input_file,data,nb_proc,nb_clusters)
+     CALL write_metadata(data, input_file, nb_clusters, nb_proc)
   ENDIF
   IF(proc_id==0) THEN
     t2 = MPI_WTIME()

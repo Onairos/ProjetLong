@@ -12,7 +12,7 @@ CONTAINS
 !! @param[in] nb_clusters_opt the optimal number of clusters
 !! @param[in] proc_id the processus identifier
 !! @param[in,out] partitioned_data the partitioned data for computing
-  SUBROUTINE apply_spectral_clustering_sparse(proc_id, nb_clusters_max, nb_clusters_opt, partitioned_data, sigma)
+  SUBROUTINE apply_spectral_clustering_sparse(nb_clusters_max, nb_clusters_opt, proc_id, sigma, partitioned_data)
     IMPLICIT INTEGER(i, j, q)
     INCLUDE 'mpif.h'
     !###########################################
@@ -151,7 +151,7 @@ CONTAINS
     nb = 2*nb_clusters_max
 
     t1 = MPI_WTIME()
-    CALL solve_arpack(AS, IAS, JAS, n, nnz2, nb, W, Z)
+    CALL solve_arpack(n, nb, nnz2, IAS, JAS, AS, W, Z)
     PRINT *, "---------- W -------------"
     DO i=1,nb
        PRINT *, 'Pure eigen values Arpack : ', i, W(i)
@@ -207,10 +207,7 @@ CONTAINS
           ALLOCATE(clusters_energies(nb_clusters))
           clusters_energies(:)=0.0
 
-          CALL apply_spectral_embedding_sparse(nb_clusters, n, Z, nnz2, AS, IAS, JAS, &
-               ratiomax(nb_clusters),clusters,clusters_centers,points_by_clusters, &
-               clusters_energies,nb_info(nb_clusters),proc_id,ratio_moy(nb_clusters), &
-               ratio_rij(nb_clusters),ratio_rii(nb_clusters))
+          CALL apply_spectral_embedding_sparse(n, nb_clusters, nnz2, proc_id, IAS, JAS, AS, Z, clusters, points_by_clusters, ratiomax(nb_clusters), ratio_moy(nb_clusters), ratio_rii(nb_clusters), ratio_rij(nb_clusters), clusters_energies, clusters_centers, nb_info(nb_clusters))
 
           DEALLOCATE(clusters)
           DEALLOCATE(clusters_centers)
@@ -283,10 +280,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     ! Computing final clustering
     IF (partitioned_data%nb_clusters>1) THEN
 
-       CALL apply_spectral_embedding_sparse(partitioned_data%nb_clusters, n, Z, nnz2, AS, IAS, JAS,ratio,clusters,&
-            clusters_centers,points_by_clusters,clusters_energies,&
-            nb_info(partitioned_data%nb_clusters),proc_id,ratiomin(1),ratio_rij(1),&
-            ratio_rii(1))
+       CALL apply_spectral_embedding_sparse(n, partitioned_data%nb_clusters, nnz2, proc_id, IAS, JAS, AS, Z, clusters, points_by_clusters, ratio, ratiomin(1), ratio_rii(1), ratio_rij(1), clusters_energies, clusters_centers, nb_info(partitioned_data%nb_clusters))
 
        DO i=1,partitioned_data%nb_points
           partitioned_data%points(i)%clusters=clusters(i)
@@ -345,9 +339,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !! @param[out] nb_info the reduced number of clusters (?)
 !! @param[out] clusters indicates which cluster each point belongs to
 !! @param[out] points_by_clusters the number of points in each cluster
-    SUBROUTINE apply_spectral_embedding_sparse(nb_clusters, n, Z, nnz, AS, IAS, JAS, ratio, clusters, &
-       clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
-       ratio_moy, ratio_rij, ratio_rii)
+    SUBROUTINE apply_spectral_embedding_sparse(n, nb_clusters, nnz, proc_id, IAS, JAS, AS, Z, clusters, points_by_clusters, ratio, ratio_moy, ratio_rii, ratio_rij, clusters_energies, clusters_centers, nb_info)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -429,9 +421,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
     it_max=n*n !1000.0
 
-    CALL apply_kmeans( nb_clusters, n, nb_clusters, it_max, it_num, Z2,&
-         clusters, clusters_centers, points_by_clusters, clusters_energies, &
-         proc_id)
+    CALL apply_kmeans(nb_clusters, nb_clusters, it_max, n, proc_id, Z2, clusters_centers, clusters, it_num, points_by_clusters, clusters_energies)
 
     ! Quality measure
 
@@ -514,7 +504,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !! @param[in] IA the row indices of the matrix coefficients
 !! @param[in] JA the column indices of the matrix coefficients
 !! @param[out] Y the resulting vector
-    SUBROUTINE compute_matvec_prod(A, IA, JA, X, Y, n, nnz)
+    SUBROUTINE compute_matvec_prod(IA, JA, n, nnz, X, A, Y)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -557,7 +547,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !! @param[in] JA the column indices of the affinity matrix coefficients
 !! @param[out] Z the matrix of eigen vectors
 !! @param[out] W 
-  SUBROUTINE solve_arpack(A, IA, JA, dim, nnz, nb_clusters_max, W, Z)
+  SUBROUTINE solve_arpack(dim, nb_clusters_max, nnz, IA, JA, A, W(:), Z(:,:))
 !     %-------------------------------------------------%
 !     | The following INCLUDE statement and assignments |
 !     | initiate trace output from the internal         |
@@ -798,8 +788,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !           | product to workd(ipntr(2)).               | 
 !           %-------------------------------------------%
 !
-            CALL compute_matvec_prod(A, IA, JA, workd(ipntr(1)), workd(ipntr(2)), &
-                           dim, nnz)
+            CALL compute_matvec_prod(IA, JA, dim, nnz, workd(ipntr(1)), A, workd(ipntr(2)))
 
             nbite = nbite + 1
 !
@@ -904,7 +893,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !                 %--------------------%
 !
                   !CALL av(nx, v(1,j), ax)
-                  CALL compute_matvec_prod(A, IA, JA, v(1,j), ax, dim, nnz)
+                  CALL compute_matvec_prod(IA, JA, dim, nnz, v(1, j), A, ax)
                   CALL daxpy(n, -d(j,1), v(1,j), 1, ax, 1)
                   d(j,3) = dnrm2(n, ax, 1)
                   d(j,3) = d(j,3) / abs(d(j,1))
@@ -919,12 +908,12 @@ PRINT *, 'DEBUG : Frobenius ratio'
 !                 %------------------------%
 !
                   !CALL av(nx, v(1,j), ax)
-                  CALL compute_matvec_prod(A, IA, JA, v(1,j), ax, dim, nnz)
+                  CALL compute_matvec_prod(IA, JA, dim, nnz, v(1, j), A, ax)
                   CALL daxpy(n, -d(j,1), v(1,j), 1, ax, 1)
                   CALL daxpy(n, d(j,2), v(1,j+1), 1, ax, 1)
                   d(j,3) = dnrm2(n, ax, 1)
                   !CALL av(nx, v(1,j+1), ax)
-                  CALL compute_matvec_prod(A, IA, JA, v(1,j+1), ax, dim, nnz)
+                  CALL compute_matvec_prod(IA, JA, dim, nnz, v(1, j+1), A, ax)
                   CALL daxpy(n, -d(j,2), v(1,j), 1, ax, 1)
                   CALL daxpy(n, -d(j,1), v(1,j+1), 1, ax, 1)
                   d(j,3) = dlapy2( d(j,3), dnrm2(n, ax, 1) )

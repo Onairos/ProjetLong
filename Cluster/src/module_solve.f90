@@ -9,7 +9,7 @@ CONTAINS
 !! @param VR 
 !! @param WR 
 !! @param N 
-  SUBROUTINE solve_dgeevx(N, A, VR, WR)
+  SUBROUTINE solve_dgeevx(N, A, WR, VR)
     IMPLICIT NONE
     EXTERNAL DGEEVX
 
@@ -87,7 +87,7 @@ CONTAINS
 !! @param[in] N 
 !! @param[out] VR 
 !! @param[out] WR 
-  SUBROUTINE solve_dgeev(N, A, VR, WR)
+  SUBROUTINE solve_dgeev(N, A, WR, VR)
     IMPLICIT NONE
     EXTERNAL DGEEV
     !###########################################
@@ -150,7 +150,7 @@ CONTAINS
 !! @param W 
 !! @param LWORK 
 !! @param N 
-  SUBROUTINE solve_dsyev(N, A, W, LWORK)
+  SUBROUTINE solve_dsyev(N, A, LWORK, W)
     IMPLICIT NONE
     EXTERNAL DSYEV
     !###########################################
@@ -195,7 +195,7 @@ CONTAINS
 !! @param LWORK 
 !! @param M 
 !! @param N 
-  SUBROUTINE solve_dsyevr(k, N, A, Z, LWORK, LIWORK, W, M)
+  SUBROUTINE solve_dsyevr(k, LIWORK, LWORK, M, N, A, W, Z)
     IMPLICIT NONE
     EXTERNAL DSYEVR
     !###########################################
@@ -268,7 +268,7 @@ CONTAINS
 !! @param LWORK 
 !! @param M 
 !! @param N 
-  SUBROUTINE solve_dsyevx(k, N, A, Z, LWORK, LIWORK, W, M)
+  SUBROUTINE solve_dsyevx(k, LIWORK, LWORK, M, N, A, W, Z)
     IMPLICIT NONE
     EXTERNAL DSYEVX
     !###########################################

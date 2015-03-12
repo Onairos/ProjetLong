@@ -163,7 +163,7 @@ CONTAINS
 !!@see module_calcul::write_partial_clusters()
 !! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
 !! @param[in] format_output the file format for visualization
-  SUBROUTINE write_assignment(format_output, params)
+  SUBROUTINE write_assignment(params, format_output)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -196,7 +196,7 @@ CONTAINS
 !!@see module_calcul::write_partial_clusters()
 !! @param[in] params the parameters defined in the \latexonly\textit{param.in}\endlatexonly\htmlonly<cite>param.in</cite>\endhtmlonly file
 !! @param[in] format_output the file format for visualization
-  SUBROUTINE write_partial_clusters(format_output, params)
+  SUBROUTINE write_partial_clusters(params, format_output)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

@@ -35,9 +35,9 @@ CONTAINS
 !! @param[out] nb_info the reduced number of clusters (?)
 !! @param[out] clusters indicates which cluster each point belongs to
 !! @param[out] points_by_clusters the number of points in each cluster
-  SUBROUTINE apply_spectral_embedding(nb_clusters, n, Z, A, ratio,clusters, &
-       clusters_centers, points_by_clusters, clusters_energies, nb_info, proc_id, &
-       ratio_moy, ratio_rij, ratio_rii)
+  SUBROUTINE apply_spectral_embedding(n, nb_clusters, proc_id, A, Z, nb_info,  &
+                  clusters, points_by_clusters, ratio, ratio_moy, ratio_rii, ratio_rij,  &
+                  clusters_centers, clusters_energies)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -110,9 +110,9 @@ CONTAINS
 
     nb_iter_max=n*n
 
-    CALL apply_kmeans( nb_clusters, n, nb_clusters, nb_iter_max, nb_iter,Z2,&
-         clusters, clusters_centers, points_by_clusters, clusters_energies, &
-         proc_id)
+    CALL apply_kmeans(nb_clusters, nb_clusters, nb_iter_max, n, proc_id,  &
+                  Z2, clusters_centers, clusters, nb_iter, points_by_clusters,  &
+                  clusters_energies)
 
     ! Quality measure
     nb_max=0
@@ -205,8 +205,9 @@ CONTAINS
 !! @param[out] nb_iter the number of iterations taken
 !! @param[out] clusters indicates which cluster each point belongs to
 !! @param[out] points_by_clusters the number of points in each cluster
-  SUBROUTINE apply_kmeans(dim, nb_points, nb_clusters, nb_iter_max, nb_iter, points, &
-       clusters, clusters_centers, points_by_clusters, clusters_energies, proc_id)
+  SUBROUTINE apply_kmeans(dim, nb_clusters, nb_iter_max, nb_points,  &
+                  proc_id, points, clusters_centers, clusters, nb_iter,  &
+                  points_by_clusters, clusters_energies)
 
     !*****************************************************************************80
     !

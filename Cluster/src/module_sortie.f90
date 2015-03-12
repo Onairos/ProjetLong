@@ -239,7 +239,7 @@ CONTAINS
 !! @param[in] nb_clusters the number of clusters
 !! @param[in] nb_clusters the number of clusters
 !! @param[in] nb_proc the number of processors used
-  SUBROUTINE write_metadata(input_file, data, nb_proc, nb_clusters)
+  SUBROUTINE write_metadata(data, input_file, nb_clusters, nb_proc)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS

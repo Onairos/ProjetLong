@@ -16,7 +16,7 @@ CONTAINS
 !! @param[in] points_by_domain the number of points in each partition
 !! @param[in,out] data the entire data for computing
 !! @param[out] partitioned_data the partitioned data for computing
-  SUBROUTINE send_partitioning(nb_proc, data, points_by_domain, assignments, partitioned_data)
+  SUBROUTINE send_partitioning(nb_proc, points_by_domain, assignments, data, partitioned_data)
     IMPLICIT NONE    
     ! MPI library
     INCLUDE 'mpif.h'
@@ -196,7 +196,7 @@ CONTAINS
 !! @param[out] nb_clusters the number of clusters
 !! @param[out] nb_clusters the number of clusters
 !! @param[out] nb_clusters the number of clusters
-  SUBROUTINE receive_number_clusters(nb_proc, nb_clusters, points_by_domain, partitioned_data, array_clust)
+  SUBROUTINE receive_number_clusters(partitioned_data, nb_proc, points_by_domain, nb_clusters, array_clust)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -259,7 +259,7 @@ CONTAINS
 !!@see receive_number_clusters()
 !! @param[in] partitioned_data the partitioned data for computing
 !! @param[in] proc_id the processus identifier
-  SUBROUTINE send_number_clusters(proc_id, partitioned_data)
+  SUBROUTINE send_number_clusters(partitioned_data, proc_id)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -305,7 +305,7 @@ CONTAINS
 !!@see receive_clusters()
 !! @param[in] partitioned_data the partitioned data for computing
 !! @param[in] proc_id the processus identifier
-  SUBROUTINE send_clusters(proc_id, partitioned_data)
+  SUBROUTINE send_clusters(partitioned_data, proc_id)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -355,8 +355,8 @@ CONTAINS
 !! @param[in] points_by_domain the number of points in each partition
 !! @param[out] cluster_map the cluster indices and the number of points in each cluster
 !! @param[out] points_by_cluster the number of points in each cluster
-  SUBROUTINE receive_clusters(nb_proc, nb_clusters, points_by_domain, assignments, partitioned_data, cluster_map, &
-       array_clust, points_by_cluster)
+  SUBROUTINE receive_clusters(array_clust, partitioned_data, nb_clusters, nb_proc, &
+                  points_by_domain, assignments, points_by_cluster, cluster_map)
     IMPLICIT NONE
     ! MPI library
     INCLUDE 'mpif.h'
@@ -449,7 +449,7 @@ CONTAINS
   CALL MPI_BCAST(clust_param%kernelfunindex,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
   CALL MPI_BCAST(clust_param%nbLimitClust,1,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
   CALL MPI_BCAST(clust_param%sigma,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
-  CALL MPI_BCAST(clust_param%gam,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
+  CALL MPI_BCAST(clust_param%gamma,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
   CALL MPI_BCAST(clust_param%delta,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
   CALL MPI_BCAST(clust_param%bandwidth,1,MPI_DOUBLE,0,MPI_COMM_WORLD,ierr)
 END SUBROUTINE send_clustering_param

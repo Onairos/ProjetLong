@@ -46,10 +46,10 @@ PROGRAM visuclusters
   CALL write_partitioning(format_output,params)
 
   ! Output file
-  CALL write_assignment(format_output,params)
+  CALL write_assignment(params, format_output)
 
   ! Outout file of clusters before regrouping
-  IF (params%nb_proc>1) CALL write_partial_clusters(format_output,params)
+  IF (params%nb_proc>1) CALL write_partial_clusters(params, format_output)
 
   ! Outout file of clusters after regrouping
   CALL write_final_clusters(format_output,params)

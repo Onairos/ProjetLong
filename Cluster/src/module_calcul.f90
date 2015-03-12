@@ -76,7 +76,7 @@ CONTAINS
 !! @param[in] proc_id the processus identifier
 !! @param[in] partitioning the partitionning (number of processors along each dimension)
 !! @param[out] sigma the affinity parameter
-  SUBROUTINE get_sigma_interface(proc_id, partitioned_data, sigma, bounds, partitioning, epsilon)
+  SUBROUTINE get_sigma_interface(partitioned_data, proc_id, partitioning, epsilon, bounds, sigma)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -150,7 +150,7 @@ CONTAINS
     PRINT *, 'DEBUG : ', proc_id, ' : value of computed sigma for interfacing : ', sigma0
 #endif
     ! Sigma computing, global formula
-    CALL get_sigma(partitioned_data,sigma)
+    CALL get_sigma(partitioned_data, sigma)
 #if aff
     PRINT *, 'DEBUG : ', proc_id,' : value of sigma for interfacing', sigma
 #endif
@@ -240,11 +240,12 @@ CONTAINS
     gaussian_kernel=K
     RETURN
   END
-!Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||ÃÂ²))
+!Stop when converged compute E = sum_N(sum_M( Indicatrice (xi E Ck)*||phi(xi)-mk||ÃÂÃÂ²))
 
 
 
-SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
+SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt, &
+                  partitioned_data,clust_param)
     IMPLICIT NONE
     INCLUDE 'mpif.h'
     !###########################################
@@ -261,6 +262,7 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     TYPE(type_data) :: partitioned_data
 
     !#### Variables  ####
+    INTEGER :: cluster(partitioned_data%nb_points) ! indicates which cluster each point belongs to
     INTEGER :: cluster_id (partitioned_data%nb_clusters)
     INTEGER :: cluster_population (partitioned_data%nb_clusters) ! the number of points in each cluster
     INTEGER :: i
@@ -285,8 +287,6 @@ SUBROUTINE apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitio
     DOUBLE PRECISION :: stockenergy (clust_param%nbLimitClust)
     DOUBLE PRECISION :: val
     DOUBLE PRECISION :: valmax
-    INTEGER :: cluster (partitioned_data%nb_points) ! indicates which cluster each point belongs to
-    INTEGER :: cluster_population (clust_param%nbLimitClust) ! the number of points in each cluster
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: Ker
     LOGICAL :: ok 
     LOGICAL :: ok2
@@ -403,7 +403,7 @@ PRINT *, 'recherche des centres'
     it_num = 0
     swap=1
     
-    partitioned_data%point(:)%cluster=1 !  cluster(:)=1
+    partitioned_data%points(:)%cluster=1 !  cluster(:)=1
     DO WHILE ((it_num<partitioned_data%nb_points**2).AND.(swap/=0))
 
        it_num = it_num + 1
@@ -452,8 +452,8 @@ PRINT *, 'recherche des centres'
        DO i=1,partitioned_data%nb_points
 
           DO j=1,clust_param%nbLimitClust
-             IF (listnorm(i,j)<listnorm(i,partitioned_data%point(i)%cluster)) THEN
-                partitioned_data%point(i)%cluster=j
+             IF (listnorm(i,j)<listnorm(i,partitioned_data%points(i)%cluster)) THEN
+                partitioned_data%points(i)%cluster=j
 
                 swap=swap+1
              ENDIF
@@ -481,7 +481,7 @@ PRINT*,'out  clust_param%nbLimitClust : ',clust_param%nbLimitClust
   END SUBROUTINE apply_kernel_k_means
 
 
-  SUBROUTINE apply_spectral_clustering(proc_id, nb_clusters_max, nb_clusters_opt, partitioned_data, sigma,clust_param)
+  SUBROUTINE apply_spectral_clustering(clust_param, nb_clusters_max, nb_clusters_opt, proc_id, sigma, partitioned_data)
     IMPLICIT NONE
     INCLUDE 'mpif.h'
     !###########################################
@@ -558,7 +558,7 @@ PRINT*,'out  clust_param%nbLimitClust : ',clust_param%nbLimitClust
  !   ENDDO
 
      IF (clust_param%kernelfunindex==0) THEN
-        A=poly_kernel( partitioned_data, clust_param%gam, clust_param%delta)
+        A=poly_kernel( partitioned_data, clust_param%gamma, clust_param%delta)
     ELSEIF (clust_param%kernelfunindex==1) THEN
         A=gaussian_kernel(partitioned_data, clust_param%sigma)
     ENDIF
@@ -600,7 +600,7 @@ PRINT*,'out  clust_param%nbLimitClust : ',clust_param%nbLimitClust
       ENDDO
 
       t1 = MPI_WTIME()
-      CALL solve_dgeev(n,A2,Z,W)
+      CALL solve_dgeev(n, A2, W, Z)
     ELSE
       PRINT *, proc_id, ' : Arpack solver'
 
@@ -657,10 +657,10 @@ PRINT*,'out  clust_param%nbLimitClust : ',clust_param%nbLimitClust
           ALLOCATE(clusters_energies(nb_clusters))
           clusters_energies(:)=0.0
 
-          CALL apply_spectral_embedding(nb_clusters,n,Z,A,&
-               ratiomax(nb_clusters),cluster,clusters_centers,points_by_clusters,&
-               clusters_energies,nb_info(nb_clusters),proc_id,ratiomoy(nb_clusters), &
-               ratiorij(nb_clusters),ratiorii(nb_clusters))
+          CALL apply_spectral_embedding(n, nb_clusters, proc_id, A, Z,  &
+                  nb_info(nb_clusters), cluster, points_by_clusters,  &
+                  ratiomax(nb_clusters), ratiomoy(nb_clusters), ratiorii(nb_clusters), &
+                   ratiorij(nb_clusters), clusters_centers, clusters_energies)
 
 
           DEALLOCATE(cluster)
@@ -726,9 +726,10 @@ PRINT *, 'DEBUG : Frobenius ratio'
 
     ! Final clustering computing
     IF (partitioned_data%nb_clusters>1) THEN
-       CALL apply_spectral_embedding(partitioned_data%nb_clusters,n,Z,A,ratio,cluster,&
-            clusters_centers,points_by_clusters,clusters_energies,&
-            nb_info(partitioned_data%nb_clusters),proc_id,ratiomin(1),ratiorij(1),ratiorii(1))
+       CALL apply_spectral_embedding(n, partitioned_data%nb_clusters, proc_id, A, Z,  &
+                  nb_info(partitioned_data%nb_clusters), cluster, points_by_clusters,  &
+                  ratio, ratiomin(1), ratiorii(1), ratiorij(1), clusters_centers,  &
+                  clusters_energies)
        DO i=1,partitioned_data%nb_points
           partitioned_data%points(i)%cluster=cluster(i)
        ENDDO
@@ -829,7 +830,7 @@ PRINT*, 'MEAN SHIFT IN'
 
     !  myMean = partitioned_data%point(stInd)%coords !initialize mean to this points location
       DO j=1, dim_num
-        myMean(j) = partitioned_data%point(stInd)%coords(j)
+        myMean(j) = partitioned_data%points(stInd)%coords(j)
 
       ENDDO
       myMembers(:) = 0
@@ -845,7 +846,7 @@ PRINT*, 'MEAN SHIFT IN'
 !PRINT*, 'MEAN stInd', stInd
 !PRINT*, 'MEAN SHIFT coord j :', j,partitioned_data%point(i)%coords(j)
 !PRINT*, 'MEAN SHIFT myMean j :', myMean(j) , j
-              sqDist = sqDist + (partitioned_data%point(i)%coords(j) - myMean(j))**2
+              sqDist = sqDist + (partitioned_data%points(i)%coords(j) - myMean(j))**2
 !PRINT*, 'MEAN SHIFT', sqDist , j
 
             ENDDO
@@ -927,7 +928,7 @@ PRINT*, 'MEAN SHIFT num  ', num
 	!ENDDO
 
     PRINT*, 'MEAN SHIFT MAX LOC', MAXLOC(clusterVotes(:,i), DIM=1)
-      partitioned_data%point(i)%cluster = MAXLOC(clusterVotes(:,i), DIM=1)
+      partitioned_data%points(i)%cluster = MAXLOC(clusterVotes(:,i), DIM=1)
 
     ENDDO
 

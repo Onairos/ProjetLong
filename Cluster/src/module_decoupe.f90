@@ -23,8 +23,7 @@ CONTAINS
 !! @param[out] bounds the intervals along each dimension representing the bounds of each partition
 !! @param[out] assignments the assignement of each point in a partition
 !! @param[out] points_by_domain the number of points in each partition
-  SUBROUTINE partition_data(data, epsilon, nb_proc, coord_min, coord_max, partitioning,&
-       points_by_domain, assignments, bounds)
+  SUBROUTINE partition_data(data, nb_proc, partitioning, epsilon, coord_max, coord_min, points_by_domain, assignments, bounds)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -52,21 +51,21 @@ CONTAINS
     ! INSTRUCTIONS
     !########################################### 
     ! Bounds definition
-    CALL define_bounds(data,coord_min,coord_max,bounds,partitioning,epsilon,nb_proc)
+    CALL define_bounds(data, nb_proc, partitioning, epsilon, coord_max, coord_min, bounds)
 
     ! Subdomains definition
-    CALL define_domains(nb_proc,data,domains,bounds,partitioning)
+    CALL define_domains(data, nb_proc, partitioning, bounds, domains)
 
     ! Writing of partionned subdomains
-    CALL write_domains(data,nb_proc,domains)
+    CALL write_domains(data, nb_proc, domains)
 
     ! Partitioning definition
     IF ((data%is_interfacing==1).OR.(nb_proc==1)) THEN
        ! Partitioning by interfacing
-       CALL partition_with_interface(nb_proc,data,points_by_domain,assignments,domains,epsilon)
+       CALL partition_with_interface(data, nb_proc, epsilon, domains, points_by_domain, assignments)
     ELSE
        ! Partitioning by overlapping
-       CALL partition_with_overlapping(nb_proc,data,points_by_domain,assignments,domains)
+       CALL partition_with_overlapping(data, nb_proc, domains, points_by_domain, assignments)
     ENDIF
     DEALLOCATE(domains)
 
@@ -93,7 +92,7 @@ CONTAINS
 !! @param[in,out] coord_max the maxima along each dimension of the data (coordinates)
 !! @param[in,out] coord_min the minima along each dimension of the data (coordinates)
 !! @param[out] bounds the intervals along each dimension representing the bounds of each partition
-  SUBROUTINE define_bounds(data, coord_min, coord_max, bounds, partitioning, epsilon, nb_proc)
+  SUBROUTINE define_bounds(data, nb_proc, partitioning, epsilon, coord_max, coord_min, bounds)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -215,7 +214,7 @@ CONTAINS
 !! @param[in] nb_proc the number of processors used
 !! @param[in] partitioning the partitionning (number of processors along each dimension)
 !! @param[out] domains the domains constructed from the bounds
-  SUBROUTINE define_domains(nb_proc, data, domains, bounds, partitioning)
+  SUBROUTINE define_domains(data, nb_proc, partitioning, bounds, domains)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -323,7 +322,7 @@ CONTAINS
 !! @param[in] nb_proc the number of processors used
 !! @param[out] assignments the assignement of each point in a partition
 !! @param[out] points_by_domain the number of points in each partition
-  SUBROUTINE partition_with_interface(nb_proc, data, points_by_domain, assignments, domains, epsilon)
+  SUBROUTINE partition_with_interface(data, nb_proc, epsilon, domains, points_by_domain, assignments)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -435,7 +434,7 @@ CONTAINS
 !! @param[in] nb_proc the number of processors used
 !! @param[out] assignments the assignement of each point in a partition
 !! @param[out] points_by_domain the number of points in each partition
-  SUBROUTINE partition_with_overlapping(nb_proc, data, points_by_domain, assignments, domains)
+  SUBROUTINE partition_with_overlapping(data, nb_proc, domains, points_by_domain, assignments)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -541,7 +540,7 @@ CONTAINS
     DO WHILE(.NOT.ok)
        j=j+1 
        IF (j>points_by_cluster(i)) THEN
-          ! Line nÃÂÃÂ°1 is entirely tested
+          ! Line nÃÂÃÂÃÂÃÂ°1 is entirely tested
 #if aff
           PRINT *, 'DEBUG : number of elements after grouping :', points_by_cluster(i)
 #endif
