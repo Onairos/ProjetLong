@@ -236,13 +236,10 @@ PRINT*, 'L55 clusters :DEBUG BANDWIDTH BEFORE READ :', clust_param%bandwidth
 
     SELECT CASE (clust_param%clustering_method_id)
     CASE (1)
-      PRINT *, 'Calling Spectral clustering...'
       CALL apply_spectral_clustering(clust_param, nb_clusters_max, nb_clusters_opt, proc_id, sigma, partitioned_data)
     CASE (2)
-      PRINT *, 'Calling Mean shift...'
       CALL mean_shift(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
     CASE (3)
-      PRINT *, 'Calling Kernel k means...'
       CALL apply_kernel_k_means(proc_id,nb_clusters_max,nb_clusters_opt,partitioned_data,clust_param)
     END SELECT
 

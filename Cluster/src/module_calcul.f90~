@@ -802,7 +802,7 @@ PRINT *, 'DEBUG : Frobenius ratio'
     DOUBLE PRECISION :: stopThresh !when mean has converged
 
 
-!PRINT*, 'MEAN SHIFT IN'
+PRINT*, 'MEAN SHIFT IN'
     
     !###########################################
     ! INSTRUCTIONS
