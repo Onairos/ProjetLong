@@ -356,7 +356,7 @@ CONTAINS
           ! Writing
           IF (params%coords==1) THEN
              ! Partitioning by coordinates
-             CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ids,1)
+             CALL write_points_coord_format(params%dim, 1, nb_points, 10, 11, ids, coords)
           ELSE
              ! Partitioning 1D picture
              CALL write_points_picture_format(params, nb_points, 10, 11, ids, proc_ids)
@@ -493,7 +493,7 @@ CONTAINS
        ! Writing
        IF (params%coords==1) THEN
           ! Partitioning by coordinates
-          CALL write_points_coord_format(10,11,nb_points,params%dim,coords,ids,1)
+          CALL write_points_coord_format(params%dim, 1, nb_points, 10, 11, ids, coords)
        ELSE
           ! Partitioning 1D picture
           CALL write_points_picture_format(params, nb_points, 10, 11, ids, proc_ids)
@@ -616,7 +616,7 @@ CONTAINS
     ENDDO
     IF (params%coords==1) THEN
        ! Classical coordinates
-       CALL write_points_coord_format(10,11,params%nb_points,params%dim,coords,ids,1)
+       CALL write_points_coord_format(params%dim, 1, params%nb_points, 10, 11, ids, coords)
     ELSE
        ! Pictures reassembly
        CALL write_points_picture_format(params, params%nb_points, 10, 11, ids, proc_ids)
@@ -645,7 +645,7 @@ CONTAINS
 
 
 !>Writes point coordinates from coordinates format for Paraview visualization
-  SUBROUTINE write_points_coord_format(unit_geo, unit_ind, nb_points, dim, coords, ids, k)
+  SUBROUTINE write_points_coord_format(dim, k, nb_points, unit_geo, unit_ind, ids, coords)
     IMPLICIT NONE
     !###########################################
     ! DECLARATIONS
@@ -653,7 +653,6 @@ CONTAINS
     !#### Parameters ####
     !====  IN  ====
     INTEGER :: dim
-    INTEGER :: i
     INTEGER :: k
     INTEGER :: nb_points
     INTEGER :: unit_geo
@@ -661,6 +660,9 @@ CONTAINS
     INTEGER, DIMENSION(:), POINTER :: ids
     DOUBLE PRECISION, DIMENSION(:,:), POINTER :: coords
     
+    !#### Variables  ####
+    INTEGER :: i
+
     !###########################################
     ! INSTRUCTIONS
     !###########################################
