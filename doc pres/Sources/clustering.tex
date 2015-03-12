@@ -5,9 +5,9 @@
 \usepackage{animate}
 
 \usetheme{Warsaw}
+\setbeamertemplate{navigation symbols}{\insertframenumber/\inserttotalframenumber}
 \setbeamerfont{block body}{size=\small}
 \setbeamerfont{block body alerted}{size=\small}
-\date{}
 \AtBeginSubsection[]
 {
   \begin{frame}
@@ -17,7 +17,8 @@
 }
 \title{New clustering methods into a parallel code}
 \author[SORIANO, AUBENEAU, DUVAL, PRIEUL, SANTINA]{SORIANO Tristan, AUBENEAU Simon, DUVAL Quentin, PRIEUL Simon, SANTINA Jeremy}
-\institute{ENSEEIHT, 3IN}
+\institute{\includegraphics[scale=0.5]{Image/logo.jpg}}
+\date{\today}
 \begin{document}
 \begin{frame}
 \maketitle
@@ -29,18 +30,17 @@
 \end{frame}
 \begin{frame}
 \frametitle{High computational complexity}
-\begin{columns}
-\begin{column}{0.4\textwidth}
-\begin{itemize}
-\item Huge quantity of data
-\item Dense matrices
-\item Extended applications
-\end{itemize}
-\end{column}
-\begin{column}{0.6\textwidth}
-\includegraphics[width=\columnwidth]{Image/parallel.png}
-\end{column}
-\end{columns}
+\begin{alertblock}{Challenge}
+The data used leads to computations using big dense matrices.
+\end{alertblock}
+\begin{center}
+\only<1>{
+\includegraphics[width=0.5\textwidth]{Image/parallel.png}
+}
+\only<2>{
+\includegraphics[width=0.5\textwidth]{Image/parallel2.png}
+}
+\end{center}
 \end{frame}
 \section{Work organisation}
 \subsection{Project management}
@@ -48,7 +48,7 @@
 \small
 \frametitle{Development Plan}
 \begin{description}
-\item [Step 1] Theoritical study + Matlab new methods implementation
+\item [Step 1] Theoretical study + Matlab new methods implementation
 \item [Step 2] Code documentation + Fortran interfaces specification
 \item [Step 3] Code refactoring + Fortran implementation
 \item [Step 4] Validation
@@ -62,7 +62,7 @@
 Unsatisfied client & Light & Heavy & Specification with the client
 \\
 \hline
-Unsuitable ressources & Medium & Heavy & Lighter test creation, early access request
+Unsuitable hardware resources & Medium & Heavy & Lighter test creation, early access request
 \\
 \hline
 Insufficient knowledge & Heavy & Medium & Increase the time dedicated to each risky task
@@ -203,9 +203,10 @@ A small software have been programmed to automatically write headers.
 \frametitle{Before and after}
 \end{frame}
 \section{Clustering algorithms}
-\tableofcontents[currentsection]
+\tableofcontents[currentsection, hideallsubsections]
 \begin{frame}
-\frametitle{Overview}
+\frametitle{Explanations}
+\only<1>{
 \begin{columns}
 \begin{column}{0.4\textwidth}
 \begin{itemize}
@@ -218,21 +219,12 @@ A small software have been programmed to automatically write headers.
 \includegraphics[width=\columnwidth]{Image/parallel.png}
 \end{column}
 \end{columns}
-\end{frame}
-\begin{frame}
-\frametitle{Overview}
-\begin{columns}
-\begin{column}{0.4\textwidth}
-\begin{itemize}
-\item Spectral Clustering
-\item Kernel K-Means
-\item Mean Shift
-\end{itemize}
-\end{column}
-\begin{column}{0.6\textwidth}
-%\includegraphics[width=\columnwidth]{Image/exemple.png}
-\end{column}
-\end{columns}
+}
+\only<2>{
+\begin{example}
+\includegraphics[width=\columnwidth]{Image/exemple.png}
+\end{example}
+}
 \end{frame}
 \subsection{Spectral Clustering}
 \begin{frame}
@@ -256,6 +248,7 @@ Create a weighted graph between points
 \subsection{Kernel K-Means}
 \begin{frame}
 \frametitle{K-Means}
+\only<1>{
 \begin{block}{Main idea}
 Select random centers for cluster and move them until they reach centers of density.
 \end{block}
@@ -272,15 +265,27 @@ Select random centers for cluster and move them until they reach centers of dens
 \animategraphics[autoplay,loop,width=\columnwidth]{1}{Image/kmeans}{1}{7}
 \end{column}
 \end{columns}
+}
+\only<2>{
+\begin{alertblock}{Limitation}
+K-Means does not work for non-linear separations.
+\end{alertblock}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\includegraphics[width=\columnwidth]{Image/cercle.png}
+\end{column}
+\begin{column}{0.5\textwidth}
+\includegraphics[width=\columnwidth]{Image/cercle2.png}
+\end{column}
+\end{columns}
+}
 \end{frame}
 \begin{frame}
-\frametitle{Description}
+\frametitle{Improving K-Means}
 \begin{block}{Main idea}
-Enhance K-Means algorithm using a Kernel function to map the original points to a feature space.
+Using K-Means on a space with higher dimensionality to highlight separations.
 \end{block}
-\begin{center}
-\includegraphics[width=0.5\textwidth]{Image/kernel.png}
-\end{center}
+\includegraphics[width=\columnwidth]{Image/separation.jpeg}
 \end{frame}
 \subsection{Mean Shift}
 \begin{frame}
