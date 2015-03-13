@@ -120,7 +120,7 @@ Libraries (MPI, Lapack and Arpack), F90 Compiler (GFortran), compilation flags
 \section{Reverse engineering}
 \subsection{Code refactoring}
 \begin{frame}
-\includegraphics[scale=0.45]{Image/process.png}
+\includegraphics[scale=0.30]{Image/process.png}
 \end{frame}
 \begin{frame}
 \frametitle{Changing source code}
@@ -169,14 +169,10 @@ Improve readability and maintainability of the code
 \item Declarations of parameters and variables at the beginning of a subroutine or program: one declaration per line, ordered by type and name
 \begin{columns}
 \begin{column}{150 pt}
-\begin{enumerate}
-\item image à venir
-\end{enumerate}
+\includegraphics[scale=0.60]{Image/before_refactoring_template.png}
 \end{column}
 \begin{column}{150 pt}
-\begin{enumerate}
-\item image à venir
-\end{enumerate}
+\includegraphics[scale=0.60]{Image/after_refactoring_template.png}
 \end{column}
 \end{columns}
 \end{enumerate}
@@ -188,14 +184,10 @@ Improve readability and maintainability of the code
 \item Reorganise signatures: parameters ordered by type and name
 \begin{columns}
 \begin{column}{150 pt}
-\begin{enumerate}
-\item image à venir
-\end{enumerate}
+\includegraphics[scale=0.35]{Image/before_reoganize.png}
 \end{column}
 \begin{column}{150 pt}
-\begin{enumerate}
-\item image à venir
-\end{enumerate}
+\includegraphics[scale=0.35]{Image/after_reorganize.png}
 \end{column}
 \end{columns}
 \end{enumerate}
@@ -264,6 +256,12 @@ A small software have been programmed to automatically write headers.
 \end{column}
 \end{columns}
 \end{frame}
+
+\begin{frame}
+\frametitle{Result}
+\includegraphics[width=1.1\textwidth]{Image/final_code_0.png}
+\end{frame}
+
 \section{Clustering algorithms}
 \tableofcontents[currentsection, hideallsubsections]
 \begin{frame}
@@ -288,6 +286,7 @@ A small software have been programmed to automatically write headers.
 \end{example}
 }
 \end{frame}
+
 \subsection{Spectral Clustering}
 \begin{frame}
 \frametitle{Description}
