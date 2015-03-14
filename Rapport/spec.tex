@@ -1,0 +1,158 @@
+\section{Overview}
+We define here the expectation of the client and the corresponding specification. The developer will follow the needs specified by the client as long as its part of the following agreement. This is a research project on image processing. It produce clustering creation among point sets and images.
+A such treatment can be applied on real time identification and following on a video.
+\section{Documentation}
+Here is a useful documentation provided by the client in order to understand the three clustering algorithms: Spectral Clustering (already implemented), Kernel K-Means, Mean-Shift and how the first one have been implemented. This should serve for algorithm implementation and overall comprehension.
+\subsection{Applicable Documents}
+\begin{center}
+    \begin{tabular}{ | p{0.15\textwidth} | l | p{0.20\textwidth} |}
+    \hline
+    \textbf{Date} & \textbf{Title} & \textbf{Author(s)}
+    \\
+    \hline
+    20 Jan. 2009 & The Global Kernel k-Means Clustering Algorithm (revised version) & Grigorios Tzortzis
+    \\ & & Aristidis Likas
+    \\ 
+    \hline
+    2001 & The Variable Bandwidth Mean Shift and Data-Driven Scale Selection & Dorin Comaniciu
+    \\ & & Visvanathan Ramesh
+    \\ & & Peter Meer
+    \\ 
+    \hline
+    \textit{unknown}& Mean Shift Analysis and Applications & Dorin Comaniciu
+    \\ & & Peter Meer
+    \\
+    \hline
+    \end{tabular}
+\end{center}
+\subsection{Reference Documents}
+\begin{flushleft}
+    \begin{tabular}{ | p{0.15\textwidth} | l | p{0.20\textwidth} |}
+    \hline
+    \textbf{Date} & \textbf{Title} & \textbf{Author(s)}
+    \\
+    \hline
+    \textit{unknown} & On Spectral Clustering: Analysis and an algorithm & Andrew Y. Ng
+    \\ & & Michael I. Jordan
+    \\ & & Yair Weiss
+    \\ 
+    \hline
+    22-25 Aug. 2004 & Kernel k-means, Spectral Clustering and Normalized Cuts & Inderjit S. Dhilon
+    \\ & & Yugjang Guan
+    \\ & & Brian Kulis
+    \\ 
+    \hline
+    \end{tabular}
+\end{flushleft}
+\section{Deliverables}
+Here are the expected deliverables that the client will receive at the end of the project.
+\begin{flushleft}
+    \begin{tabular}{ | l |}
+    \hline
+   	\textbf{Content}
+    \\
+    \hline
+    Implemented Kernel K-means and Mean-Shift algorithms
+    \\ 
+    \hline
+    Running configuration files with documentation
+    \\ 
+    \hline
+    Refactored code from the given sources to improve maintainability and optimized compilation
+    \\ 
+    \hline
+    Documentation of the source code in HTML and PDF formats
+    \\ 
+    \hline
+    New tests for comparison of performances between algorithms
+    \\ 
+    \hline
+    \end{tabular}
+\end{flushleft}
+\section{Functional Requirements}
+Here are the new functionnalities that the program should implement.
+\begin{flushleft}
+    \begin{tabular}{ | p{0.09\textwidth} |  p{0.91\textwidth} |}
+    \hline
+   	\textbf{Reference} & \textbf{Requirement}
+    \\
+    \hline
+	FREQ-01 & Kernel K-means should work with all different data format : 2D or 3D coordinates, picture, thresholded picture and geometric (picture + coordinates)
+    \\ 
+    \hline
+	FREQ-02 & Mean-Shift should work with all different data format : 2D or 3D coordinates, picture, thresholded picture and geometric (picture + coordinates)
+    \\ 
+    \hline
+	FREQ-03 & The user should be able to use any of the three algorithms using a new parameter defined in the \textit{param.in} file.
+    \\ 
+    \hline
+   	FREQ-04 & The user should be able to set a bandwidth for Mean-Shift algorithm using a new parameter defined in the \textit{param.in} file.
+   	\\ 
+    \hline
+    FREQ-05 & New data sets should be created to provide other tests for the algorithms.
+   	\\ 
+    \hline
+    \end{tabular}
+\end{flushleft}
+\section{Non-Functional Requirements}
+Here are the requirements that do not implement new functionnalities for the program. They concern the uptime requirements, the reverse engineering aspect and the maintainability of the code.
+\begin{flushleft}
+    \begin{tabular}{ | p{0.12\textwidth} |  p{0.88\textwidth} |}
+    \hline
+   	\textbf{Reference} & \textbf{Requirement}
+    \\
+    \hline
+	NFREQ-01 & The deadline for this project is the 13$^{th}$ of March 2015.
+    \\
+    \hline
+	NFREQ-02 & The source code should be documented using specific comments inside the code.
+    \\
+    \hline
+    NFREQ-03 & The deliverables should be put on versionned repository using Git.
+    \\
+    \hline
+    NFREQ-04 & Quality of the original source code should be improved by removing unused variables and methods and by replacing deprecated types and symbols.
+    \\
+    \hline
+    NFREQ-05-1 & Readability of the original source code should be improved by renaming variables, methods and parameters using proper naming convention.
+    \\
+    \hline
+    NFREQ-05-2 & Readability of the original source code should be improved by translating all French portions of the code into English.
+    \\
+    \hline
+    NFREQ-05-3 & Readability of the original source code should be improved by removing all commented code.
+    \\
+    \hline
+    NFREQ-06 & The documentation should be written in English.
+    \\
+    \hline
+    NFREQ-07 & The algorithms should be as efficient as possible in term of performances.
+    \\
+    \hline
+    \end{tabular}
+\end{flushleft}
+\section{Environmental Requirements}
+Here are the requirements on the technologies that are used: software and hardware.
+\begin{flushleft}
+    \begin{tabular}{ | p{0.12\textwidth} |  p{0.88\textwidth} |}
+    \hline
+   	\textbf{Reference} & \textbf{Requirement}
+    \\
+    \hline
+	ENVREQ-01 & The program should work on ENSEEIHT's informatic teaching equipment.
+	\\
+	\hline
+    ENVREQ-02 & The new algorithms Kernel K-Means and Mean-Shift should be implemented in Fortran.
+    \\
+    \hline
+    ENVREQ-03 & The code should be compiled with GFortran.
+	\\
+    \hline
+    ENVREQ-04 & The new algorithms Kernel K-Means and Mean-Shift should be compatible with the libraries MPI, Arpack and Lapack.
+    \\
+    \hline
+    ENVREQ-05 & The documentation should be generated using Doxygen.
+    \\
+    \hline
+    \end{tabular}
+\end{flushleft}
