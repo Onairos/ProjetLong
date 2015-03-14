@@ -1,0 +1,23 @@
+\section{Automated comments writing}
+\subsection{Issues}
+\subsection{MySQL Database}
+
+The MySQL database is basically made to store the information on modules, routines and parameters from the Google Drive. We have 5 tables (cf Figure \ref{table})
+\begin{itemize}
+\item \textbf{modules}: classifies all the modules
+\item \textbf{methods}: classifies all the routines
+\item \textbf{parameters}: classifies all the parameters
+\item \textbf{desc\_param}: classifies parameters whithout duplicate
+\end{itemize}
+\begin{figure}
+%\includegraphics[width=\textwidth]{Image/docu-tables.png}
+\caption{Description of the tables\label{table}}
+\end{figure}
+Each Google sheet is copied locally using Microsoft Excel$^\copyright$ and registerd into CSV format. Thus, three files are produced: one for modules, one for methods and one for parameters. Then, a simple analysis is performed in order to fill the \textit{desc\_param} table with all the parameters without duplicate based on the name and the type. Finally, the result are written back into a dedicated sheet of the Google Drive.\\
+
+As long as the refactoring evolves, we keep regularly the database updated. Especially for the renaming of the modules, methods and parameters\footnote{cf section \ref{auto}}. Because the classifying does not take into account the reordering of the parameters\footnote{cf section \ref{reor}}, we add the table \textbf{type\_order} that orders the type according to the refactoring.
+\subsection{\textit{AutoComment} software\label{auto}}
+\section{Autogeneration with Doxygen}
+\subsection{Doxygen tool parameters}
+\subsection{Formats}
+\subsection{Call and caller graphs}
