@@ -287,25 +287,6 @@ A small software have been programmed to automatically write headers.
 }
 \end{frame}
 
-\subsection{Spectral Clustering}
-\begin{frame}
-\frametitle{Description}
-\begin{block}{Main idea}
-Create a weighted graph between points
-\end{block}
-\vfill
-\begin{columns}
-\begin{column}{0.6\textwidth}
-\begin{itemize}
-\item Each vertice weight represents the similarity between points
-\item The final graph is cut on the lowest similarity vertices
-\end{itemize}
-\end{column}
-\begin{column}{0.4\textwidth}
-\includegraphics[width=\columnwidth, height=4cm]{Image/graph.png}
-\end{column}
-\end{columns}
-\end{frame}
 \subsection{Kernel K-Means}
 \begin{frame}
 \frametitle{K-Means}
@@ -369,8 +350,20 @@ Move a window over the data set following the density gradient.
 \end{columns}
 \end{frame}
 \subsection{Results}
+\begin{frame}[allowframebreaks]
+\frametitle{Spectral Clustering vs. Mean Shift}
+\includegraphics[width=\textwidth, height=0.6\textheight]{Image/spectral1.png}\\
+Spectral Clustering:0.10 s\\
+Mean Shift:0.12 s\\
+\includegraphics[width=\textwidth, height=0.6\textheight]{Image/spectral2.png}\\
+Spectral Clustering:18.3 s\\
+Mean Shift:4.10E-002 s\\
+\end{frame}
 \begin{frame}
-
+\frametitle{Parameter influence}
+\includegraphics[width=0.3333\textwidth]{Image/mshift1.png}
+\includegraphics[width=0.3333\textwidth]{Image/mshift2.png}
+\includegraphics[width=0.3333\textwidth]{Image/mshift3.png}
 \end{frame}
 \section{Conclusion}
 \tableofcontents[currentsection, hideallsubsections]

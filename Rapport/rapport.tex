@@ -1,0 +1,30 @@
+\documentclass{rapport_log}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+\begin{document}
+\include{title}
+\tableofcontents
+	\chapter*{Introduction}
+		\input{intr}
+\part{Project Management}
+	\chapter{Development plan}
+		\input{dvlp}
+	\chapter{Specification plan}
+		\input{spec}
+	\chapter{Tests plan}
+		\input{test}
+	\chapter{Meetings}
+		\input{meet}
+	\chapter{Feedback}
+		\input{feed}
+\part{Technical aspects}
+	\chapter{Refactoring}
+		\input{refa}	
+	\chapter{Documentation}
+		\input{docu}
+	\chapter{Implementation}
+		\input{impl}
+	\chapter*{Conclusion}
+		\input{conc}
+\end{document}
