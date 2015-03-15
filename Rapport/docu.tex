@@ -54,7 +54,7 @@ Each Google sheet is copied locally using Microsoft Excel$^\copyright$ and regis
 As long as the refactoring evolves, we keept regularly the database up-to-date. Especially for the renaming of the modules, methods and parameters\footnote{cf section \ref{auto}}. And because the classifying does not take into account the reordering of the parameters\footnote{cf section \ref{reor}}, we added the table \textbf{type\_order} that put a "weight" on each type according to the refactoring.
 
 \subsection{\textit{AutoComment} software\label{auto}}
-This small software is the best solution we found to respond to repetitive work issues. This program in Java automatically write headers before each module and method by reading the Fortran files, extracting information from the database and write them back into target files in an other directory. We summed up its algorithm (see Algorithm \ref{algo}). 
+This small software is the best solution we found to respond to repetitive work issues. This program in Java automatically write headers before each module and method by reading the Fortran files, extracting information from the database and write them back into target files in an other directory. See Algorithm \ref{algo} for a brief summary. 
 \begin{algorithm}
 \caption{\textit{AutoComment} algorithm}
 \label{algo}
@@ -78,7 +78,27 @@ This small software is the best solution we found to respond to repetitive work 
 \end{algorithmic}
 \end{algorithm}
 
-The program is intend to be launched after the refactoring process. The key idea of this program is that we do not have to write the descriptions twice and we can work on refactoring and documentation at the same time. The algorithm is not fully explained as all the descriptions are not extracted from the database. Methods required advanced description and sometimes references and/or notes. It appeared that it is difficult to format long description in Excel sheets. Because we do not want too long comment lines, we used escape caracters but it is not well handled.  Besides the use of specific tag for such descriptions (@details, @see, @note) leads to some problem of integration in the database. That is why we choose to put further description of methods into separate text files named as the corresponding methods.
+The program is intend to be launched after the refactoring process. The key idea of this program is that we do not have to write the descriptions twice and we can work on refactoring and documentation at the same time. The algorithm is not fully explained as all the descriptions are not extracted from the database. Methods required advanced description and sometimes references and/or notes. It appeared that it is difficult to format long description in Excel sheets. Because we do not want too long comment lines, we used escape caracters but it is not well handled.  Besides the use of specific tag for such descriptions (@details, @see, @note) leads to some problem of integration in the database. That is why we choose to put further description of methods into separate text files named as the corresponding methods.\\
+
+This kind of operations was not useful for the type structures because there are only five of them with few attributes.
 \section{Autogeneration with Doxygen}
 \subsection{Doxygen tool parameters}
+In this subsection, we briefly explain the configuration of the Doxygen documentation generation. In order to make the report clearer, we simply show what differs from the default configuration.
+\begin{itemize}
+\item \textbf{PROJECT\_NAME}: we set the name of the documentation to "Clustering Methods"
+\item \textbf{PROJECT\_NUMBER}: we set the version of the program to "v1.0"
+\item \textbf{FULL\_PATH\_NAMES}: we disabled this field to have simply the name of the files and not the full path
+\item \textbf{EXTRACT\_ALL}: we enabled this field to extract all modules, routines and type
+\item \textbf{USE\_MATHJAX}: we allowed the use of \textit{MathJax} in order to handle mathematical formula for HTML
+\item \textbf{HAVE\_DOT}: we allowed the use of Dot tool from \textit{GraphViz}
+\item \textbf{CALL\_GRAPH}: we enabled this field to generate call graphs
+\item \textbf{CALLER\_GRAPH}: we enabled this field to generate caller grapgs
+\end{itemize}
 \subsection{Call and caller graphs}
+The generation of call and caller graphs are handled by Doxygen tool using GraphViz tool. For each routine, it creates the corresponding graphs (see Figure \ref{graph} for an example). Each called and caller routine in these graphs has an hyperlink to its documentation.\\
+\begin{figure}[h!]
+\includegraphics[width=0.7\textwidth]{Image/docu-graphs}\centering
+\caption{Example of call and caller graphs\label{graph}}
+\end{figure}
+
+During the documentation generation, an error occurs. It seems that the GraphViz tool does not well create the graphs for the main program.
