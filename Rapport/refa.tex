@@ -1,0 +1,37 @@
+\section{Changing types}
+The declared types were standardised in order to improve the software quality and portability.
+
+\subsection{Float numbers}
+The variables and parameters representing float numbers were standardised. Indeed, some of them were declared as $REAL$ (coded in 4 bytes by default), whereas others were declared as $DOUBLE PRECISION$ or $REAL*8$ (coded in 8 bytes by default). As the memory is not a problem with modern computers, all real numbers are now declared as $DOUBLE PRECISION$.
+\\The changes were made using a simple Java program with String manipulation (\textit{String.replace} method).
+
+\subsection{\textit{KIND} keyword}
+As the keyword $KIND$ is interpreted differently depending on the compiler used (for instance, $KIND=4$ could generate a 4 bytes or 16 bytes variable), all the $(KIND=*)$ were removed.
+Right now, the real numbers are all coded in 8 bytes, and the integer numbers are all coded in 4 bytes.
+\\The changes were also made using a Java program.
+
+\subsection{Strings}
+When using the compiler with the flag \textit{-pedantic}, we discovered that the syntax declaring a string ($CHARACTER*80$ or $CHARACTER*30$) is deprecated. Thus, strings are now declared as following : 
+\[CHARACTER (LEN=80)\]
+\[CHARACTER (LEN=30)\]
+\\The changes were also made using a Java program.
+
+\subsection{Boolean values}
+Some local variables were declared as $INTEGER$, but only took the values 0 and 1, representing a boolean value (commonly used into a loop). Some were simply removed (the loop has been simplified), and some were replaced by the declaration $LOGICAL$, taking the values $.TRUE.$ and $.FALSE.$.
+\\The changes were made case by case.
+
+
+\section{Organising source code}
+\subsection{Fortran keywords}
+\subsection{Commented code}
+\subsection{Semicolons}
+\subsection{Unused variables}
+\subsection{Declarations}
+\subsection{Signatures}
+
+\section{Renaming and translating}
+\subsection{Comments of the code}
+\subsection{Output messages}
+\subsection{Subroutines}
+\subsection{Parameters}
+\subsection{Variables}
