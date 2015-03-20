@@ -1,0 +1,91 @@
+
+\section{Environment}
+\subsection{Hardware environment}
+As it is a parallel computing program. The environment must enable the team to test on single and on multiple entity the code produced. In order to do so the code will be tested on lab machines, which are the most likely to represent the IRIT environment. 
+\subsection{Software environment}
+This project implies the use of multiple technologies: Matlab, Fortran, MPI, ssh, Doxygen. The test must run on the client machine configuration.
+
+\section{Test definition}
+The following test must show the client that the code fit the specifications. It include non-regression test : the original code will be tested on the team configuration as a performance reference and will be compared to the new implemented algorithm result in term of efficiency and quality.
+
+\textbf{Id}: T001
+\textbf{Description}: This is the initial test, all the initial function of the program must run. \\
+bouquet, 3blocSimples, Cible, arthus will be tested\\
+\textbf{Result} : The program must run on 2D, 3D geometrical and color images. \\
+Bouquet: It must produce 4 clusters : leaf, oranges, tree, backgroung.\\
+Cible: It must produce 1 cluster per ring.\\
+3blocSimples: 3 clusters\\
+Arthus: It must run, find clusters in a limited time.\\
+
+\textbf{Id}: T002
+\textbf{Description}: We must test the matlab implmentation of Mean Shift \\
+bouquet, 3blocSimples, Cible will be tested\\
+\textbf{Result}: The program must run on 2D, 3D geometrical and color images. \\
+Bouquet: It must produce 4 clusters : leaf, oranges, tree, backgroung.\\
+3blocSimples: 3 clusters\\
+Cible: It must produce 1 cluster per ring.\\
+
+\textbf{Id}: T003
+\textbf{Description}: We must test the matlab implmentation of Kernel K-Means \\
+bouquet, 3blocSimples, Cible will be tested\\
+\textbf{Result}: The program must run on 2D, 3D geometrical and color images. \\
+Bouquet: It must produce 4 clusters : leaf, oranges, tree, backgroung.\\
+Cible: It must produce 1 cluster per ring.\\
+3blocSimples: 3 clusters\\
+
+\textbf{Id}: T004
+\textbf{Description}: We must test the Fortran implmentation of Mean Shift \\
+bouquet, 3blocSimples, Cible will be tested\\
+\textbf{Result}: The program must run on 2D, 3D geometrical and color images. \\
+Bouquet: It must produce 4 clusters : leaf, oranges, tree, backgroung.\\
+Cible: It must produce 1 cluster per ring.\\
+3blocSimples: 3 clusters\\
+
+\textbf{Id}: T005
+\textbf{Description}: We must test the Fortran implmentation of Mean Shift \\
+Arthus1 will be tested with different bandwidth\\
+\textbf{Result}: The program must run on 2D, 3D geometrical and color images. \\
+Arthus 1 must produce an image segmentation result in limited time\\
+
+\textbf{Id}: T006
+\textbf{Description}: We must test the Fortran implmentation of Kernel K-means \\
+bouquet, 3blocSimples, Cible will be tested: 
+\begin{enumerate}
+\item using polynomial kernel function
+\item using gaussian kernel function
+\end{enumerate}
+\textbf{Result}: The program must run on 2D, 3D geometrical and color images. \\
+Bouquet: It must produce 4 clusters : leaf, oranges, tree, backgroung.\\
+Cible: It must produce 1 cluster per ring.\\
+3blocSimples: 3 clusters\\
+
+\textbf{Id}: T007
+\textbf{Description}: We must test the initial implmentation of Spectral clustering using different Kernel function \\
+bouquet, 3blocSimples, Cible will be tested: 
+\begin{enumerate}
+\item using polynomial kernel function
+\item using gaussian kernel function
+\end{enumerate}
+\textbf{Result}: The program must run on 2D, 3D geometrical and color images. \\
+Bouquet: It must produce 4 clusters : leaf, oranges, tree, backgroung.\\
+Cible: It must produce 1 cluster per ring.\\
+3blocSimples: 3 clusters\\
+
+The test T005 o T007 will be duplicated for parallel computing
+
+Thoose test will cover:
+\begin{enumerate}
+\item Matlab implementation of Kernek K-means
+\item Matlab implementation of Mean shift
+\item Fortran implementation of Kernek K-means
+\item Fortran implementation of Mean shift
+\item Fortran implementation of Kernel methods
+\item Integration of the methods into a parallele code
+\end{enumerate}
+
+
+\textbf{Id}: T008
+\textbf{Description}: We must show that the code refactoring has een succesull \\
+The code will e satical analysed to show the improvement 
+
+\textbf{Result}: The code readability, syntax must have been improved and standards must have applied : one language, one naming standard etc\\
