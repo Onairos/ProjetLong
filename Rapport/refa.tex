@@ -1,8 +1,8 @@
 \section{Changing types}
-The declared types were standardised in order to improve the software quality and portability.
+The declared types were standardized in order to improve the software quality and portability.
 
 \subsection{Float numbers}
-The variables and parameters representing float numbers were standardised. Indeed, some of them were declared as $REAL$ (coded in 4 bytes by default), whereas others were declared as $DOUBLE PRECISION$ or $REAL*8$ (coded in 8 bytes by default). As the memory is not a problem with modern computers, all real numbers are now declared as $DOUBLE PRECISION$.
+The variables and parameters representing float numbers were standardized. Indeed, some of them were declared as $REAL$ (coded in 4 bytes by default), whereas others were declared as $DOUBLE PRECISION$ or $REAL*8$ (coded in 8 bytes by default). As the memory is not a problem with modern computers, all real numbers are now declared as $DOUBLE PRECISION$.
 \\The changes were made using a simple Java program with String manipulation (\textit{String.replace} method).
 
 \subsection{\textit{KIND} keyword}
@@ -21,7 +21,7 @@ Some local variables were declared as $INTEGER$, but only took the values 0 and 
 \\The changes were made case by case.
 
 
-\section{Organising source code}
+\section{Organizing source code}
 The source code was cleared in order to improve readability for the developer, and thus improve his ability to maintain the software.
 
 \newpage
@@ -76,7 +76,7 @@ In Fortran, an end of line indicates an end of instruction. In case of the devel
 When using the compiler with the flag \textit{-Wextra}, we found some local variables which were unused, probably from older versions of the code. Thus, those variables are not declared any more. 
 
 \subsection{Declarations}
-The declarations of parameters and variables at the beginning of each subroutine and program were disorganised. Now, there are only one variable or parameter declared per line and the declarations are ordered with the following rules: 
+The declarations of parameters and variables at the beginning of each subroutine and program were disorganized. Now, there are only one variable or parameter declared per line and the declarations are ordered with the following rules: 
 \begin{itemize}
 \item 
 parameters then variables
@@ -116,12 +116,12 @@ The order of parameters in the signatures of subroutines was changed to match wi
 The source code was translated in order to improve readability, and make the code more international.
 
 \subsection{Comments of the code}
-All the comments giving further explanations of the algorithmic are now in English for internationalisation of the code.
+All the comments giving further explanations of the algorithmic are now in English for internationalization of the code.
 
 \subsection{Output messages}
 All the messages displayed in the console (with the command $PRINT$) are now in English too.
 
 \subsection{Subroutines, parameters and variables}
-The subroutines names were translated, standardised (lower\_snake\_case) and described what the routine does.
-\\ The parameters and variables names were also translated and standardised.
+The subroutines names were translated, standardized (lower\_snake\_case) and described what the routine does.
+\\ The parameters and variables names were also translated and standardized.
 \\ The array containing all the old and new names for the routines and parameters can be found in the associated file \textit{refactored\_names.ods}.
