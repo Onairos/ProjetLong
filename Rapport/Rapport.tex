@@ -1,0 +1,46 @@
+\documentclass{rapport_log}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{wrapfig} 
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+\usepackage{algorithm}
+\usepackage{color}
+
+\begin{document}
+\include{title}
+\tableofcontents
+	\chapter*{Introduction}
+		\input{intr}
+\part{Project Management}
+	\chapter*{Development plan}
+		\input{dvlp}
+	\chapter*{Specification plan}
+		\input{spec}
+	\chapter*{Tests plan}
+		\input{test}
+	\chapter*{Meetings}
+		\input{meet}
+	\chapter*{Feedback}
+		\input{feed}
+\part{Reverse Engineering}
+	\chapter*{Refactoring}
+		\input{refa}	
+	\chapter*{Documentation}
+		\input{docu}
+\part{Program and Implementation}
+        \chapter*{Program structure}
+                \input{program}
+	\chapter*{Kernel K-Means}
+		\input{kern}
+	\chapter{Mean Shift}
+		\input{shift}
+	\chapter*{Tests and results}
+		%\input{test}
+        \input{resu}
+	\chapter*{Conclusion}
+		\input{conc}
+%\part*{Appendices}
+%	\chapter*{Doxygen configuration}
+%		\lstinputlisting{Script/conf.txt}
+\end{document}
