@@ -1,8 +1,8 @@
 \section{Changing types}
-The declared types were standardised in order to improve the software quality and portability.
+The declared types were standardized in order to improve the software quality and portability.
 
 \subsection{Float numbers}
-The variables and parameters representing float numbers were standardised. Indeed, some of them were declared as $REAL$ (coded in 4 bytes by default), whereas others were declared as $DOUBLE PRECISION$ or $REAL*8$ (coded in 8 bytes by default). As the memory is not a problem with modern computers, all real numbers are now declared as $DOUBLE PRECISION$.
+The variables and parameters representing float numbers were standardized. Indeed, some of them were declared as $REAL$ (coded in 4 bytes by default), whereas others were declared as $DOUBLE PRECISION$ or $REAL*8$ (coded in 8 bytes by default). As the memory is not a problem with modern computers, all real numbers are now declared as $DOUBLE PRECISION$.
 \\The changes were made using a simple Java program with String manipulation (\textit{String.replace} method).
 
 \subsection{\textit{KIND} keyword}
@@ -11,7 +11,7 @@ Right now, the real numbers are all coded in 8 bytes, and the integer numbers ar
 \\The changes were also made using a Java program.
 
 \subsection{Strings}
-When using the compiler with the flag \textit{-pedantic}, we discovered that the syntax declaring a string ($CHARACTER*80$ or $CHARACTER*30$) is deprecated. Thus, strings are now declared as following : 
+When using the compiler with the flag \textit{-pedantic}, we discovered that the syntax declaring a string ($CHARACTER*80$ or $CHARACTER*30$) is deprecated. Thus, strings are now declared as following: 
 \[CHARACTER (LEN=80)\]
 \[CHARACTER (LEN=30)\]
 \\The changes were also made using a Java program.
@@ -21,17 +21,107 @@ Some local variables were declared as $INTEGER$, but only took the values 0 and 
 \\The changes were made case by case.
 
 
-\section{Organising source code}
+\section{Organizing source code}
+The source code was cleared in order to improve readability for the developer, and thus improve his ability to maintain the software.
+
+\newpage
 \subsection{Fortran keywords}
+The following keywords of Fortran were written in lowercase. So as to have a better visibility of the structure of the code, and to use the same norm as the Fortran developers, they are now in uppercase.
+\\The changes were made using a Java program.
+
+\begin{center}
+\begin{tabular}{ | c | }
+\hline 
+\textbf{Keywords} \\
+
+\hline 
+PROGRAM, MODULE, CONTAINS, SUBROUTINE, FUNCTION \\
+CALL, CONTINUE, RETURN, STOP \\
+USE, INCLUDE \\
+ALLOCATE, DEALLOCATE \\
+OPEN, CLOSE, FILE, UNIT \\
+INQUIRE, EXIST, INTRINSIC \\
+READ, WRITE, PRINT \\
+
+\hline 
+IMPLICIT NONE, EXTERNAL \\
+TYPE, PARAMETER, INTENT \\
+INTEGER, REAL, DOUBLE PRECISION, COMPLEX, CHARACTER, LOGICAL \\
+COMMON, POINTER, DIMENSION \\
+
+\hline 
+GOTO \\
+IF, THEN, ELSIF, ELSE, ENDIF \\
+WHILE, DO, ENDDO, END \\
+SELECT, CASE, DEFAULT \\
+
+\hline
+.TRUE., .FALSE. \\
+.EQ., .NE. \\
+.GT., .LT., .GE., .LE. \\
+.OR., .AND., .XOR., .NOT. \\
+
+\hline
+\end{tabular}
+\end{center}
+
 \subsection{Commented code}
+All the commented algorithmic was removed, to avoid useless lines of code and to ease the readability by the developer.
+
 \subsection{Semicolons}
+In Fortran, an end of line indicates an end of instruction. In case of the developer want multiple instructions on one line, he can separate them with the character ';' (semicolon).
+\\But multiple instructions on one line are very difficult to read and understand. It is not a good programming practice. That is why there are no longer multiple instructions per line. Furthermore, all the useless semicolons were removed.
+
 \subsection{Unused variables}
+When using the compiler with the flag \textit{-Wextra}, we found some local variables which were unused, probably from older versions of the code. Thus, those variables are not declared any more. 
+
 \subsection{Declarations}
+The declarations of parameters and variables at the beginning of each subroutine and program were disorganized. Now, there are only one variable or parameter declared per line and the declarations are ordered with the following rules: 
+\begin{itemize}
+\item 
+parameters then variables
+\item
+for parameters : first "in" parameters, then "in/out" parameters and finally "out" parameters
+\item
+order by type: strings, characters, structured types, integers, integer arrays, real numbers, real arrays, then boolean values (subjective order)
+\item
+for variables or parameters with the same type, sort by alphabetic order
+\end{itemize}
+
+\newpage
+What is more, declarations are introduced by the following presentation: 
+\begin{quote}
+\texttt{
+IMPLICIT NONE \\
+!\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\# \\
+! DECLARATIONS \\
+!\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\# \\
+!\#\#\#\# Parameters \#\#\#\# \\
+!==== IN ==== \\
+!=== IN/OUT === \\
+!==== OUT ==== \\
+!\#\#\#\# Variables \#\#\#\# \\
+!\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\# \\
+! INSTRUCTIONS \\
+!\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#  \\
+}
+\end{quote}
+
 \subsection{Signatures}
+The order of parameters in the signatures of subroutines was changed to match with the order described in the previous paragraph.
+\\The changes were made using a Java program.
+
 
 \section{Renaming and translating}
+The source code was translated in order to improve readability, and make the code more international.
+
 \subsection{Comments of the code}
+All the comments giving further explanations of the algorithmic are now in English for internationalization of the code.
+
 \subsection{Output messages}
-\subsection{Subroutines}
-\subsection{Parameters}
-\subsection{Variables}
+All the messages displayed in the console (with the command $PRINT$) are now in English too.
+
+\subsection{Subroutines, parameters and variables}
+The subroutines names were translated, standardized (lower\_snake\_case) and described what the routine does.
+\\ The parameters and variables names were also translated and standardized.
+\\ The array containing all the old and new names for the routines and parameters can be found in the associated file \textit{refactored\_names.ods}.

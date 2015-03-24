@@ -36,13 +36,13 @@ The principle of K-means is to select random centers for clusters, split the dat
 \end{algorithmic}
 \end{algorithm}
 
-However, this method is limited as we can only separated the clusters with hyperplanes, that does not work for non-linear separations (see Figure \ref{sepa}). To handle such cases, we preprocess the data by using kernel functions.
+However, this method is limited as we can only separated the clusters with hyperplanes, that does not work for non-linear separations (see Figure \ref{sepa}). To handle such cases, we pre-process the data by using kernel functions.
 \begin{figure}
 \includegraphics[width=0.6\textwidth]{Image/algo-sepa.png}\centering
 \caption{Example of non linear separation\label{sepa}}
 \end{figure}
 \section{Kernel functions}
-The main idea of the Kernel K-Mean algorithm is to map the data points into a higher dimensional space in order to enlight non linear separators (see Figure \ref{kern}). For this purpose, we pass the dataset ($x_1,...,x_n$) through a Kernel function that computes affinity between point using different approaches from simply finding the shortest distances:\\
+The main idea of the Kernel K-Mean algorithm is to map the data points into a higher dimensional space in order to lighten non linear separators (see Figure \ref{kern}). For this purpose, we pass the dataset ($x_1,...,x_n$) through a Kernel function that computes affinity between point using different approaches from simply finding the shortest distances:\\
 \begin{equation}
 \textbf{Polynomial Kernel }K(x_i,x_j) = (x_i^Tx_j + \gamma)^{\delta}
 \end{equation}
@@ -58,4 +58,3 @@ The challenge of the Kernel K-Means algorithm is to select the right Kernel and 
 \includegraphics[width=0.6\textwidth]{Image/algo-kern.png}\centering
 \caption{Projection on a higher dimensional space\label{kern}}
 \end{figure}
-\section{Implementation}
