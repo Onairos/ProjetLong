@@ -7,27 +7,32 @@ The client had an existing development plan in mind that was logical, covered al
 Each of the following step represents the schedule for the different point expected by the client to be complete. It check the good evolution of the project and the respect of the desired specifications.
 \begin{description}
 \item[Step 1]
+\noindent
 	\begin{itemize}
 	\item 1. Bibliography study (the reference can be found in the documentation section)
  	\item 2. Existing parallel code set up on lab machines, new example creation : 2D examples 3D examples
 	\item 3. The three following methods must be implemented in matlab : spectral clustering, Kernel K-Means and Mean Shift        
 	\end{itemize} 
 \item[Step 2]
+\noindent
 	\begin{itemize}
 	\item 1. Code documentation (Doxygen) : dependency graphs, method and parameters description.
 	\item 2. End of the clustering methods implementation in Matlab
 	\end{itemize}
 \item[Step 3]
+\noindent
 	\begin{itemize}
 	\item This step provides specification of the new clustering methods interfaces in Fortran  and validation with the client.
 	\end{itemize}
 \item[Step 4]
+\noindent
 	\begin{itemize}
 	\item 1. Code refactoring : the code will follow classical Fortran coding convention, the method and variables will be renamed for better understanding.
 	\item 2. Implementation of the new clustering methods interfaces FORTRAN
 	\item 3. new tests generation
 	\end{itemize}
 \item[Step 5]
+\noindent
 	\begin{itemize}
 	\item Validation of the new methods. Quality of the result on the different tests, time elapsed computing, non regression check.
 	\item The refactored code will be tested and the validation will rely on statical analysis of the code.
